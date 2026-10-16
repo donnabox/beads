@@ -1,0 +1,303 @@
+[
+  {
+    "ordinal": 1,
+    "id": "singleton-create",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/create-bead",
+    "credentialRef": "operator",
+    "status": 200,
+    "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+    "bodyBytes": 113,
+    "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "minimum-singleton"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": "pos-999"
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": "foreign-epoch"
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": "foreign-view"
+      }
+    ]
+  },
+  {
+    "ordinal": 2,
+    "id": "singleton-replay",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/create-bead",
+    "credentialRef": "operator",
+    "status": 200,
+    "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+    "bodyBytes": 113,
+    "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "minimum-singleton"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": ""
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": "epoch-one"
+      },
+      {
+        "name": "BDP-Scope-Epoch",
+        "value": "epoch-two"
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": "not a view!"
+      }
+    ]
+  },
+  {
+    "ordinal": 3,
+    "id": "singleton-conflict",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/create-bead",
+    "credentialRef": "operator",
+    "status": 409,
+    "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}",
+    "bodyBytes": 103,
+    "bodySha256": "553c7e4b63db182cbe9b18d7a2911e71f2b5f40b1ff9436438ccc9b81410e5a3",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "minimum-singleton"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": "not a token!"
+      }
+    ]
+  },
+  {
+    "ordinal": 4,
+    "id": "missing-key",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/create-bead",
+    "credentialRef": "operator",
+    "status": 400,
+    "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+    "bodyBytes": 113,
+    "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": ""
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": "epoch-one"
+      },
+      {
+        "name": "BDP-Scope-Epoch",
+        "value": "epoch-two"
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": "not a view!"
+      }
+    ]
+  },
+  {
+    "ordinal": 5,
+    "id": "unauthenticated",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/create-bead",
+    "credentialRef": "unknown",
+    "status": 401,
+    "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+    "bodyBytes": 113,
+    "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "minimum-unauthenticated"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": "pos-999"
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": "foreign-epoch"
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": "foreign-view"
+      }
+    ]
+  },
+  {
+    "ordinal": 6,
+    "id": "stale-revision",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/update-bead",
+    "credentialRef": "operator",
+    "status": 409,
+    "bodyUtf8": "{\"bead\":\"https://reference.invalid/acme/beads/w1-a\",\"expectedRevision\":\"minimum-stale-revision\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"must-not-commit\"}]}",
+    "bodyBytes": 176,
+    "bodySha256": "e0ae796e8a992c27102711f854d8cdf7db1dc83ca1b0d0d0b3c5859c261728c2",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "minimum-stale"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": ""
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": "epoch-one"
+      },
+      {
+        "name": "BDP-Scope-Epoch",
+        "value": "epoch-two"
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": "not a view!"
+      }
+    ]
+  },
+  {
+    "ordinal": 7,
+    "id": "invalid-carrier",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/create-bead",
+    "credentialRef": "operator",
+    "status": 400,
+    "bodyUtf8": "{",
+    "bodyBytes": 1,
+    "bodySha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "minimum-invalid"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": "not a token!"
+      }
+    ]
+  },
+  {
+    "ordinal": 8,
+    "id": "singleton-point",
+    "method": "GET",
+    "url": "https://reference.invalid/acme/beads/w1-a",
+    "credentialRef": "operator",
+    "status": 200,
+    "bodyUtf8": null,
+    "bodyBytes": 0,
+    "bodySha256": null,
+    "headers": []
+  },
+  {
+    "ordinal": 9,
+    "id": "sequence-create",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/sequence",
+    "credentialRef": "operator",
+    "status": 200,
+    "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}",
+    "bodyBytes": 190,
+    "bodySha256": "76bd4c1c05ceb414c5da1c4f31892dbe55c0f41bdf3796532341f00f7785163f",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": "not a token!"
+      }
+    ]
+  },
+  {
+    "ordinal": 10,
+    "id": "sequence-replay",
+    "method": "POST",
+    "url": "https://reference.invalid/acme/operations/sequence",
+    "credentialRef": "operator",
+    "status": 200,
+    "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}",
+    "bodyBytes": 190,
+    "bodySha256": "76bd4c1c05ceb414c5da1c4f31892dbe55c0f41bdf3796532341f00f7785163f",
+    "headers": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": ""
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": "epoch-one"
+      },
+      {
+        "name": "BDP-Scope-Epoch",
+        "value": "epoch-two"
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": "not a view!"
+      }
+    ]
+  },
+  {
+    "ordinal": 11,
+    "id": "sequence-point",
+    "method": "GET",
+    "url": "https://reference.invalid/acme/beads/w1-b",
+    "credentialRef": "operator",
+    "status": 200,
+    "bodyUtf8": null,
+    "bodyBytes": 0,
+    "bodySha256": null,
+    "headers": []
+  }
+]

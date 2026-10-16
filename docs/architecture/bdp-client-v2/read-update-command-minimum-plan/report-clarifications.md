@@ -1,0 +1,9 @@
+# Additive safe-report clarification and arithmetic check
+
+This addendum leaves frozen plan173b3658/scenarioee3977cf/ledgerdfb1653b unchanged. It clarifies the planned local reporter, not current cold-directory source. No authoring/execution/review launch is released.
+
+The new report must explicitly name the applied control (`replay-outcome`) and label it `assertion-input-only`, separating projected runner outcomes from unchanged original wire observations. For a run where this row is absent, omit its supplement or mark it explicitly not-run; never present empty ledgers as a failed or successful execution. Use a distinct absolute per-invocation output path. Initial exclusive creation (`wx`,0600), followed only by same-invocation rewrites, prevents silent replacement of another run. Reuse the local writer/lifecycle pattern; no generic filesystem framework or shared API. Report errors remain failures. Do not rewrite real wire content-length/bytes or invent executor action IDs/credential fields; the explicit provenance join in the plan remains binding.
+
+Recomputed from all nine exact UTF-8 POST bodies:113+113+103+113+113+176+1+190+190 = **1,112 bytes**, maximum190. Both GETs have no body. The earlier1,102 impression is incorrect. Every ledger body/digest/length matches scenario.json. Count remains11 actions/47 assertions.
+
+An independent second in-memory reconstruction of committed bb9600 plus the literal row/replacement reproduced all frozen measurement hashes: manifest3,689,599 disk /1,912,642 compact bytes /98,836 nodes; coverage720,396 bytes. All36 disjoint derivative recipes retain the additive9,462-byte/507-node delta, maximum1,913,753/98,871. Proposed four data allowances72,239/21,782/16,981/7,735 remain arithmetic proposals; parser/time/runtime bounds remain unchanged. No future merged parent is invented and final formatted implementation must be remeasured.

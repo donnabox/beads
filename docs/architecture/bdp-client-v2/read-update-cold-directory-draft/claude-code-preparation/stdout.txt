@@ -1,0 +1,122 @@
+## Scope of this review
+
+I read only what was supplied: the complete new scenario object, the complete replacement coverage row, the complete four‑file TypeScript diff, the safe‑report contract, and the quoted unchanged/integration excerpts. I did not inspect any file on disk, ran nothing, and verified no hash by computation. Line references are new‑side numbers taken from the supplied hunk headers.
+
+**Independently re‑derived and consistent (not findings):** action/assertion arithmetic (21 actions, 134 assertions; 10 raw‑http / 11 client; 10 POST) matches `coldDirectoryRequests`, the coverage row's 134 ordered binding ids match a flatMap of the scenario's action/assertion ids, and the attempt caps (`>=10`, `>=11`) admit exactly the declared counts. Mutation ordering is sound (alias deleted before its bead; link deleted before its source bead; `w1-b` never deleted before `final-b`). CAS chaining is genuinely closed: `a-rev → update-bead`, `initial-link-revision → update-link`, `final-link-revision → delete-link`, `a-updated-rev → delete-bead`, each re‑asserted in the local `bodies` table. Target provenance holds structurally: the nine client targets are only reachable through `execution.bindings[...]`, whose sole producer is the `directory-captures` capture set, and the client helper independently re‑enforces canonical‑scope confinement that raw captures would otherwise have enforced. The four coverage byte allowances are arithmetically consistent (5114 B row growth; 1176 B and 1524 B of previously unconsumed slack absorbed; 703415+14892 = 648157+70150 = 718307), and they are data‑growth pins only — parser node cap (100000), compact‑byte cap (4 MiB), request‑body fact cap (4096), observation cap (65536) and report cap (262144) are untouched. Parent preservation is the strongest part of the change: both changed JSON files are pinned by reconstructed‑parent digests plus the exact spliced previous coverage row, so every unchanged byte is covered rather than asserted.
+
+---
+
+## Actual defects
+
+**1. Severity: medium — counterfactual returns a self‑contradictory response envelope.**
+`apps/bdptest/src/read-update-matrix.test.ts:1025‑1067` (control branch: `return { ...actual, bodyText, bodyOctets: Buffer.byteLength(bodyText) }`).
+Issue: only `bodyText` and `bodyOctets` are rewritten. `actual.headers` (hence any `content-length`) and `actual.wireResponseBytes` are spread through unchanged, and per `packages/conformance/src/http-executor.ts:23‑110` the socket‑level executor is exactly the one that supplies `wireResponseBytes`. The returned object therefore describes a body that is one member shorter than its own framing evidence.
+Impact: the pending controlled test pins a very specific shape — sole failure `directory:schema`, and `exchanges[2].assertions` exactly `[status:true, schema:false]`. If the runner derives `wireBodyOctets`/`decodedBodyBytes` from the wire bytes, or cross‑checks framing in exact mode, the observed failure becomes a `harnessError`/`exact-observation` rather than the named assertion failure. Fail‑closed (the oracle would fail), but it would fail for the wrong reason.
+Smallest correction: destructure `wireResponseBytes` out of the returned object and rewrite `content-length` when present: `const { wireResponseBytes: _w, ...rest } = actual; return { ...rest, headers: { ...actual.headers, ...(actual.headers["content-length"] === undefined ? {} : { "content-length": String(Buffer.byteLength(bodyText)) }) }, bodyText, bodyOctets: Buffer.byteLength(bodyText) };`
+
+**2. Severity: low‑medium — oracle logic embedded in the transport path degrades failure shape.**
+`apps/bdptest/src/read-update-matrix.test.ts:1025‑1067` (`validateCold`, `expect(body).toEqual(coldDirectory)`, the alias‑404 `retry` expects, and the unguarded `JSON.parse(actual.bodyText)`).
+Issue: these are oracle assertions executed inside the executor wrapper. A genuine server deviation (bad directory member, missing `retry`, non‑JSON error page) rejects the executor, so the runner records a synthesized transport/execution error on that action instead of the scenario's own named assertion. The `expect(body).toEqual(coldDirectory)` is additionally redundant: `readUpdateOperationDirectory` already pins all nine values with `const` + `required` + `additionalProperties:false`, so the `directory.schema` assertion covers it.
+Impact: diagnostic quality only; no claim is weakened, but a real defect reports as a transport category rather than `directory:schema` or `read-deleted-alias:*`.
+Smallest correction: keep the pre‑mutation `validateCold` call inline (it is load‑bearing for the counterfactual's "genuine 200 first" honesty), and move the alias `retry`/`code` checks and the equality to `assertColdDirectory` by recording the observed values into `coldRaw[i].body` (already retained) instead of asserting in the wrapper.
+
+**3. Severity: low — `report.coldDirectory` is emitted on every run, including runs where the scenario never executed.**
+`apps/bdptest/src/read-update-matrix.test.ts:1591‑1602`.
+Issue: the block is unconditional with `checksPassed: false`, empty ledgers, `aliasRetryPassed: false`. Every unrelated report (all other installed tests, both shards) now carries a cold‑directory block that reads as an unverified/failed check.
+Impact: report honesty and shape; also any existing whole‑report shape pin elsewhere in the suite now needs updating.
+Smallest correction: conditional spread — `...(coldAttempts.length ? { coldDirectory: { … } } : {})` — and keep the existing `if (coldAttempts.length)` guard around the `checksPassed = true` mutation.
+
+**4. Severity: low — the saved report counts control applications but never names the applied control.**
+`apps/bdptest/src/read-update-matrix.test.ts:1681‑1710` (`controlApplications` in the written object).
+Issue: the file records `controlApplications: 1` but not *which* assertion input was mutated; the mutated directory body also reaches the file through `result` as an apparently observed response. The contract document names the mutation, the artifact does not.
+Impact: a reader of a retained failure report cannot tell from the artifact alone that `updateLink` was deleted from assertion input.
+Smallest correction: add `...(directoryControl === undefined ? {} : { control: directoryControl })` to `report.coldDirectory`.
+
+**5. Severity: low — `mode: 0o600` does not constrain an existing path, and the "distinct path per invocation" contract is unenforced.**
+`apps/bdptest/src/read-update-matrix.test.ts:1681‑1710` (`writeFileSync(filename, safe, { mode: 0o600 })`).
+Issue: `mode` applies at creation only; an existing file keeps its prior permissions and is silently overwritten. The writer is intentionally called 2–3 times per run, so a blanket `wx` flag is not available.
+Impact: a caller‑supplied path that already exists (reuse, or a pre‑created world‑readable file) receives the report at the pre‑existing mode.
+Smallest correction: track a local `let coldReportWritten = false;` in `run`, pass `{ mode: 0o600, flag: coldReportWritten ? "w" : "wx" }`, and set the flag after a successful write.
+
+**6. Severity: low — `claimEligible` is written as a literal rather than projected.**
+`apps/bdptest/src/read-update-matrix.test.ts:1681‑1710` (`claimEligible: false`).
+Issue: the file always claims ineligibility regardless of `report.claimEligible`. Both new tests assert the report value separately, but the aggregate path also writes this file without that pairing inside the writer.
+Impact: a future divergence between runner state and the retained artifact would not be detected at the write site. (Direction is safe — it can never over‑claim.)
+Smallest correction: `claimEligible: report.claimEligible,` plus `if (report.claimEligible !== false) throw Error("cold directory report must not claim eligibility");` before the size/secret gate.
+
+---
+
+## Supplied‑context gaps (cannot be resolved from what was provided)
+
+**7. Severity: high (blocking verification) — the two `exactConfigurationDigest` replacements are unexplained and unexercised.**
+`apps/bdptest/src/read-update-matrix.test.ts:2053` and `:2486` (`3224c31c… → 26da5a28…`).
+Issue: the diff changes no exact‑mode input. The omitted‑context boundary states exactMode is built "from fixed artifactRoutes with explicit operator/anonymous/unknown handles, requestTimeout5000" — if that list is a fixed literal and unchanged, this digest should not have moved. The change is consistent with the route set (or another digest input) being derived from the loaded manifest, which the boundary does not state. Both pin sites are `await run(...)` installed tests, so none of the seven CPU callbacks touched the new value; its provenance is not in the supplied evidence.
+Impact: either the boundary statement or the digest is wrong; one of the two pending installed tests fails. Smallest correction: state and show the derivation of `exactConfigurationDigest` (routes literal vs. manifest‑derived) and record where the new value was observed; no code change if routes are derived.
+
+**8. Severity: high (blocking execution) — client GET to the operation directory requires an installed exact route.**
+`apps/bdptest/test-support/read-update-exact-client.ts:70‑100` against scenario action `directory-captures`.
+Issue: for `method === "GET"`, the helper admits the request only if `mode.routes` contains it, or if the resolved path matches `^beads/[^/]+$`. `operations/` cannot take the fallback (and the follow‑on canonical‑bead check also throws), so `GET https://reference.invalid/acme/operations/` must already be in `artifactRoutes` — as must POST `operations/sequence` and the GETs for `types/task`, `types/relates`, `alias/w1-locator`, `links/w1-l`, `beads/w1-a`, `beads/w1-b`. `artifactRoutes` is neither in the diff nor in the supplied excerpts.
+Impact: if any is absent, the scenario cannot run at all (helper throw for the client GET, exact‑mode rejection for raw GETs). Resolves together with finding 7. Smallest correction: none if present; otherwise this becomes a route‑table change, which the stated scope forbids — so it must be confirmed, not assumed.
+
+**9. Severity: medium — fixture bindings and URL literals are assumed, not pinned.**
+Scenario actions `put-alias-get`/`deleted-link`/`deleted-bead`/`final-b` (bindings `w1.alias`, `w1.l`, `w1.a`, `w1.b`), the `types` + `path` joins, and every URL literal in `coldDirectoryRequests` (`:152‑719`).
+Issue: nothing CPU‑verifiable ties `w1.alias → ${scope}alias/w1-locator` or the discovery `operations`/`types` links to the trailing‑slash forms the URL table and the two in‑wrapper hooks (`sent.url === \`${scope}operations/\``, `\`${scope}alias/w1-locator\``) assume. Fixtures are out of scope and were not supplied.
+Impact: a trailing‑slash or binding‑name mismatch makes the hooks silently not fire. This is fail‑closed — `expect(coldControlApplications).toBe(directoryControl ? 1 : 0)` and `expect(coldAliasRetryPassed).toBe(!directoryControl)` convert silence into failure — so the risk is a failing pending run, not a false pass. Smallest correction: none required; if cheap pinning is wanted, assert the four fixture binding values in the CPU pin test from the loaded fixture.
+
+**10. Severity: medium — request‑level idempotency keys are unverified, and `sequence` declares none.**
+Scenario action `sequence` (`input` has no `idempotencyKey`; the member body carries `"directory-sequence-b"`), versus every other mutation action which declares one; oracle `:152‑719`; pin test `:1791‑1893`.
+Issue: the client helper only emits the `idempotency-key` header when `input.idempotencyKey` is present, the helper's observation output omits the key entirely, and neither the pin test nor `assertColdDirectory` checks it. Whether the installed reference requires a request‑level key for a sequence POST is not determinable from the supplied excerpts.
+Impact: if a header is required, the pending positive run fails at the last mutation; either way the change adds ten mutations whose idempotency‑key provenance no local check covers.
+Smallest correction: add `expect(action.input.idempotencyKey).toBe(<expected>)` per client action to the CPU pin test (cheap, offline), and resolve the `sequence` question explicitly — do not add a key on speculation.
+
+**11. Severity: low — strict full‑Resource and postimage equalities depend on unseen response projections.**
+Oracle `resource()` and `expect(raw.at(-1)?.body).toEqual(final)` (`:152‑719`); scenario `final-b.postimage`.
+Issue: `resource()` allows exactly the authored fields plus `revision`, so any `revisionProvenance` (conditionally emitted per `packages/server/src/resource-evaluator.ts:1125‑1168`) breaks it; `final-b` compares a `currentBeadRecord` read against a sequence result resource, and `currentBeadRecord` permits `links`/`ownedLinks` that the mutation envelope does not carry. Existing precedent for both patterns lives in scenario bodies that were deliberately omitted.
+Impact: plausible failure mode for the unrun positive test; no correctness claim is overstated. Smallest correction: none if precedent exists; otherwise `final-b` would need the explicit view the client helper already models (`query.view`), which raw http actions cannot express — so confirm precedent first.
+
+**12. Severity: low — secret scanning and report shape rest on omitted structures.**
+`:1681‑1710` (`safe.includes(token) || safe.includes(wrongToken)`), covering `report.configuration`, `report.result` (whose `ObservedExchange.request.headers` is a plain record per `packages/conformance/src/runner.ts:159‑187`) and `report.observations`.
+Issue: the only secret guard is a two‑literal substring scan, matching the established `expect(JSON.stringify(progress)).not.toContain(token)` convention. If exact‑mode `request.headers` or `configuration` ever carried the operator token, the writer would throw on every invocation rather than leak — correct direction, but it would make the feature unusable and surface as a cleanup error.
+Impact: no leak path identified; usability/robustness unknown. Smallest correction: none; optionally scan for the configured credential header values generically instead of two literals.
+
+**13. Severity: low — the control path returns before the remainder of the executor wrapper.**
+`:1025‑1067` (early `return` inside the `cold` block, ahead of `if (admissionHit)` and everything after it).
+Issue: any unconditional post‑response accounting later in that wrapper is skipped for the single mutated response. All other controls are scenario‑gated, so no interference exists; the omitted tail is unreviewed here.
+Impact: unknown but confined to one response in one controlled run. Smallest correction: none if the tail is purely control‑gated; otherwise set the mutated fields on a local and fall through instead of returning early.
+
+**14. Severity: low — `currentScenario` is never cleared, so the attempt caps stay armed after the scenario body returns.**
+`:917‑976` (`currentScenario = scenario.id`) with `:1025‑1067` and `:1119‑1139`.
+Issue: if `cleanup.resetFixture` or any post‑scenario probe dispatches through the wrapped executor, the 11th raw attempt throws "extra cold directory raw attempt" and lands as a cleanup error, contradicting the new `expect(report.cleanupComplete).toBe(true)`. Per‑scenario isolated children make an HTTP‑based reset unlikely, but the reset mechanism was not supplied.
+Impact: fail‑loud only. Smallest correction: clear `currentScenario = ""` when the per‑scenario callback's work completes, or gate the counters on an explicit in‑flight flag.
+
+---
+
+## Nonpassing / diagnostic limitations
+
+**15.** Neither new installed test has been executed. Everything live is unverified: the 204/200/307/404 statuses, the actual directory values and base URLs, full‑Resource and postimage equalities, the three‑field deleted identity, cleanup completion, and the controlled run's pinned sole‑failure shape (findings 1, 8–11 all first resolve there). The seven passing CPU callbacks cover artifact structure only.
+
+**16.** Six of the seven CPU callbacks were not re‑executed on the final source; they are prior‑source observations bridged by a comment + one fence number in `:4989‑4994`. The bridge is sound only if no passing test hashes the bytes of `read-update-matrix.test.ts` itself. The `cumulative-artifact.test.ts` "source digest map" was supplied only as a one‑line insertion, so I cannot confirm its coverage set. A full seven‑callback rerun removes the inference and is cheap.
+
+**17.** Inside the installed aggregate, the four count updates (`uncoveredIds` 97→96, `authoredIds` 54→55, `reviewedWholeIds` 33→34, `omittedRequiredIds` 76→75) are unverified, but each is consistent with the CPU‑verified artifact counts (130 rows / 96 non‑whole / 75 omitted, shards [50,5], 49+1 manifest scenarios). Low residual risk.
+
+**18.** Several oracle equalities cannot fail independently because both sides derive from the same pushes — `mixed.filter(http)` vs `raw.map(fact)`, `raw.map(fact.ordinal)` vs indices, client ordinals vs indices. The load‑bearing checks are the comparisons against `result.scenarios[...]` (`exchanges`, `actions`, assertion outcomes) and the request/body/digest equalities. These tautologies should not be counted as evidence when summarizing coverage.
+
+**19.** I verified no digest by computation. The row digest (`7930b5…`), both reconstructed‑parent digests, and the continuation digest are machine‑verified by the passing CPU callbacks; `diffSha256`, the six `sourceFiles` hashes, `sourceBindingSha256`, and the new `exactConfigurationDigest` are not verified by anything in the supplied evidence (see finding 7).
+
+---
+
+## Optional suggestions
+
+**20.** `:1791‑1893` — the pin test asserts the nine capture *bindings* equal `Object.values(coldDirectory)` but never their *pointers*. A cross‑wired capture (binding `create-bead` from `/body/deleteBead`) passes all seven CPU callbacks and fails only in the pending live run. The nine pairings in the supplied scenario are correct, so this is a guard gap, not a defect. Add `expect(row.actions[3].captures.map(c => [c.binding, c.from.pointer])).toEqual(Object.entries(coldDirectory).map(([k, v]) => [v, \`/body/${k}\`]))`.
+
+**21.** `packages/conformance/src/read-update-artifact-set.test.ts:155‑185` — `coldDirectorySpan` starts at `text.indexOf(JSON.stringify(key))`, which is unanchored; a future `"scenarios"`/`"rows"` substring in an earlier string value shifts the scan start, and the failure mode is a wrong hash rather than a clear error. Anchor on `'"scenarios": ['` / `'"rows": ['`, or derive the offset from the parsed index.
+
+**22.** All four coverage byte fences now sit exactly at 718307 B with zero slack, and three of them are different views of the same file length. This is deliberate per the existing comments, but the next coverage row must edit four numbers in two files. If that is unwanted, consolidate to one exact pin plus three untouched historical bases.
+
+**23.** `:1767‑1790` — the controlled test calls `run` with sixteen positional arguments and eleven `undefined` placeholders, and `assertColdDirectory` shadows its outer `expected` request table with a per‑request `expected` inside the loop. Both are readability hazards only; a trailing options object for *new* controls would not touch the shared helper API that the non‑goals protect.
+
+---
+
+## Uncovered review dependency
+
+Not none. Two items must be closed by someone with the files, because no supplied text can settle them and they gate whether the change runs at all: (a) the derivation and observed provenance of the new `exactConfigurationDigest` `26da5a28…`, together with whether `artifactRoutes` is a fixed literal or manifest‑derived — this single answer resolves findings 7 and 8; and (b) the fixture binding values and discovery link forms behind finding 9. Secondary dependencies I could not evaluate: the omitted tail of the raw executor wrapper (13), the `resetFixture` mechanism (14), the `cumulative-artifact.test.ts` source‑digest coverage set (16), the installed reference's idempotency‑key requirement for sequences (10), and the precedent scenario bodies for strict full‑Resource / postimage equality (11). I reviewed none of the omitted unchanged bodies, and their omission is not evidence that they are correct.
