@@ -1,0 +1,424 @@
+{
+  "status": "CLOSED_PLAN_ONLY_NOT_A_LAUNCHER",
+  "rootLaunchReleased": false,
+  "orderedStages": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "historical-default",
+    "review-historical",
+    "restart-default",
+    "review-restart-default",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "accept-consumer-lock",
+    "verify-installed-consumer",
+    "restart-external",
+    "review-restart-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresRootRelease": true
+    },
+    "typecheck": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "format-check": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/biome.json",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "lint": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/biome.json",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "fresh-build": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "buildIncludesClean": true
+    },
+    "historical-default": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/run/historical-default.results.json",
+        "--testNamePattern",
+        "^installed\\ Scope/Bead/Link\\ Event\\ SSE\\ matches\\ finite\\ bytes\\ and\\ sparse\\ Bead\\ survives\\ fifteen\\ seconds$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds"
+      ],
+      "selectedPassed": 1,
+      "selectedFailed": 0,
+      "selectedPending": 0,
+      "otherCallbackMayBeUnselected": true,
+      "environment": {},
+      "expectedObservation": "private-installed-event-source-sse",
+      "attribution": "development-local",
+      "prospectiveWorkload": {
+        "http": 23,
+        "finite": 19,
+        "sse": 4,
+        "productChildren": 1,
+        "ownedStores": 1,
+        "ownedTempPrefixes": [
+          "bdp-sse-installed-"
+        ],
+        "localZeroHTTPControls": 0
+      }
+    },
+    "restart-default": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/run/restart-default.results.json",
+        "--testNamePattern",
+        "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "installed Event cursors survive restart with Last-Event-ID precedence and source binding"
+      ],
+      "selectedPassed": 1,
+      "selectedFailed": 0,
+      "selectedPending": 0,
+      "otherCallbackMayBeUnselected": true,
+      "environment": {},
+      "expectedObservation": "private-event-restart-cursor",
+      "attribution": "development-local",
+      "prospectiveWorkload": {
+        "http": 5,
+        "finite": 4,
+        "sse": 1,
+        "productChildren": 2,
+        "ownedStores": 1,
+        "ownedTempPrefixes": [
+          "bdp-event-restart-installed-"
+        ],
+        "localZeroHTTPControls": 2
+      }
+    },
+    "restart-external": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/run/restart-external.results.json",
+        "--testNamePattern",
+        "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "installed Event cursors survive restart with Last-Event-ID precedence and source binding"
+      ],
+      "selectedPassed": 1,
+      "selectedFailed": 0,
+      "selectedPending": 0,
+      "otherCallbackMayBeUnselected": true,
+      "environment": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": {
+          "from": "accepted-installed-provenance.entryRealpath"
+        },
+        "BDP_TRANSACTIONAL_INSTALLED_SOURCE": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87"
+      },
+      "expectedObservation": "private-event-restart-cursor",
+      "attribution": "external-installed-candidate",
+      "prospectiveWorkload": {
+        "http": 5,
+        "finite": 4,
+        "sse": 1,
+        "productChildren": 2,
+        "ownedStores": 1,
+        "ownedTempPrefixes": [
+          "bdp-event-restart-installed-"
+        ],
+        "localZeroHTTPControls": 2
+      }
+    },
+    "pack-protocol": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-server": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "consumer-install": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "firstInstallOnly": true,
+      "network": false
+    },
+    "node-version": {
+      "kind": "supervised-command-template",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "expectedStdout": "v24.16.0"
+    },
+    "bind-workspace-tools": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "After frozen-lock offline install, verify unchanged tracked source/lock; pin resolved actual tool/native binary identities plus package versions from frozen lock. Do not use tools from another worktree. Offline cache miss stops; no automatic retry or network expansion.",
+      "released": false
+    },
+    "bind-fresh-build": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Hash actual packages/*/dist and apps/*/dist outputs after accepted clean-build; bind frozen source inventory, head/tree, log/exit hashes and protocol schemas. No old build reuse.",
+      "released": false
+    },
+    "review-historical": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Inspect exact selected Vitest success and historical JSON; fresh local entry/binding. Keep development-local result separate despite legacy installed observation name.",
+      "released": false
+    },
+    "review-restart-default": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Apply acceptance.json predicates; local dist and neither override. Reporter, source and callback facts must agree.",
+      "released": false
+    },
+    "prepare-package-directory": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Create new packet-owned run/packages exclusively; no existing archives reused.",
+      "released": false
+    },
+    "verify-archives": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Adapt pinned packages.py tar mode: every member equals fresh build/source, exact inventory; only workspace:* to0.0.0 server manifest rewrite; record actual archive hashes. Checkout dirty only in witness; never copy old clean:true claim.",
+      "released": false
+    },
+    "prepare-consumer": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Adapt packages.py consumer mode to this packet. Exclusive run/consumer; file: dependencies on verified archives, protocol archive override and fast-uri3.1.5.",
+      "released": false
+    },
+    "accept-consumer-lock": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Root inspects/pins generated lock and exact eight-package production closure. No retry, lock regeneration or invented expected hash.",
+      "released": false
+    },
+    "verify-installed-consumer": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Adapt packages.py installed mode: every installed protocol/server member equals archive and fresh source; eight manifests/resolved dependencies all inside external consumer; independent recursive payload hash. Pin entry, graph, lock/settings, artifacts and inventory; recheck before/after callback.",
+      "released": false
+    },
+    "review-restart-external": {
+      "kind": "closed-root-checkpoint",
+      "instruction": "Apply acceptance.json and actual archive/consumer binding; compare child payload/contracts/config/entry/source against actual artifacts. Source string is not child attestation.",
+      "released": false
+    }
+  },
+  "environmentPolicy": {
+    "clearAllPrefix": [
+      "BDP_"
+    ],
+    "clear": [
+      "NODE_OPTIONS",
+      "NODE_PATH",
+      "NODE_DEBUG",
+      "PYTHONOPTIMIZE",
+      "BIOME_BINARY",
+      "npm_execpath",
+      "npm_node_execpath"
+    ],
+    "set": {
+      "PATH_prefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+      "CI": "true",
+      "TMPDIR": "unique packet-owned per-stage directory",
+      "npm_config_cache": "per-stage temp npm-cache"
+    },
+    "externalOverridesOnlyAfterAcceptedConsumer": true
+  },
+  "supervisorContract": {
+    "reference": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-smoke-failure/validation-preparation/run.py",
+    "adaptationRequiredBeforeRelease": true,
+    "isolatedNewSession": true,
+    "termSeconds": 115,
+    "killSeconds": 119,
+    "outerSeconds": 120,
+    "automaticRetries": 0,
+    "noProcessSurvivors": true,
+    "forcedCleanupAlwaysFails": true,
+    "preserveFailureStore": true
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "totalsProspectiveOnly": {
+    "callbacks": 3,
+    "http": 33,
+    "finite": 27,
+    "sse": 6,
+    "productChildren": 5,
+    "ownedStores": 3,
+    "zeroHTTPControlExecutions": 4
+  },
+  "prohibited": [
+    "full-suite rerun",
+    "smoke rerun",
+    "retry",
+    "source edit",
+    "old artifact reuse",
+    "fake local installed override",
+    "S1/G2 decisions",
+    "public admission bypass"
+  ]
+}
