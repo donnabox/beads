@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 20:48 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 21:09 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -34,7 +34,7 @@ These are planning lanes, not promises that all their changes will ship in Previ
 
 The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/donnabox/beads/releases/tag/graph-preview2), commit `703bb13e91aa2cab2092443319139006d74242c8`. Fork `main` is still `40b3232456dfcbe621ea66ee55d635ac56634a1e`; upstream `main` is `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. This draft PR tracks planning and execution; there is no published Preview 3 integration branch or source catch-up PR yet.
 
-The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed28cd47da47e167484f32db586e7ad8a279`. Its focused CI-policy compile failed and the full attempt remains preserved. A fresh, uncommitted successor combines final Preview 2 with pinned current upstream `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. Its 31 textual conflicts have provisional resolutions and no unmerged files remain. After duplicate test helpers were reconciled, a focused compile still failed: fork policy tests refer to legacy CI lanes that upstream's newer test model retired, while the merged fork workflows still contain those lanes. This is an active workflow/test reconciliation; no merged-source qualification passed.
+The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed28cd47da47e167484f32db586e7ad8a279`. Its focused CI-policy compile failed and the full attempt remains preserved. A fresh, uncommitted successor combines final Preview 2 with pinned current upstream `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. Its 31 textual conflicts have provisional resolutions and no unmerged files remain. The scripts package now compiles, but the first focused CI/Bazel-policy run failed in 30 top-level test groups. The failures expose a real mismatch between upstream's newer Bazel workflow/test model and legacy fork lanes that still supply required gates. The complete failed attempt is frozen separately; no merged-source qualification passed.
 
 ## Integration-base milestones
 
