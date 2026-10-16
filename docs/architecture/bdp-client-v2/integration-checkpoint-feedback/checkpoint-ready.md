@@ -1,0 +1,7 @@
+# Frozen implementation checkpoint verified
+
+PR150 https://github.com/gastownhall/bdp/pull/150 remains OPEN/DRAFT at d4f3f4be88c7837b71d6646518ca3589d464ba3d, tree d71a5753aef97444db36d044a74d3f99c168dc29. Exact CI38981157039 completed success at2026-10-16T23:41:33Z; root verified all27steps successful and remote PR/branch head unchanged. Raw job log is preserved with SHA in initial-collection-unknown-validation-successor-2/exact-head-ci.json.9361tests passed/1skipped across186files;7preflight tests, staticchecks/build, package smoke and historical Read evidence gate passed. Historical Read observations retain their original source/evidence attribution and do not qualify write profiles.
+
+Native/actualClaude code findings, nonsemantic closure, local installed validation and independent combined-tree review are linked from PR150 and the sole implementation plan. This makes the proposed checkpoint verified and ready for Trish’s ledger; it is not authorization to merge main. Candidate remains frozen, no merge/rebase/closure performed. S1/G2/full write-profile qualification remain explicit exclusions.
+
+Subsequent parser work uses separate codex/vickie-parser-refusal at /Users/dbox/repos/wt/vickie/vickie-parser-refusal, created from exact d4f3f4be. It will not move PR150. Retentionca303411 remains deferred from this checkpoint. Await agreement on frozen main/head semantic map and Donna execution authorization for main reconciliation.
