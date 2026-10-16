@@ -1,0 +1,70 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/run-source.py
+@@ -22,12 +22,12 @@
+ BINDING = None  # Root must bind the final combined author manifest.
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = 'b6635fd16dd899bee6de96b49d7ba85b759c7c779c7c7f315f4a752ea06ff0c9'
++COMMANDS_SHA = '12f008b21aff581897d1eeefbec58829e35e5974af4d1ca9904bf779ff74c5fc'
+ GUARD_SHA = 'fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
+-HEAD = '1647c5df37a82e1364d281ac46beb60a94ab6c76'
+-TREE = 'a070420a4c17aa67a821c742d363ff9e82e872a6'
++HEAD = '733728cf40fc2f57407000251673bd5d3218acd4'
++TREE = 'ea0dccd68d91323887424cad9729e6593aef04f2'
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ['setup', 'typecheck', 'build', 'format-check', 'lint', 'boundaries', 'read-seal', 'consistency', 'owner-read', 'http', 'build-inventory']
++ORDER = ['typecheck', 'build', 'format-check', 'integration-owner-read', 'build-inventory']
+ OWNED_PATHS = None  # Root must freeze the exact combined changed-path inventory.
+ 
+ def require(ok, message):
+@@ -51,11 +51,12 @@
+     require(git("rev-parse", "HEAD^{tree}").decode().strip() == TREE, "Base tree changed")
+     require(git("branch", "--show-current").decode().strip() == binding["branch"], "Branch changed")
+     require(not git("diff", "--cached", "--name-only").strip(), "Unexpected staged changes")
+-    expected_new = {name for name, item in binding["files"].items() if item["new"]}
+-    actual_new = set(git("ls-files", "--others", "--exclude-standard").decode().splitlines())
+-    require(actual_new == expected_new, "Unexpected untracked source")
+-    changed = set(git("diff", "HEAD", "--name-only").decode().splitlines()) | actual_new
+-    require(changed == set(binding["files"]), "Unexpected source scope")
++    require(not git("status", "--porcelain").strip(), "Integrated candidate must remain clean")
++    require(set(git("diff", "--name-only", binding["diffBase"], "HEAD").decode().splitlines()) == set(binding["files"]), "Integrated ten-path scope changed")
++    require(git("show", "-s", "--format=%P", binding["authorCommit"]).decode().split() == [binding["authorParent"]], "Author ancestry changed")
++    require(git("show", "-s", "--format=%P", binding["integrationCommit"]).decode().split() == binding["integrationParents"], "Integration ancestry changed")
++    require(binding["integrationParents"][1] == binding["diffBase"], "Main parent mismatch")
++    require(git("show", "-s", "--format=%P", "HEAD").decode().split() == [binding["integrationCommit"]], "Factual doc ancestry changed")
+     actual = {name: sha((W / name).read_bytes()) for name in binding["files"]}
+     require(actual == {name: item["sha256"] for name, item in binding["files"].items()}, "Frozen source changed")
+     pinned = json.loads((P / "input-binding.json").read_text())
+@@ -64,13 +65,7 @@
+ 
+ def source_patch_hash():
+     binding = json.loads(BINDING.read_text())
+-    patch = git("diff", "--binary", "HEAD")
+-    for name, item in binding["files"].items():
+-        if item["new"]:
+-            result = subprocess.run(["git", "diff", "--no-index", "--", "/dev/null", name],
+-                                    cwd=W, capture_output=True, timeout=10)
+-            require(result.returncode == 1, "New source diff unavailable")
+-            patch += result.stdout
++    patch = git("diff", "--binary", binding["diffBase"], "HEAD")
+     return sha(patch)
+ 
+ def load_gate(name):
+@@ -100,7 +95,7 @@
+     require(gate["inputBindingSha256"] == sha((P/"input-binding.json").read_bytes()), "Input inventory changed")
+     for item, digest in gate["preparationFiles"].items():
+         require(sha((P/item).read_bytes()) == digest, "Preparation changed: " + item)
+-    require(gate.get("unmergedCandidateValidation") is True, "Unmerged source attribution must be explicit")
++    require(gate.get("integratedCandidateValidation") is True, "Integrated candidate attribution must be explicit")
+     source = source_hashes()
+     binding = json.loads(BINDING.read_text())
+     require(source_patch_hash() == binding["diffSha256"], "Full draft diff changed")
+@@ -115,7 +110,7 @@
+     if name == "build-inventory":
+         require(spec["argv"] == ["/usr/bin/python3", str(P/"inventory.py")], "Inventory command changed")
+     else:
+-        expected_tool = str(W / "node_modules/vitest/vitest.mjs") if "selectedFullNames" in spec else "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"
++        expected_tool = str(W / "node_modules/vitest/vitest.mjs") if "selectedFullNames" in spec else str(W / "node_modules/@biomejs/biome/bin/biome") if name == "format-check" else "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"
+         require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", expected_tool], "Toolchain changed")
+     require(not spec.get("validatedBdpOverrides"), "Source phase must not inherit installed/control overrides")
+     spec.setdefault("ownedTempPrefixes", [])

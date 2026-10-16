@@ -1,0 +1,75 @@
+--- a/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+@@ -57,6 +57,18 @@
+   throw new Error("installed minimum entry override requires declared source commit");
+ const resolvedEntry = realpathSync(entry);
+ const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++function responseHeaderDigest(rawHeaders: readonly string[]): string {
++  const pairs: [string, string][] = [];
++  for (let i = 0; i < rawHeaders.length; i += 2) {
++    const name = rawHeaders[i]!.toLowerCase();
++    if (name !== "date") pairs.push([name, rawHeaders[i + 1]!]);
++  }
++  pairs.sort((left, right) => {
++    if (left[0] !== right[0]) return left[0] < right[0] ? -1 : 1;
++    return left[1] === right[1] ? 0 : left[1] < right[1] ? -1 : 1;
++  });
++  return digest(JSON.stringify(pairs));
++}
+ const entrySha256 = digest(readFileSync(resolvedEntry));
+ const workspaceDirty =
+   execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+@@ -443,6 +455,7 @@
+         headers: Headers;
+         text: string;
+         bytes: number;
++        headerDigest: string;
+       }>((resolve, reject) => {
+         const request = httpRequest(
+           {
+@@ -478,6 +491,7 @@
+                 headers: received,
+                 text: Buffer.concat(chunks).toString("utf8"),
+                 bytes,
++                headerDigest: responseHeaderDigest(response.rawHeaders),
+               });
+             });
+           },
+@@ -725,6 +739,7 @@
+         }
+         if (row.index === 29) {
+           expect(response.text).toBe(firstHidden!.text);
++          expect(response.headerDigest).toBe(firstHidden!.headerDigest);
+           for (const name of retainedHeaders)
+             expect(response.headers.get(name)).toBe(firstHidden!.headers.get(name));
+         }
+@@ -737,6 +752,10 @@
+           expect(response.bytes).toBe(0);
+           expect(response.headers.get("allow")).toBe("GET, HEAD");
+         } else {
++          if (row.status === 401)
++            expect(response.headers.get("www-authenticate")).toBe(
++              'Bearer realm="bdp-transaction-development"',
++            );
+           const value = parse(response);
+           expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
+           expect(value).toMatchObject({
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2000,7 +2000,12 @@
+ missing/hidden Resource, alias and initial incident-anchor precedence and bounded
+ unproved-position waiting for existing current Bead/Link Resource/properties.
+ Strict consumers and pending Snapshot/incident-Event questions remain separate.
+-At this draft checkpoint no runtime tests, installed cohorts or qualification
+-have been established. Actual authorization main must be integrated ordinarily
+-before final validation; source and installed evidence will retain their exact
+-commit/build provenance.
++On that isolated candidate, all 11 source-validation stages passed, including
++the fresh build and 15 selected source callbacks; the preceding fixture-type and
++report-lint failures remain preserved under their original bindings. An installed
++minimum-current observation test is authored but unexecuted; no installed or
++counterfactual control run is recorded. Actual authorization main df80f8cb is ordinarily integrated through bf50e1e8;
++final installed validation remains pending. Unknown
++positions combined with foreign epoch/view remain a private unsupported
++development gap, outside the current operator ruling. Source and later installed
++evidence retain their exact commit/build provenance; no qualification is claimed.

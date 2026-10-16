@@ -1,0 +1,436 @@
+{
+  "verificationBy": "delegated author worker; root independent verification pending",
+  "head": "3bb2f2449ce345e118d04c07eadd777363add544",
+  "tree": "69497d4ffc2089ce56790a9a257ecdff2eb0b47b",
+  "parents": [
+    "e35708f8c534a47d82f95e4abb5f1d3f0f6f0954",
+    "df80f8cb86b7763bc7bb005492e43d8840527045"
+  ],
+  "clean": true,
+  "sixReviewedHashesUnchanged": true,
+  "fiveNetPathsVsMain": true,
+  "all18MainPathsPreserved": true,
+  "stages": [
+    {
+      "stage": "fresh-build",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.3153140840586275,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "exitSha256": "a322742055ff7fddbd7fecf3897d6c084152fc678faf25cb32470ea8a3dd7f85",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.1626232920680195,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "exitSha256": "2b18d95b5ffa25417c2f300d3617fe7fef4711d3792d9917ab2b0246066f8ea1",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.6707424169871956,
+      "logSha256": "0e4ec070875cf42e7a446726059bde45929751e58993da87cf72bc25db972fb7",
+      "exitSha256": "bc1c3a59e8f4a597b0c983dfd8a46b74b88e41b6f7e5f74f328aba31da0d0756",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.4714092500507832,
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "exitSha256": "ede72353979d471132ea519d781cef2132ec9de7c1a4859e493cbf576a1b3fe8",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.5906860830727965,
+      "logSha256": "6afdcfc140b70c63a626428878a892975d2c0011c88f74e4be35ef3062fde451",
+      "exitSha256": "bdb6ea5343a6ea1381b5b6d67c6a61e86c1b2a77cc58fa45b35538904c4e7d76",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "read-evidence",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.1226059158798307,
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "exitSha256": "898302c55038109a5c9ad21cf5a48cee8279026104faf39102c36b74416940b9",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "cpu-eight",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.9616178749129176,
+      "logSha256": "87cc332eb011dc9c23c22b2391229bfea3bd08e464e96ba086d9694d9ac11725",
+      "exitSha256": "4dc3caa1b2592e265e4120da30c5a6097a8009a67f38f60f4b31d3d805330a9f",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "pins command minimum literals, ordinary admission and parent preservation",
+          "pins cold RU directory literals, actual target bindings and parent preservation",
+          "pins numeric admission source growth, old blocks and independent row ledgers",
+          "pins metadata closure growth, old B actions and final N preservation",
+          "pins bounded R closure source, changed-action ledger and unchanged companions",
+          "pins cumulative source digest map, catalog order and every coverage binding",
+          "canonical cumulative profile contracts maps ordinary Update command-minimum evidence while TX mapping remains partial",
+          "private two-artifact Read+Update set accepts the actual current corpus split with unchanged prerequisite groups and coverage"
+        ],
+        "skipped": 336,
+        "jsonSha256": "30dd8dd70dfe19afb5534bf11335863914ff3398214e3f081495af5c21748c8d",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    {
+      "stage": "node-version",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.5653727080207318,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+      "exitSha256": "389718a50fa7a5a4d74c46b2ee5de5342a72d89d01eb9118b34fb1ba244d5431",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "package-directory",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.0613850830122828,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "ad4b0c7a5e29897c834efeabf1d70ce8220e63e680bf35f0d98b0b6341541907",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "pack-protocol",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.8941500829532743,
+      "logSha256": "0372ee8338501dbc085a70461c9a436fec70774687fc0a3a7e143193e6dc0933",
+      "exitSha256": "768d5a9983fb4ecaf84509ce5f4f89cb939231e603fc0fa149a3c4cdde67ec2f",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "pack-server",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.0128256659954786,
+      "logSha256": "ee70d1b7fbc0fb5442c89447b49a141868822d84b08dc772f44200d649bd2e50",
+      "exitSha256": "195b9c848fdf73400a0d94e3e0b1478d4a55410465250524f91ca52dc5c2e57a",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "verify-tar",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.1493519160430878,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "9c4262016b89b34b8d35bbdbfd2c9c23e5c1ce9592c202987d7d264a4df4c259",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "prepare-consumer",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.9938640829641372,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "05b38c6cb31ad87986176188b7a3b145c80b40128a759c44ddae4263194de5c0",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "consumer-install",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.3413719579111785,
+      "logSha256": "a015fdc9f425e1f8f1c4c1adf9c64b32ef847a4db0b8e0a4ff07e7b4447a98fb",
+      "exitSha256": "227eb13e30b11a84014ac5b2b9a903f9b66277af1d86dfe47e74dd8bf2cdc0bd",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "verify-installed",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.1109579999465495,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "70e97f4fd4bf7f5a6d12c0cbef0d8a69c152ae0eb8c73c629565519a9ae6f7c7",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "selected-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.383802083088085,
+      "logSha256": "b0cbc807f7b6ab7f0e32a7d54cc2373e7f35b1d8bcdc5a76f2811193435e3a25",
+      "exitSha256": "ffefca49544ad523e435f97299de771bad67e40a945adea094b204819d8f0840",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "observes ignored command minimum fields with ordinary Update admission"
+        ],
+        "skipped": 207,
+        "jsonSha256": "09655b8647200cfb0ea8bcdcc2b1908e8f8c8ff03ff2779d99b18551b0ec2f9f",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    {
+      "stage": "selected-minimum-control",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.3871938749216497,
+      "logSha256": "644aeda17f3d978351631ad4b4c17eaf8f23f6cd42878f0373c80b1245262174",
+      "exitSha256": "00b95b115a070d7dadc4099632dd789f526c78527268a53396897ec44de1aaad",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "rejects a changed retained outcome in command minimum assertion input"
+        ],
+        "skipped": 207,
+        "jsonSha256": "355c1ef016be212e7ce55da75651a188f59869cb06e70ff7a84c8b337191437a",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    }
+  ],
+  "smokes": {
+    "selected-positive": {
+      "reportSha256": "39ae63e828213cec3b5fcdc3711cf05b3f2c3d5d44ef004f650e3e48812f00c6",
+      "responses": 11,
+      "statuses": [
+        200,
+        200,
+        409,
+        400,
+        401,
+        409,
+        400,
+        200,
+        200,
+        200,
+        200
+      ],
+      "assertionsPassed": 47,
+      "assertionsFailed": [],
+      "controlApplications": 0,
+      "checksPassed": true,
+      "cleanupComplete": true,
+      "payloadMatches": true,
+      "sourceCommitMatches": true,
+      "reportMode": "0600",
+      "reportBytes": 15763
+    },
+    "selected-minimum-control": {
+      "reportSha256": "910bb4a66c133eb0a3df0ab03feeeecc9f38397b0768cd3f3126c4e74197b973",
+      "responses": 2,
+      "statuses": [
+        200,
+        200
+      ],
+      "assertionsPassed": 7,
+      "assertionsFailed": [
+        {
+          "exchange": "singleton-replay",
+          "assertion": "outcome"
+        }
+      ],
+      "controlApplications": 1,
+      "checksPassed": true,
+      "cleanupComplete": true,
+      "payloadMatches": true,
+      "sourceCommitMatches": true,
+      "reportMode": "0600",
+      "reportBytes": 5244
+    }
+  },
+  "actualHttp": 13,
+  "productChildrenSourceDerived": 4,
+  "sampledPids": [
+    73053,
+    73055,
+    73059,
+    73074,
+    73075,
+    73092,
+    73093,
+    73103,
+    73183,
+    73185,
+    73190,
+    73205,
+    73247,
+    73251,
+    73255,
+    73256,
+    73283,
+    73285,
+    73289,
+    73304,
+    73334,
+    73336,
+    73341,
+    73355,
+    73361,
+    73391,
+    73393,
+    73397,
+    73411,
+    73467,
+    73470,
+    73474,
+    73477,
+    73490,
+    73494,
+    73497,
+    73529,
+    73531,
+    73565,
+    73567,
+    73571,
+    73628,
+    73630,
+    73634,
+    73669,
+    73671,
+    73675,
+    73713,
+    73715,
+    73763,
+    73771,
+    73789,
+    73794,
+    73802,
+    73843,
+    73845,
+    73854,
+    73862,
+    73888,
+    74010,
+    74013,
+    74037,
+    74182,
+    74184,
+    74189,
+    74190,
+    74207,
+    74346,
+    74348,
+    74352,
+    74355,
+    74365,
+    74370,
+    74388,
+    74427,
+    74429,
+    74434,
+    74437,
+    74447,
+    74452
+  ],
+  "sampledPidsAndGroupsAbsent": true,
+  "retainedCompileCaches": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/boundaries.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/consumer-install.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/fresh-build.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/lint.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/pack-protocol.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/pack-server.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/read-evidence.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/typecheck.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesRemaining": [],
+  "packageMembers": 317,
+  "productionPackageCount": 8,
+  "payloadIdentity": "2a50d50d28418d1edb81a950922da057ce209b361b48e7202351d9b3595a0714",
+  "provenanceSha256": "dc19dc13396abe216948924db2dd07212bf047b763dc8df41dec95b397b2e3ba",
+  "buildInputs": 675,
+  "packageOutputPaths": 316,
+  "emittedPaths": 444,
+  "packageDeltaOnlyTransactionFiles": [
+    "packages/server/dist/transaction-authorization.d.ts",
+    "packages/server/dist/transaction-authorization.d.ts.map",
+    "packages/server/dist/transaction-authorization.js",
+    "packages/server/dist/transaction-authorization.js.map",
+    "packages/server/dist/transaction-changefeed.d.ts",
+    "packages/server/dist/transaction-changefeed.d.ts.map",
+    "packages/server/dist/transaction-changefeed.js",
+    "packages/server/dist/transaction-changefeed.js.map",
+    "packages/server/dist/transaction-events.d.ts",
+    "packages/server/dist/transaction-events.d.ts.map",
+    "packages/server/dist/transaction-events.js",
+    "packages/server/dist/transaction-events.js.map",
+    "packages/server/dist/transaction-http.d.ts.map",
+    "packages/server/dist/transaction-http.js",
+    "packages/server/dist/transaction-http.js.map",
+    "packages/server/dist/transaction-installed.d.ts",
+    "packages/server/dist/transaction-installed.d.ts.map",
+    "packages/server/dist/transaction-read.d.ts.map",
+    "packages/server/dist/transaction-read.js",
+    "packages/server/dist/transaction-read.js.map",
+    "packages/server/dist/transaction-runtime-configuration.js",
+    "packages/server/dist/transaction-runtime-configuration.js.map",
+    "packages/server/dist/transaction-runtime.d.ts",
+    "packages/server/dist/transaction-runtime.d.ts.map",
+    "packages/server/dist/transaction-runtime.js",
+    "packages/server/dist/transaction-runtime.js.map",
+    "packages/server/dist/transaction-service.d.ts",
+    "packages/server/dist/transaction-service.d.ts.map",
+    "packages/server/dist/transaction-service.js",
+    "packages/server/dist/transaction-service.js.map",
+    "packages/server/dist/transaction-snapshot.d.ts",
+    "packages/server/dist/transaction-snapshot.d.ts.map",
+    "packages/server/dist/transaction-snapshot.js",
+    "packages/server/dist/transaction-snapshot.js.map",
+    "packages/server/dist/transaction-store.d.ts",
+    "packages/server/dist/transaction-store.d.ts.map",
+    "packages/server/dist/transaction-store.js",
+    "packages/server/dist/transaction-store.js.map"
+  ],
+  "historicalAggregate": "b8952314HTTP retained, not rerun or relabeled; final exact-head CI aggregate required",
+  "limitations": "Full response bodies and secret header values remain in private asserted memory; safe output scalar/fingerprint facts only. Process sampling can miss short-lived/detached processes; helper cleanup checks are separate. claimEligible false; no public or whole-contract qualification."
+}

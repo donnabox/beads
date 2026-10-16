@@ -1,0 +1,153 @@
+{
+  "sourceCommit": "3bb2f2449ce345e118d04c07eadd777363add544",
+  "targetEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "3bb2f2449ce345e118d04c07eadd777363add544",
+    "installedPayloadDigest": "2a50d50d28418d1edb81a950922da057ce209b361b48e7202351d9b3595a0714",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "2a50d50d28418d1edb81a950922da057ce209b361b48e7202351d9b3595a0714",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "artifacts": {
+    "catalogDigest": "c4a2ad576f3285ef9007f8bc69b094cf36e06716ed543ab195f4b8a53e9d3967",
+    "manifestDigest": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765"
+  },
+  "exactConfigurationDigest": "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69",
+  "claimEligible": false,
+  "cleanupComplete": true,
+  "commandMinimum": {
+    "status": "observed",
+    "checksPassed": true,
+    "control": {
+      "name": "replay-outcome",
+      "kind": "assertion-input-only"
+    },
+    "applications": 1,
+    "dispatches": [
+      {
+        "localIndex": 0,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "credentialRef": "operator"
+      },
+      {
+        "localIndex": 1,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "credentialRef": "operator"
+      }
+    ],
+    "completions": [
+      {
+        "localIndex": 0,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": true,
+        "bodyOctets": 113,
+        "bodyDigest": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+        "headersMatched": true,
+        "bodyValidated": true
+      },
+      {
+        "localIndex": 1,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": true,
+        "bodyOctets": 113,
+        "bodyDigest": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+        "headersMatched": true,
+        "bodyValidated": true
+      }
+    ],
+    "provenance": {
+      "dispatch": "actual executeExact input, zero-based index; no action ID",
+      "ids": "actual ObservedExchange.request IDs joined by order/method/url",
+      "completion": "actual original response and exactRequest, before assertion-input control"
+    }
+  },
+  "result": {
+    "id": "read-update.http.command-minimum-fields",
+    "state": "fail",
+    "exchanges": [
+      {
+        "request": {
+          "id": "singleton-create",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        "status": 200,
+        "assertions": [
+          {
+            "id": "status",
+            "passed": true
+          },
+          {
+            "id": "media",
+            "passed": true
+          },
+          {
+            "id": "schema",
+            "passed": true
+          },
+          {
+            "id": "outcome",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "request": {
+          "id": "singleton-replay",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        "status": 200,
+        "assertions": [
+          {
+            "id": "status",
+            "passed": true
+          },
+          {
+            "id": "media",
+            "passed": true
+          },
+          {
+            "id": "schema",
+            "passed": true
+          },
+          {
+            "id": "outcome",
+            "passed": false
+          }
+        ]
+      }
+    ]
+  }
+}

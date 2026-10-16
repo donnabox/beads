@@ -1,0 +1,74 @@
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index a3c9e0e..7ea014b 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -1916,15 +1916,26 @@ describe("current alias minimum subset", () => {
+     const f = prepared(),
+       sentinel = new Error("alias provider failed");
+     let fault: "context" | "provider" | "target" | undefined = "context";
++    type Reader = Parameters<typeof f.store.captureReadAuthorization>[0];
++    const originalReaders = new WeakMap<Reader, Reader>();
+     const owner: typeof f.store = {
+       ...f.store,
++      captureReadAuthorization: (reader, principal) =>
++        f.store.captureReadAuthorization(originalReaders.get(reader) ?? reader, principal),
+       withRead: (callback) =>
+         f.store.withRead((reader, captured) => {
+           if (fault === "provider") throw sentinel;
+-          return callback(
+-            fault === "target" ? { ...reader, alias: () => "links/not-a-bead" } : reader,
+-            fault === "context" ? { ...captured, scopePosition: "pos-02" } : captured,
+-          );
++          const exposed =
++            fault === "target" ? { ...reader, alias: () => "links/not-a-bead" } : reader;
++          originalReaders.set(exposed, reader);
++          try {
++            return callback(
++              exposed,
++              fault === "context" ? { ...captured, scopePosition: "pos-02" } : captured,
++            );
++          } finally {
++            originalReaders.delete(exposed);
++          }
+         }),
+     };
+     const plane = createTransactionReadPlane(owner, f.readOptions);
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index ad72b54..93ccabc 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -904,14 +904,16 @@ it.each(["different-view", "prior-format-9"])(
+       db.prepare("SELECT value FROM metadata WHERE name='configuration'").get()?.value,
+     );
+     const config = JSON.parse(original);
+-    expect(config.authorizationView).toBe("development-all-visible");
++    expect(config.initialAuthorizationView).toBe("development-all-visible");
++    expect(config.policyStorageRevision).toBe(1);
+     const incompatible: Record<string, unknown> = {
+       ...config,
+-      authorizationView: "different-view",
++      initialAuthorizationView: "different-view",
+     };
+     if (fault === "prior-format-9") {
+       incompatible.format = "bdp-private-transaction-snapshot-9";
+-      delete incompatible.authorizationView;
++      delete incompatible.initialAuthorizationView;
++      delete incompatible.policyStorageRevision;
+     }
+     db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(
+       JSON.stringify(incompatible),
+diff --git a/scripts/smoke-executables.mjs b/scripts/smoke-executables.mjs
+index a18ef1e..1c6e3e7 100644
+--- a/scripts/smoke-executables.mjs
++++ b/scripts/smoke-executables.mjs
+@@ -257,6 +257,10 @@ async function installPackedWorkspace() {
+       "node-http-disconnect.d.ts.map",
+       "node-http-disconnect.js",
+       "node-http-disconnect.js.map",
++      "transaction-authorization.d.ts",
++      "transaction-authorization.d.ts.map",
++      "transaction-authorization.js",
++      "transaction-authorization.js.map",
+       "transaction-changefeed.d.ts",
+       "transaction-changefeed.d.ts.map",
+       "transaction-changefeed.js",
