@@ -1,6 +1,8 @@
-# Preview 3 integration status
+# Preview 3 planning and execution
 
-Last checked: October 15, 2026, 20:08 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 20:13 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+
+This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided; listing a workstream here will not itself commit it to Preview 3.
 
 ## Current state
 
@@ -8,7 +10,7 @@ The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/do
 
 A local, uncommitted merge rehearsal combines final Preview 2 with earlier upstream commit `b911ed28cd47da47e167484f32db586e7ad8a279`. All 30 recorded conflicts have provisional resolutions, but the merged source has not passed build or test qualification. Upstream has since advanced by one commit affecting 15 files, which the successor must include.
 
-## Milestones
+## Integration-base milestones
 
 - [x] Freeze Preview 2 source and release tag.
 - [x] Preserve a local merge rehearsal and resolve its recorded conflicts provisionally.
@@ -18,6 +20,13 @@ A local, uncommitted merge rehearsal combines final Preview 2 with earlier upstr
 - [ ] Open a draft fork PR; pass whole exact-merge hosted gates and independent evidence review.
 - [ ] Obtain Donna's approval to update fork `main` with the qualified merge.
 - [ ] Create the Preview 3 integration branch from the verified fork `main` commit.
+
+## Release planning and delivery
+
+- [ ] Agree the Preview 3 cutline and record which parallel workstreams are included or deferred.
+- [ ] Integrate and qualify each accepted change on the Preview 3 branch.
+- [ ] Prepare a candidate runbook and manual playground for review.
+- [ ] Freeze a verified release candidate, complete review, and publish the final release after Donna's sign-off.
 
 ## Current focus
 
