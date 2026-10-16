@@ -65,14 +65,20 @@ func validateIssueCreateFields(issue *types.Issue) error {
 	return validateIssueReferenceStorage("spec_id", issue.SpecID)
 }
 
-func sameIssueCreateFields(want, got *types.Issue) bool {
+func sameIssueCreateFields(want, got *types.Issue, actor string) bool {
 	if want == nil || got == nil {
 		return false
+	}
+	// The native public create role defaults an absent creator to the actor.
+	// Compare against that documented default without mutating the request.
+	createdBy := want.CreatedBy
+	if createdBy == "" {
+		createdBy = actor
 	}
 	wantMetadata, wantErr := commonMetadata(want.Metadata)
 	gotMetadata, gotErr := commonMetadata(got.Metadata)
 	return wantErr == nil && gotErr == nil && bytes.Equal(wantMetadata, gotMetadata) && want.Design == got.Design && want.AcceptanceCriteria == got.AcceptanceCriteria &&
 		want.Assignee == got.Assignee && want.SpecID == got.SpecID &&
-		sameIssueDue(want.DueAt, got.DueAt) && want.Notes == got.Notes && want.Owner == got.Owner && want.CreatedBy == got.CreatedBy &&
+		sameIssueDue(want.DueAt, got.DueAt) && want.Notes == got.Notes && want.Owner == got.Owner && createdBy == got.CreatedBy &&
 		reflect.DeepEqual(want.EstimatedMinutes, got.EstimatedMinutes) && reflect.DeepEqual(want.ExternalRef, got.ExternalRef)
 }

@@ -63,7 +63,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		records = make([]IssueRecord, 0, len(created.Issues))
 		hasInitialNotes := false
 		for index, issue := range created.Issues {
-			if !sameIssueCreateFields(request.Items[index].Issue, issue) || issueops.IsWisp(issue) {
+			if !sameIssueCreateFields(request.Items[index].Issue, issue, request.Actor) || issueops.IsWisp(issue) {
 				return fmt.Errorf("%w: markdown item %d cannot be represented exactly as a durable graph Issue", storage.ErrValidation, index)
 			}
 			path, err := generatedIssuePath(ctx, tx, issue.ID)

@@ -100,7 +100,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if !sameIssueCreateFields(create.Issue, created.Issue) || issueops.IsWisp(created.Issue) ||
+		if !sameIssueCreateFields(create.Issue, created.Issue, create.Actor) || issueops.IsWisp(created.Issue) ||
 			!strings.HasPrefix(created.Issue.ID, parent.Properties.ID+".") {
 			return fmt.Errorf("%w: native child Issue cannot be represented exactly", storage.ErrValidation)
 		}
