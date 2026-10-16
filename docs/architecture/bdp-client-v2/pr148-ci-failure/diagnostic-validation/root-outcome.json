@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "stages": {
+    "typecheck": 2.0777352501172572,
+    "format-check": 0.7566343750804663,
+    "lint": 0.8608091671485454,
+    "negative-controls": 5.061236249981448
+  },
+  "passedFullNames": [
+    "detects incorrect independent Read properties expectations",
+    "detects incorrect independent Read collection expectations",
+    "detects incorrect independent Read condition expectations"
+  ],
+  "sampledPidsAbsent": 25,
+  "resultsSha256": "d0d5995cec846be73691445a62da2fb57fc8888a2087376061ecbcf23648a823",
+  "source": "8ee plus diagnostic37558e78",
+  "causeReproduced": false,
+  "limitation": "Isolated pass does not explain original CI. New full CI on diagnostic successor needed, preserving assertions/deadlines and emitting bounded category evidence if failure recurs."
+}

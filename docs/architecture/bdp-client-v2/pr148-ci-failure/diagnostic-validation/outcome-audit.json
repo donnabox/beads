@@ -1,0 +1,102 @@
+{
+  "status": "DIAGNOSTIC_SELECTION_PASSED_CAUSE_UNRESOLVED",
+  "recordedAt": "2026-10-16T21:38:13.585268+00:00",
+  "stages": {
+    "typecheck": {
+      "exitSha256": "2eb05f4d9cec889ba80246b8c2fe7b070451ebe1df50df23731fd2ef220141eb",
+      "elapsedSeconds": 2.0777352501172572,
+      "exit": 0,
+      "supervisorExit": 0,
+      "unclassifiedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/run/typecheck.tmp/node-compile-cache"
+      ]
+    },
+    "format-check": {
+      "exitSha256": "4dc4b829b1b6005f3d92404b3151b5017fa458754799a2da47cb190845f2536e",
+      "elapsedSeconds": 0.7566343750804663,
+      "exit": 0,
+      "supervisorExit": 0,
+      "unclassifiedTempEntries": []
+    },
+    "lint": {
+      "exitSha256": "04fde1e2b4cbd4599f486756a6bb3832a07994d674cb3f8a8fbd1c3088d872e9",
+      "elapsedSeconds": 0.8608091671485454,
+      "exit": 0,
+      "supervisorExit": 0,
+      "unclassifiedTempEntries": []
+    },
+    "negative-controls": {
+      "exitSha256": "5eeb8294a1dbe4040c82f2dd2a08838a2813a0086a661d26d7724908c1eeae16",
+      "elapsedSeconds": 5.061236249981448,
+      "exit": 0,
+      "supervisorExit": 0,
+      "unclassifiedTempEntries": []
+    }
+  },
+  "testResultsSha256": "d0d5995cec846be73691445a62da2fb57fc8888a2087376061ecbcf23648a823",
+  "cases": [
+    {
+      "name": "detects incorrect independent Read properties expectations",
+      "status": "passed",
+      "durationMs": 1187.3173749999999
+    },
+    {
+      "name": "detects incorrect independent Read collection expectations",
+      "status": "passed",
+      "durationMs": 1112.538
+    },
+    {
+      "name": "detects incorrect independent Read condition expectations",
+      "status": "passed",
+      "durationMs": 1133.4120419999995
+    }
+  ],
+  "skippedCases": 205,
+  "sourceHead": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b"
+  },
+  "unchangedTrackedInputs": 679,
+  "unchangedEmittedFiles": 448,
+  "sampledPids": [
+    8810,
+    8817,
+    8891,
+    8990,
+    10682,
+    10684,
+    10740,
+    10749,
+    12381,
+    12385,
+    12414,
+    12423,
+    14534,
+    14538,
+    14568,
+    14590,
+    14675,
+    14713,
+    14740,
+    14800,
+    14833,
+    14861,
+    14925,
+    14959,
+    14996
+  ],
+  "sampledPidsStillPresent": [],
+  "sampledOwnedRoots": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/run/negative-controls.tmp/bdp-cumulative-ru-FLTSvZ",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/run/negative-controls.tmp/bdp-cumulative-ru-Ts16cT",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/run/negative-controls.tmp/bdp-cumulative-ru-Y0FT38"
+  ],
+  "sampledOwnedRootsStillPresent": [],
+  "limitations": [
+    "The original CI harness-error did not reproduce in this single isolated run. Its cause remains unknown and no runtime fix is inferred.",
+    "29 expected HTTP completions and 9 product children are static workload expectations, not newly recorded independent HTTP/child counters.",
+    "Typecheck node-compile-cache is preserved for root classification; it is not an owned runtime root and was not removed.",
+    "Lint passed with 226 warnings and 8 infos; no fixes applied.",
+    "No publication, build, source change, retry or timeout widening occurred."
+  ]
+}
