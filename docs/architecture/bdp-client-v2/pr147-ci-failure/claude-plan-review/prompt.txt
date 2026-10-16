@@ -1,0 +1,105 @@
+Review the bounded PR147 CI repair PLAN, before any source patch. Source is clean committed b0213805e4b15bb7bac4e09da5fdddb236cf6ea5 in /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving. Do not write or modify any files. Output numbered findings only in stdout; each actionable finding needs severity, exact location, concrete defect/impact and smallest correction. If there are no blockers, say so and state limits. Do not run tests or commands. Only Read/Glob/Grep tools are enabled; no Bash/Edit/Write/MCP. Do not create plans or other files.
+
+This is a two-test-file repair proposal, not a production redesign. Actual CI run38868976416 reports9352pass/2fail/1skip. Failure1: stale generic-depth exception expectation. Failure2: final20s elapsed assertion at29305.395045ms after complete semantic checks. The proposal replaces only per-node Vitest matcher machinery in an independent iterative test oracle with equivalent direct shape/sorted-key checks; adds one CPU-only helper rejection callback; preserves literal12000depth, all semantic assertions, work20s/cleanup5s/callback30s and product limits. Do not infer unmeasured production timing attribution, weaken assertions, change production semantics or increase budgets to make it green.
+
+The plan's author also authored part of the historical installed evidence and this packet. Independent native review is included in full below; its agreement is context, not a verdict you must follow. Root independently dispositions your review before authoring.
+
+Read these full actual source sections (the files are available through Read; source includes both entire tests, not excerpts alone):
+- packages/server/src/transaction-set.test.ts:1023–1155, especially1105–1118: literal Selector identity/pointers, invalid Selector versus valid deep input, unbranded capacity rejection, adjacent branded deep acceptance.
+- packages/server/src/transaction-submission.test.ts:1747–2060: complete independent equality/freeze helpers and full deep set/dependent-sequence/receipt/recovery callback including cleanup. Review every proposed semantic preservation assumption.
+- packages/server/src/transaction-batch.ts:124–180; transaction-set.ts:16–47,125–159: mixed preparation and separate Selector grammar/capacity.
+- packages/server/src/json-value-equality.ts; transaction-store.ts:86–96,2280–2296; resource-evaluator.ts:383–421; packages/protocol/src/json-values.ts: use only as needed to distinguish test overhead from actual production traversal. Do not recommend using production comparator in the independent oracle.
+
+You may inspect other repository files read-only where needed. Identify any material dependency you inspect beyond these pinned inputs. Full raw CI log lives outside the repository at /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/job-full.log (SHA256 f9d27717d4fb4d17c6053e8b15de301bbda823a6ff8c6f8ed040ca193a5b3e26); concise exact excerpt is supplied below so you need not read3.5MB. No whole-suite rerun, helper microbenchmark or fixture execution has occurred in this diagnosis. Ranking matcher overhead first is a source-grounded hypothesis, not a measured CPU profile.
+
+Focus: (1) preserve Selector safety while removing only stale generic-depth expectation; (2) direct equality remains equivalent over finite acyclic dense JSON, including same-count different keys, array/object, null/primitive and numeric equality; (3) bounded negative self-tests exercise deep leaf mismatch and meaningful structural rejection without recursive matcher/stringifier; (4) retain all lifecycle/value/replay/freeze assertions and exact limits; (5) narrow3-case then whole2file105-case validation/fanout and honest timing conclusion. Suggest a smaller correction only if equally strong. Do not expand scope for optional reporter polish.
+
+Complete diagnosis follows verbatim.
+
+# PR147 two-failure diagnosis
+
+Two test-only changes are justified. No production defect is established by these failures. Source is clean b0213805e4b15bb7bac4e09da5fdddb236cf6ea5; exact files and preserved raw CI bytes are bound in diagnosis-source-pins.json. This is source inspection, not a new execution. No source, limits or assertions were changed. CONTEXT.md was read; no AGENTS.md was found in the checkout or inspected parent directories.
+
+## 1. Stale generic-depth refusal — confirmed
+
+Raw job-full.log:11230–11239 reports transaction-set.test.ts:1111: expected the valid deep mixed preparation to throw TransactionDevelopmentLimitError, but it did not. The immediately preceding invalid Selector case still expects TransactionSelectorSyntaxError. Current transaction-batch.ts:124–138 delegates prepareTransaction to prepareTransactionSetCore; the latter enforces request bytes, decodes and prepares without the removed generic value-depth refusal. Its mixed path preserves shape checks and runs Selector grammar at166–172. transaction-set.ts:16 and150–159 retain independent Selector byte/depth/node limits and brand checks. The adjacent test at1122 explicitly accepts byte-bounded deep input.
+
+Minimal correction: replace only the stale valid-deep throw assertion at1109–1111 with positive preparation/no-throw (or bind the returned two-operation carrier and its original Selector); retain the invalid $..* grammar assertion, all earlier literal identity and diagnostic-pointer checks, and the following unbranded transactionSelectorCapacity rejection unchanged. Do not reintroduce a generic value-depth cap or remove Selector capacity checks.
+
+## 2. Test-helper overhead under full CI — direct cost confirmed, timing share not measured
+
+Raw log:3002–3008 includes the complete fresh-depth-source-identities record then the callback's final elapsed assertion fails at29305.395045ms against20000. The test completed in29319ms, below its30000ms Vitest timeout; it failed its own20s work assertion, not a hanging child or a recursive stack overflow. Its catch/cleanup ran; the log does not independently prove all process/store cleanup. Full CI ultimately reports9352passed/2failed/1skipped in186files,838.86s suite (11255–11258).
+
+transaction-submission.test.ts:1747–1759 is an independent iterative equality oracle. For every nonidentical object/array pair it creates TWO Vitest assertions: Array.isArray equality and sorted Object.keys deep equality. The deep witness at1773–2060 uses literal12000 nested arrays, and repeatedly compares complete receipts, Resources, groups, retained replay, reopened durable snapshots and pages. Even one distinct12000-array pair causes24000 matcher calls. The same helper is local to this one callback. Its per-node key sort is O(k log k), but k=1 along the deep chain; the identified cost is repeated matcher machinery, not an established quadratic walk.
+
+The helper independently compares JSON value semantics: a===b short-circuits, null/primitive mismatch throws, arrays differ from objects, complete sorted key sets must match, and every child is traversed. Null-prototype metadata versus ordinary parsed metadata intentionally compares equal. Metadata is not recursively rewalked from each ancestor: each child is pushed once per comparison. Repeated store.inspect calls do reread/JSON.parse all resources/groups (transaction-store.ts:2280–2296), and snapshot/group comparisons can revisit several historical copies. This adds bounded work, but deleting those comparisons would weaken rollback/recovery evidence; do not do so initially.
+
+Production paths inspected are iterative: json-value-equality.ts:3–29; transaction-store.ts:86–96 receipt freezing; resource-evaluator.ts:383–421 copy/freeze; protocol json-values.ts worklists; transaction-set.ts:18–47 text serialization. No stack-recursive whole deep JSON assertion or proven production superlinear path was identified in the failing callback. Full CI runs other heavy cohorts concurrently (e.g. rawlog2997–3001), so contention is plausible, not quantified. An isolated green alone will not establish full-CI headroom.
+
+Minimal test-only correction: retain the independent stack algorithm and primitive/array/key semantics, replace the two per-node expect calls with direct boolean checks and explicit mismatch throws. Compare both sorted key lengths and every sorted key before pushing children. Do not import/reuse the production comparator, memoize away comparisons, replace full equality with shape-only matching, lower12000depth, raise20s work/5s cleanup/30s callback limits, or change request bodies/operation counts.
+
+Add bounded CPU-only reject controls for this helper: separately allocated equal full12000-depth JSON passes; differing terminal primitive fails; array versus object fails; same-count different-key and missing/extra-key objects fail (null mismatch also cheap and useful). Keep all checks outside production and use ordinary matcher assertions only at these handful of outer boundaries. Prefer a separate single helper-regression callback so its own cost is explicit rather than included in the existing owner lifecycle budget. Existing deep witness continues to prove actual set/sequence/no-op/rollback/replay/expiry and durable recovery.
+
+## Validation proposal (not executed)
+
+1. Preserve this raw failure. After authorized two-test-file edit, run targeted typecheck/format and one finite exact selection containing the stale Selector callback, the new helper reject callback and the existing deep durable callback. Same pinned Node24.16/pnpm11.20, verbose+JSON, maxWorkers1, supervisor120s, no retry. The owner witness retains1directory/2sequential store opens,0HTTP/0productchildren; the Selector and helper callbacks are CPU-only. Check all exact named outcomes and preserve elapsed/cleanup evidence.
+2. Run BOTH complete affected files in a bounded source invocation (or separate120s invocations if required by measured duration). Original CI enumerates57 set and47 submission cases; adding one helper callback yields105 total. This addresses the original fanout miss: the stale Selector callback was outside the previous narrow source selection. Do not misreport skipped cases as full-file passes.
+3. If optimized deep witness still breaches20s, stop. A separately approved bounded timing probe should attribute helper time/call/node counts versus real store/prepare/execute/inspect phases; do not relax limits or alter production based solely on this log. Conversely, passing isolated checks is not a guarantee under full concurrency; exact successor full CI is needed before asserting the regression closed in that environment.
+4. No installed HTTP rerun is intrinsically required for a strictly two-test-file change with unchanged production/build payload, but retain the actual source-byte bridge and original installed evidence. Root decides publication/full CI. No changes to the concurrently frozen conditional checkout or packet.
+
+Proposed focused argv shape (new helper title must be frozen at authoring): pinned node node_modules/vitest/vitest.mjs run packages/server/src/transaction-set.test.ts packages/server/src/transaction-submission.test.ts --maxWorkers=1 --reporter=verbose --reporter=json --outputFile=<exclusive-results> --testNamePattern='^(?:preserves literal Selector identity and original mixed-carrier diagnostic pointers|<new exact helper title>|executes deep values through set and dependent sequence with durable receipt recovery)$'. Full-file stage removes only testNamePattern. No command here has been run.
+
+
+Complete independent native plan review follows verbatim.
+
+# Native review of bounded PR147 CI repair plan
+
+Agree with the proposed two-test-file correction. No production change or time-limit increase is justified by these failures. This reviews the explicit repair proposal, then the complete diagnosis.md (SHA256 717070991a182b7e662d55fa53a1be80729fe38c07552b9ea67ce1263a52f82e), against committed source and actual CI output. Final patch equivalence and actual follow-up validation remain to be checked.
+
+Pinned source: `b0213805e4b15bb7bac4e09da5fdddb236cf6ea5` in `/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving`, clean on inspection. `transaction-submission.test.ts` SHA256 `026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182`; `transaction-set.test.ts` `aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8`. Raw `job-full.log` SHA256 `f9d27717d4fb4d17c6053e8b15de301bbda823a6ff8c6f8ed040ca193a5b3e26`.
+
+Actual CI summary (log11228–11263): two failed / 9,352 passed / one skipped tests; two failed /184 passed files. The set callback fails because the expected depth exception is absent. The deep-submission callback reaches its final elapsed-time assertion after its preceding semantic assertions and fails at 29,305.395045ms versus <20,000ms. This is an assertion failure, not evidence that the framework's 30-second callback deadline itself fired.
+
+1. **Stale depth expectation:** `transaction-set.test.ts:1105–1111` first checks invalid Selector grammar with deep Resource input, then expects a development-depth exception for the valid combination. `transaction-batch.ts:125–136` now deliberately delegates to byte-bounded mixed preparation without that removed depth refusal. Replace only the latter expectation with successful preparation (prefer checking the actual two operations and valid prepared Selector capability). Preserve the preceding invalid-Selector rejection, its surrounding original diagnostic-pointer checks, and the following forged/unbranded Selector-capacity rejection. `transaction-set.ts:151–159` still requires the branded grammar summary and independently enforces Selector limits; removing the old arbitrary Resource-depth guard does not remove that contract.
+
+2. **Independent deep oracle overhead:** `assertDeepSubmissionValue` at `transaction-submission.test.ts:1747–1760` iteratively walks the graph but constructs two Vitest assertions per nonidentical object: array-kind equality and sorted own-key equality. The deep callback has exactly 18 callsites, several comparing independently decoded/reopened depth-12,000 graphs. Replacing those two calls with explicit Array.isArray equality and sorted key-vector length/element equality, throwing bounded errors on disagreement, preserves the existing comparison domain and traversal. Preserve `a === b`, null/type/primitive rejection, sorting, and every paired child push. Do not substitute a production comparator, native recursive equality/stringification, omit nodes, or add growing diagnostic path strings. This is a concrete avoidable cost; the log alone does not quantify its contribution or prove resource contention.
+
+   Add pure negative controls to demonstrate rejection of a deep unequal primitive leaf, array-versus-object shape, and missing/extra/replaced own key (including equal key counts with a different key). A separately parsed equal deep value should pass. These controls need no owner, store, child or HTTP request. The diagnosis proposes one separate CPU-only helper callback, which is appropriate to keep its cost explicit and outside the existing owner work budget. Preserve the helper's existing finite acyclic JSON domain; no broader general-object equality redesign is needed.
+
+Retain every original receipt/resource/group, no-op, replay, rollback, expiry, issued-page/reopen and frozen-descendant assertion, depth12,000 and request byte bounds. Keep the 20-second work check, five-second cleanup check, and 30-second callback timeout unchanged. No new HTTP, opens or fixture lifecycle is needed. The first failed CI and both exact failure records remain historical evidence.
+
+The diagnosis's focused three-case selection (two affected callbacks plus one new CPU helper case), followed by the two complete affected files (104 old cases plus the new case = 105), targeted formatting/lint/typecheck and exact successor full CI is coherent. Preserve a finite supervisor and the actual counts at each stage. A successful local timing result would establish that run only; no automatic retry or predicted CI pass is warranted. I did not run tests, import product code, alter source, or invoke another reviewer.
+
+
+Exact preserved raw CI excerpt (lines11228–11258; ANSI escapes retained):
+2026-10-16T08:00:18.0260945Z 
+2026-10-16T08:00:18.0261924Z  [32m✓[39m apps/bdptest/src/transactional-matrix.test.ts[2m > [22mdiscriminates principal isolation against a separately bound collapsed namespace[33m 1227[2mms[22m[39m
+2026-10-16T08:00:18.0364064Z 
+2026-10-16T08:00:18.0364969Z [31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+2026-10-16T08:00:18.0365467Z 
+2026-10-16T08:00:18.0369643Z [41m[1m FAIL [22m[49m packages/server/src/transaction-set.test.ts[2m > [22mpreserves literal Selector identity and original mixed-carrier diagnostic pointers
+2026-10-16T08:00:18.0375779Z [31m[1mAssertionError[22m: expected function to throw an error, but it didn't[39m
+2026-10-16T08:00:18.0377092Z [36m [2m❯[22m packages/server/src/transaction-set.test.ts:[2m1111:5[22m[39m
+2026-10-16T08:00:18.0646954Z     [90m1109|[39m   [34mexpect[39m(() [33m=>[39m
+2026-10-16T08:00:18.0648993Z     [90m1110|[39m     batch.prepareTransaction(scope, JSON.stringify({ operations: [deep…
+2026-10-16T08:00:18.0651233Z     [90m1111|[39m   )[33m.[39m[34mtoThrow[39m(batch[33m.[39m[33mTransactionDevelopmentLimitError[39m)[33m;[39m
+2026-10-16T08:00:18.0652724Z     [90m   |[39m     [31m^[39m
+2026-10-16T08:00:18.0653482Z     [90m1112|[39m   [34mexpect[39m(() [33m=>[39m
+2026-10-16T08:00:18.0654462Z     [90m1113|[39m     [34mtransactionSelectorCapacity[39m(
+2026-10-16T08:00:18.0654906Z 
+2026-10-16T08:00:18.0655374Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+2026-10-16T08:00:18.0655730Z 
+2026-10-16T08:00:18.0656770Z [41m[1m FAIL [22m[49m packages/server/src/transaction-submission.test.ts[2m > [22mexecutes deep values through set and dependent sequence with durable receipt recovery
+2026-10-16T08:00:18.0657775Z [31m[1mAssertionError[22m: expected 29305.395045 to be less than 20000[39m
+2026-10-16T08:00:18.0658542Z [36m [2m❯[22m packages/server/src/transaction-submission.test.ts:[2m2041:41[22m[39m
+2026-10-16T08:00:18.0881893Z     [90m2039|[39m     expect(measured.every((entry) => entry.identityBytes > 0)).toBe(tr…
+2026-10-16T08:00:18.0884068Z     [90m2040|[39m     console.log(JSON.stringify({ witness: "fresh-depth-source-identiti…
+2026-10-16T08:00:18.0894264Z     [90m2041|[39m     [34mexpect[39m(performance[33m.[39m[34mnow[39m() [33m-[39m started)[33m.[39m[34mtoBeLessThan[39m([34m20000[39m)[33m;[39m
+2026-10-16T08:00:18.0895395Z 
+2026-10-16T08:00:18.0896501Z     [90m   |[39m                                         [31m^[39m
+2026-10-16T08:00:18.0897535Z     [90m2042|[39m   } [35mcatch[39m (error) {
+2026-10-16T08:00:18.0898801Z     [90m2043|[39m     errors[33m.[39m[34mpush[39m(error)[33m;[39m
+2026-10-16T08:00:18.0899264Z 
+2026-10-16T08:00:18.0899690Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+2026-10-16T08:00:18.0900007Z 
+2026-10-16T08:00:18.0915029Z [2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m184 passed[39m[22m[90m (186)[39m

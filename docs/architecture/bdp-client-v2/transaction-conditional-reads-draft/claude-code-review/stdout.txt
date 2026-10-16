@@ -1,0 +1,177 @@
+## Review — conditional Read conformance row vs. pinned `docs/specs/bdp.md`
+
+I read the spec sections you pinned (`bdp.md:1980–2008`, `5871–5889`), the four-file diff, and the loader/runner/server code the row depends on. Scope honored: no files written, nothing executed, no redesign proposals, main excluded.
+
+Two corrections to the premise up front, both load-bearing:
+
+- **The change does not load.** Finding 1 is a hard blocker in the manifest, not a style issue.
+- I confirmed your attribution note is accurate: `captures` is `[]` everywhere in the new row, no `equalsBinding` assertions exist, and `assertions = 198` checks out (I recounted all 14 actions independently: 26+18+11+10+11+11+12+11+11+11+11+26+18+11 = 198). The coverage binding list matches the manifest one-for-one. Byte/node fences are internally consistent with the measured values you cited, and `Buffer.byteLength(preimage) === 1434` is arithmetically correct (I recomputed it; the old 1228 is also consistent with removing the 3 new pairs).
+
+---
+
+### 1. BLOCKER — the new row violates two `requiredProfile: "read"` gates in the manifest loader; the whole bundle throws at load
+
+**Where:** `packages/conformance/test-support/transactional/manifest-v1.json:7` (`"requiredProfile": "read"`) with `:20-22` (`seed`, `POST`) + its `raw.body`, and `:1164-1166` (`update`, `POST`) + its `raw.body`.
+**Gates:** `packages/conformance/src/executable-manifest.ts:840-852` and `:1003-1004`.
+
+```ts
+// executable-manifest.ts:840
+if (requiredProfile === "read" && method !== undefined) {
+  const ordinaryReadMethod = method === "GET" || method === "HEAD" || method === "OPTIONS";
+  ...
+  if (!ordinaryReadMethod && !(method === "POST" && negativeMethodProbe === true))
+    issues.push({ path: `${path}.method`,
+      message: "Read scenarios permit only GET, HEAD, OPTIONS, or an explicit POST probe" });
+}
+// executable-manifest.ts:1003
+if (profile === "read") issues.push({ path, message: "Read scenarios cannot carry an exact body" });
+```
+
+`requiredProfile` here is the **scenario's declared** profile (`parseScenario` → `parseActions(…, requiredProfile, …)` at `:545`/`:733`), not the run or bundle profile. `seed` and `update` are `POST` with `raw.body` and no `negativeMethodProbe`, so `parseExecutableScenarioManifest` collects **4 issues** and throws `ManifestValidationError` (`:504`). `createCumulativeTransactionalArtifactBundle` goes through the same validator (`artifact-bundle.ts:170`), and both test files build the bundle at module top level (`transactional-matrix.test.ts:44`, `transactional-cumulative.test.ts`), so **every test in both files fails during module evaluation** — this is not a single-assertion failure.
+
+You cannot sidestep by declaring `transactional`: `artifact-bundle.ts:222-226` requires the manifest row's `requiredProfile` to equal the catalog's, and `catalog/read-v1.json:814` says `read`. `prerequisiteScenario` does not help either — prerequisite actions are parsed inside *this* scenario's `actions` array and hit the same gate. This is also the first `"requiredProfile": "read"` row ever added to this manifest (the other 16 are `read-update`/`transactional`), which is why no existing row trips it.
+
+**Fix (in scope, no production change):** bind the row to **`transactional.http.conditional-reads`** (`packages/conformance/catalog/transactional-v1.json:2040-2066`, `requiredProfile: "transactional"`). Its pinned requirements are a strictly better match for what the row actually asserts — see finding 2. Knock-on regeneration required because the row is no longer `scenarios[0]`: `withoutConditionalRow`'s "first object" prefix trick (`transactional-cumulative.test.ts:3723-3740`), `manifest.scenarios[0]`/`[1]` indices (`:3779`, `:3204`), the `receipt.pagination` index `12` (`:1272`), the `uniqueRoutes` order (`transactional-matrix.test.ts:200-219`, `1394-1413`), `exactConfigurationDigest` `dba06191…`, the `1434` preimage length, and both parent-byte digests. The unplanned count stays `234` (one row still moves to planned).
+
+---
+
+### 2. HIGH — the row's strongest evidence is attributed to the wrong catalog clause
+
+**Where:** `manifest-v1.json:6-7` (row id/profile) vs. `catalog/read-v1.json:811-831`; coverage row `coverage-v1.json` `"id": "read.http.conditional-reads"`.
+
+`read.http.conditional-reads` owns exactly three requirements: bodyless 304/412 with no Problem body; refusal precedence; "Applicable cache fields remain required." It says **nothing** about `bdp-scope-epoch` / `bdp-authorization-view` / `bdp-scope-position`.
+
+But 21 of the row's 198 assertions are `present-bdp-*` / `absent-bdp-*` / `position` on 304, 412, 401 and 404 responses. Those discharge `bdp.md:5876-5878` ("Required current Scope context remains required on 304 and 412 responses"), which is owned by `transactional.http.conditional-reads` (`transactional-v1.json:2050-2054`) — a row the coverage leaves in the 234 unplanned set. So the coverage artifact credits Transactional-only evidence to a Read requirement, and leaves the requirement that evidence actually proves uncredited.
+
+**Impact:** coverage mis-attribution in the canonical artifact; a reader of `coverage-v1.json` cannot tell that the 304/412 context-header evidence belongs to a different clause.
+**Fix:** same as finding 1 — rebind to `transactional.http.conditional-reads`, whose four requirements cover refusal precedence, 304/412 context, and "Omitting optional validators does not permit ignoring HTTP preconditions." Keep `wholeContract: false` and the HEAD-parity disclaimer as-is (deliberately not binding `*.head-conditional-parity` is the conservative, correct call and I am not asking you to change it).
+
+---
+
+### 3. MEDIUM — the canonical manifest never ties the 304/412 ETag to the observed validator, although the runner has the purpose-built assertion
+
+**Where:** `manifest-v1.json:442-519` (`conditional-get`), `520-613` (`conditional-head`), `614-696` (`mismatch-get`), `698-797` (`mismatch-head`) — each asserts only `{ "kind": "header", "name": "etag", "absent": false }`.
+
+The runner already supports two assertions written for exactly this clause:
+
+- `header.equalsResponse` — `runner.ts:2086-2102`, resolves the earlier response's ETag through `observedEntityTag` and compares byte-exactly.
+- `header.presentIfResponse` — `runner.ts:2104-2114`, literally commented *"304 must retain metadata supplied on the earlier successful response."*
+
+Both are schema-validated and reference-checked (`executable-manifest.ts:1448-1457`). Neither is used. As authored, a target that returns an **arbitrary or stale** ETag on the 304/412 passes every manifest assertion in this row. The app-side oracle does enforce it (`transactional-matrix.test.ts:4425` `if (i >= 2 && i <= 6) expect(response.headers.etag).toBe(initialTag)` and `:4420` `if (i === 12) expect(...).not.toBe(initialTag)`), but that is non-portable: it never ships in the manifest/coverage artifact, so the coverage claim is weaker than the app run.
+
+**Fix:** add `{ "id": "etag-current", "kind": "header", "name": "etag", "equalsResponse": "initial-get" }` to `conditional-get`/`conditional-head`/`mismatch-get`/`mismatch-head`, and `"equalsResponse": "current-get"` logic (or at minimum a `presentIfResponse: "initial-get"` on `conditional-get`). This raises the assertion total and all pinned counts/digests — fold into the finding-1 regeneration.
+
+---
+
+### 4. MEDIUM — only `*` and a fabricated non-matching tag are exercised; no specific matching validator, and the coverage reason does not disclose it
+
+**Where:** `manifest-v1.json` `if-none-match: "*"` on actions 3, 4, 7, 8, 9, 10; `if-match: "\"conditional-no-match\""` on 5, 6.
+
+The catalog row's title is *"Read conditions use **observed validators** and preserve native bodyless outcomes"*, and the Transactional row pins *"Omitting optional validators does not permit ignoring HTTP preconditions."* The row never sends a concrete entity tag that **matches** — not `If-None-Match: <observed etag>` → 304, not `If-Match: <observed etag>` → 200, not `If-Match: *` → pass (`bdp.md:1995-1996` names all three). A server implementing only the `*` wildcard branch and a blanket "any specific tag fails" rule passes this row.
+
+This is forced by a real constraint, not an oversight: dynamic validator substitution lives on the non-exact `headers` path (`runner.ts:1161` `headers = exact ? {} : resolveScenarioHeaders(request.headers ?? {}, priorResponses)`), and raw `headerLines` are byte-literal. So `*` is the only option for a raw-exact row — that's fine. The defect is **disclosure**: the coverage `reason` omits it. "date/validator combinations … remain omitted" reads as *combined* date+validator conditions, not *"no matching specific entity tag is exercised at all."*
+
+The row does avoid the corresponding false-positive correctly: the app oracle asserts `initialTag !== conditionalFalseTag` (`transactional-matrix.test.ts:4420`, `:4429`), so the 412 cannot come from an accidental tag collision. Good.
+
+**Fix:** add an explicit clause to the coverage `reason`, e.g. "Conditions use `*` and a validated non-matching tag only; raw exact header lines cannot carry an observed validator, so matching specific `If-None-Match`/`If-Match` tags and `If-Match: *` remain omitted."
+
+---
+
+### 5. MEDIUM — `etag absent: false` on the 412 pair over-asserts beyond the spec and RFC 9110
+
+**Where:** `manifest-v1.json:679-684` (`mismatch-get:etag`) and the matching `mismatch-head:etag`.
+
+`bdp.md:1990-1991` requires 412 to be bodyless with no Problem body and keeps "applicable cache fields"; `bdp.md:5877-5878` adds the three Scope-context fields. Neither requires `ETag` on a 412. RFC 9110 §15.4.5 makes ETag mandatory on **304** only ("MUST generate … ETag … that would have been sent in a 200"); there is no equivalent for 412.
+
+This happens to pass against the reference service — `read-http.ts:30-38` deletes `content-type`/`content-length` and only drops `etag` for 406, so 412 keeps it — so this is a portability/false-negative risk in the canonical artifact, not a failing assertion: a spec-conformant implementation that omits ETag on 412 is rejected by this row.
+
+**Fix:** drop `etag` from the `mismatch-get`/`mismatch-head` assertion sets, or keep the 412 ETag check in the app-side oracle only (where it is a legitimate reference-service observation). Keep the 304 `etag` assertions — those are well-founded.
+
+---
+
+### 6. LOW–MEDIUM — asymmetric 304/412 evidence for a clause the spec states identically
+
+**Where:** `mismatch-get`/`mismatch-head` carry `no-media` (`content-type` absent, `manifest-v1.json:689-694`); `conditional-get`/`conditional-head` do not.
+
+`bdp.md:1990` treats both identically ("MUST be bodyless and MUST NOT carry a BDP Problem body"). `read-http.ts:31` deletes `content-type` for both statuses, so the 304 assertion would hold. As authored, a 304 advertising `Content-Type: application/problem+json` with a zero-length body satisfies the manifest.
+
+Also inconsistent: the app oracle checks `content-length === "0"` for 412 but asserts nothing for the 304's absent `content-length` (`transactional-matrix.test.ts:4330-4334`) — worth a `toBeUndefined()` there, since `read-http.ts:33-36` deliberately omits it on 304 and that comment-documented behavior is otherwise unpinned.
+
+**Fix:** add `no-media` to `conditional-get`/`conditional-head`; add the 304 `content-length` absence check to the app oracle.
+
+---
+
+### 7. LOW — the 401/404 expectations are new to this manifest; one concrete item is unverified
+
+I checked the parts I could read, and most of it is sound:
+
+- `www-authenticate: Bearer realm="bdp-transaction-development"` matches `packages/server/src/transaction-http.ts:110-111` exactly, and is set only for `code === "unauthenticated"`. ✓
+- `readProblem()` (`packages/protocol/src/index.ts:534-546`) returns exactly `{type, code, retry, status}` for `unauthenticated` and `resource-not-found` — no `title`/`detail` — so the `json-equals` 4-key shape is correct, and `#/$defs/readProblem` makes `title` optional (`schemas/bdp-v0.schema.json:48-75`). ✓
+- 401 context-header **absence** matches `transaction-http.ts:403` (`transactionHttpProblem("unauthenticated")` with no observation argument). ✓
+
+**Open item:** the 404 asserts `present-bdp-*` **and** `position: "pos-1"`. Those headers are attached only via `context(response, …)`, which `transaction-http.ts:240-255` applies conditionally on `"observation" in result`. If the read facet's `resource-not-found` problem result carries no observation, four assertions on `missing-get` and four on `missing-head` fail. Note the contrast: `transaction-schema-http.test.ts:266-267` and `:428-429` show 400/500 responses with those headers **undefined**, while `:195` shows them **present** on 304/412.
+
+For context, the only other anonymous read action in this manifest (`transactional.batch.atomic-commit:unauthenticated`, `manifest-v1.json:4611-4637`) asserts `status`/`request-headers`/`request-body` only — so every one of the new `cache`, `media`, `challenge`, `schema`, `problem`, `absent-bdp-*`, `present-bdp-*` expectations on refusal responses is first-of-kind here. Flagging the 404-observation question specifically so the scheduled run has a named failure hypothesis rather than a blanket "needs validation."
+
+---
+
+### 8. LOW — `conditionalPrefix` hardcodes `14` instead of the wire's own bound
+
+**Where:** `apps/bdptest/src/transactional-matrix.test.ts:4503` and `:4507`.
+
+```ts
+if (conditional.count() < 14) conditional.onDispatch(input);
+```
+
+The wire's bound is `maximum = control ? 4 : 14` (`:4246`). Passing a `conditionalReadWire(true)` into `conditionalPrefix` would route dispatch 5 into the wire, tripping `expect(dispatches.length).toBeLessThan(maximum)` (`:4276`) *inside the exact HTTP executor* — which surfaces as an opaque `HttpTransportError("configuration")` / `exact-configuration` harness error, not a readable assertion. No current call site does this, so it is latent.
+
+**Fix:** expose `expected: () => maximum` from the wire and compare against it in `conditionalPrefix`.
+
+Verified-correct around this, for the record: the divert boundary is sound. Execution order is **catalog** order, not manifest order (`runner.ts:376`, `selection.ts:54-63`, `profile-contract-selection.ts:9`), `read-v1.json` is first in `coreCatalogs`, and the conditional row is the only planned `read.*` row — so the first 14 HTTP exchanges really are this row's, and diverting them is *required* so that `principalNamespaceWire`'s self-gated first-7 window (`:3799-3821`) still sees its own requests. Its post-window guards (`:3801-3803`, `:3826`) are not weakened: the diverted requests are pinned to `operator`/`anonymous` by exact literal equality, and `conditionalPrefix` adds the reciprocal `idempotency-key` guard.
+
+---
+
+### 9. LOW — coverage `reason` says "captured receipt postimages" while `captures` is `[]`
+
+**Where:** `coverage-v1.json`, new row `reason`, first sentence: *"complete current Resources equal captured receipt postimages…"*
+
+There are no captures (`captures: []` on all 14 actions, asserted at `transactional-cumulative.test.ts:3774`). The later sentence does disclaim it correctly ("Full dynamic receipt/postimage equality is an independent app wire oracle, not a canonical manifest assertion"), so this is wording, not a false claim — but the two sentences contradict each other inside one `reason` string, and the word "captured" is the one a reader would key on.
+
+**Fix:** drop "captured", e.g. "…the independent app wire oracle compares each complete current Resource to the corresponding receipt postimage…". Note what the manifest *does* prove portably: the static `properties` literals (`"before"` → `"after"`) on `seed`/`initial-get`/`update`/`current-get` give a real before/after link; revision identity is app-oracle-only.
+
+---
+
+### 10. LOW — uses `scope` + `"beads/a"` instead of the fixture's declared `subject` binding
+
+**Where:** `manifest-v1.json:445-447` and the other 9 `beads/a` targets, vs. `test-support/transactional/fixture-v1.json:8` (`"subject": "https://reference.invalid/acme/beads/a"`).
+
+Functionally identical (both resolve through `resolveTarget`; `observe()`'s inventory at `transactional-matrix.test.ts:187` maps either to the same URL), and the existing `beads/a` route in the old inventory came from `binding: "subject"`. But hardcoding the path duplicates a declared binding, diverging from the convention every other row follows. `beads/missing` legitimately needs `scope` + path (no binding exists).
+
+**Fix:** use `{ "binding": "subject" }` for the 10 `beads/a` targets; update the `routes` projection in `transactional-cumulative.test.ts:3806-3815` accordingly.
+
+---
+
+### Security / privacy — no issues found
+
+I checked this specifically because the new wire reads raw request evidence:
+
+- `exactRequest.headerLines` (`http-executor.ts:756-758`) is **unredacted** and contains the resolved `authorization: Bearer <token>` appended at `:713`. The new oracle's comparison is scoped to `.slice(0, literal.headerLines.length)` (`:4297`), which covers only authored lines — credentials are appended *after* — so a failure diff cannot print a token. The suffix check (`:4299-4301`) reduces to a boolean.
+- `responses.push` (`:4436-4446`) stores only `action`, `status`, body bytes/digest, an allowlisted header subset, and request body bytes/digest. No header lines, no `effectiveRequest`, no credentials. The `summary()` docstring claim holds.
+- `bdp-authorization-view` is retained in `conditionalMetadata`, which is consistent with existing practice (`isSecretHeaderName` explicitly exempts it, `http-executor.ts:344`; the principal wire already records it).
+- Output path is guarded (`:4561-4562`: absolute, ≤4096 chars), matching `principalOutputPath()`.
+
+One diagnostic-quality nit, not a finding: the new oracle omits the `.map(h => h.name)` pre-check that `principalNamespaceWire` runs before the full `toEqual` (`:3836-3839`), so a mismatch reports values rather than names first. Strictly stronger assertion; only the failure message is less readable.
+
+---
+
+### Also verified correct (no action)
+
+- `response-metadata-equals` with `optionalHeaders: ["content-length","content-type","vary"]` on HEAD is valid per `executable-manifest.ts:1834-1876` and `:1436-1444`; all 8 `headers` are in `STABLE_RESPONSE_METADATA_HEADERS` (`:432-445`).
+- `body-absent` has real teeth on both 304 and 412: `parseRawResponse` returns raw framed bytes for HEAD/204/304 (`http-executor.ts:1190-1193`), and decodes against `Content-Length: 0` for the 412 — so a leaked body is caught either way.
+- `credentialRef: "anonymous"` works end to end (`{ id: "anonymous", headerNames: [] }` passes `:479`, `:683-687`, `:715`).
+- HEAD routes are accepted by `validateExactRunConfiguration` / `METHODS` (`:359`, `:552-571`).
+- HEAD `content-length` parity with the GET holds for 200 **and** for 401/404, because `read-http.ts:42-46` sets it from the serialized body outside the status-conditional block.
+- `vary: Accept` is retained on 304/412 and absent on problem responses, so every `get-metadata` `vary` comparison is consistent.
+- Control semantics: the two failures (`conditional-get:status`, `conditional-get:body-absent`) are exactly right — `etag`, `cache`, `position`, `present-bdp-*`, `request-*` all still pass on the 200 — and `ScenarioAssertionFailure` from `runner.ts:1464-1470` stops the row, leaving 4 exchanges and 10 unobserved requests. The server-side 200 for a non-matching specific tag has precedent at `read-http.test.ts:182`.
+- Manifest/coverage ordering constraint is satisfied: `transactional-cumulative.test.ts:102-105` requires manifest order to equal catalog order, which is why the row must be `scenarios[0]` *as currently bound* — and why rebinding per finding 1 moves it.
+- Capacity note: the manifest is now ~870 KB against the 1 MiB TX factory cap (`transactional-cumulative.test.ts:207-218`), ~174 KB of headroom. Not a defect; worth tracking before the next row of this size.
