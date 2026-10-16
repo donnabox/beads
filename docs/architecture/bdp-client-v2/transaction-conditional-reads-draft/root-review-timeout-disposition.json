@@ -1,0 +1,55 @@
+{
+  "status": "inconclusive; no review verdict or validation release",
+  "results": [
+    {
+      "packet": "rebind-claude-review-focused",
+      "exit": {
+        "exitCode": 143,
+        "timeout": true,
+        "elapsedSeconds": 896.3438932918943,
+        "sourceInputsUnchanged": true,
+        "packetUnchanged": true,
+        "headBefore": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+        "headAfter": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+        "headIsChronologyOnly": false,
+        "sampledPids": [
+          95515
+        ],
+        "groupAfterCLI": [],
+        "remainingProcesses": [],
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "temporaryDirectoryCreated": false,
+        "noSessionPersistence": true
+      },
+      "exitSha256": "97ef455b3a398483aa89cb4a220e671fbe8b94125a8f645fd973f948d85b78a8"
+    },
+    {
+      "packet": "next-serving-audit/claude-code-review",
+      "exit": {
+        "exitCode": 143,
+        "timeout": true,
+        "elapsedSeconds": 896.6729757091962,
+        "sourceInputsUnchanged": true,
+        "packetUnchanged": true,
+        "headBefore": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+        "headAfter": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+        "headIsChronologyOnly": false,
+        "sampledPids": [
+          96629
+        ],
+        "groupAfterCLI": [],
+        "remainingProcesses": [],
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "temporaryDirectoryCreated": false,
+        "noSessionPersistence": true
+      },
+      "exitSha256": "6309de20b3bcdbefac7bcd500c28c498b83ab3de56baf11bf5002f2b6bf4f2d2"
+    }
+  ],
+  "diagnosis": "Identical argv and capture mechanism succeeded for smaller concurrent smoke review. No intermediate telemetry available; individual timeout cause unknown.",
+  "next": "Prepare separately gated streamed review attempts with observable intermediate records; no automatic retries. Native Event validation preparation continues independently.",
+  "sourceChanges": false,
+  "testsReleased": false
+}
