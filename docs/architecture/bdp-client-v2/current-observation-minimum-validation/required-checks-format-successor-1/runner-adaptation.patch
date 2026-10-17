@@ -1,0 +1,38 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-2/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-format-successor-1/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+@@ -37,10 +37,11 @@
+  for f,h in g['preparedArtifacts'].items():require(sha((P/f).read_bytes())==h,'Prepared artifact changed '+f)
+  subprocess.run(['/opt/homebrew/opt/python@3.14/bin/python3.14','/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py','/usr/bin/true'],check=True,timeout=30)
+  b=document(g['sourceBinding']);g['_sourceBinding']=b;g['_sourceIdentity']=source_check(b);g['finalHead']=b['head'];g['finalTree']=b['tree']
+- base=document(g['baseTools']);_v.tools_check(base['tools']);tb=document(g['workspaceTools']);_v.tools_check(tb['tools'])
+- require(base['sourceLockSha256']==b['trackedSourceFiles']['pnpm-lock.yaml'] and tb['sourceIdentity']==g['_sourceIdentity'] and tb['head']==g['finalHead'] and tb['sourceLockSha256']==base['sourceLockSha256'],'Workspace tool source attribution differs')
+- require(tb['installExitSha256']==sha((V/'run/workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((V/'run/workspace-install.log').read_bytes()),'Actual bootstrap evidence changed')
+- for stage in ['workspace-install','bind-workspace-tools']:_v.complete(stage,g)
++ base=document(g['baseTools']);_v.tools_check(base['tools'])
++ g['_sourceBinding']=b;g['sourceLockSha256']=b['trackedSourceFiles']['pnpm-lock.yaml']
++ require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
++ require(g.get('bootstrapReuseAccepted') is True and g.get('bootstrapReuseBinding')=={'path':str(V/'bootstrap-reuse-binding.json'),'sha256':sha((V/'bootstrap-reuse-binding.json').read_bytes())},'Root bootstrap reuse acceptance absent')
++ _v.verify_bootstrap_reuse({**g,'sourceBinding':{'path':str(V/'source-binding.json'),'sha256':sha((V/'source-binding.json').read_bytes())}})
+  verify_build(g)
+  for prior in c['order'][:c['order'].index(name)]:
+   r=read(E/(prior+'.exit.json'));require(r['accepted'] and r['exit']==0 and r['sourceIdentity']==g['_sourceIdentity'] and r['sourceUnchanged'] and not r['remainingProcesses'] and not r['runtimeDirectoriesStillPresent'] and not r['forcedCleanup'] and not r['errors'],'Prior required check failed')
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-2/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-format-successor-1/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-2/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-format-successor-1/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,

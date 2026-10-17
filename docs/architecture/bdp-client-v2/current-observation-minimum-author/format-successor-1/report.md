@@ -1,0 +1,9 @@
+# Measured formatting successor1 — frozen for native equivalence review
+
+One root-authorized invocation of measured Node24/Biome2.5.7 format --write on exactly the nine listed test files completed raw0. Actual output: Formatted9files/Fixed9files. Elapsed0.242s, no forced cleanup or process-group survivor. Started argv, raw log, sampled process rows and terminal record are retained; all11 measured tool bytes/realpaths remained identical. No check --write, lint fix, import sorting, second formatter or repository sweep ran.
+
+All nine reported files changed;670 other tracked files, every production byte and complete progress document remain identical to correction-successor2. Installed historical callbacks/helper prefix before the appended current-observation witness are byte-identical. Exact97 selection, report schemas and workload bytes unchanged. Forward/reverse full layout delta, all679 source binding and before/after snapshots are frozen for independent syntax/equivalence closure. Formatter-added trailing punctuation is visible in the exact delta; no blanket whitespace-only claim is made.
+
+Original actual format failure7a508856 is retained at its original path/hash. Its three truncated displayed diffs are not represented as a complete site inventory. Predecessor typecheck success remains predecessor evidence; no successor typecheck/format-check/lint/build/test or runtime validation ran. Native equivalence closure and root closed-packet acceptance remain required.
+
+Only the actual two bootstrap prerequisites may later be explicitly mapped with unchanged17 dependency inputs/11 tool identities. No prior static/build/source/installed result may be relabeled; all19 subsequent stages and4 required checks stay fresh. Conditional owns the separate CLOSED validation rebind. No commit/push or public-profile claim.

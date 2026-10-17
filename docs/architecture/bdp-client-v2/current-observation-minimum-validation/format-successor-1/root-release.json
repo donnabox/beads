@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-17T21:06:16.872154+00:00",
+  "accepted": true,
+  "mainIndexSha256": "3f11be54f31d4498a65333a1bda85ec6a1683f6d8798aee9f2cf18c451595f2b",
+  "requiredIndexSha256": "4da32961ed879e4f16639f3be3eff3f8fbfc784c6203f5c81c2e789a8d6a700c",
+  "nativePreparationSha256": "4db5338da267ff7a15206c3537ee4b38f9f348f67af6026d0751f04be330fa7e",
+  "sourceBindingSha256": "97f121161739d912d91c4150a2a59fce73fa7304e5883b9ab8cca5e94644a615",
+  "verifiedSource": 679,
+  "verifiedEntries": [
+    21,
+    12
+  ],
+  "bootstrapRecords": 8,
+  "dependencyInputs": 17,
+  "tools": 11,
+  "gateSha256": "0dcb2b438065909f72fc546ff1379cab44dc007324f81fd3862456a3b173df62",
+  "reusedPrerequisites": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "freshReleasedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "stopOnFirstFailure": true,
+  "externalCallbacksReleased": false,
+  "requiredChecksReleased": false
+}

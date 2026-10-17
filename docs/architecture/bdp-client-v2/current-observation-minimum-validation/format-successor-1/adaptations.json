@@ -1,0 +1,37 @@
+{
+  "sourceBindingFinalized": true,
+  "helperImplementationFinalized": true,
+  "executionAuthorized": false,
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+  "sourceCandidate": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "authorSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/format-successor-1",
+  "bootstrapReusePrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/gate.py",
+    "sha256": "ba1ebedb59300ba40d89c44f28ba411a0f15f038e83d243b68f6c032d17c38aa"
+  },
+  "changes": [
+    "Nine-test formatting-only source transition, actual679 map and new fullpatch; native closure pinned",
+    "Remove only two already accepted bootstrap command stages; retain original records/tool identity via explicit source transition",
+    "Copy proven verify_bootstrap_reuse function unchanged; require root reuse acceptance,17 dependency pins,8 bootstrap records,11 tool hashes/realpaths and original source identity",
+    "Required gate uses same transition verification against main source-binding record; required sibling source map is byte-identical",
+    "Rebind output/helper paths and references to separate format successor"
+  ],
+  "unchanged": [
+    "Main run.py/packages.py/audit.py and all expected source/installed observation predicates",
+    "97 exact source cases,9new reports plus28 separately attributed legacy reports",
+    "Source37HTTP and separate historical22/new37 installed; sibling5 fullCI only",
+    "All19 post-bootstrap stages fresh, starting typecheck; required4 fresh",
+    "120s/TERM115/no retries, owned cleanup, fresh build before source collection",
+    "Consumer-install cwd run/consumer and root approval of actual consumer lock/proof"
+  ],
+  "reusedOnly": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "notReused": [
+    "typecheck",
+    "format-check",
+    "any lint/build/runtime/required stage"
+  ],
+  "actualFreshBuildConsumerPins": null
+}

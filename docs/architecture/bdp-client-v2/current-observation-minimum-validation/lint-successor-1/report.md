@@ -1,0 +1,11 @@
+# CLOSED lint-successor-1 validation
+
+This separate candidate binds author b79e0ab9/fullpatch5c0e0522: only one cleanup block in transaction-service.test.ts changed after formatting. The locally caught throw is replaced by direct error collection with the existing success path in else; source/schema/selection/workload remain as reviewed except this exact equivalent correction. Completed actual CODE, two-test closure and formatter evidence retain their original attribution.
+
+Reuse is limited to ORIGINAL correction-successor-2 workspace-install and bind-workspace-tools. The same17 unchanged dependency inputs,11 actual tool hashes/realpaths,8 original bootstrap records and original source identity are bound. No format-successor-1 stage is reused: its successful typecheck/format and failed lint remain historical. The expanded diagnostic (raw7508175c) and ordinary lint log remain preserved, with no claimed successor pass.
+
+All19 later stages start fresh at typecheck, plus4 fresh required checks. Exact97 source cases,9new reports and28 separately attributed legacy reports remain unchanged. Source37HTTP remains separate from selected installed historical22/new37; sibling5 remains fullCI only. Same120s/TERM115/no retry, fresh build before emitted module collection, distinct installed supervision/immediate audits, consumer-install in run/consumer, and root-pinned actual archives/lock/proof.
+
+Main run/gate/packages/audit are byte-identical to formatted preparation. Required gate changes only its main validation directory. Command specs are unchanged except paths; all contracts remain unchanged. Reuse verifier still checks original bootstrap source identity rather than relabeling it to current source. All gates remain closed, approvedStages empty, actual gate tool/build/consumer slots null until root acceptance. No helper import or product/static/runtime execution occurred in this preparation. Native/root source and preparation closure precede release; no profile-qualification claim.
+
+Exact native source closure622a5762 and root-native-acceptance e586194f4193d69cb81dc50d4d836bfe98d5c9859c2860d02ab43ef357a59cf5 are pinned before this final freeze. Their source acceptance does not open these execution gates.
