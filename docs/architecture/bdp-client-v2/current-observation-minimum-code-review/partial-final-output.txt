@@ -1,0 +1,61 @@
+I inspected the actual five production files, all ten owned test files, the docs append, the pinned spec clauses for receiving/remaining‑reads (5790–5859) and receipt pages (4626–4660), `report-schemas.json`, plus surrounding repository source (`transaction-runtime.ts`, `transaction-runtime-configuration.ts`, `transaction-installed-configuration.ts`, `authority-read.ts`, `read-pagination.ts`, `read-http.ts`, `transaction-batch.ts`, `transaction-submission.ts`, `biome.json`, `tsconfig.base.json`, `tsconfig.check.json`, `vitest.config.ts`) and every unowned test that could contradict the new behavior. No commands were run.
+
+# Findings
+
+## Blocker
+
+**1. Formatter gate will fail: the new test code is not Biome‑formatted.** Severity: blocker (mechanical, non‑behavioral).
+- `biome.json:11-15` sets `formatter.enabled` with `lineWidth: 100` over `**` (only `dist`/`node_modules` excluded); `package.json:19` makes `format:check` = `biome format .`, which the accepted plan lists as a pre‑runtime gate.
+- The patch adds breakable over‑width lines and single‑line non‑empty blocks that Biome always expands, e.g. `packages/server/src/transaction-receipt-pages.test.ts:1` (126‑col import), `:344`, `:351`, `:354` (~330 cols), `:358`, `:360-364`, `:370`, `:371` (`f.raw((db) => { offlineInspections++; baseline = inventory(db); });`), `:386`; `packages/server/src/transaction-service.test.ts:3799`, `:3802`, `:3828-3831`, `:3843` (`record(value: boolean) { recording = value; }`), `:3893`, `:3907-3922`, `:3928`, `:3934`, `:3943-3959`, `:3974-3980`, `:3988`, `:4029-4042`; `packages/server/src/transaction-http.test.ts:6043`, `:6173-6174`, `:6176`, `:6188-6191`; `apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:1072`, `:1131`, `:1154`, `:1284-1348`.
+- Evidence that these are genuinely unformatted (not tolerated width): every pre‑existing over‑100 line in the same files is unbreakable — SQL literals (`transaction-store.ts:240-246`), PRAGMA strings (`:582`), long `it("…", async () => {` titles (`transaction-service.test.ts:180-2400`, `transaction-receipt-pages.test.ts:82,239,293`), and the installed file's three (`:126,621,623`). The new lines are object literals, call argument lists, nested ternaries and inline blocks.
+- Consequence: `pnpm format:check` exits non‑zero before any source/installed run, and re‑formatting changes the bytes the plan pins as byte‑identical, so the fixture/author bindings and patch hash must be re‑issued.
+- Minimal correction: run `pnpm format` over the 15 code files and re‑pin bindings/hashes; no assertion or counter needs to change.
+
+No other blocker found. Specifically, I found **no behavioral blocker** in the five production files: the shared checker, the Type/initial‑Type/incident lanes, and the three capture seams match the clauses I read (see "Verified" below).
+
+## Findings (non‑blocking, ordered by severity)
+
+**2. D self‑reports two hardcoded fields and never asserts closure; it also emits no record on failure.** Severity: medium (honest‑reporting / contract).
+- `packages/server/src/transaction-receipt-pages.test.ts:386` logs `payloadUnchanged: true, closed: true` as literals, and the callback has no `try/finally`, unlike A/B/C/E.
+- Consequence: the emitted `current-observation-page-retention` record cannot distinguish a derived observation from a constant; `closed` has no corresponding assertion anywhere in D (closure is a side effect of `f.raw()` at `:371`/`:377`, and the accepted plan says existing close helpers "do not substitute for explicit new successful‑close assertions"); on any assertion failure the declared single record (`report-schemas.json` `current-observation-page-retention.records: 1`) is never emitted at all.
+- Minimal correction: derive both values — e.g. `const payloadUnchanged = JSON.stringify(after) === JSON.stringify(baseline);` plus one explicit post‑`raw` closure oracle (`expect(() => f.owner.inspect()).toThrow("closed")`, recorded as `closed`) — and move the `console.log` into a `finally` with a `failureCount`, adding `failureCount` to the D schema for parity with the other five contracts.
+
+**3. C's count comparison sits outside the failure aggregation, so it can mask the real cause.** Severity: low‑medium.
+- `packages/server/src/transaction-service.test.ts:4042` runs after the `finally` and before `if (failures.length) throw new AggregateError(...)` at `:4043`.
+- Consequence: when the drain genuinely misbehaves, a count mismatch throws first and the captured cause (entry timeout, unexpected settlement, close rejection) never reaches the AggregateError; it survives only in the console record.
+- Minimal correction: wrap the comparison in `try { expect([...]).toEqual([2,2,1,3,1,1]); } catch (error) { failures.push(error); }` placed before the aggregate throw (or inside the `finally`).
+
+**4. `TransactionMinimumVisibilityGap` becomes unreachable *and* loses all coverage while its HTTP translation is retained.** Severity: low‑medium (dead compatibility branch).
+- `packages/server/src/transaction-read.ts:224-243`: the new `kind === "type"` early branch takes the only admitted kind that previously reached the conversion; `transaction-read.test.ts` no longer imports or references the class (import removed in the patch), and `grep` shows the sole remaining references are the declaration (`transaction-read.ts:27`), the throw site (`:239`) and the handler (`transaction-http.ts:684-685`).
+- Consequence: the `minimum-position-visibility` 500 translation is now untested dead code in the ordinary candidate; a future refactor can silently delete or break it, and the progress note does not record it as retained‑but‑unreachable (the plan required keeping the export, not keeping it witnessed).
+- Minimal correction: either retain one direct assertion that constructs the gap and checks the handler's `developmentGap("minimum-position-visibility")` translation, or add one clause to the progress note stating the branch is retained compatibility with no reachable ordinary path.
+
+**5. `initial-types` on a not‑found refusal still takes the strict path, inconsistent with its own successful lane.** Severity: low (currently unreachable).
+- `packages/server/src/transaction-read.ts:222-243` vs `:245`: a `collection/types` read is waitable on success (`kind !== "strict"`) but, if it ever produced `resource-not-found`, it falls into `checkCurrentReadMinimum(minimum, current, false)` and yields `TransactionMinimumUnsupported` → HTTP 500.
+- Consequence: a latent 500 lane for the same kind the batch declares waitable; no test pins either behavior.
+- Minimal correction: include `initial-types` in the `kind === "type"` branch (`if (kind === "type" || kind === "initial-types")`), or add a one‑line comment stating the collection route cannot refuse with `resource-not-found`.
+
+**6. B does not discriminate "unauthenticated refusal before lexical capture" for `receiptPage`.** Severity: low (coverage gap; code order is correct and spec‑required).
+- `packages/server/src/transaction-service.test.ts:3958` sends a *valid* tuple anonymously, and `:3959` sends a malformed tuple *authenticated*. `transaction-service.ts:600-606` orders auth before `snapshotCurrentReadMinimum`, which spec.md:4654-4656 requires, but no case exercises both violations together.
+- Consequence: a regression that captured before refusing (leaking a `TypeError` to an unauthenticated caller) would pass B.
+- Minimal correction: add one call `f.service.receiptPage({ kind: "unauthenticated" }, page, { ...minimum, minimumPosition: "two tokens" })` expecting `{ kind: "refused", code: "unauthenticated" }` (zero attempts/waits), and update B's declared `operations`/`rowsLength` from 12 to 13 in `selection`/`report-schemas` (counts are contract values, so this is a deliberate scope decision, not a silent edit).
+
+**7. A mutates the caller's tuple but never asserts the mutation landed.** Severity: low.
+- `packages/server/src/transaction-service.test.ts:3876-3877` sets `changing.minimumPosition`/`changing.scopeEpoch`; the oracle is only the *absence* of `cursor-expired` at `:3908-3910`.
+- Consequence: if the mutation were a no‑op (wrong object, frozen input), the test still passes and the "preserves captured tuples across real progress" title would be unproved.
+- Minimal correction: after the loop add `expect(changing).toMatchObject({ scopeEpoch: "caller-mutated", minimumPosition: current.scopePosition });` (no traffic change).
+
+**8. E does not register its runtime with the file's `cleanup`, and can double‑record one close error.** Severity: low.
+- `packages/server/src/transaction-http.test.ts:6027-6045` creates the directory and runtime without `cleanup.push(...)`, unlike every other callback in the file (`:97`, `:804`, `:2919`); `:6181-6188` pushes a close rejection via `void closing.catch(...)` *and* via the surrounding `catch`.
+- Consequence: if the 1000 ms close race expires, the listener and SQLite handle stay open for the rest of the worker (the plan's intended directory retention does not require leaving the runtime unregistered); a fast close rejection appears twice in the AggregateError (F avoids this with its de‑duplicating `fail()` at `:1080-1085`).
+- Minimal correction: add `cleanup.push(() => runtime?.close());` immediately after `:6043` (`close()` memoizes `completion`, so it is idempotent), and guard the duplicate with a `fail`-style `includes` check or drop the `void closing.catch` arm.
+
+**9. The progress append omits the one ordering change it makes to the former strict discovery checker.** Severity: low (scope honesty).
+- `docs/design/transaction-implementation-progress.md:2065-2069` says the checker "compares epoch then authorization view for an opaque minimum … before treating eligibility as unproved", which is accurate, but does not record that for the unknown‑identity path an invalid *owner* position is now reported ahead of the foreign epoch/view comparison (`transaction-consistency.ts:120-128`), reversing `checkTransactionMinimum`'s foreign‑context‑first order that `discoveryObserved` previously used (`transaction-service.ts:271`).
+- Consequence: the note understates a real behavior delta the plan explicitly accepted; everything else in the two paragraphs is appropriately hedged ("not a test‑pass or profile‑completion claim", "Full candidate review and fresh … validation remain required").
+- Minimal correction: append one clause, e.g. "a faulted owner position is reported before foreign epoch/view on the unknown‑identity path, unlike the former strict discovery order".
+
+**10. E/F receipt oracles are not at parity.** Severity: low (optional).
+- `apps/bdptest/.../transactional-minimum-receiving-installed.test.ts:328-348` additionally asserts the receipt body's `scopeEpoch`/`authorizationView` equal the response context and match the token profile; the source twin at `packages/server/src/transaction-http.test.ts:6076-6084` asserts only status/`toMatchObject`/position.
+- Consequence: the "same 37‑exchange workload" claim holds for route/method/status but not for setup‑receipt field oracles.
+- Minimal correction: copy the two extra assertions into E's local `receipt()`
