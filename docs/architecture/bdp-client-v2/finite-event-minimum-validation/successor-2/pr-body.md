@@ -10,6 +10,6 @@ Validation:
 - All 13 selected source callbacks passed, including five preflight controls and four existing regressions. New HTTP observation recorded 32 exchanges; historical source traffic is not represented as a measured combined total.
 - Fresh installed consumer passed the new three-exchange GET200/GET503/HEAD503 case and the historical 11-exchange missing-context case. Both children closed cleanly; owned stores and all 326 sampled processes were absent at final audit.
 - Native and actual Claude review completed; subsequent mechanical formatting and equivalent cleanup corrections have separate native/root dispositions. Earlier failed static attempts retain their original identities.
-- Exact commit CI is pending. No merge or release requested by this draft.
+- Exact commit [CI38995336477](https://github.com/gastownhall/bdp/actions/runs/38995336477) passed all 27 steps: 9,375 tests across 186 files, one skip; seven preflight tests; static checks/build, package smoke and the historical Read evidence gate. Raw job log and exact head/tree/ancestry verification are retained in the evidence packet. No merge or release requested by this draft.
 
 [Evidence and dispositions](https://github.com/donnabox/beads/tree/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/finite-event-minimum-validation/successor-2) · [Sole implementation plan](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/design.md)

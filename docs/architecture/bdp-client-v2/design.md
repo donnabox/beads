@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T02:50:59Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T03:08:23Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T02:50:59Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | PR154 published f6204255; exact CI38995336477 running | All19 local stages passed; no integration until exact green CI/scope/tree checks |
+| Root | PR154 exact CI38995336477 green at f6204255 | Full27 steps passed; separate subsequent candidate, frozen PR150 unchanged |
 | Conditional author | Closed Bead Event plan-v2 complete; idle | Six files and exact prospective workloads frozen; no authoring release |
 | Event reviewer / actual Claude | Plan-review packet prepared; root launched Claude PID56220 at02:50:26Z | Review-only, unchanged3600s bound, clean f620 and immutable inputs |
-| Native reviewer | Plan-v2 review complete; idle | No substantive blocker; commit follows all source and installed validation |
+| Native reviewer | Independent PR154 terminal CI audit | Raw log, exact head/tree/scope, selected regressions and capability caveats |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -165,6 +165,8 @@ Author [successor-3](finite-event-minimum-author/successor-3/report.md), binding
 **Next independent serving slice identified; planning only.** [Read-only audit](finite-event-next-serving-audit/plan.md), SHA b0450e3da3edec834aab7e6607264ad07aa9edb182f095029448efe3e76ddaff, identifies canonical initial finite Bead Event opaque minimum as a concrete remaining private500. Root inspected the three production seams and accepted bounded plan preparation, not authoring. Conditional author pins canonical classification, exact workloads and fixed deadlines; native reviewer independently checks retained/deleted Event identity, preflight and S1/G2 separation. Scope excludes Link Events, after/SSE and public discovery. PR154 exact CI still running with static/build steps successful; no new failure, no merge, frozen PR150 unchanged.
 
 **Bead Event plan council running.** [Closed plan-v2](finite-event-next-serving-audit/plan-v2.md)880395f8 and selection2c0d9ed7 pin six files,25 source plus3 installed callbacks and prospective128+18 HTTP, including actual seeds; no observations claimed. [Native review](finite-event-next-serving-audit/native-plan-v2-review.md)928baddf found no substantive blocker. Root independently verified679 clean f620 source hashes and read production/parser seams, exact plan and review. Explicit sequencing override: commit only after ALL selected source and installed validation/audits pass. [Actual Claude preparation](finite-event-next-serving-audit/claude-plan-review/preparation.md) and [root release](finite-event-next-serving-audit/claude-plan-review/root-release.json): root launched read-only Claude PID56220 at2026-10-17T02:50:26Z, unchanged3600s bound/TERM3595, no model override or retry. Source and packet snapshots/process samples active; streamed records show progress, no verdict yet. No source authoring, new worktree or merge released. PR154 exact CI38995336477 remains in full tests with prior static/build successful.
+
+**PR154 exact CI verified green.** [CI38995336477](https://github.com/gastownhall/bdp/actions/runs/38995336477) passed all27steps on unchanged f6204255/tree f5a20fe3/soleparent b76:9375tests across186files passed,1skip;7preflight; static/build, package smoke and historical Readgate. [Raw log and exact bindings](finite-event-minimum-validation/successor-2/exact-head-ci.json) bind3582932bytes SHA c59b07c295771471b84d50b34f8f14a5a5fd1b5fbb568a923b4b273578abc9e4. Smoke payload b9d1d50e matches local external-consumer validation; claimEligible:false remains. Root checked remote head, clean checkout and six-file scope; PR body refreshed. Native independent log audit in progress. PR154 remains a separate subsequent draft excluded from frozen PR150; no merge/release or full-profile claim. Actual Claude Bead-plan review PID56220 remains live with streamed progress and no verdict.
 
 ## Current priority: BDP profile structure and implementation
 
