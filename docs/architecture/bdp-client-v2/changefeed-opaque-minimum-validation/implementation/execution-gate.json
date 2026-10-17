@@ -1,13 +1,18 @@
 {
-  "released": false,
-  "rootPlanAccepted": false,
-  "rootExactSourceAccepted": false,
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
   "session": "2026-10-08T20:26:35Z-81e5",
   "mode": "final",
-  "approvedStages": [],
-  "staticValidationAuthorized": false,
-  "nativeCodeReviewDisposed": false,
-  "actualClaudeReviewDisposed": false,
+  "approvedStages": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
   "implementationIndexSha256": "dc04aead48e78a48da1c116077f6b710b07b67fb5998785f174f66e1622f3a7b",
   "sourceBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/source-binding.json",
@@ -17,10 +22,13 @@
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/base-tools.json",
     "sha256": "f93adde88fcfa337e0c0133563cb9c7bbd5ab6478f4eed211486de35cda16cb0"
   },
-  "workspaceTools": null,
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "9c63f40ec5410f1969c577b31ad664c268b4e9fcdf11eed6c6a03265bebadf76"
+  },
   "rootDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/root-disposition.pending.json",
-    "sha256": "b71635a8551aa5e94cb354ead9aaf4e6b69aabf54aed79df9179d1e807b155d0"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/root-dispositions.json",
+    "sha256": "7de926391888cea4906d4484ad4d0a3e7b3c2dcdf164a8edea990784906af8e4"
   },
   "consumerLockSha256": null,
   "installedProvenance": null,

@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T14:45:58Z. **ACTIVE — separate alias PR160 ready and exact-CI green; next finite-changefeed opaque-minimum plan in review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T14:58:42Z. **ACTIVE — separate alias PR160 ready and exact-CI green; next finite-changefeed opaque-minimum plan in review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T14:45:58Z. **ACTIVE — separate alias PR160 ready and exa
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Frozen changefeed draft verified; native CODE accepted | Actual Claude CODE running; runtime still held |
-| Conditional reviewer | Actual Claude CODE review | PID19404/session29184,14:27:47Z,1800s single attempt |
-| Event reviewer | Closed executable preparation complete | Source immutable; awaiting CODE disposition and staged release |
-| Native reviewer | Native CODE and executable preparation closure complete | No runtime until root release |
+| Root | Changefeed CODE council disposition complete; static failure preserved | Formatting-only successor and validation closure next |
+| Conditional reviewer | Actual Claude CODE complete and audited | Exit0/1369.318s; no survivors; source unchanged |
+| Event reviewer | Exact formatter-only successor and closed validation adaptation | Five layout sites in two tests; no runtime |
+| Native reviewer | CODE dispositions accepted; formatting successor closure next | Original failure and bootstrap provenance preserved |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -428,6 +428,11 @@ Event adapts established validation helpers with execution closed. Derived sourc
 
 
 **Executable preparation closed and accepted; execution remains held.** [Native preparation review](changefeed-opaque-minimum-validation/implementation/native-preparation-review.md)656d8332 and [root acceptance](changefeed-opaque-minimum-validation/implementation/root-preparation-acceptance.json) bind preparationaf427872/implementationdc04aead/source4807cc63. Root independently rehashed17 preparation entries,679 actual source files and immutable references. Fresh2+19 ordering, nine new plus one historical report, exact17source/44HTTP and separate10/4installed contracts are closed. All execution flags remain false and approvedStages empty. Actual Claude CODE PID19404 continues within the original1800s attempt; source remains frozen. Remote PR150d4/PR159d719/PR1605ceb heads and successful checks reverified; no new main or checkpoint changes.
+
+
+**Changefeed CODE council complete; actual format gate identified mechanical correction.** Actual Claude exit0/1369.318s,5505records/2940766bytes, one terminal, unchanged679source/17contexts/eightartifacts and no survivors. [Completion audit](changefeed-opaque-minimum-code-review/completion-audit.md) preserves actual47Read/29Grep/3Glob; copied contexts had no separate Read, while patch/selection/workload were inline. [Root dispositions](changefeed-opaque-minimum-code-review/root-dispositions.json) and [native audit](changefeed-opaque-minimum-code-review/findings-audit.md)dce2c074 find no semantic blocker. F11 narrower current-Resource MUST is not generalized to changefeed; retry estimates are unmeasured. Selected17cases are not file/profile census. Optional changes deferred.
+
+Fresh dependency install4.688s/tool binding8.288s/typecheck5.420s passed. Actual format-check4.561s failed raw1 on five layout sites in two tests, with no fixes applied. [Root static outcome](changefeed-opaque-minimum-validation/implementation/root-static-outcome.json) preserves exact log6e91d643, unchanged source/no survivors. Event now owns only those formatter-reported text corrections plus CLOSED successor validation preparation with explicitly attributed two-bootstrap reuse and fresh remaining19 stages. Original typecheck and formatter results are not successor evidence. Native closure and root release precede further execution; no lint/build/tests/installed runtime/commit/push yet. Frozen PR159/150 and ready PR160 unchanged.
 
 ## Current priority: BDP profile structure and implementation
 

@@ -1,0 +1,110 @@
+{
+  "at": "2026-10-17T14:58:42.221255+00:00",
+  "stages": {
+    "workspace-install": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "2c787f2afdb4d4e8d7dbe5a4cacfacc8c7b7e1d64bf670eda387669c4faff82d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.687808291986585,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        37642
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-changefeed-validation-workspace-install-e4gfbglu",
+      "logSha256": "dccc635676642c044945e02c473a57b7140b90cde11211ddc9a25a5a72d44996"
+    },
+    "bind-workspace-tools": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "2c787f2afdb4d4e8d7dbe5a4cacfacc8c7b7e1d64bf670eda387669c4faff82d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 8.288139749784023,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        39349,
+        39377,
+        39398,
+        39415,
+        39434,
+        39452,
+        39470,
+        39489,
+        39508,
+        39524,
+        39563,
+        39580,
+        39596,
+        39615,
+        39668,
+        39694,
+        39710,
+        39727,
+        39746,
+        39763,
+        39782,
+        39801,
+        39818,
+        39838,
+        39855,
+        39871,
+        39888,
+        39906,
+        39924,
+        39941,
+        39956,
+        39973,
+        39991,
+        40011,
+        40028,
+        40046,
+        40066,
+        40080,
+        40081
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-changefeed-validation-bind-workspace-tools-elxf5y2a",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "2c787f2afdb4d4e8d7dbe5a4cacfacc8c7b7e1d64bf670eda387669c4faff82d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 5.419547957833856,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        41512,
+        41536
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-changefeed-validation-typecheck-4px2gba0",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exit": 1,
+      "accepted": false,
+      "sourceIdentity": "2c787f2afdb4d4e8d7dbe5a4cacfacc8c7b7e1d64bf670eda387669c4faff82d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.560636582784355,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        43246,
+        43248
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-changefeed-validation-format-check-vomun43n",
+      "logSha256": "6e91d643394def4f66985098d8d9318afdf69fe86bd6b97f69777d6b4fb13f2a"
+    }
+  },
+  "outcome": "Stopped at first failure; original formatting failure preserved. Only exact five diagnostic layout sites in two test files authorized for a separately frozen successor; no runtime executed."
+}
