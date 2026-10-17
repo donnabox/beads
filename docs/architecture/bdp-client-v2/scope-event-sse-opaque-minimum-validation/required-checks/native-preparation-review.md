@@ -1,0 +1,13 @@
+# Native required-check preparation review
+
+Verdict: no actionable preparation blocker. This is a read-only text/data review, not execution or release. All gates remain closed and no run directory exists.
+
+Independently verified preparation-index SHA256 469fdf1c7fd9727c29e2007b4dad7b39a0875db780781129a91ddc2471af3be6 and all 12 indexed entries, every references.json file pin, and all 679 current source hashes in source-binding bcbd975c76b4af9af249cd89e46a80992cf99f3e7f5850f34eee510e287922b6. Read full commands, gate, runner, adaptation, preparation report, expectations and historical binding. Source is the original frozen seven-file draft; a later formatting successor requires explicit rebind, not reuse under changed attribution.
+
+Four fresh stages only: boundaries, exact seven preflight callbacks, package smoke, historical Read verification. Actual cwd and absolute result paths target this worktree/packet. Every stage requires raw0,120s outer/TERM115,no retries; ordered prefix release and completed CODE flags are explicit. Workspace tool source/lock/install log+exit identity and original fresh bootstrap completions are checked; fresh-build/bind proof and current artifacts are prerequisites before all checks. Thus the preflight's emitted CLI cannot silently inherit a skipped stale-build path. No missing future tool/build evidence is fabricated: their slots remain null.
+
+The runner retains sanitized BDP/Vitest/Node environment, /private/tmp per-attempt ownership, separate process group, 30s progress, exclusive attempt records, sampled process verification, failure on forced cleanup/errors/leftover runtime directories, and final source/build recheck. Raw0 alone is insufficient. These are sampled-process/owned-group assurances, not universal process-census claims.
+
+Preflight checks exact seven full names and all passed/no skipped. Smoke demands its unique installed.reference.observed event, allNineTargets=true and claimEligible=false; its separate packages/consumer and internal registry-capable install are honestly described, not substituted for the SSE external cohort. Historical verification accepts only raw0 and exact evidence.verified artifact/constant/runHead, with historical input bytes pinned; no recapture/generation or new TX claim. Existing historical Read runHead e5f7d0c43c151426350ceededdc77fe7e372db9b remains distinct from current source.
+
+All four checks remain additional to the eight source callbacks and separate historical5/new6 SSE installed cohorts. No inflated HTTP/child census, fresh historical qualification or complete profile claim. Root must supply actual measured prerequisites and release; no helper was imported or invoked during this review.

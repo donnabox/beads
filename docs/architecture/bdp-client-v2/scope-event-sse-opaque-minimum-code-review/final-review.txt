@@ -1,0 +1,209 @@
+I inspected the seven changed files in the worktree at the cited lines and the dependencies that decide the new behavior. Below is what I verified, what I could not, and the findings.
+
+---
+
+## Material actually inspected
+
+**Read in full or in the cited regions (working-tree files, not the patch text alone):**
+`packages/server/src/transaction-http.ts` (1–420, 420–650, 636–705) · `transaction-service.ts` (1–220, 355–385, 460–620, 735–776) · `transaction-store.ts` (360–430, 460–480, 655–825, 1690–1900, 2340–2370) · `transaction-event-sse.test.ts` (1–450, 439–830, 990–1169, 1613–1642, 1719) · `apps/bdptest/src/transactional-event-sse-installed.test.ts` (1–120, 700–890, 1193–1194, 1388–1507) · `transaction-events.test.ts` (1390–1620) · `docs/design/transaction-implementation-progress.md` (2055–2063).
+
+**Dependencies read:** `transaction-consistency.ts` (full) · `transaction-events.ts` (144–266) · `read-http.ts` (10–155) · `transaction-runtime.ts` (88–400) · `transaction-runtime-configuration.ts` (125–404) · `transaction-sse.ts` (14–170) · `test-support/raw-sse-recorder.ts` (full) · `packages/conformance/src/http-executor.ts` (330–400, 528–590, 700–790, 860–1040, 1080–1230) · `tsconfig.base.json`, `tsconfig.check.json`, `biome.json`, `vitest.config.ts`, root/server `package.json`, `.github/workflows/ci.yml` · `transaction-sse.test.ts` (395–425, 590–620, 890–910) · `transaction-http.test.ts` (4620–4930) · `transaction-store.test.ts` (grep context only).
+
+**Supplied context read:** `report-schemas.json`, `author-report.md`, `preservation-checks.json` (lines 1–311 of 711 only — the four `checks` entries and part of the 672-file map).
+
+**Supplied but NOT inspected (no claim made about them):** `source-binding.json`, `author-index.json`, `draft.patch` (I used the inline patch and cross-checked it against the real files), `selection.json`, `workload.json`, `accepted-plan.md`, `plan-index.json`, `native-plan-closure.md`, `root-author-release.json`, `actual-plan-review.txt`, `plan-findings-audit.md`, `root-plan-dispositions.json`, `root-findings-acceptance.json`, `plan-completion-audit.md`, `bdp.md`, the three `design-*-checkpoint.md` files, `required-contract-matrix.md`, and lines 312–711 of `preservation-checks.json`.
+
+**Not verifiable under the read-only/no-execution constraint:** the `484ba471…` patch digest, the `bbfa5b2…` base, every SHA-256 in `preservation-checks.json`, the 679/672 file census, and `scripts/transaction-installed-observation.mjs` (not read). No test, build, formatter or compiler was run; all typing conclusions below are static reasoning.
+
+---
+
+## Findings
+
+### 1. Biome formatting violations will fail CI before anything else runs — Medium
+**File:** `packages/server/src/transaction-event-sse.test.ts:1625-1626` and `:1719`
+
+**Issue.** Two new lines in test D are not Biome-canonical output under `biome.json` (`formatter.enabled: true`, `lineWidth: 100`, `files.includes: ["**", …]`):
+
+- `:1625-1626` — a nested conditional written with the `:` at end-of-line:
+  ```ts
+  code: status === 401 ? "unauthenticated" :
+    target === "events/?after=" ? "invalid-parameter" : "malformed-request",
+  ```
+  A repo-wide grep for `\?\s*"[^"]*"\s*:\s*$` across `packages/` returns exactly one hit — this line. Biome/Prettier never emit a trailing ternary `:`.
+- `:1719` — 101 characters, over the configured 100, and fully breakable:
+  ```ts
+  expect(event).toMatchObject({ source: `${scope}events/`, transaction: seed.body.transaction });
+  ```
+
+**Impact.** `.github/workflows/ci.yml:60` runs `pnpm format:check` as the first verification step, before `lint`, `typecheck`, `build` and `test`, and CI triggers on `push` to `codex/vickie-*` (`ci.yml:7`). The whole job fails at step 60; none of the new behavior ever gets exercised. The author report states no formatter ran, which is consistent.
+
+**Correction.**
+```ts
+            code:
+              status === 401
+                ? "unauthenticated"
+                : target === "events/?after="
+                  ? "invalid-parameter"
+                  : "malformed-request",
+```
+and
+```ts
+      expect(event).toMatchObject({
+        source: `${scope}events/`,
+        transaction: seed.body.transaction,
+      });
+```
+I verified the one *modified* line in `transaction-events.test.ts:1530-1536` is correct: collapsed it would be 101 characters, so Biome keeps the argument-per-line form exactly as written.
+
+---
+
+### 2. `safeContext` silently degrades to `any`, voiding D's context contract — Low/Medium
+**File:** `packages/server/src/transaction-event-sse.test.ts:1549-1550` (and `:1679`)
+
+**Issue.**
+```ts
+const safeContext = (headers: Record<string, string>) =>
+  Object.fromEntries(names.map((name) => [name, headers[name]]));
+```
+With `noUncheckedIndexedAccess: true`, `headers[name]` is `string | undefined`, so the callback returns `(string | undefined)[]` — an array, not a tuple. The first `Object.fromEntries` overload (`Iterable<readonly [PropertyKey, T]>`) does not match; only the fallback `fromEntries(entries: Iterable<readonly any[]>): any` does, so `safeContext` returns `any`. Same at `:1679` for `expectedContext`.
+
+**Impact.** The declared `context: Record<string, string | undefined>` field on `records` (`:1530`) and every `expect(safeContext(...)).toEqual(expectedContext)` comparison are typed against `any`, so a future drift in `names` or in the recorder's header map produces no compile error — the exact failure these annotations exist to catch. The installed test gets this right (`transactional-event-sse-installed.test.ts:1465` uses `[name, response.headers[name]] as const`), so this is an inconsistency inside the same change.
+
+**Correction.**
+```ts
+const safeContext = (
+  headers: Record<string, string>,
+): Record<(typeof names)[number], string | undefined> =>
+  Object.fromEntries(names.map((name) => [name, headers[name]] as const));
+```
+and add `as const` at `:1679` as well.
+
+---
+
+### 3. No new case proves the unknown-minimum SSE refusal avoids the single stream slot — Low
+**Files:** `packages/server/src/transaction-event-sse.test.ts:1523` (D); existing coverage at `:443-469` and `:787-803`
+
+**Issue.** `maximumStreams` defaults to 1 (`transaction-service.ts:124`; `TRANSACTION_SSE_DEFAULTS.maximumStreams = 1`). D issues all ten 503 refusals with no stream active, so a slot capture would be unobservable. The code is correct — `service.beginEvents` throws inside `handler.handle`, so `streamResponse` and `service.stream` are never reached — but the new admission branch has no test that distinguishes slot-exhaustion 503 (`temporarily-unavailable`) from minimum-refusal 503 (`catch-up-timeout`).
+
+I did verify a useful non-regression: the existing test at `:787-803` (`pos-99`, canonical scope, `Accept: text/event-stream`, no reconnect controls) now routes through the **new** `currentReadMinimumHeaders` + `checkCurrentReadMinimum(…, true)` path, yields the identical `TransactionMinimumFailure("behind")`, and still proves no slot is held across a held wait. The gap is only the `TransactionMinimumUnproved` (unknown-token) branch.
+
+**Correction.** Inside D, after `stream.ready` resolves on the known live stream and before `stream.close()`, add one request:
+```ts
+const refusedDuringStream = await raw("events/", opaque, 503);
+expect(JSON.parse(refusedDuringStream.body).code).toBe("catch-up-timeout");
+```
+This moves the dispatch budget from 31 to 32 and the 503 count from 10 to 11, so it is a deliberate budget decision rather than a free addition.
+
+---
+
+### 4. Resource Event SSE now disagrees with its own JSON representation on the same minimum — Low (documented limitation)
+**Files:** `packages/server/src/transaction-http.ts:528-535`; `transaction-events.test.ts:1538`; `transaction-event-sse.test.ts` D (`beads/a?view=events` / `links/l?view=events` → 500)
+
+**Issue.** `initialScopeSseMinimum` requires `eventRequest.source.kind === "scope"`. For `beads/a?view=events` with an identical matched-context unknown minimum, `Accept: application/json` yields **503 `catch-up-timeout`** (already covered at `transaction-events.test.ts:1538`) while `Accept: text/event-stream` yields **500 `x-bdp-development-limit: minimum-position`**. After this change the Accept header is the only remaining input that changes the refusal class for the same resource and the same tuple. Neither refusal carries `Vary: Accept` (`problem()` and `developmentGap()` set it only for POST, `transaction-http.ts:690-691`); both are `no-store`, so this is a diagnosability issue rather than a cache-correctness one.
+
+**Impact.** Clients negotiating media cannot treat the Event-minimum refusal uniformly. The progress paragraph at `docs/design/transaction-implementation-progress.md:2062` states "Resource Event SSE … remain excluded" but does not record that the exclusion now produces a *divergent* refusal class from the JSON sibling.
+
+**Correction.** Either extend the admission predicate to `source.kind === "bead" | "link"` in a follow-up slice (the store already implements the waitable check generically via `checkCurrentReadMinimum`), or amend the doc paragraph to state the divergence explicitly, e.g. "Resource Event SSE remains excluded and therefore answers a matched-context unknown minimum with the 500 private gap while its JSON sibling refuses with 503."
+
+---
+
+### 5. `admission` is the one `beginEventScan` control with no type validation — Low
+**File:** `packages/server/src/transaction-store.ts:1776-1788`
+
+**Issue.**
+```ts
+if (
+  typeof sourceUrl !== "string" ||
+  (after !== undefined && typeof after !== "string") ||
+  typeof invalidReconnect !== "boolean"
+)
+  throw new TypeError("invalid Event scan controls");
+```
+`admission` is not checked. Any non-`"initial-scope-sse"` value (including `"initial-scope-SSE"` or a typo'd literal from a future caller) silently falls through to the strict path at `:1792-1794`.
+
+**Impact.** Fail-closed, so no security or correctness defect today — but the adjacent validation now has a hole, and a misspelled admission token degrades to a 500 private gap with no diagnostic. `readChanges` (`:1846`) has the same omission, so the change is internally consistent; this is a defense-in-depth gap, not a regression.
+
+**Correction.** Extend the guard:
+```ts
+  typeof invalidReconnect !== "boolean" ||
+  (admission !== undefined && admission !== "initial-scope-sse")
+```
+
+---
+
+### 6. Private admission token is forwarded even when no minimum controls are present — Low
+**File:** `packages/server/src/transaction-http.ts:528-535, 559`
+
+**Issue.** `initialScopeSseMinimum` does not consult `hasMinimumControls(request)`. Every fresh canonical-scope SSE read — including the overwhelmingly common no-minimum case — now carries `"initial-scope-sse"` into `service.beginEvents` and then `owner.beginEventScan`. With `minimum === undefined` the store skips the check block entirely (`transaction-store.ts:1800-1803`), so behavior is unchanged; I confirmed the existing SSE tests (`transaction-event-sse.test.ts:289-348`, `:443-469`, `:497-557`) are unaffected.
+
+**Impact.** The token's reach is broader than its stated meaning ("only the selected minimum-bearing request supplies this provenance"), so any future behavior keyed on it would silently apply to no-minimum reads. The `finite-start-now` seam at `:481-491` has the same shape, so this is a pre-existing pattern.
+
+**Correction.** Append `hasMinimumControls(request)` to the `initialScopeSseMinimum` conjunction, or pass `initialScopeSseMinimum && minimum !== undefined ? "initial-scope-sse" : undefined` at `:559`.
+
+---
+
+### 7. `closeSession`'s exit check relies on non-obvious optional-chain narrowing — Low
+**File:** `apps/bdptest/src/transactional-event-sse-installed.test.ts:1189-1196`
+
+**Issue.**
+```ts
+session.closeEvent?.code !== 0 ||
+session.closeEvent.signal !== null
+```
+The second access is not optional-chained. This compiles only because TypeScript's optional-chain containment narrowing removes `undefined` from `session.closeEvent` in the *false* branch of `x?.code !== 0`, which is the branch the `||` right operand is analyzed in. The semantics are correct (an undefined `closeEvent` makes the first operand true and throws "child normal exit not established").
+
+**Impact.** Reordering the operands, or inserting any statement between them, turns this into a compile error (`'session.closeEvent' is possibly 'undefined'`) rather than a logic change — a maintenance trap in new code that has no historical precedent in this file (`closeEvent` appears only in the new callback: `:1135, 1193, 1341, 1684, 1761`).
+
+**Correction.** Make it explicit:
+```ts
+if (
+  !session.closeEvent ||
+  session.exit.code !== 0 ||
+  session.exit.signal !== null ||
+  session.closeEvent.code !== 0 ||
+  session.closeEvent.signal !== null
+)
+```
+
+---
+
+### 8. Test A emits no observation on failure, unlike B/C/D — Low
+**File:** `packages/server/src/transaction-event-sse.test.ts:1163-1168`
+
+**Issue.** A's `console.log` sits after the `try/finally`, so any failed assertion (inside the `try`, or the earlier `expect(packet.events).toHaveLength(1)` at `:1069`) propagates with no report line. `report-schemas.json` documents this ("emission: success only"), and B/C/D all emit a `failureCount`-bearing report on both paths.
+
+**Impact.** For a validation adapter that expects the five labels in `selection.json.sourceObservationLabels`, a failed A is indistinguishable from "A never ran". A also has no `failureCount` field at all, so the schema's contract cannot express partial success.
+
+**Correction.** Either add a `failures: unknown[]` collector and emit `{observation, reads, seedCommits, cases, failureCount}` from a `finally` (matching B/C/D), or record in `report-schemas.json` that a missing `scope-event-sse-minimum-owner` line must be treated as a failure, not as an unrun case.
+
+---
+
+### 9. Stale `dist/` makes D silently test the old behavior locally — Informational
+**File:** `packages/server/src/transaction-event-sse.test.ts:190-192`
+
+`runtimeFixture` loads `../dist/transaction-runtime.js`, so D (and the modified `transaction-events.test.ts:1399-1401`) exercise **compiled** code, while A/B/C use src (`./transaction-store.js`, `./transaction-service.js`, `./transaction-consistency.js` — confirmed same-instance, so `instanceof TransactionMinimumUnproved` / `ScopeServerOperationAbortedError` resolve correctly). CI is safe: `ci.yml:65-66` runs `pnpm build` before `pnpm test`. A local `vitest run` against a pre-patch `dist/` would show D's new SSE pair as 500 and the changed `transaction-events.test.ts` pair as 500, i.e. a false failure attributable to staleness rather than the change. Worth stating in the eventual validation instructions.
+
+---
+
+### 10. Doc paragraph 2060's unqualified "SSE" exclusion is now only disambiguated downstream — Informational
+**File:** `docs/design/transaction-implementation-progress.md:2060, 2062`
+
+I confirmed `:2060` is byte-unchanged and still reads "Direct after/genesis, retained continuations, SSE and foreign-context opaque minima remain outside this extension" with no qualifier on "SSE". `:2062` supplies the disambiguation ("does not supersede the preceding finite changefeed start-now paragraph's changefeed SSE exclusion"). Under the append-only policy and the root F8 disposition this is the correct mechanism, but a reader who stops at `:2060` now draws a false conclusion. No change requested; recorded so the next appended paragraph does not compound it.
+
+---
+
+## Verified correct (no finding)
+
+I traced each focus item to the actual code rather than the prose:
+
+- **Negotiated-fresh gating.** `transaction-http.ts:528-535` requires `media === "sse"`, `source.kind === "scope"`, canonical URL, `after === undefined`, `!url.searchParams.has("after")`, `!headers.has("last-event-id")`, `fields.length === 0`. `fields` is hoisted ahead of the `minimum` computation with no shadowing of the changefeed-branch `fields` at `:473`. Repeated `Last-Event-ID` sets `invalidReconnect` and keeps the strict path; the store returns `{kind:"unsupported"}` before the reconnect `TransactionEventParameterError` (`:1798` precedes `:1804`), producing D's 500.
+- **Synchronous capture before lifecycle/wait.** `transaction-service.ts:547-557` snapshots before `run()`; `snapshotCurrentReadMinimum` (`transaction-consistency.ts:33-56`) freezes a 3-key data-only copy, so B's post-`waitEntered` mutation of `f.minimum` cannot reach the retry. Retry recapture of `readContext()` is per-attempt inside `enter` (`transaction-store.ts:1799`), which is what yields B's `["pos-1","pos-2","pos-2"]`.
+- **Owner-entry context and retry.** `checkCurrentReadMinimum(minimum, context, true)` → `Unproved` for token-valid/unparseable positions, `Unsupported` for epoch/view mismatch, delegating to `checkTransactionMinimum` → `behind` otherwise. `waitForTransactionMinimum` (`:160-178`) retries only `Unproved` and `behind`, never renews the deadline, and checks `signal.aborted` at the top of each iteration — which is exactly why C's post-latch iteration throws `ScopeServerOperationAbortedError`.
+- **Strict paths.** default (no admission), `after`-bearing, `invalidReconnect`, bead, link all reach `snapshotTransactionMinimum` and throw `TypeError("unsupported minimum tuple")` **before** `enter()`, which is why A's rows 7–11 report zero group preparations.
+- **Missing/malformed ordering.** `eventSourceKnown` → `missing` precedes the `"unsupported"` sentinel and the minimum check (`:1796-1803`); a malformed tuple throws at snapshot time, before `enter`. A's `missing` case correctly returns `{kind:"missing", context}` with `pos-1`.
+- **No packet/slot or conditional bypass.** `eventPacket` (the only `eventScans.set` site, `:796`) runs after the minimum check; `streamResponse`/`conditionalReadStatus` run after `await service.beginEvents`. `applyReadHttpSemantics` (`read-http.ts:10-39`) applies conditionals only to 200-JSON/204, so a 503 problem is never rewritten to 304/412 — D's `opaque + If-None-Match: *` and `opaque + If-Match: "wrong"` 503s are sound. Retries do not leak scans (the throw precedes `eventPacket`), and `eventScans` is a `WeakMap`.
+- **D's dispatch and status arithmetic.** I recounted independently: 4 + 1 + 12 (six pairs) + 13 + 1 = 31, and `{200:6, 503:10, 500:8, 400:3, 404:1, 401:1, 304:1, 412:1}` = 31. The a/b/l seed yields exactly five Events in group `pos-1` with types `[created, created, created, linked, linked]` and subjects `[beads/a, beads/b, links/l, links/l, links/l]` — confirmed against `transaction-events.ts:250-258` (linked events are subject-on-link, endpoint-discriminated) and `transaction-store.test.ts:125-155`. With `receiptMaximumItems: 2` the pages are 2+2+1. The positive stream proves `ready`, status, `content-type`/`cache-control`, absent `etag`/`content-length`, full context headers, all five exact `id:`/`event:`/`data:` frames with a negative control, live liveness (`!aborted`, `!destroyed`, `elapsedMs < 5000`) **before** the intentional close, and byte-identical frames after drain.
+- **Legacy regression surface.** The `transaction-events.test.ts:1530-1536` edit changes only the canonical Scope SSE pair to 503/`catch-up-timeout`/observed; `calls` still totals 32 (1 + 1 + 15 pairs × 2) and the report schema is untouched. I checked every other minimum-bearing case in that callback and every `BDP-Minimum-Scope-Position` site across `packages/server/src` (changefeed routes at `transaction-sse.test.ts:408/603/901`, the `beads/` receiving tests at `transaction-http.test.ts:4653/4838/4910`, the JSON Event cases at `transaction-events.test.ts:467-546`): none is reachable by the new predicate.
+- **Installed E.** Six dispatches capped by `beginRequest`'s `toBeLessThan(6)`; five finite responses with schema validation, exact bodies, `bodyOctets === byteLength(bodyText)`, `x-bdp-development: non-attesting`, full context on every response including both 503s, and `HEAD` `content-length` equal to the GET — which holds because `applyReadHttpSemantics` sets it from `stringifyJsonValue(body)` and `deliver` (`transaction-runtime.ts:88-96`) does not overwrite an existing value when the body is already stripped. The known HEAD SSE legitimately has neither `content-length` nor `transfer-encoding` (Node suppresses framing when `_hasBody` is false), and the exact executor's `Connection: close` (`http-executor.ts:725`) is what lets a HEAD exchange terminate at all, since `isFramedResponseComplete` returns `false` for HEAD (`:1091`). `Host: reference.invalid` is required and asserted because the installed runtime is `authorityMode: "canonical"` (`transaction-runtime.ts:133`, `transaction-installed-configuration.ts:63`), while the in-process fixture correctly uses the listener host (default `"listener"`, `transaction-runtime-configuration.ts:221`). The independently recomputed `expectedAuthentication`/`expectedPolicy`/`runtimeConfigurationIdentity` match the real construction at `transaction-runtime-configuration.ts:240-254, 373-390`, including association key order under `stringifyJsonValue`. One 10 s envelope starts at the intentional stream stop (`cleanupEnd`) and covers the child drain; the `finally` aborts **before** closing sessions on any failure; `rmSync` runs only when `failures.length === 0`; `safeFailureMessage` redacts the token from `message` and `name`, and no stack, cause or nested AggregateError text is serialized.
+- **`report-schemas.json` vs. code.** Field lists match the four new `console.log` payloads exactly, and every `expected` entry is derivable from an emitted field (`statuses`/`pageEventCounts`/`positiveFrames` from `records[].status`, `baselinePages[].eventCount`, `positive.framesAfterDrain`). Omission behavior is real: `finalContext`, `positive`, `sse`, `streamAtReport` and `binding` are `undefined` on early failure and `JSON.stringify` drops them. A's `measurementLimit` is accurate — the spy counts `/FROM groups/` **preparations** only, so the rows-2-to-13 zeros prove no group-table statement preparation, not zero SQL (`readContext` → `metadata()` prepares `FROM metadata`, `eventSourceKnown` prepares `FROM identities`; both are uncounted by design). The only inaccuracy I found is the A failure-path asymmetry in Finding 8.
+- **Typing/lifecycle spot checks.** `snapshotCurrentReadMinimum`/`checkCurrentReadMinimum` were already imported in both production files (used by `readEvents` at `:1692/1705`); `currentReadMinimumHeaders` already imported in `transaction-http.ts:17`. All three changed test files **are** typechecked (`tsconfig.check.json` includes `apps/*/src/**/*.ts` and `packages/*/src/**/*.ts`, and `@bdp/server/testing` maps to `packages/server/test-support/testing.ts:429`). Under `exactOptionalPropertyTypes` the conditional spreads (`...("context" in result ? {context} : {})`), the `pid?: number | undefined` widenings, and the `closing ??=` narrowings are sound; `noUnusedLocals`/`noUnusedParameters` are satisfied. Store and runtime `close()` are both idempotent (`transaction-store.ts:2359-2367`, `transaction-runtime.ts:375-398`), so D's explicit `f.runtime.close()` plus the `afterEach` cleanup, and B/C's service-owned owner close plus `ownerFixture`'s cleanup, are safe. `service.close()` awaits `active` before `owner.close()`, which is what makes C's held-wait-then-close ordering observable.

@@ -1,0 +1,80 @@
+apps/bdptest/src/transactional-event-sse-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1598 1598 │       expect(recorder.headers["etag"]).toBeUndefined();
+    1599 1599 │       context(recorder.headers);
+    1600      │ - ····await·bounded(recorder.until(()·=>·idFrames(recorder).length·>=·1),·workEnd,·"SSE·Event");
+         1600 │ + ····await·bounded(
+         1601 │ + ······recorder.until(()·=>·idFrames(recorder).length·>=·1),
+         1602 │ + ······workEnd,
+         1603 │ + ······"SSE·Event",
+         1604 │ + ····);
+    1601 1605 │       const beforeClose = [...idFrames(recorder)];
+    1602 1606 │       expect(beforeClose).toHaveLength(1);
+  
+
+packages/server/src/transaction-event-sse.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1034 1034 │       preparations = 0;
+    1035 1035 │       try {
+    1036      │ - ······const·result·=·f.owner.beginEventScan(
+    1037      │ - ········sourceUrl,
+    1038      │ - ········after,
+    1039      │ - ········minimum,
+    1040      │ - ········invalidReconnect,
+    1041      │ - ········admission,
+    1042      │ - ······);
+         1036 │ + ······const·result·=·f.owner.beginEventScan(sourceUrl,·after,·minimum,·invalidReconnect,·admission);
+    1043 1037 │         cases.push({
+    1044 1038 │           label,
+    ········· │ 
+    1172 1166 │   async function scopeSseMinimumService() {
+    1173 1167 │     const { createTransactionService } = await import("./transaction-service.js");
+    1174      │ - ··const·{·TransactionMinimumUnproved,·TransactionMinimumFailure·}·=
+    1175      │ - ····await·import("./transaction-consistency.js");
+         1168 │ + ··const·{·TransactionMinimumUnproved,·TransactionMinimumFailure·}·=·await·import(
+         1169 │ + ····"./transaction-consistency.js"
+         1170 │ + ··);
+    1176 1171 │     const f = ownerFixture();
+    1177 1172 │     let seedCommits = 0;
+    ········· │ 
+    1520 1515 │   });
+    1521 1516 │   
+    1522      │ - 
+    1523 1517 │   it("serves initial Scope Event SSE opaque minima before conditional admission", async () => {
+    1524 1518 │     const f = await runtimeFixture();
+    ········· │ 
+    1623 1617 │             expect(JSON.parse(stream.body)).toMatchObject({
+    1624 1618 │               status,
+    1625      │ - ············code:·status·===·401·?·"unauthenticated"·:
+    1626      │ - ··············target·===·"events/?after="·?·"invalid-parameter"·:·"malformed-request",
+         1619 │ + ············code:
+         1620 │ + ··············status·===·401
+         1621 │ + ················?·"unauthenticated"
+         1622 │ + ················:·target·===·"events/?after="
+         1623 │ + ··················?·"invalid-parameter"
+         1624 │ + ··················:·"malformed-request",
+    1627 1625 │             });
+    1628 1626 │         } else {
+    ········· │ 
+    1717 1715 │       ]);
+    1718 1716 │       for (const event of baseline)
+    1719      │ - ······expect(event).toMatchObject({·source:·`${scope}events/`,·transaction:·seed.body.transaction·});
+         1717 │ + ······expect(event).toMatchObject({
+         1718 │ + ········source:·`${scope}events/`,
+         1719 │ + ········transaction:·seed.body.transaction,
+         1720 │ + ······});
+    1720 1721 │       expect(baseline[3]!.data).toMatchObject({
+    1721 1722 │         endpoint: "source",
+  
+
+Checked 6 files in 15ms. No fixes applied.
+Found 2 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
