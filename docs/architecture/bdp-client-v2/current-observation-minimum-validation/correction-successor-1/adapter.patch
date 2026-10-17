@@ -1,0 +1,500 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/adaptations.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/adaptations.json
+@@ -2,20 +2,20 @@
+   "sourceBindingFinalized": true,
+   "helperImplementationFinalized": true,
+   "executionAuthorized": false,
+-  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
++  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+   "sourceCandidate": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
++  "authorSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1",
+   "changes": [
+-    "Candidate checkout/HEAD/environment/temp prefixes and all path/output mappings",
+-    "Exact97 source callback/file mapping,15 TypeScript format/lint targets",
+-    "Replace SSE-specific auditor with actual current-observation9 new/28 legacy reports and separate installed22/37 matrices",
+-    "Fresh bootstrap only; base/tool/dependency/consumer actual pins remain unbound",
+-    "Separate four required checks bound to this source/build; no historical evidence generation"
++    "Fresh sibling output paths and exact corrected679 source map/full patch",
++    "D schema and explicit audit postCloseProbes1/failureCount0/directoryAbsent/observed closed+equality",
++    "Update source finding attribution from pending12 to corrected8; no pass claim"
+   ],
+   "unchanged": [
+-    "120s/TERM115/no-retry/process supervision",
+-    "Build-before-source chain",
+-    "Archive member/source verification and contained consumer dependency/payload hashing",
+-    "Root measured lock/proof gates before external execution"
++    "97 exact source cases and9 new reports plus separately attributed28 legacy reports",
++    "historical22 and new37 title-filtered installed callbacks, unchanged sibling5 fullCI only",
++    "Fresh2bootstrap+19 stages; no reuse of old run records",
++    "120s/TERM115/no retries; build before source collection",
++    "Package/consumer identity and root lock/proof acceptance gates"
+   ],
+-  "knownSourceFinding": "Pending Link500 aggregate correction; no source editing authorized by this preparation"
++  "actualToolsBuildConsumerPins": null
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit-expectations.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit-expectations.json
+@@ -1,6 +1,6 @@
+ {
+   "finalized": true,
+-  "reportSchemasSha256": "c08334d504d8fd0bef23866bea32d7af1832475676b0a46952115ddcc7e83c12",
++  "reportSchemasSha256": "4aa798e073074fe010a370ee1ea0075bd60b737a37c4aad942c04d034c6ec4f9",
+   "newSourceLabels": {
+     "current-observation-service": 1,
+     "current-observation-nondisclosure": 1,
+@@ -33,7 +33,7 @@
+     "receipt-root-minimum-http": 1
+   },
+   "legacyAttribution": "Fresh selected legacy callbacks; inherited counters/report schemas remain distinct. Actual full callback semantic assertions, not these metadata counts, establish behavior.",
+-  "knownSourceFinding": "Link HTTP500 aggregate still12 in frozen draft although rowtable implies8; no source fix/validation approval in this packet.",
++  "knownSourceFinding": "Original Link500 aggregate12 corrected to8 in frozen correction successor1; unvalidated source correction, not runtime success.",
+   "operationTargets": {
+     "createBead": "create-bead",
+     "updateBead": "update-bead",
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit.py
+@@ -110,6 +110,7 @@
+   require([r['outcome'] for r in b['rows']]==['missing','catch-up-timeout','cursor-expired','foreign-view','missing','missing','missing','unauthenticated','malformed','missing','catch-up-timeout','foreign-view'],'B outcomes')
+   require(sorted(o['surface'] for o in by['current-observation-drain'])==sorted(['type','types','incident','page','discovery']),'Five distinct drains')
+   d=by['current-observation-page-retention'][0];require([r['outcome'] for r in d['rows']]==['page','unproved','unproved','cursor-expired','foreign-view','missing','missing','unproved'],'D actual retained outcomes')
++  scalars(d,{'postCloseProbes':1,'failureCount':0,'directoryAbsent':True,'closed':True,'payloadUnchanged':True})
+   for r in d['rows']:context(r['context'])
+   e=by['current-observation-http'][0];wire37(e,False);directory_absent(e['directory'],'bdp-current-observation-http-')
+   for label in ex['legacyLabels']:
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/commands.json
+@@ -43,10 +43,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-workspace-tools": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -147,10 +147,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -178,7 +178,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ omitted\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ undefined\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ null\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ number\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ false\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ empty\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ method\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ accessor\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ inherited\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ proxy\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ revoked\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ projects\\ immutable\\ current\\ Types\\ and\\ exact\\ incident\\ directions\\ including\\ self\\-Link\\ deduplication|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ types\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ incident\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 0\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 1\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 2\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 0|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 1|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 2|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|current\\ alias\\ minimum\\ subset\\ preserves\\ direct\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ preserves\\ service\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ conditions\\ alias\\ mapping\\ and\\ context\\ in\\ one\\ entry\\ without\\ revising\\ either\\ target|current\\ alias\\ minimum\\ subset\\ rechecks\\ a\\ repointed\\ alias\\ after\\ waiting\\ for\\ a\\ real\\ Resource\\ effect|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|current\\ alias\\ minimum\\ subset\\ forwards\\ ordinary\\ and\\ minimum\\ Request\\ aborts\\ before\\ SQL\\ and\\ drains\\ an\\ admitted\\ alias\\ wait|current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|current\\ alias\\ minimum\\ subset\\ captures\\ unknown\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ captures\\ pos\\-01\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ absent\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ deleted\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ dangling\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ hidden\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ returns\\ current\\ alias\\ absence\\ when\\ an\\ admitted\\ opaque\\ wait\\ loses\\ its\\ mapping|current\\ alias\\ minimum\\ subset\\ drains\\ an\\ aborted\\ opaque\\ alias\\ wait\\ before\\ releasing\\ its\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ incident\\-Link\\ opaque\\ exclusions\\ beside\\ alias\\ minima|current\\ minimum\\ perform\\ receiving\\ preserves\\ a\\ direct\\ non\\-enumerable\\ pre\\-aborted\\ signal\\ before\\ owner\\ entry|current\\ minimum\\ perform\\ receiving\\ preserves\\ direct\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ minimum\\ perform\\ receiving\\ preserves\\ service\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|internal\\ discovery\\ owner\\ observation\\ copies\\ exactly\\ one\\ owner\\ entry\\ and\\ parses\\ only\\ after\\ releasing\\ it|internal\\ discovery\\ owner\\ observation\\ keeps\\ entry\\ refusal\\ distinct\\ from\\ structural\\ validation\\ failure|internal\\ discovery\\ owner\\ observation\\ captures\\ nested\\ limits\\ once\\ and\\ enforces\\ the\\ captured\\ values\\ after\\ caller\\ mutation|internal\\ discovery\\ owner\\ observation\\ keeps\\ the\\ replay\\ position\\ floor\\ and\\ complete\\ genesis\\ groups\\ through\\ receipt\\ expiry\\ and\\ reopen|internal\\ discovery\\ minimum\\ observation\\ preserves\\ synchronous\\ no\\-minimum\\ timing\\ and\\ ignores\\ its\\ signal\\ and\\ wait\\ policy|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-1\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-0\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ genesis\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ captures\\ immutable\\ minimum\\ controls\\ and\\ releases\\ the\\ owner\\ during\\ controlled\\ catch\\-up|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ scopeEpoch\\ refusal|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ authorizationView\\ refusal|internal\\ discovery\\ minimum\\ observation\\ times\\ out\\ after\\ two\\ controlled\\ attempts\\ without\\ assembly\\ and\\ leaves\\ the\\ owner\\ reusable|internal\\ discovery\\ minimum\\ observation\\ rejects\\ pre\\-abort\\ before\\ entry\\ and\\ pending\\ abort\\ before\\ retry|internal\\ discovery\\ minimum\\ observation\\ drains\\ an\\ admitted\\ discovery\\ wait\\ before\\ closing\\ the\\ owner|internal\\ discovery\\ minimum\\ observation\\ keeps\\ malformed\\ input,\\ entry\\ refusal,\\ provider\\ and\\ parser\\ failures\\ distinct|captures\\ lexical\\ current\\ minimums\\ without\\ widening\\ strict\\ consumers\\ or\\ invoking\\ accessors|waits\\ for\\ unproved\\ current\\ eligibility\\ with\\ one\\ deadline\\ and\\ preserves\\ terminal\\ failures|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|drains\\ an\\ admitted\\ unknown\\ minimum\\ to\\ timeout\\ and\\ rejects\\ new\\ reads\\ while\\ closing|records\\ one\\ atomic\\ page\\ chain,\\ retains\\ original\\ postimages\\ and\\ all\\ tail\\ allocations\\ through\\ expiry|captures\\ immutable\\ current\\ context\\ for\\ nondisclosable\\ receipt\\ pages\\ before\\ minimum\\ checks|checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry|gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Link\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences|rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|waits\\ for\\ lexical\\ current\\ observations\\ and\\ preserves\\ captured\\ tuples\\ across\\ real\\ progress|orders\\ Type\\ refusal\\ and\\ receipt\\ page\\ nondisclosure\\ before\\ projection|drains\\ lexical\\ current\\ observation\\ type\\ before\\ close|drains\\ lexical\\ current\\ observation\\ types\\ before\\ close|drains\\ lexical\\ current\\ observation\\ incident\\ before\\ close|drains\\ lexical\\ current\\ observation\\ page\\ before\\ close|drains\\ lexical\\ current\\ observation\\ discovery\\ before\\ close|preserves\\ receipt\\ page\\ detail\\ when\\ lexical\\ eligibility\\ is\\ unproved|serves\\ current\\ observation\\ minimums\\ with\\ actual\\ issued\\ pages\\ and\\ HTTP\\ parity)$"
+       ],
+@@ -398,10 +398,10 @@
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -425,10 +425,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -447,7 +447,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -465,7 +465,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -475,10 +475,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -489,10 +489,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -503,7 +503,7 @@
+       "termAfterSeconds": 115
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -521,10 +521,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -544,7 +544,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/receiving-history-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run/receiving-history-external.results.json",
+         "--testNamePattern",
+         "^rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure$"
+       ],
+@@ -575,10 +575,10 @@
+       }
+     },
+     "review-receiving-history-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit.py",
+         "history"
+       ],
+       "outerSeconds": 120,
+@@ -598,7 +598,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/current-observation-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run/current-observation-external.results.json",
+         "--testNamePattern",
+         "^observes\\ installed\\ current\\ observation\\ minima\\ within37requests$"
+       ],
+@@ -629,10 +629,10 @@
+       }
+     },
+     "review-current-observation-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/audit.py",
+         "current"
+       ],
+       "outerSeconds": 120,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/reference-pins.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/reference-pins.json
+@@ -19,5 +19,17 @@
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/run.py": "03f75db503322f86cea7534a39fad1616baa9e36db2ad6400895b2fc10ed762e",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/commands.json": "df1ff18845f5df9ca0eeab3be7204fbb49c79ec976809cc5a85d88462f23f589",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/report.md": "1ca19a63627f0d505617f68e228657fe3259b47e77ebdf0f78a3f0a4e65762d6",
+-  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/plan.md": "5104f3d4c4154c70f8ce4417e82d5cffbdb7c166b7fa59c5d50bbb9c3d851fd2"
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/plan.md": "5104f3d4c4154c70f8ce4417e82d5cffbdb7c166b7fa59c5d50bbb9c3d851fd2",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/index.json": "f2c69a8b00c8ddcfd765fd4b6368cc7ec787661a614caaa23b02a3c3b5ad7d7c",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/source-binding.json": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/draft.patch": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/correction.patch": "616fe4a65fbe9576ac299ba9f727a725030ed8b3266bf9178afeee0658f935ad",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/selection.json": "6db62011c00a9bede399241e088e4881746bc8a464e0deb1dc91d00d0c2803a0",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/workload.json": "33386d6740d9fc2bee34a86469b16c2ecf8e295f8202159047c8d20fa7c20687",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/report-schemas.json": "4aa798e073074fe010a370ee1ea0075bd60b737a37c4aad942c04d034c6ec4f9",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/preservation.json": "38ae2b9663ce14cab9b203313223556c5bd85cdbaa853193c411b03bc6605c49",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/report.md": "803f6b3aa7c4bf908643e778aa072a692f2762f41eb96cac090911fda648516c",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/root-author-release.json": "d17818becf8a1d36b1280ba45fe4f381616095886d04be240a8c3665d4c3b051",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/preparation-index.json": "f22af4c1c9e70bb4ca94170ffefdf4f003d9a9546ea2de0eba74890c8589e195",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/preparation-index.json": "a3b693805d808f0ce12886c843031a80b5f016366c19d1a188c99e717d43b224"
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/report-schemas.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/report-schemas.json
+@@ -488,7 +488,10 @@
+           "offlineInspections",
+           "rows",
+           "payloadUnchanged",
+-          "closed"
++          "closed",
++          "postCloseProbes",
++          "directoryAbsent",
++          "failureCount"
+         ],
+         "additionalProperties": false,
+         "properties": {
+@@ -552,6 +555,17 @@
+           },
+           "closed": {
+             "type": "boolean"
++          },
++          "postCloseProbes": {
++            "type": "integer",
++            "minimum": 0
++          },
++          "directoryAbsent": {
++            "type": "boolean"
++          },
++          "failureCount": {
++            "type": "integer",
++            "minimum": 0
+           }
+         }
+       },
+@@ -561,7 +575,10 @@
+         "offlineInspections": 2,
+         "rowsLength": 8,
+         "payloadUnchanged": true,
+-        "closed": true
++        "closed": true,
++        "postCloseProbes": 1,
++        "directoryAbsent": true,
++        "failureCount": 0
+       }
+     },
+     "current-observation-http": {
+@@ -982,7 +999,7 @@
+   "legacy": "Existing selected reports remain separately attributed. Do not require only9 total source JSON reports: selected historical callbacks emit their existing observations. Historical installed22 remains separate from new37; sibling5 unselected.",
+   "limitations": [
+     "B row outcomes are asserted classifications; actual attempts, contexts and wait/clock counts are separately recorded.",
+-    "D payloadUnchanged/closed logged only after synchronous actual comparison/closure succeeds.",
++    "D emits a handled success/failure report using actual inventories, closure probe and directory observation; partial failure may have incomplete counts and fails success audit.",
+     "Wire body/schema/content/header oracles execute inside callbacks; retained safe metadata does not reproduce full bodies.",
+     "Standalone source E does not report raw socket close inventory; runtime close is observed. Installed F records ClientRequest close plus child close event.",
+     "No measurement has run; these are desired success constraints derived from drafted source."
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/report.md
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/report.md
+@@ -1,17 +1,11 @@
+-# CLOSED current-observation validation adapters
++# CLOSED correction-successor1 validation
+ 
+-Prepared against author binding d81b271b / full patch194419e1 / author index1d2dcf86, on isolated current-observation HEADd9c3eb9. The normalized source binding retains all679 hashes, exact16 dirty paths, HEAD/tree/branch, the full binary diff and before/after owned hashes. No candidate source or author artifact changed. No helper was imported or executed, and no formatter/install/build/test/runtime was run.
++Separate preparation against actual corrected author9c75bdd9/fullpatchca59dc9f, Dschema4aa798e0 and workload33386d67. Original implementation and required-check packets are preserved byte-for-byte. Source remains frozen and unqualified; original CODE timeout is not approval.
+ 
+-This is the accepted validation plan's concrete adaptation, not execution authority. Fresh2 bootstrap stages precede19 fresh stages; no predecessor result is reused. The copied bounded supervisor retains120s outer/TERM115, process-group sampling/cleanup, no retry, unique/private/tmp and per-stage start/log/process/exit records. Any failed stage stops dependent work. Build and bind-build precede collection of all selected source modules, including dynamic emitted imports.
++Fresh2 bootstrap plus19 fresh stages. No old record, dependency install, tool capture, static check, build or result is reused. Existing supervision120s/TERM115/no retries and build-before-source collection are unchanged. Exact97 source cases/9 new observations plus28 separately attributed legacy reports are unchanged. Historical22/new37 installed callbacks remain separately supervised with immediate audits; sibling5 remains fullCI only.
+ 
+-The actual static selection expands88 approved legacy cases plus9 new cases=97 across9 source modules. New9 report records and28 separately labeled legacy records are audited separately; their labels/counters are not a combined legacy traffic claim. The source test's own assertions remain responsible for full bodies, exact failure classes/reference identities, retention/state comparison and streams; the external auditor independently checks selected results/files, actual report identities, current contexts/counts/lifecycle and wire matrices. It does not count a SQL preparation as an execution, promise settlement as socket drainage, or source diagnostics as profile qualification.
++Adapter changes are output paths, corrected679 source/fullpatch/owned hashes, copied actual authored D schema/workload and one explicit D scalar check: postCloseProbes1, failureCount0, directoryAbsenttrue, closedtrue, payloadUnchangedtrue. D still8 page calls/two opens/two offline inspections; its ownership probe is separate. The source count assertion12→8 is acknowledged only as unvalidated code, not a pass. Other auditor semantics, package mechanics and stage commands are unchanged except path rebinding.
+ 
+-Installed historical22 and new37 use separate anchored-title single-callback attempts with immediate audits against independently verified fresh archives/consumer. The unchanged sibling5 remains excluded here and belongs to later exact-head full CI. The new37 auditor verifies exact ordered label/method/route/status, actual issued canonical page, current pos3/context, GET/HEAD body/length/metadata parity and503 Retry-After1. The historical22 auditor retains its original shape and checks the amended page503 alongside original receiving/nondisclosure/status controls. It does not demand child-close/active-request fields the historical report never emitted. New F requires its own actual child close event, zero active/pending counts and owned directory removal. Both require matching entry/payload/fixture/operation binding and sampled child PID.
++All release flags false and approvedStages empty. Actual base tools/workspace tools/build/consumer lock/proof/inventory remain null until measured and root accepted. Copied base-tools.candidate contains predecessor expectations only. No helper import, install, format, test, build, runtime or review launch occurred. Root/native preparation review and changed CODE verdict precede any staged release.
+ 
+-The staged source/build/archive/consumer chain is unchanged from the reviewed predecessor. The actual consumer lock is root-pinned before installation proof; proof/inventory are accepted before any external callback. The base-tools candidate file contains predecessor path/hash expectations only. Current base-tool, workspace dependency/tool, consumer lock/proof/inventory and required-check build references remain null in gates until measured and accepted; this preparation fabricates no actual tools or artifact identities.
+-
+-A separate sibling required-checks packet preserves four existing checks: boundaries,7 preflight cases, complete package smoke and sealed historical Read evidence verification. It resolves the same fresh candidate build/tools, uses independent fresh attempts and preserves the historical artifact/runHead identity. Package smoke remains non-attesting and evidence verification does not regenerate or relabel historical evidence.
+-
+-Known source finding remains pending CODE disposition: Link Event HTTP still asserts500x12 although its amended foreign pairs imply500x8. This preparation neither edits that frozen source nor treats an anticipated failure as a pass. No stages are approved; every release flag is false and approvedStages is empty. Native/root helper closure and actual CODE disposition precede root staged releases. Root must handle any source successor with fresh binding and preserved predecessor evidence.
+-
+-Launch syntax after a future explicit release only: pinned Python `implementation/run.py final STAGE`, or sibling `required-checks/run.py final STAGE`, through the session guard. Do not invoke now.
++Separate required-checks-correction-successor-1 preserves boundaries, seven preflight cases, package smoke and historical Read evidence with fresh attempts and the same candidate build. Historical evidence remains historical, not a current full-profile claim.
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/root-disposition.pending.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/root-disposition.pending.json
+@@ -1,8 +1,8 @@
+ {
+   "accepted": false,
+-  "sourceBindingSha256": "0c6c47c5aafb0b2e0f9b9f1f879037c32159cecea02d963ce05932346a3a50b4",
++  "sourceBindingSha256": "693b740ecbd231dd50a76ab6110ec602975167d9eb5f117b104dd755dd1fa203",
+   "dependencyInstallAuthorized": false,
+   "staticValidationAuthorized": false,
+   "runtimeValidationAuthorized": false,
+-  "reason": "Native/Claude CODE and root measured preparation acceptance pending."
++  "reason": "Changed successor requires native closure, complete actual CODE disposition and root staged release; original CODE timeout is not approval."
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/source-binding.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/source-binding.json
+@@ -137,7 +137,7 @@
+     "docs/design/startup-configuration.md": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+     "docs/design/transaction-event-review-closure.md": "905b4d8ee7210c8d82c6fc6bdb4f40fb34b4d33c16888186ce9f7d8088fd51dc",
+     "docs/design/transaction-harness-review-closure.md": "dfac3c425e603b324c508a8aeee236d1dad664667bd10a2f05f268962407b646",
+-    "docs/design/transaction-implementation-progress.md": "36309c8dbf1b5ae99392da6c2585f6375bf2dc65fe41bddedcad4276bf16e53b",
++    "docs/design/transaction-implementation-progress.md": "08f9040e3feee9961d7b72fcb6cf85f09d02e0699e7e0dd0d6306d38e61549d8",
+     "docs/design/transaction-snapshot-core-review-closure.md": "fd0e88da435bf90fd8e1c97bb6c031ef9f7e765bf28643e5b5ce6c29e52726c5",
+     "docs/design/transaction-snapshot-installed-observations.md": "bfc3b9095c8f613ebfcc062a884a2f8bb2df628d3f43734d39ebde15f64b61f6",
+     "docs/design/transaction-snapshot-serving-progress.md": "043f9585580bbbc0ef4835aa747810129aa14bcf8d0086c4744ac0b903912527",
+@@ -437,9 +437,9 @@
+     "packages/server/src/transaction-discovery.test.ts": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+     "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+     "packages/server/src/transaction-event-sse.test.ts": "7be697d50e48937f6f2fbb910f74b071730b552dac1202ee2d50c7a8632b6a22",
+-    "packages/server/src/transaction-events.test.ts": "e9a9897943eae8fe68a3db697a0ecb229ae47343fb87b0129b15b36705b46694",
++    "packages/server/src/transaction-events.test.ts": "73610525cba9c29a57ec0d3e654f5e30160b2520725f7b6dfe532ae7dc325cc1",
+     "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+-    "packages/server/src/transaction-http.test.ts": "d5bafae5d66dcd29f489c4e9ec9f2cfdd7940c86cc06fe378ddb1a69446a3370",
++    "packages/server/src/transaction-http.test.ts": "1fe199e7f3d4830065084b88d1e23a34679db95c94394436ac01cf1ad8c49f87",
+     "packages/server/src/transaction-http.ts": "6d570df85e21526c59ad84115d0bbf9fb7b1d1158efe68850fad84d9fa57ee42",
+     "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+     "packages/server/src/transaction-installed-contracts.test.ts": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+@@ -449,8 +449,8 @@
+     "packages/server/src/transaction-materialization.test.ts": "9a2ce6b1a3a461fbede11ece36566368b1e5f1c034c550a2593ac93a3ef79096",
+     "packages/server/src/transaction-owned.test.ts": "48ada80b0868ef95f5bb1cf5f7489bafca4c3aab37883feb1a2bbe7067d3e58b",
+     "packages/server/src/transaction-read.test.ts": "b9799ade1a6b2bd5b77ebcaefe80886f7526825e43cf4fc94e3ac227a528d208",
+-    "packages/server/src/transaction-read.ts": "c4cc1011af7afcff940110fb0ce7b49e80a663dd89120ff9ec098892b57f2260",
+-    "packages/server/src/transaction-receipt-pages.test.ts": "b470058499042424805567b9ea74eadc3320b2807e4bc8a0118b0c93996e1f05",
++    "packages/server/src/transaction-read.ts": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
++    "packages/server/src/transaction-receipt-pages.test.ts": "654b827928a95277395e5d382fa3f083860b72c2a4650b9f0ed85a3343e86219",
+     "packages/server/src/transaction-recovery.test.ts": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+     "packages/server/src/transaction-runtime-configuration.test.ts": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+     "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+@@ -461,7 +461,7 @@
+     "packages/server/src/transaction-sequence-alias.test.ts": "5e819d7746238003bcabd791d5c6c08abccfcd5db12bd256cc99781078795ff4",
+     "packages/server/src/transaction-sequence.test.ts": "31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170",
+     "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+-    "packages/server/src/transaction-service.test.ts": "2433b3b324c990be6cd2228b72505cc2c9dcdaa08952265a1f1ca3acd68fa1ec",
++    "packages/server/src/transaction-service.test.ts": "bf2e6945a9162e3127dd5e0e3e0193d928c541849cf283f2791e7b6e177459dd",
+     "packages/server/src/transaction-service.ts": "1eea06b33d70585de2bc1d9ffc05772f787d62616b50e119a574d145c344ac6c",
+     "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+     "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+@@ -709,7 +709,7 @@
+     },
+     "packages/server/src/transaction-read.ts": {
+       "beforeSha256": "dd1ce54966c092ace3164c54a2911f0231b48276f10d024453e33ab4541c659c",
+-      "afterSha256": "c4cc1011af7afcff940110fb0ce7b49e80a663dd89120ff9ec098892b57f2260"
++      "afterSha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683"
+     },
+     "packages/server/src/transaction-http.ts": {
+       "beforeSha256": "6ba85bc270f0fd5f81c22b563ad776bb1ee939445b81f1647c9d6baec2a4fc33",
+@@ -733,15 +733,15 @@
+     },
+     "packages/server/src/transaction-http.test.ts": {
+       "beforeSha256": "05f9be15d1ef262cf87dc3a07229290499dd0acd553a03a8d2f9febc1d15920a",
+-      "afterSha256": "d5bafae5d66dcd29f489c4e9ec9f2cfdd7940c86cc06fe378ddb1a69446a3370"
++      "afterSha256": "1fe199e7f3d4830065084b88d1e23a34679db95c94394436ac01cf1ad8c49f87"
+     },
+     "packages/server/src/transaction-service.test.ts": {
+       "beforeSha256": "ba23d242e73a67765db4de77ff0d43f691feb68641ffdf8071a5ded4dc05cb08",
+-      "afterSha256": "2433b3b324c990be6cd2228b72505cc2c9dcdaa08952265a1f1ca3acd68fa1ec"
++      "afterSha256": "bf2e6945a9162e3127dd5e0e3e0193d928c541849cf283f2791e7b6e177459dd"
+     },
+     "packages/server/src/transaction-receipt-pages.test.ts": {
+       "beforeSha256": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+-      "afterSha256": "b470058499042424805567b9ea74eadc3320b2807e4bc8a0118b0c93996e1f05"
++      "afterSha256": "654b827928a95277395e5d382fa3f083860b72c2a4650b9f0ed85a3343e86219"
+     },
+     "packages/server/src/transaction-snapshot.test.ts": {
+       "beforeSha256": "4ab1bb6fa6a6a9e3104b3a9cd11fb045af6002459578275528e31c0d2d6e3122",
+@@ -749,7 +749,7 @@
+     },
+     "packages/server/src/transaction-events.test.ts": {
+       "beforeSha256": "708fafc31d031abdff6434110d36d4bfd1126d38cbb977d81af1da1703121673",
+-      "afterSha256": "e9a9897943eae8fe68a3db697a0ecb229ae47343fb87b0129b15b36705b46694"
++      "afterSha256": "73610525cba9c29a57ec0d3e654f5e30160b2520725f7b6dfe532ae7dc325cc1"
+     },
+     "packages/server/src/transaction-event-sse.test.ts": {
+       "beforeSha256": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9",
+@@ -765,13 +765,13 @@
+     },
+     "docs/design/transaction-implementation-progress.md": {
+       "beforeSha256": "cf7707ffc7018c9486359192189f1ac8d140734b06aee46e025d8a4db9596314",
+-      "afterSha256": "36309c8dbf1b5ae99392da6c2585f6375bf2dc65fe41bddedcad4276bf16e53b"
++      "afterSha256": "08f9040e3feee9961d7b72fcb6cf85f09d02e0699e7e0dd0d6306d38e61549d8"
+     }
+   },
+-  "binaryDiffSha256": "194419e1b5210531b781fd822dd8e0de1be4d2c18c70e4d9a77a503a0a78bf7c",
++  "binaryDiffSha256": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
+   "authorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/source-binding.json",
+-    "sha256": "d81b271b04b78af8da81b1f85bc84c9d2b2ff1856979d1a92c8d79215165843a"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/source-binding.json",
++    "sha256": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310"
+   },
+-  "attribution": "Exactly frozen reviewed-pending dirty candidate; no executed validation."
++  "attribution": "Frozen correction successor1; all stages fresh, no old CODE approval or validation result reused."
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/workload.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/workload.json
+@@ -15,7 +15,7 @@
+     "directOwnerPageOperations": 8,
+     "targetAttempts": 65,
+     "separateLiveProbes": 6,
+-    "separatePostCloseProbes": 5,
++    "separatePostCloseProbes": 6,
+     "waits": 17,
+     "minimumClockCalls": 74,
+     "setupMutations": 12,
+@@ -115,7 +115,8 @@
+       "calls": 8,
+       "mutations": 1,
+       "ownerOpens": 2,
+-      "offlineInspections": 2
++      "offlineInspections": 2,
++      "postCloseProbes": 1
+     },
+     "E": {
+       "http": 37,
+@@ -127,8 +128,9 @@
+   },
+   "lifecycle": {
+     "C": "Immediate observed outcome; bounded entered-versus-settled race; finally clock2/release before operation and close drainage. Post-close is returned entry-refused/not-accepting. No signal invented for receipt page.",
+-    "D": "No await between clock advance and synchronous owner close/offline comparison; no timer sweep inference after asynchronous yield.",
+-    "E": "Actual finite fetches, runtime close observed under1000ms local cleanup race; unknown close retains directory.",
++    "D": "Synchronous owned callback: transfer only completed fixture cleanup handlers, no await through clock advance/close/offline comparison; actual inventories determine payload equality, explicit owner.close plus one returned-refusal probe determines closed; remove only after verified closure, aggregate and report errors. Partial fixture construction leaves original fallback cleanup ownership.",
++    "E": "Same single1000ms runtime-close race, identity-deduplicated immediate/late rejection observer and caught removal errors; unknown close retains directory without global unbounded cleanup or retry.",
+     "F": "45s overall work,5s request,10s shared cleanup including request close/pending drain and child exit+close event;60s callback. Outer cleanup expiry preserves unknown ownership/directory and observes late cleanup rejection. Launcher pre-ready cleanup is its inherited contract, not a callback-observed child."
+-  }
++  },
++  "successorAttribution": "Source-only correction; no runtime or compiler/formatter evidence. D adds one separate ownership probe;97 selected cases and all service/page/HTTP/wait/clock/mutation counts unchanged."
+ }

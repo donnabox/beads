@@ -1,0 +1,326 @@
+--- a/packages/server/src/transaction-events.test.ts
++++ b/packages/server/src/transaction-events.test.ts
+@@ -2223,7 +2223,7 @@
+       true,
+     );
+     expect(responses.filter((response) => response.status === 503)).toHaveLength(8);
+-    expect(responses.filter((response) => response.status === 500)).toHaveLength(12);
++    expect(responses.filter((response) => response.status === 500)).toHaveLength(8);
+     expect(calls).toBe(35);
+   } catch (error) {
+     failures.push(error);
+--- a/packages/server/src/transaction-receipt-pages.test.ts
++++ b/packages/server/src/transaction-receipt-pages.test.ts
+@@ -1,7 +1,8 @@
+ import { TransactionMinimumFailure, TransactionMinimumUnproved, type TransactionMinimum } from "./transaction-consistency.js";
+ import { DatabaseSync } from "node:sqlite";
+-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
++import { isDeepStrictEqual } from "node:util";
+ import path from "node:path";
+ import { spawnSync } from "node:child_process";
+ import { afterEach, expect, it, vi } from "vitest";
+@@ -339,49 +340,146 @@
+ });
+ 
+ it("preserves receipt page detail when lexical eligibility is unproved", () => {
+-  const f = fixture();
+-  const seed = f.owner.executeObserved(f.claim()), page = pageUrl(seed.receipt.next);
+-  const minimum = { scopeEpoch: seed.context.scopeEpoch, authorizationView: seed.context.authorizationView, minimumPosition: "opaque" };
+-  let calls = 0, offlineInspections = 0, ownerOpens = 1;
++  const cleanupBoundary = cleanup.length;
++  const failures: unknown[] = [];
++  let f: ReturnType<typeof fixture> | undefined;
++  let calls = 0,
++    offlineInspections = 0,
++    ownerOpens = 0,
++    postCloseProbes = 0,
++    payloadUnchanged = false,
++    closed = false,
++    directoryAbsent = false;
+   const rows: { label: string; outcome: string; context: unknown }[] = [];
+-  const read = (label: string, principal: string, target: string, tuple: TransactionMinimum) => {
+-    calls++;
+-    try {
+-      const result = f.owner.readReceiptPage(principal, target, tuple);
+-      rows.push({ label, outcome: result.kind, context: "context" in result ? result.context : null });
+-      return result;
+-    } catch (error) {
+-      rows.push({ label, outcome: error instanceof TransactionMinimumFailure ? error.reason : error instanceof TransactionMinimumUnproved ? "unproved" : "unexpected", context: error instanceof TransactionMinimumFailure || error instanceof TransactionMinimumUnproved ? error.context : null });
+-      throw error;
+-    }
+-  };
+-  expect(read("known", "p", page, { ...minimum, minimumPosition: "pos-1" })).toMatchObject({ kind: "page", context: seed.context });
+-  for (const token of ["opaque", "pos-01"])
+-    expect(() => read(token, "p", page, { ...minimum, minimumPosition: token })).toThrow(TransactionMinimumUnproved);
+-  for (const [patch, reason] of [[{ scopeEpoch: "foreign" }, "cursor-expired"], [{ authorizationView: "foreign" }, "foreign-view"]] as const)
+-    expect(() => read(reason, "p", page, { ...minimum, ...patch })).toThrow(expect.objectContaining({ reason, context: seed.context }));
+-  expect(read("other-principal", "other", page, minimum)).toMatchObject({ kind: "missing", context: seed.context });
+-  expect(read("unknown-page", "p", `${seed.receipt.id}/pages/unknown`, minimum)).toMatchObject({ kind: "missing", context: seed.context });
+   const inventory = (db: DatabaseSync) => ({
+     receipts: db.prepare("SELECT * FROM receipts ORDER BY principal,key").all(),
+     plans: db.prepare("SELECT * FROM receipt_pages ORDER BY receipt,principal").all(),
+     ranges: db.prepare("SELECT * FROM receipt_page_ranges ORDER BY receipt,start").all(),
+   });
+-  let baseline: ReturnType<typeof inventory> | undefined, after: ReturnType<typeof inventory> | undefined;
+-  f.raw((db) => { offlineInspections++; baseline = inventory(db); });
+-  f.reopen();
+-  ownerOpens++;
+-  // No asynchronous yield until the second offline comparison: maintenance uses this clock.
+-  f.time(86401001);
+-  expect(() => read("past-expiry", "p", page, minimum)).toThrow(TransactionMinimumUnproved);
+-  f.raw((db) => { offlineInspections++; after = inventory(db); });
+-  expect(after).toEqual(baseline);
+-  if (!after) throw new Error("offline receipt inventory missing");
+-  expect(after.receipts).toHaveLength(1);
+-  expect(after.plans).toHaveLength(1);
+-  expect(after.ranges.length).toBeGreaterThan(0);
+-  expect(JSON.parse(String(after.receipts[0]!.receipt)).detail).not.toBe("expired");
+-  expect([calls, ownerOpens, offlineInspections]).toEqual([8, 2, 2]);
+-  rmSync(path.dirname(f.options.file), { recursive: true, force: true });
+-  console.log(JSON.stringify({ observation: "current-observation-page-retention", calls, ownerOpens, offlineInspections, rows, payloadUnchanged: true, closed: true }));
+-});
++  const inventories: {
++    baseline?: ReturnType<typeof inventory>;
++    after?: ReturnType<typeof inventory>;
++  } = {};
++  try {
++    const owned = fixture();
++    f = owned;
++    ownerOpens++;
++    // Transfer only this successfully constructed fixture's cleanup ownership.
++    cleanup.splice(cleanupBoundary);
++    const seed = owned.owner.executeObserved(owned.claim()),
++      page = pageUrl(seed.receipt.next);
++    const minimum = {
++      scopeEpoch: seed.context.scopeEpoch,
++      authorizationView: seed.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    const read = (label: string, principal: string, target: string, tuple: TransactionMinimum) => {
++      calls++;
++      try {
++        const result = owned.owner.readReceiptPage(principal, target, tuple);
++        rows.push({ label, outcome: result.kind, context: "context" in result ? result.context : null });
++        return result;
++      } catch (error) {
++        rows.push({
++          label,
++          outcome:
++            error instanceof TransactionMinimumFailure
++              ? error.reason
++              : error instanceof TransactionMinimumUnproved
++                ? "unproved"
++                : "unexpected",
++          context:
++            error instanceof TransactionMinimumFailure || error instanceof TransactionMinimumUnproved
++              ? error.context
++              : null,
++        });
++        throw error;
++      }
++    };
++    expect(read("known", "p", page, { ...minimum, minimumPosition: "pos-1" })).toMatchObject({
++      kind: "page",
++      context: seed.context,
++    });
++    for (const token of ["opaque", "pos-01"])
++      expect(() => read(token, "p", page, { ...minimum, minimumPosition: token })).toThrow(
++        TransactionMinimumUnproved,
++      );
++    for (const [patch, reason] of [
++      [{ scopeEpoch: "foreign" }, "cursor-expired"],
++      [{ authorizationView: "foreign" }, "foreign-view"],
++    ] as const)
++      expect(() => read(reason, "p", page, { ...minimum, ...patch })).toThrow(
++        expect.objectContaining({ reason, context: seed.context }),
++      );
++    expect(read("other-principal", "other", page, minimum)).toMatchObject({
++      kind: "missing",
++      context: seed.context,
++    });
++    expect(read("unknown-page", "p", `${seed.receipt.id}/pages/unknown`, minimum)).toMatchObject({
++      kind: "missing",
++      context: seed.context,
++    });
++    owned.raw((db) => {
++      offlineInspections++;
++      inventories.baseline = inventory(db);
++    });
++    owned.reopen();
++    ownerOpens++;
++    // No asynchronous yield until the second offline comparison: maintenance uses this clock.
++    owned.time(86401001);
++    expect(() => read("past-expiry", "p", page, minimum)).toThrow(TransactionMinimumUnproved);
++    owned.raw((db) => {
++      offlineInspections++;
++      inventories.after = inventory(db);
++    });
++    const { baseline, after } = inventories;
++    if (!baseline || !after) throw new Error("offline receipt inventory missing");
++    payloadUnchanged = isDeepStrictEqual(after, baseline);
++    expect(payloadUnchanged).toBe(true);
++    expect(after).toEqual(baseline);
++    expect(after.receipts).toHaveLength(1);
++    expect(after.plans).toHaveLength(1);
++    expect(after.ranges.length).toBeGreaterThan(0);
++    expect(JSON.parse(String(after.receipts[0]!.receipt)).detail).not.toBe("expired");
++    expect([calls, ownerOpens, offlineInspections]).toEqual([8, 2, 2]);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    if (f) {
++      try {
++        f.owner.close();
++        postCloseProbes++;
++        expect(f.owner.withRead(() => true)).toMatchObject({
++          kind: "entry-refused",
++          reason: "not-accepting",
++        });
++        closed = true;
++      } catch (error) {
++        failures.push(error);
++      }
++      if (closed) {
++        try {
++          rmSync(path.dirname(f.options.file), { recursive: true, force: true });
++        } catch (error) {
++          failures.push(error);
++        }
++      }
++      directoryAbsent = !existsSync(path.dirname(f.options.file));
++    }
++    console.log(
++      JSON.stringify({
++        observation: "current-observation-page-retention",
++        calls,
++        ownerOpens,
++        offlineInspections,
++        rows,
++        payloadUnchanged,
++        closed,
++        postCloseProbes,
++        directoryAbsent,
++        failureCount: failures.length,
++      }),
++    );
++  }
++  if (failures.length) throw new AggregateError(failures, "receipt page retention and cleanup failed");
++});
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -3912,6 +3912,11 @@
+         }
+       }
+     }
++    expect(changing).toEqual({
++      scopeEpoch: "caller-mutated",
++      authorizationView: current.authorizationView,
++      minimumPosition: current.scopePosition,
++    });
+     expect(assemble).toHaveBeenCalledTimes(1);
+     expect([operations, f.counts().attempts, waits, tick, f.counts().mutations]).toEqual([25, 35, 10, 45, 2]);
+   } catch (error) { failures.push(error); }
+@@ -4037,8 +4042,14 @@
+       expect(f.owner.withRead(() => true)).toMatchObject({ kind: "entry-refused", reason: "not-accepting" });
+       directoryAbsent = f.remove();
+     } catch (error) { failures.push(error); }
++    try {
++      expect([operations, f.counts().attempts, waits, clockCalls, liveProbes, postCloseProbes]).toEqual([
++        2, 2, 1, 3, 1, 1,
++      ]);
++    } catch (error) {
++      failures.push(error);
++    }
+     console.log(JSON.stringify({ observation: "current-observation-drain", surface, operations, entries: f.entries, waits, clockCalls, liveProbes, postCloseProbes, settled, closeSettled, ...f.counts(), directoryAbsent, failureCount: failures.length }));
+   }
+-  expect([operations, f.counts().attempts, waits, clockCalls, liveProbes, postCloseProbes]).toEqual([2, 2, 1, 3, 1, 1]);
+   if (failures.length) throw new AggregateError(failures, "current observation drain failed");
+ });
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -6032,6 +6032,13 @@
+   let tick = 0, waits = 0, attempted = 0, closed = false;
+   let runtime: Awaited<ReturnType<typeof startTransactionRuntime>> | undefined;
+   const failures: unknown[] = [];
++  const recordedFailures = new Set<unknown>();
++  const recordFailure = (error: unknown) => {
++    if (!recordedFailures.has(error)) {
++      recordedFailures.add(error);
++      failures.push(error);
++    }
++  };
+   const responses: { label: string; method: string; url: string; status: number; bytes: number; headers: Record<string, string | null> }[] = [];
+   const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
+   const granted = new Set([`${scope}operations/batch`, `${scope}operations/update-where`, `${scope}types/task`, `${scope}types/`, `${scope}types/missing`, `${scope}beads/r00?view=links`, `${scope}beads/missing?view=links`]);
+@@ -6080,6 +6087,14 @@
+       expect(validateSelectorReceipt(value), JSON.stringify(validateSelectorReceipt.errors)).toBe(true);
+       expect(value).toMatchObject({ status: "completed", idempotencyKey: key, requiredPosition: position, effectPosition: position });
+       expect(context(response)[2]).toBe(position);
++      expect([value.scopeEpoch, value.authorizationView]).toStrictEqual(
++        context(response).slice(0, 2),
++      );
++      expect(
++        context(response)
++          .slice(0, 2)
++          .every((v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,256}$/.test(v)),
++      ).toBe(true);
+       return value;
+     };
+     const seed = await exchange("seed", "POST", `${scope}operations/batch`, [], "writer", seedBody, "current-observation-seed");
+@@ -6173,21 +6188,27 @@
+     expect(Object.fromEntries([200, 503, 410, 409, 404, 400, 401].map((status) => [status, responses.filter((r) => r.status === status).length]))).toEqual({ 200: 7, 503: 10, 410: 8, 409: 8, 404: 2, 400: 1, 401: 1 });
+     expect(Object.fromEntries(["POST", "GET", "HEAD"].map((method) => [method, responses.filter((r) => r.method === method).length]))).toEqual({ POST: 3, GET: 21, HEAD: 13 });
+     expect(waits).toBe(10);
+-  } catch (error) { failures.push(error); }
++  } catch (error) { recordFailure(error); }
+   finally {
+     let closeTimer: ReturnType<typeof setTimeout> | undefined;
+     try {
+       if (runtime) {
+         const closing = runtime.close();
+-        void closing.catch((error: unknown) => { failures.push(error); });
++        void closing.catch((error: unknown) => { recordFailure(error); });
+         await Promise.race([closing, new Promise<never>((_, reject) => {
+           closeTimer = setTimeout(() => reject(new Error("current observation HTTP close timeout")), 1000);
+         })]);
+         closed = true;
+       }
+-    } catch (error) { failures.push(error); }
++    } catch (error) { recordFailure(error); }
+     finally { clearTimeout(closeTimer); }
+-    if (closed) rmSync(directory, { recursive: true, force: true });
++    if (closed) {
++      try {
++        rmSync(directory, { recursive: true, force: true });
++      } catch (error) {
++        recordFailure(error);
++      }
++    }
+     console.log(JSON.stringify({ observation: "current-observation-http", elapsedMs: performance.now() - started, attempted, responses, waits, clockCalls: tick, closed, directory, directoryAbsent: !existsSync(directory), failureCount: failures.length }));
+   }
+   if (failures.length) throw new AggregateError(failures, "current observation HTTP and cleanup failed");
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -220,6 +220,8 @@
+       const { minimum, kind } = capturedCondition(condition);
+       const current = transactionReadContexts(observation).current;
+       if (refusal?.code === "resource-not-found") {
++        // Initial Types reads return an inventory, possibly empty, not this refusal.
++        // Keep the defensive strict fallback for other refusal kinds below.
+         if (kind === "resource" || kind === "missing" || kind === "alias") return;
+         if (kind === "type") {
+           checkCurrentReadMinimum(minimum, current, true);
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2064,6 +2064,6 @@
+ 
+ ### Current-observation minimum closure (private candidate)
+ 
+-The shared current-context checker now compares epoch then authorization view for an opaque minimum on an admitted waitable observation, before treating eligibility as unproved. Current Type/initial-Type and successful incident-Link reads use the existing bounded waiter; Type missing/hidden collisions use minimum-first ordering under the general remaining-read rule. Resource, alias and incident-anchor missing-first behavior remains. Owned receipt pages capture lexical minima and preserve parent/principal/epoch/token nondisclosure before minimum and retention. Internal discovery observation uses the same checker without exposing discovery or selecting a public profile.
+-
+-The associated source and installed witnesses cover capture across a real commit, finite draining before owner close, receipt-page retention and conditional/HEAD parity. Their new source-derived workload and predecessor adjustments are recorded separately; this paragraph is not a test-pass or profile-completion claim. Earlier private foreign-opaque outcomes remain historical evidence; this candidate supersedes that behavior only on already-admitted current observers. Strict retained/cursor/reconnect/Resource-SSE/changefeed-SSE paths, S1/G2 decisions and public discovery/admission remain outside this change. Existing counterfactual injection controls are not ordinary-runtime results. Full candidate review and fresh source/packed-consumer validation remain required.
++The shared current-context checker first rejects an invalid owner position, then compares epoch and authorization view for an opaque minimum on an admitted waitable observation, before treating eligibility as unproved. This preserves the accepted invalid-owner precedence, including for internal discovery observations previously using the strict checker. Current Type/initial-Type and successful incident-Link reads use the existing bounded waiter; Type missing/hidden collisions use minimum-first ordering under the general remaining-read rule. Resource, alias and incident-anchor missing-first behavior remains. Owned receipt pages capture lexical minima and preserve parent/principal/epoch/token nondisclosure before minimum and retention. Internal discovery observation uses the same checker without exposing discovery or selecting a public profile.
++
++The associated source and installed witnesses cover capture across a real commit, finite draining before owner close, receipt-page retention and conditional/HEAD parity. Their new source-derived workload and predecessor adjustments are recorded separately; this paragraph is not a test-pass or profile-completion claim. Earlier private foreign-opaque outcomes remain historical evidence; this candidate supersedes that behavior only on already-admitted current observers. Strict retained/cursor/reconnect/Resource-SSE/changefeed-SSE paths, S1/G2 decisions and public discovery/admission remain outside this change. The exported visibility-gap compatibility class and its HTTP translation remain for retained compatibility; ordinary admitted current paths no longer witness that gap. Existing counterfactual injection controls are not ordinary-runtime results. Anonymous and malformed receipt-page controls are tested separately; their combined case is not claimed by the unchanged twelve-operation nondisclosure witness. Full candidate review and fresh source/packed-consumer validation remain required.

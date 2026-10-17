@@ -1,0 +1,31 @@
+# Native Event admission/replay plan review
+
+Verdict: no actionable plan blocker found. The six-file slice is concrete and sufficiently bounded for the next independent PLAN review. This is not source authoring or execution approval. The required exact-green predecessor rebind remains unsatisfied and explicit.
+
+## Inputs and basis
+
+Reviewed complete plan 7b1a80e7648cea6f98d5d7ff5a0f16393793688d71d28c7c8c3402b129b396bf, selection 813839522750a213d44274a397787cd41c4c016db545304987f23d04dee1c6bc and preparation index 0d952c9aaed01de65202e1f284bc83ccf3162bd99f8817356e8857dbdf05415e. All four indexed hashes match. Source binding 7c785f7f6b3247aef21a5fd81df91737b2b9c051c97b376e07ec61e6a2f38797 has the identical 679-file map as original current-observation author d81b271b; all three immutable references match. The six proposed file inputs match that historical map, using original author after-snapshots for changed files. The spec and raw SSE recorder also match the map.
+
+This deliberately reviews the original unqualified dirty planning basis, not the moving correction worktree. It does not assert that current source remains identical to the old 679-file map. Before authoring, rebind to the actually corrected, validated and exact-green committed predecessor; account for its six-file correction and measured formatting separately. In particular, the Link aggregate 12→8 correction belongs to that predecessor, not this Event plan.
+
+## Semantic assessment
+
+The pinned spec at docs/specs/bdp.md:5794–5851 supports lexical receiving before owner lookup and the general remaining-read choice to wait or fail explicitly. The plan correctly avoids asserting that the narrower current Resource unknown-position MUST establishes retained continuation precedence. Event after is exclusive/source-bound under 6204–6263; SSE Last-Event-ID override under 6328–6358 is preserved. No new normative policy or operator decision is required by the proposed implementation choice.
+
+Pinned transaction-http.ts:509–565, transaction-service.ts:496–575 and transaction-store.ts:1670–1815 support the proposed separation. HTTP receiving/auth/URL grammar remain earlier; finite JSON ignores raw reconnect fields; effective SSE cursor selection retains repeated-field rejection and malformed URL receiving behavior. Canonical source classification must remain separate from tuple capture errors. Finite service capture stays after waiter preflight on first attempt; beginEvents retains its existing synchronous capture. These are intentionally distinct API precedences.
+
+The explicit current-event tag is internal provenance through already selected private Event routes. It changes neither public discovery/admission nor authentication, the source grammar, known/deleted source lookup, source-bound cursor checks, retention membership, or packet advancement. Direct after-bearing calls without intent and the old initial-scope-sse tag remain strict under their original rules. Within admitted owner entry, missing source precedes semantic minimum; unsupported/context/minimum precede invalidReconnect and cursor validation, as already ordered for recognized minimums. Failed eligibility must not prepare retained groups or construct packets; source identity lookup is not misrepresented as a complete read/allocation census. S1 retained Snapshot and G2 metadata-only incident-Link projection stay excluded.
+
+## Workload and lifecycle assessment
+
+Arithmetic reconciles: A3+B6+C2+D1+legacy5 =17 source callbacks. D=1 seed+5 finite baseline+18 source rows+2 Resource rows+11 controls=37. Legacy32+37+35+31+28=163, total200 prospective HTTP. Installed unchanged historical5 plus new10 gives15, hence215 combined across19 callbacks and19 stores. Three installed children are sequential across two stores. A has66 owner calls; B12 attempts plus6 baseline, C2 attempts plus2 baseline plus2 post-close probes. These are authored workload dimensions, not observed network or allocation counts.
+
+The existing reconnect callback at transaction-event-sse.test.ts:349–450 supports its unchanged28 dispatch count and the distinction between receiving URL failure, effective Last-Event-ID and non-SSE header ignoring. Event records expose their own cursor IDs, so the one-page Bead finite baseline can supply its first Event ID even when next is null; the plan does not require fabricating a cursor. The a/b/l seed yields Scope5, Bead2 and Link1; finite HTTP page maximum2 explains three Scope pages and one Bead/Link page each.
+
+B/C immediate outcome observers, finite entered-versus-settled guards and unconditional abort-before-release avoid the constant-clock stranded-wait failure. Returned withRead entry-refused is the correct post-close oracle. Synchronous close-unsettled flags are properly limited to that synchronous observation. No extra successful-path retry or traffic is introduced for cleanup.
+
+The positive SSE witness explicitly avoids relying on recordRawSse.close(): that helper destroys the socket and awaits closed without rethrowing stored failure (test-support/raw-sse-recorder.ts:139–157). Readiness/frame races, live-before-intentional-close assertions, abort-cause preservation and post-drain exact frames are necessary and specified. D's five-second request bound, cleanup-inclusive four-second stop margin and bounded cleanup remain finite; the installed45/5/10/60/120 limits and TERM115 preserve failure on unknown ownership with store retention. Their feasibility is prospective until actual validation; no deadline expansion or performance success is inferred here.
+
+## Preserved gates and limits
+
+No product changes, helper imports, test/build/formatter execution or review launch occurred in this review. No new proof of retained deletion, pruning, later stream G2 behavior, public Transactional qualification or full profile completion is claimed. Existing direct/default-strict and historical installed prefixes must remain byte-identical except the enumerated legacy HTTP expectation changes. Actual source/installed report schemas, exact selectors and emitted import graph must be checked against the frozen authored successor, with a fresh bound build before HTTP module collection and independently accepted packed consumer before installed witnesses.

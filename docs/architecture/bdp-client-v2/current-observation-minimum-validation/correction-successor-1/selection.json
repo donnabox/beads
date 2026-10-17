@@ -1,0 +1,820 @@
+{
+  "kind": "source-derived-frozen-selection-not-executed",
+  "planSelectionSha256": "9294d8a606bd34dca96d176ce179ae138e566571d4e2bfb1ca18677f094f6750",
+  "legacySourceCases": 88,
+  "newSourceCases": 9,
+  "sourceCases": 97,
+  "source": [
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID omitted through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "omitted"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID undefined through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "undefined"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID null through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "null"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID number through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "number"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID false through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "false"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID empty through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "empty"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID method through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "method"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID accessor through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "accessor"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID inherited through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "inherited"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID proxy through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "proxy"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "rejects malformed Type ID revoked through a Promise without invoking caller data",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data",
+      "new": false,
+      "template": "rejects malformed Type ID %s through a Promise without invoking caller data",
+      "parameter": "revoked"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "projects immutable current Types and exact incident directions including self-Link deduplication",
+      "fullName": "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "keeps types limits, allocation and retained continuation boundaries distinct",
+      "fullName": "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct",
+      "new": false,
+      "template": "keeps %s limits, allocation and retained continuation boundaries distinct",
+      "parameter": "types"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "keeps incident limits, allocation and retained continuation boundaries distinct",
+      "fullName": "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct",
+      "new": false,
+      "template": "keeps %s limits, allocation and retained continuation boundaries distinct",
+      "parameter": "incident"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "waits and cancels current surface 0 without retaining an owner entry",
+      "fullName": "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry",
+      "new": false,
+      "template": "waits and cancels current surface %i without retaining an owner entry",
+      "parameter": 0
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "waits and cancels current surface 1 without retaining an owner entry",
+      "fullName": "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry",
+      "new": false,
+      "template": "waits and cancels current surface %i without retaining an owner entry",
+      "parameter": 1
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "waits and cancels current surface 2 without retaining an owner entry",
+      "fullName": "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry",
+      "new": false,
+      "template": "waits and cancels current surface %i without retaining an owner entry",
+      "parameter": 2
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "pre-aborts, drains and releases a waiting current surface 0",
+      "fullName": "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0",
+      "new": false,
+      "template": "pre-aborts, drains and releases a waiting current surface %i",
+      "parameter": 0
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "pre-aborts, drains and releases a waiting current surface 1",
+      "fullName": "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1",
+      "new": false,
+      "template": "pre-aborts, drains and releases a waiting current surface %i",
+      "parameter": 1
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "pre-aborts, drains and releases a waiting current surface 2",
+      "fullName": "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2",
+      "new": false,
+      "template": "pre-aborts, drains and releases a waiting current surface %i",
+      "parameter": 2
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+      "fullName": "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+      "fullName": "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+      "new": false,
+      "template": "preserves %s minimum alias receiving validation, cancellation and lifecycle precedence",
+      "parameter": "direct"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+      "fullName": "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+      "new": false,
+      "template": "preserves %s minimum alias receiving validation, cancellation and lifecycle precedence",
+      "parameter": "service"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "conditions alias mapping and context in one entry without revising either target",
+      "fullName": "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "rechecks a repointed alias after waiting for a real Resource effect",
+      "fullName": "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+      "fullName": "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+      "fullName": "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "does not relabel alias provider or malformed context failures as missing",
+      "fullName": "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "captures unknown alias minima while resolving each retry against the live owner",
+      "fullName": "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
+      "new": false,
+      "template": "captures %s alias minima while resolving each retry against the live owner",
+      "parameter": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "captures pos-01 alias minima while resolving each retry against the live owner",
+      "fullName": "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
+      "new": false,
+      "template": "captures %s alias minima while resolving each retry against the live owner",
+      "parameter": "pos-01"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves absent alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
+      "new": false,
+      "template": "preserves %s alias nondisclosure before opaque minimum waiting",
+      "parameter": "absent"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves deleted alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
+      "new": false,
+      "template": "preserves %s alias nondisclosure before opaque minimum waiting",
+      "parameter": "deleted"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves dangling alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
+      "new": false,
+      "template": "preserves %s alias nondisclosure before opaque minimum waiting",
+      "parameter": "dangling"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves hidden alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
+      "new": false,
+      "template": "preserves %s alias nondisclosure before opaque minimum waiting",
+      "parameter": "hidden"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "returns current alias absence when an admitted opaque wait loses its mapping",
+      "fullName": "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "drains an aborted opaque alias wait before releasing its owner",
+      "fullName": "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves incident-Link opaque exclusions beside alias minima",
+      "fullName": "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current minimum perform receiving",
+      "title": "preserves a direct non-enumerable pre-aborted signal before owner entry",
+      "fullName": "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current minimum perform receiving",
+      "title": "preserves direct minimum perform receiving validation, cancellation and lifecycle precedence",
+      "fullName": "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence",
+      "new": false,
+      "template": "preserves %s minimum perform receiving validation, cancellation and lifecycle precedence",
+      "parameter": "direct"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current minimum perform receiving",
+      "title": "preserves service minimum perform receiving validation, cancellation and lifecycle precedence",
+      "fullName": "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence",
+      "new": false,
+      "template": "preserves %s minimum perform receiving validation, cancellation and lifecycle precedence",
+      "parameter": "service"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery owner observation",
+      "title": "copies exactly one owner entry and parses only after releasing it",
+      "fullName": "internal discovery owner observation copies exactly one owner entry and parses only after releasing it",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery owner observation",
+      "title": "keeps entry refusal distinct from structural validation failure",
+      "fullName": "internal discovery owner observation keeps entry refusal distinct from structural validation failure",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery owner observation",
+      "title": "captures nested limits once and enforces the captured values after caller mutation",
+      "fullName": "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery owner observation",
+      "title": "keeps the replay position floor and complete genesis groups through receipt expiry and reopen",
+      "fullName": "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "preserves synchronous no-minimum timing and ignores its signal and wait policy",
+      "fullName": "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "returns an immutable same-entry eligible prefix for pos-1 after release",
+      "fullName": "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release",
+      "new": false,
+      "template": "returns an immutable same-entry eligible prefix for %s after release",
+      "parameter": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "returns an immutable same-entry eligible prefix for pos-0 after release",
+      "fullName": "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release",
+      "new": false,
+      "template": "returns an immutable same-entry eligible prefix for %s after release",
+      "parameter": "pos-0"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "returns an immutable same-entry eligible prefix for genesis after release",
+      "fullName": "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release",
+      "new": false,
+      "template": "returns an immutable same-entry eligible prefix for %s after release",
+      "parameter": "genesis"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "captures immutable minimum controls and releases the owner during controlled catch-up",
+      "fullName": "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "releases the owner after an in-entry scopeEpoch refusal",
+      "fullName": "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal",
+      "new": false,
+      "template": "releases the owner after an in-entry %s refusal",
+      "parameter": "scopeEpoch"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "releases the owner after an in-entry authorizationView refusal",
+      "fullName": "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal",
+      "new": false,
+      "template": "releases the owner after an in-entry %s refusal",
+      "parameter": "authorizationView"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "times out after two controlled attempts without assembly and leaves the owner reusable",
+      "fullName": "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "rejects pre-abort before entry and pending abort before retry",
+      "fullName": "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "drains an admitted discovery wait before closing the owner",
+      "fullName": "internal discovery minimum observation drains an admitted discovery wait before closing the owner",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "internal discovery minimum observation",
+      "title": "keeps malformed input, entry refusal, provider and parser failures distinct",
+      "fullName": "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-consistency.test.ts",
+      "suite": "",
+      "title": "captures lexical current minimums without widening strict consumers or invoking accessors",
+      "fullName": "captures lexical current minimums without widening strict consumers or invoking accessors",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-consistency.test.ts",
+      "suite": "",
+      "title": "waits for unproved current eligibility with one deadline and preserves terminal failures",
+      "fullName": "waits for unproved current eligibility with one deadline and preserves terminal failures",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-consistency.test.ts",
+      "suite": "",
+      "title": "distinguishes closed minimum receiving syntax from supported position identities",
+      "fullName": "distinguishes closed minimum receiving syntax from supported position identities",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "",
+      "title": "uses actual current policy for missing-first and unproved Resource attempts",
+      "fullName": "uses actual current policy for missing-first and unproved Resource attempts",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "",
+      "title": "drains an admitted unknown minimum to timeout and rejects new reads while closing",
+      "fullName": "drains an admitted unknown minimum to timeout and rejects new reads while closing",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-receipt-pages.test.ts",
+      "suite": "",
+      "title": "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+      "fullName": "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-receipt-pages.test.ts",
+      "suite": "",
+      "title": "captures immutable current context for nondisclosable receipt pages before minimum checks",
+      "fullName": "captures immutable current context for nondisclosable receipt pages before minimum checks",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "suite": "",
+      "title": "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+      "fullName": "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "suite": "",
+      "title": "does not expire retained Snapshot details on an ineligible fresh attempt",
+      "fullName": "does not expire retained Snapshot details on an ineligible fresh attempt",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "suite": "",
+      "title": "gates fresh Snapshot opaque minima before allocation and expiry",
+      "fullName": "gates fresh Snapshot opaque minima before allocation and expiry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "suite": "",
+      "title": "gates initial Scope Event unknown minima before retained scans",
+      "fullName": "gates initial Scope Event unknown minima before retained scans",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "suite": "",
+      "title": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "fullName": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "suite": "",
+      "title": "gates initial Bead Event unknown minima before retained scans",
+      "fullName": "gates initial Bead Event unknown minima before retained scans",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "suite": "",
+      "title": "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "fullName": "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "suite": "",
+      "title": "gates initial Link Event unknown minima before retained scans",
+      "fullName": "gates initial Link Event unknown minima before retained scans",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "suite": "",
+      "title": "serves initial finite Link Event opaque minima with retained identity and route fences",
+      "fullName": "serves initial finite Link Event opaque minima with retained identity and route fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "suite": "",
+      "title": "gates initial Scope Event SSE opaque minima before scan packets",
+      "fullName": "gates initial Scope Event SSE opaque minima before scan packets",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "suite": "",
+      "title": "captures initial Scope Event SSE minima once and recaptures context on retry",
+      "fullName": "captures initial Scope Event SSE minima once and recaptures context on retry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "suite": "",
+      "title": "drains an aborted initial Scope Event SSE minimum wait before owner close",
+      "fullName": "drains an aborted initial Scope Event SSE minimum wait before owner close",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "suite": "",
+      "title": "serves initial Scope Event SSE opaque minima before conditional admission",
+      "fullName": "serves initial Scope Event SSE opaque minima before conditional admission",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "suite": "",
+      "title": "keeps direct and excluded changefeed minimum paths strict",
+      "fullName": "keeps direct and excluded changefeed minimum paths strict",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "suite": "",
+      "title": "serves finite start-now opaque minima before HTTP shortcuts",
+      "fullName": "serves finite start-now opaque minima before HTTP shortcuts",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+      "fullName": "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "fullName": "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "fullName": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+      "fullName": "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "fullName": "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "rejects collection parser errors before unknown minimum support checks",
+      "fullName": "rejects collection parser errors before unknown minimum support checks",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "preserves parser refusal parity on noncollection and excluded query routes",
+      "fullName": "preserves parser refusal parity on noncollection and excluded query routes",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "preserves receiving and HTTP error precedence for parser refusals",
+      "fullName": "preserves receiving and HTTP error precedence for parser refusals",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "fullName": "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "fullName": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+      "fullName": "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "waits for lexical current observations and preserves captured tuples across real progress",
+      "fullName": "waits for lexical current observations and preserves captured tuples across real progress",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "orders Type refusal and receipt page nondisclosure before projection",
+      "fullName": "orders Type refusal and receipt page nondisclosure before projection",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "drains lexical current observation type before close",
+      "fullName": "drains lexical current observation type before close",
+      "new": true,
+      "template": "drains lexical current observation %s before close",
+      "parameter": "type"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "drains lexical current observation types before close",
+      "fullName": "drains lexical current observation types before close",
+      "new": true,
+      "template": "drains lexical current observation %s before close",
+      "parameter": "types"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "drains lexical current observation incident before close",
+      "fullName": "drains lexical current observation incident before close",
+      "new": true,
+      "template": "drains lexical current observation %s before close",
+      "parameter": "incident"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "drains lexical current observation page before close",
+      "fullName": "drains lexical current observation page before close",
+      "new": true,
+      "template": "drains lexical current observation %s before close",
+      "parameter": "page"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "",
+      "title": "drains lexical current observation discovery before close",
+      "fullName": "drains lexical current observation discovery before close",
+      "new": true,
+      "template": "drains lexical current observation %s before close",
+      "parameter": "discovery"
+    },
+    {
+      "file": "packages/server/src/transaction-receipt-pages.test.ts",
+      "suite": "",
+      "title": "preserves receipt page detail when lexical eligibility is unproved",
+      "fullName": "preserves receipt page detail when lexical eligibility is unproved",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "serves current observation minimums with actual issued pages and HTTP parity",
+      "fullName": "serves current observation minimums with actual issued pages and HTTP parity",
+      "new": true
+    }
+  ],
+  "perFileTitleFilters": {
+    "packages/server/src/transaction-changefeed.test.ts": "^(?:keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts)$",
+    "packages/server/src/transaction-consistency.test.ts": "^(?:captures\\ lexical\\ current\\ minimums\\ without\\ widening\\ strict\\ consumers\\ or\\ invoking\\ accessors|waits\\ for\\ unproved\\ current\\ eligibility\\ with\\ one\\ deadline\\ and\\ preserves\\ terminal\\ failures|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities)$",
+    "packages/server/src/transaction-event-sse.test.ts": "^(?:gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission)$",
+    "packages/server/src/transaction-events.test.ts": "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Link\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences)$",
+    "packages/server/src/transaction-http.test.ts": "^(?:serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences|rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|serves\\ current\\ observation\\ minimums\\ with\\ actual\\ issued\\ pages\\ and\\ HTTP\\ parity)$",
+    "packages/server/src/transaction-read.test.ts": "^(?:current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ omitted\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ undefined\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ null\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ number\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ false\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ empty\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ method\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ accessor\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ inherited\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ proxy\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ revoked\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ projects\\ immutable\\ current\\ Types\\ and\\ exact\\ incident\\ directions\\ including\\ self\\-Link\\ deduplication|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ types\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ incident\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 0\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 1\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 2\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 0|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 1|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 2|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|current\\ alias\\ minimum\\ subset\\ preserves\\ direct\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ preserves\\ service\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ conditions\\ alias\\ mapping\\ and\\ context\\ in\\ one\\ entry\\ without\\ revising\\ either\\ target|current\\ alias\\ minimum\\ subset\\ rechecks\\ a\\ repointed\\ alias\\ after\\ waiting\\ for\\ a\\ real\\ Resource\\ effect|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|current\\ alias\\ minimum\\ subset\\ forwards\\ ordinary\\ and\\ minimum\\ Request\\ aborts\\ before\\ SQL\\ and\\ drains\\ an\\ admitted\\ alias\\ wait|current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|current\\ alias\\ minimum\\ subset\\ captures\\ unknown\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ captures\\ pos\\-01\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ absent\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ deleted\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ dangling\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ hidden\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ returns\\ current\\ alias\\ absence\\ when\\ an\\ admitted\\ opaque\\ wait\\ loses\\ its\\ mapping|current\\ alias\\ minimum\\ subset\\ drains\\ an\\ aborted\\ opaque\\ alias\\ wait\\ before\\ releasing\\ its\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ incident\\-Link\\ opaque\\ exclusions\\ beside\\ alias\\ minima|current\\ minimum\\ perform\\ receiving\\ preserves\\ a\\ direct\\ non\\-enumerable\\ pre\\-aborted\\ signal\\ before\\ owner\\ entry|current\\ minimum\\ perform\\ receiving\\ preserves\\ direct\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ minimum\\ perform\\ receiving\\ preserves\\ service\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|drains\\ an\\ admitted\\ unknown\\ minimum\\ to\\ timeout\\ and\\ rejects\\ new\\ reads\\ while\\ closing)$",
+    "packages/server/src/transaction-receipt-pages.test.ts": "^(?:records\\ one\\ atomic\\ page\\ chain,\\ retains\\ original\\ postimages\\ and\\ all\\ tail\\ allocations\\ through\\ expiry|captures\\ immutable\\ current\\ context\\ for\\ nondisclosable\\ receipt\\ pages\\ before\\ minimum\\ checks|preserves\\ receipt\\ page\\ detail\\ when\\ lexical\\ eligibility\\ is\\ unproved)$",
+    "packages/server/src/transaction-service.test.ts": "^(?:internal\\ discovery\\ owner\\ observation\\ copies\\ exactly\\ one\\ owner\\ entry\\ and\\ parses\\ only\\ after\\ releasing\\ it|internal\\ discovery\\ owner\\ observation\\ keeps\\ entry\\ refusal\\ distinct\\ from\\ structural\\ validation\\ failure|internal\\ discovery\\ owner\\ observation\\ captures\\ nested\\ limits\\ once\\ and\\ enforces\\ the\\ captured\\ values\\ after\\ caller\\ mutation|internal\\ discovery\\ owner\\ observation\\ keeps\\ the\\ replay\\ position\\ floor\\ and\\ complete\\ genesis\\ groups\\ through\\ receipt\\ expiry\\ and\\ reopen|internal\\ discovery\\ minimum\\ observation\\ preserves\\ synchronous\\ no\\-minimum\\ timing\\ and\\ ignores\\ its\\ signal\\ and\\ wait\\ policy|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-1\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-0\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ genesis\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ captures\\ immutable\\ minimum\\ controls\\ and\\ releases\\ the\\ owner\\ during\\ controlled\\ catch\\-up|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ scopeEpoch\\ refusal|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ authorizationView\\ refusal|internal\\ discovery\\ minimum\\ observation\\ times\\ out\\ after\\ two\\ controlled\\ attempts\\ without\\ assembly\\ and\\ leaves\\ the\\ owner\\ reusable|internal\\ discovery\\ minimum\\ observation\\ rejects\\ pre\\-abort\\ before\\ entry\\ and\\ pending\\ abort\\ before\\ retry|internal\\ discovery\\ minimum\\ observation\\ drains\\ an\\ admitted\\ discovery\\ wait\\ before\\ closing\\ the\\ owner|internal\\ discovery\\ minimum\\ observation\\ keeps\\ malformed\\ input,\\ entry\\ refusal,\\ provider\\ and\\ parser\\ failures\\ distinct|waits\\ for\\ lexical\\ current\\ observations\\ and\\ preserves\\ captured\\ tuples\\ across\\ real\\ progress|orders\\ Type\\ refusal\\ and\\ receipt\\ page\\ nondisclosure\\ before\\ projection|drains\\ lexical\\ current\\ observation\\ type\\ before\\ close|drains\\ lexical\\ current\\ observation\\ types\\ before\\ close|drains\\ lexical\\ current\\ observation\\ incident\\ before\\ close|drains\\ lexical\\ current\\ observation\\ page\\ before\\ close|drains\\ lexical\\ current\\ observation\\ discovery\\ before\\ close)$",
+    "packages/server/src/transaction-snapshot.test.ts": "^(?:checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry)$"
+  },
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "http": 22,
+      "children": 1,
+      "stores": 1,
+      "attribution": "fresh successor of historical callback; owned page oracle changes",
+      "titleFilter": "^rejects malformed read minimum tuples before observation while preserving receipt nondisclosure$",
+      "separateSupervisedAttempt": true,
+      "immediateAudit": true
+    },
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed current observation minima within37requests",
+      "http": 37,
+      "children": 1,
+      "stores": 1,
+      "attribution": "new callback",
+      "titleFilter": "^observes installed current observation minima within37requests$",
+      "separateSupervisedAttempt": true,
+      "immediateAudit": true
+    }
+  ],
+  "unselectedInstalledSiblings": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed opaque receipt root timeout with principal nondisclosure",
+      "http": 5,
+      "children": 1,
+      "stores": 1,
+      "sourceChange": "none; preserve existing callback bytes",
+      "coverage": "later full exact-head CI only; not focused59"
+    }
+  ],
+  "installedWholeFileAfterAppend": {
+    "callbacks": 3,
+    "http": 64,
+    "children": 3,
+    "stores": 3
+  },
+  "executionReleased": false,
+  "selectionNote": "Five approved legacy describe families expanded from actual static tables; other existing/new literal titles are top-level. No module collection or runtime. Preserve separate installed exact-title invocations, never whole-file64 as focused59."
+}
