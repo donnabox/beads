@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T11:34:58Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T11:37:20Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T11:34:58Z. **ACTIVE — bounded PR150 reconciliation now; 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | Resolve isolated Python date-time checker dependency | Candidate d719 unchanged; 11stages passed; later stages gated |
-| Conditional reviewer | Actual Claude temp-root review complete | Six LOW/INFO dispositioned; no blockers |
-| Event reviewer | Bounded Python dependency continuation plan | Explicit prior-prefix reuse; no source edits or execution |
-| Native reviewer | Date-time dependency diagnosis and continuation review | Full-suite audit complete; dependency plan review pending |
+| Conditional reviewer | Actual Claude dependency-only plan review running | PID64207,1800s bound; no implementation or execution |
+| Event reviewer | Dependency-only continuation plan complete | Explicit11stage reuse plus14fresh stages; awaiting council |
+| Native reviewer | Dependency plan reviewed without blockers | Actual helper delta still requires inspection before release |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -372,6 +372,9 @@ Root performed the authorized ordinary merge in the isolated branch: only docs/s
 
 
 **Corrected full suite passed; separate Python prerequisite failure isolated.** Actual Claude temp-root review exited0/426.223s, unchanged701source/36contexts, no survivors; all six numbered LOW/INFO findings dispositioned. Fresh successor passed11stages through Read evidence verification. Full suite:9375passed/187files/1existing optional skip; required CLI matrix passed46.606s, five affected callbacks and actual cumulative234assertion passed. [Native runtime audit](pr150-frozen-main-reconciliation/validation-private-tmp-successor/native-runtime-audit.md) preserves workspace attribution and original failed run. Preflight7tests, package smoke claimEligible:false/allNineTargets:true and historical Read evidence raw0 with original e5f7/dbaf/674982be identity passed. Then Type example check failed raw1 at negative due_at assertion. [Diagnosis](pr150-frozen-main-reconciliation/type-example-dependency-diagnosis.json) identifies missing optional rfc3339-validator: no date-time checker registered in isolated jsonschema4.26. Script/schema/fixture match frozen8d; no product/Types source change warranted. Dependency-only continuation plan is being reviewed with explicit reuse of unchanged successful prefix and fresh Type check. The next node-version invocation was rejected before launch by the existing prior-stage gate; all package-consumer stages remain unstarted. Original failure and this failure remain immutable. No candidate push/PR/main landing.
+
+
+[Dependency continuation plan](pr150-frozen-main-reconciliation/validation-format-dependency-plan.md)4f096844 and [native review](pr150-frozen-main-reconciliation/validation-format-dependency-native-review.md)72e77772 are root accepted. Actual Claude review launched once11:36:54Z, PID64207/session7211,1800s bound, default model/read-only tools; no result yet. Provisioning and continuation implementation remain gated. [Trish handoff](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6233414185) reports the passed full suite and dependency prerequisite; no human decision.
 
 ## Current priority: BDP profile structure and implementation
 
