@@ -1,0 +1,780 @@
+{
+  "status": "PASS within stated limits",
+  "runId": 39035528845,
+  "jobId": 117404439420,
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "event": "push",
+  "attempt": 1,
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-10-17T13:11:21Z",
+      "completed_at": "2026-10-17T13:11:23Z"
+    },
+    {
+      "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-10-17T13:11:23Z",
+      "completed_at": "2026-10-17T13:11:25Z"
+    },
+    {
+      "name": "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-10-17T13:11:25Z",
+      "completed_at": "2026-10-17T13:11:27Z"
+    },
+    {
+      "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-10-17T13:11:27Z",
+      "completed_at": "2026-10-17T13:11:36Z"
+    },
+    {
+      "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-10-17T13:11:36Z",
+      "completed_at": "2026-10-17T13:11:44Z"
+    },
+    {
+      "name": "Run test \"$(node --version)\" = \"v24.16.0\"",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-10-17T13:11:44Z",
+      "completed_at": "2026-10-17T13:11:44Z"
+    },
+    {
+      "name": "Run test \"$(pnpm --version)\" = \"11.20.0\"",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-10-17T13:11:44Z",
+      "completed_at": "2026-10-17T13:11:45Z"
+    },
+    {
+      "name": "Run sudo apt-get update",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-10-17T13:11:45Z",
+      "completed_at": "2026-10-17T13:11:52Z"
+    },
+    {
+      "name": "Run sudo apt-get install --yes libicu-dev",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-10-17T13:11:52Z",
+      "completed_at": "2026-10-17T13:11:52Z"
+    },
+    {
+      "name": "Run mkdir -p \"$RUNNER_TEMP/bdp-tools\"",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-10-17T13:11:52Z",
+      "completed_at": "2026-10-17T13:11:52Z"
+    },
+    {
+      "name": "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-10-17T13:11:52Z",
+      "completed_at": "2026-10-17T13:14:35Z"
+    },
+    {
+      "name": "Verify the Go-installed source-build bd identity",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-10-17T13:14:35Z",
+      "completed_at": "2026-10-17T13:14:36Z"
+    },
+    {
+      "name": "Run pnpm install --frozen-lockfile",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-10-17T13:14:36Z",
+      "completed_at": "2026-10-17T13:14:38Z"
+    },
+    {
+      "name": "Run pnpm format:check",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14,
+      "started_at": "2026-10-17T13:14:38Z",
+      "completed_at": "2026-10-17T13:14:39Z"
+    },
+    {
+      "name": "Run pnpm lint",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-10-17T13:14:39Z",
+      "completed_at": "2026-10-17T13:14:42Z"
+    },
+    {
+      "name": "Run pnpm check:boundaries",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16,
+      "started_at": "2026-10-17T13:14:42Z",
+      "completed_at": "2026-10-17T13:14:43Z"
+    },
+    {
+      "name": "Run pnpm typecheck",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-10-17T13:14:43Z",
+      "completed_at": "2026-10-17T13:14:47Z"
+    },
+    {
+      "name": "Run pnpm build",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18,
+      "started_at": "2026-10-17T13:14:47Z",
+      "completed_at": "2026-10-17T13:14:50Z"
+    },
+    {
+      "name": "Run pnpm test",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 19,
+      "started_at": "2026-10-17T13:14:50Z",
+      "completed_at": "2026-10-17T13:29:56Z"
+    },
+    {
+      "name": "Run pnpm e2e:ready:preflight",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 20,
+      "started_at": "2026-10-17T13:29:56Z",
+      "completed_at": "2026-10-17T13:29:59Z"
+    },
+    {
+      "name": "Run pnpm smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-10-17T13:29:59Z",
+      "completed_at": "2026-10-17T13:30:07Z"
+    },
+    {
+      "name": "Read-cohort evidence gate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-10-17T13:30:07Z",
+      "completed_at": "2026-10-17T13:30:08Z"
+    },
+    {
+      "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 41,
+      "started_at": "2026-10-17T13:30:08Z",
+      "completed_at": "2026-10-17T13:30:08Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 42,
+      "started_at": "2026-10-17T13:30:08Z",
+      "completed_at": "2026-10-17T13:30:08Z"
+    },
+    {
+      "name": "Post Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 43,
+      "started_at": "2026-10-17T13:30:08Z",
+      "completed_at": "2026-10-17T13:30:08Z"
+    },
+    {
+      "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 44,
+      "started_at": "2026-10-17T13:30:08Z",
+      "completed_at": "2026-10-17T13:30:09Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 45,
+      "started_at": "2026-10-17T13:30:09Z",
+      "completed_at": "2026-10-17T13:30:09Z"
+    }
+  ],
+  "rawLog": {
+    "retrievedAt": "2026-10-17T13:30:43.128721+00:00",
+    "endpoint": "repos/gastownhall/bdp/actions/jobs/117404439420/logs",
+    "rawBytes": 3671173,
+    "rawSha256": "8b57298f73213d23bd65abc05d31e5f0f58193b040cfcc46e6e67fc43e69b565",
+    "carriageReturns": 0,
+    "gzipSha256": "801ba21c7164691b50c39c85680029f0a535696f6c10c13fb53fdb91c9e90648",
+    "base64TransportSha256": "5637d36730af27e14955e5b97af0fad30441e6317178d8481cbaa1d0516d7228",
+    "roundTripExact": true
+  },
+  "fullSuite": {
+    "passed": 9426,
+    "skipped": 1,
+    "filesPassed": 186,
+    "durationSeconds": 905.68
+  },
+  "preflightPassed": 7,
+  "sourceSelectedPassed": 20,
+  "installedSelectedPassed": 2,
+  "selectedPassLines": [
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+      "fullName": "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+      "category": "existing",
+      "line": 2615,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves direct minimum alias receiving validation, cancellation and lifecycle precedence 22ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+      "fullName": "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+      "category": "existing",
+      "line": 2616,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves service minimum alias receiving validation, cancellation and lifecycle precedence 16ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "conditions alias mapping and context in one entry without revising either target",
+      "fullName": "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
+      "category": "existing",
+      "line": 2620,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > conditions alias mapping and context in one entry without revising either target 24ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "rechecks a repointed alias after waiting for a real Resource effect",
+      "fullName": "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
+      "category": "existing",
+      "line": 2621,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > rechecks a repointed alias after waiting for a real Resource effect 24ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+      "fullName": "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+      "category": "existing",
+      "line": 2622,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > keeps live alias context failures and compatible absent/deleted/dangling observations distinct 24ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+      "fullName": "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+      "category": "existing",
+      "line": 2623,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait 16ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "does not relabel alias provider or malformed context failures as missing",
+      "fullName": "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+      "category": "existing",
+      "line": 2624,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > does not relabel alias provider or malformed context failures as missing 14ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "captures unknown alias minima while resolving each retry against the live owner",
+      "fullName": "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
+      "category": "new",
+      "line": 2640,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > captures unknown alias minima while resolving each retry against the live owner 26ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "captures pos-01 alias minima while resolving each retry against the live owner",
+      "fullName": "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
+      "category": "new",
+      "line": 2641,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > captures pos-01 alias minima while resolving each retry against the live owner 24ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves absent alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
+      "category": "new",
+      "line": 2642,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves absent alias nondisclosure before opaque minimum waiting 21ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves deleted alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
+      "category": "new",
+      "line": 2643,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves deleted alias nondisclosure before opaque minimum waiting 21ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves dangling alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
+      "category": "new",
+      "line": 2644,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves dangling alias nondisclosure before opaque minimum waiting 21ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves hidden alias nondisclosure before opaque minimum waiting",
+      "fullName": "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
+      "category": "new",
+      "line": 2654,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves hidden alias nondisclosure before opaque minimum waiting 11ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "returns current alias absence when an admitted opaque wait loses its mapping",
+      "fullName": "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
+      "category": "new",
+      "line": 2655,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > returns current alias absence when an admitted opaque wait loses its mapping 15ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "drains an aborted opaque alias wait before releasing its owner",
+      "fullName": "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
+      "category": "new",
+      "line": 2656,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > drains an aborted opaque alias wait before releasing its owner 11ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current alias minimum subset",
+      "title": "preserves incident-Link opaque exclusions beside alias minima",
+      "fullName": "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
+      "category": "new",
+      "line": 2657,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves incident-Link opaque exclusions beside alias minima 10ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "",
+      "title": "uses actual current policy for missing-first and unproved Resource attempts",
+      "fullName": "uses actual current policy for missing-first and unproved Resource attempts",
+      "category": "addedUnchanged",
+      "line": 2661,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > uses actual current policy for missing-first and unproved Resource attempts 24ms"
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "suite": "current Type and incident-Link minimums",
+      "title": "keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+      "fullName": "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+      "category": "addedUnchanged",
+      "line": 2614,
+      "text": "\u2713 packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps compatible missing Types and absent/deleted incident anchors separate from collisions 23ms"
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "fullName": "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "category": "amended",
+      "line": 1693,
+      "text": "\u2713 packages/server/src/transaction-http.test.ts > serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries 63ms"
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "suite": "",
+      "title": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "fullName": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "category": "addedUnchanged",
+      "line": 1728,
+      "text": "\u2713 packages/server/src/transaction-http.test.ts > waits for current Resources and initial collections with unknown minima and preserves residual refusals 52ms"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-alias-installed.test.ts",
+      "suite": "",
+      "title": "installed sequence aliases resolve at turns and retain targets/misses across exact retries and restart",
+      "fullName": "installed sequence aliases resolve at turns and retain targets/misses across exact retries and restart",
+      "category": "existing",
+      "line": 5514,
+      "text": "\u2713 apps/bdptest/src/transactional-alias-installed.test.ts > installed sequence aliases resolve at turns and retain targets/misses across exact retries and restart 2191ms"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-alias-installed.test.ts",
+      "suite": "",
+      "title": "observes installed live alias opaque minima without redirect shortcuts",
+      "fullName": "observes installed live alias opaque minima without redirect shortcuts",
+      "category": "new",
+      "line": 5520,
+      "text": "\u2713 apps/bdptest/src/transactional-alias-installed.test.ts > observes installed live alias opaque minima without redirect shortcuts 3020ms"
+    }
+  ],
+  "sourceAliasReports": 10,
+  "sourceAliasHTTP": 28,
+  "installedHistoricalExchanges": 36,
+  "installedNewExchanges": 6,
+  "anchors": [
+    {
+      "line": 438,
+      "text": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+    },
+    {
+      "line": 450,
+      "text": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+    },
+    {
+      "line": 1357,
+      "text": "BDP_REQUIRE_BD_MATRIX: 1"
+    },
+    {
+      "line": 4177,
+      "text": "\u2713 apps/bdpbd/src/read-matrix.test.ts > bdpbd Read realization > passes every checked-in plan through an isolated public bd CLI workspace (requires local pinned bd or BDP_BD_MATRIX_EXECUTABLE) 35671ms"
+    },
+    {
+      "line": 10890,
+      "text": "\u2193 scripts/demo-read.test.mjs > runnable Read walkthrough > matches real bd and preserves the established seed command recipe"
+    },
+    {
+      "line": 11520,
+      "text": ""
+    },
+    {
+      "line": 11521,
+      "text": "\u2713 apps/bdptest/src/transactional-matrix.test.ts > observes partial Transactional conditional reads and HEAD after mutation (control true) 1290ms"
+    },
+    {
+      "line": 11522,
+      "text": ""
+    },
+    {
+      "line": 11523,
+      "text": "Test Files  186 passed (186)"
+    },
+    {
+      "line": 11524,
+      "text": "Tests  9426 passed | 1 skipped (9427)"
+    },
+    {
+      "line": 11525,
+      "text": "Start at  13:14:51"
+    },
+    {
+      "line": 11526,
+      "text": "Duration  905.68s (transform 9.86s, setup 3.47s, import 51.22s, tests 2001.72s, environment 36ms)"
+    },
+    {
+      "line": 11527,
+      "text": ""
+    },
+    {
+      "line": 11528,
+      "text": "##[group]Run pnpm e2e:ready:preflight"
+    },
+    {
+      "line": 11529,
+      "text": "pnpm e2e:ready:preflight"
+    },
+    {
+      "line": 11530,
+      "text": "shell: /usr/bin/bash -e {0}"
+    },
+    {
+      "line": 11531,
+      "text": "env:"
+    },
+    {
+      "line": 11532,
+      "text": "PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin"
+    },
+    {
+      "line": 11533,
+      "text": "GOTOOLCHAIN: local"
+    },
+    {
+      "line": 11534,
+      "text": "##[endgroup]"
+    },
+    {
+      "line": 11535,
+      "text": "$ vitest run scripts/e2e-ready.test.mjs --reporter=verbose"
+    },
+    {
+      "line": 11536,
+      "text": ""
+    },
+    {
+      "line": 11537,
+      "text": "RUN  v4.1.10 /home/runner/work/bdp/bdp"
+    },
+    {
+      "line": 11538,
+      "text": ""
+    },
+    {
+      "line": 11539,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 62ms"
+    },
+    {
+      "line": 11540,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 140ms"
+    },
+    {
+      "line": 11541,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 3ms"
+    },
+    {
+      "line": 11542,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 1ms"
+    },
+    {
+      "line": 11543,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 2ms"
+    },
+    {
+      "line": 11544,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 156ms"
+    },
+    {
+      "line": 11545,
+      "text": "\u2713 scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 604ms"
+    },
+    {
+      "line": 11546,
+      "text": ""
+    },
+    {
+      "line": 11547,
+      "text": "Test Files  1 passed (1)"
+    },
+    {
+      "line": 11548,
+      "text": "Tests  7 passed (7)"
+    },
+    {
+      "line": 11549,
+      "text": "Start at  13:29:57"
+    },
+    {
+      "line": 11550,
+      "text": "Duration  1.45s (transform 243ms, setup 46ms, import 308ms, tests 970ms, environment 0ms)"
+    },
+    {
+      "line": 11551,
+      "text": ""
+    },
+    {
+      "line": 11552,
+      "text": "##[group]Run pnpm smoke"
+    },
+    {
+      "line": 11553,
+      "text": "pnpm smoke"
+    },
+    {
+      "line": 11554,
+      "text": "shell: /usr/bin/bash -e {0}"
+    },
+    {
+      "line": 11555,
+      "text": "env:"
+    },
+    {
+      "line": 11556,
+      "text": "PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin"
+    },
+    {
+      "line": 11557,
+      "text": "GOTOOLCHAIN: local"
+    },
+    {
+      "line": 11558,
+      "text": "##[endgroup]"
+    },
+    {
+      "line": 11559,
+      "text": "$ node scripts/smoke-executables.mjs"
+    },
+    {
+      "line": 11560,
+      "text": "bdp: installed --help, --version, and diagnostics passed"
+    },
+    {
+      "line": 11561,
+      "text": "bdptest: installed --help, --version, and diagnostics passed"
+    },
+    {
+      "line": 11562,
+      "text": "bdpbd: installed --help, --version, and diagnostics passed"
+    },
+    {
+      "line": 11563,
+      "text": "bdp: installed clean lifecycle passed"
+    },
+    {
+      "line": 11564,
+      "text": "bdptest: installed clean lifecycle passed"
+    },
+    {
+      "line": 11565,
+      "text": "bdpbd: installed clean lifecycle passed"
+    },
+    {
+      "line": 11566,
+      "text": "bdptest: server.advertisedProfile and bdptest.fixture round-trip through tarball"
+    },
+    {
+      "line": 11567,
+      "text": "bdpbd: server.advertisedProfile and bd.executable round-trip through tarball"
+    },
+    {
+      "line": 11568,
+      "text": "bdptest: --config alone remains lifecycle-only"
+    },
+    {
+      "line": 11569,
+      "text": "bdpbd: --config alone remains lifecycle-only"
+    },
+    {
+      "line": 11570,
+      "text": "bdptest: --serve --config remains fail-closed before bind"
+    },
+    {
+      "line": 11571,
+      "text": "bdpbd: --serve --config remains fail-closed before bind"
+    },
+    {
+      "line": 11572,
+      "text": "bdptest: public Read admission serves discovery and stops cleanly"
+    },
+    {
+      "line": 11573,
+      "text": "bdptest: public profile admission fails closed before bind"
+    },
+    {
+      "line": 11574,
+      "text": "bdpbd: public Read admission serves discovery and stops cleanly"
+    },
+    {
+      "line": 11575,
+      "text": "bdpbd: public profile admission fails closed before bind"
+    },
+    {
+      "line": 11576,
+      "text": "{\"event\":\"installed.reference.observed\",\"claimEligible\":false,\"configurationIdentity\":\"f0b225cd420028757c612408b4731886dbe2cefb4f14eed6d4dcc71abe1e4d6b\",\"payloadIdentity\":\"3bcccdbcf7abd2ba9282c2412d43ddc60cb5c1da65e9b069438c66a6caf087ed\",\"artifactIdentity\":\"development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7\",\"allNineTargets\":true,\"stableScope\":\"https://reference.invalid/acme/\"}"
+    },
+    {
+      "line": 11577,
+      "text": "bdp: role isolation lifecycle ignores invalid bdptest/server values"
+    },
+    {
+      "line": 11578,
+      "text": "##[group]Run pnpm evidence:verify || test $? -eq 2"
+    },
+    {
+      "line": 11579,
+      "text": "pnpm evidence:verify || test $? -eq 2"
+    },
+    {
+      "line": 11580,
+      "text": "shell: /usr/bin/bash -e {0}"
+    },
+    {
+      "line": 11581,
+      "text": "env:"
+    },
+    {
+      "line": 11582,
+      "text": "PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin"
+    },
+    {
+      "line": 11583,
+      "text": "GOTOOLCHAIN: local"
+    },
+    {
+      "line": 11584,
+      "text": "##[endgroup]"
+    },
+    {
+      "line": 11585,
+      "text": "$ node scripts/read-cohort-evidence.mjs"
+    },
+    {
+      "line": 11586,
+      "text": "{\"level\":\"info\",\"event\":\"evidence.verified\",\"executable\":\"read-cohort-evidence\",\"artifact\":\"docs/design/evidence/read-cohort/read-v1.json\",\"constant\":\"674982be2123b9b7aae630bf79c3f774122900cd\",\"runHead\":\"e5f7d0c43c151426350ceededdc77fe7e372db9b\",\"evidenceCommit\":\"dbaf63a24219e1ea3f80394746853598b0d4464a\",\"schemaReadProjection\":\"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc\",\"schemaReadProjectionDefinitions\":47,\"schemaReadProjectionReachable\":46,\"rows\":89}"
+    }
+  ],
+  "maskedObservations": [
+    {
+      "line": 1702,
+      "label": "source-receipt-missing-context"
+    },
+    {
+      "line": 3183,
+      "label": "source-missing-event-context"
+    },
+    {
+      "line": 4446,
+      "label": "private-installed-event-missing-context"
+    },
+    {
+      "line": 5030,
+      "label": "private-installed-minimum-receiving"
+    },
+    {
+      "line": 5669,
+      "label": "private-installed-minimum-current-resource"
+    },
+    {
+      "line": 6956,
+      "label": "private-installed-receipt-missing-context"
+    },
+    {
+      "line": 7516,
+      "label": "private-installed-changefeed-parameter-context"
+    },
+    {
+      "line": 11514,
+      "label": "installed-tx-conditional"
+    }
+  ],
+  "limits": [
+    "Eight unrelated raw observation JSON rows are GitHub-mask damaged; no reconstruction. All ten alias source reports and both selected installed reports are intact.",
+    "CI alias callbacks use workspace emitted dist; local packed-consumer validation is distinct evidence. Package smoke separately checks tarballs.",
+    "Remote cleanup is callback-reported lifecycle/job completion, not independent remote process/filesystem census. Local cleanup remains separate.",
+    "Historical Read evidence remains its original 89-row artifact and historical identities, not new alias qualification. Counts do not establish profile completeness."
+  ],
+  "auditMethod": "Read-only metadata/raw-log extraction and data assertions; no product execution. Source capture/missing/transition/drain/incident counters and HTTP status sequence inspected against selected contracts; installed binding, status, GET/HEAD metadata, lifecycle inspected. Historical localSensitivityControls is the two-item array admission-target/stale-postimage, not a numeric field."
+}

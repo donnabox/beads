@@ -1,0 +1,35 @@
+{
+  "sourceFile": "packages/server/src/transaction-changefeed.test.ts",
+  "existingTitles": [
+    "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page",
+    "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+    "does not classify a missing previously committed cursor row as never issued or skip its gap",
+    "captures feed body and serving context inside one fenced owner entry",
+    "keeps start=now's original admission anchor through a minimum wait and drains on close",
+    "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart",
+    "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+    "preserves current context on owner-observed changefeed parameter refusals over HTTP"
+  ],
+  "newTitles": [
+    "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown",
+    "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01",
+    "aborts fresh finite changefeed opaque waiting before close drains",
+    "preserves fresh finite changefeed admission before wait preflight: already-aborted",
+    "preserves fresh finite changefeed admission before wait preflight: invalid-policy",
+    "preserves fresh finite changefeed admission before wait preflight: throwing-clock",
+    "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock",
+    "keeps direct and excluded changefeed minimum paths strict",
+    "serves finite start-now opaque minima before HTTP shortcuts"
+  ],
+  "sourceCount": 17,
+  "sourcePattern": "^(keeps\\ genesis\\ checkpoint\\ distinct\\ from\\ zero\\ position\\ and\\ resumes\\ after\\ an\\ empty\\ caught\\-up\\ page|uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|does\\ not\\ classify\\ a\\ missing\\ previously\\ committed\\ cursor\\ row\\ as\\ never\\ issued\\ or\\ skip\\ its\\ gap|captures\\ feed\\ body\\ and\\ serving\\ context\\ inside\\ one\\ fenced\\ owner\\ entry|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|serves\\ actual\\ HTTP\\ finite\\ GET/HEAD,\\ absolute\\ navigation,\\ native\\ conditions\\ and\\ restart|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ unknown|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ pos\\-01|aborts\\ fresh\\ finite\\ changefeed\\ opaque\\ waiting\\ before\\ close\\ drains|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ already\\-aborted|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ invalid\\-policy|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ throwing\\-clock|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ nonfinite\\-clock|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts)$",
+  "installedFile": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+  "historicalTitle": "observes genuine installed current context on changefeed parameter refusals",
+  "newTitle": "observes genuine installed finite start-now opaque minimum refusal",
+  "installedSeparatePatterns": [
+    "^observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals$",
+    "^observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal$"
+  ],
+  "titlesAreTopLevel": true,
+  "executed": false
+}
