@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T09:57:46Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T10:16:08Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T09:57:46Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Alias plan corrections closed; isolated authoring released | Review frozen draft before CODE council and runtime release |
-| Conditional reviewer | Actual PLAN findings and precision successor independently closed | Idle; review source when frozen |
-| Event reviewer | Author four-file alias opaque-minimum slice on isolated9d2 base | Freeze patch/source/preservation/selection; no runtime or publication |
-| Native reviewer | Independent PR158 exact CI audit accepted | Idle; full raw-job and masked historical-record limits retained |
+| Root | Reconcile exact frozen PR150/main inputs on isolated branch | Review plan/council, merge, validate exact result and publish PR; no main landing |
+| Conditional reviewer | Prepare exact-object merge/validation plan | Frozen plan with isolated tool prerequisites; no source changes |
+| Event reviewer | Prepare actual Claude reconciliation PLAN review | Closed runner/input bindings; alias draft frozen and stopped |
+| Native reviewer | Independently review reconciliation plan and Claude preparation | Findings before merge release; no source mutation |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -341,6 +341,11 @@ Next alias detailedplan remains closed on dirty planning basis pending PR158 exa
 **Alias plan corrections closed; source authoring started.** [Native findings audit](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/findings-audit.md)a0ef9bea and [native precision closure](receipt-root-next-serving-audit/plan-precision-successor-2/native-precision-review.md)14199cd7 confirm all12 dispositions. [Final plan](receipt-root-next-serving-audit/plan-precision-successor-2/plan-v3.md)2455988b/[selection](receipt-root-next-serving-audit/plan-precision-successor-2/selection-v3.json)ba6d72a3/indexec64c3fe retain the four-file production/test scope and deadlines. Root rehashed17frozen artifacts/all679source; the findings audit really is included in that index at a0ef, correcting a stale handoff statement without artifact changes. Prospective20source/46sourceHTTP/88combinedHTTP/22stores includes the three unchanged legacy callbacks; no runtime or completeness claim. Unique new installed label and10s unknown/late cleanup wording close the review findings.
 
 [Root authoring release](alias-opaque-minimum-author/root-author-release.json) at09:57:06Z binds isolated `/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum`, branch `codex/vickie-alias-opaque-minimum`, clean9d2/tree62628a/all679. Event worker owns only transaction-read.ts, its tests, transaction-http.test.ts and transactional-alias-installed.test.ts. Preserve existing classifier, ten selected legacy callbacks and historical36-request installed cohort. No tests/build/install/formatter/services/commit/push released; frozen draft then CODE review and staged validation remain next. PR150d4 and PR1589d2 remain unchanged and green; S1/G2, public activation and main integration holds unchanged. Prior checkpoint09:46 immediate launch readback differed transiently; a separate read confirmed exact submitted bytes/e9d2fd51 and unchanged session without a repeated write.
+
+
+**Alias draft frozen at the reconciliation boundary.** [Author report](alias-opaque-minimum-author/report.md), binding8b077746/patchf538ccdb/index0e2d5bef pin exactly four changed files and675 unchanged inputs on9d2cd441. No alias tests/build/install/CODE review/commit/push has run. The exported classifier and historical callbacks are preserved in the draft, pending review and execution. The worktree stays separate and untouched.
+
+**Reconciliation preparation active.** Isolated `codex/vickie-pr150-main-reconciliation` starts clean at d4f3f4be, with exact incoming8d6671 object fetched. No merge yet. Native/object audit confirms the nine shared files, four hidden schema readers and sole minimum-read normative delta. Plan and native/Claude review preparation precede authoring. Local Go1.26.3 is not the required1.26.2; validation will provision and verify an isolated toolchain/Beads1.0.5 instead of using shared CLI. No validation or combined-tree claim yet. Earlier blanket reconciliation holds below are historical and superseded only for this authorized isolated pair.
 
 ## Current priority: BDP profile structure and implementation
 
