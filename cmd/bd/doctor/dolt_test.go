@@ -5,17 +5,32 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/configfile"
+	"github.com/steveyegge/beads/internal/doltserver"
 )
 
 // TestRunDoltHealthChecks_NonDoltBackend was removed: SQLite backend no longer
 // exists. GetBackend() always returns "dolt" after the dolt-native cleanup.
 // (bd-yqpwy)
 
+// clearDoltPortEnv empties both process-wide Dolt port variables for the
+// duration of the test. The cgo TestMain publishes its shared test server on
+// BEADS_DOLT_SERVER_PORT and BEADS_DOLT_PORT, and either one outranks a port
+// written to metadata.json, so a test that expects no server, or a server of
+// its own, must not inherit them.
+func clearDoltPortEnv(t *testing.T) {
+	t.Helper()
+	t.Setenv("BEADS_DOLT_SERVER_PORT", "")
+	t.Setenv("BEADS_DOLT_PORT", "")
+}
+
 func TestRunDoltHealthChecks_DoltBackendNoServer(t *testing.T) {
 	// GH#2722: In owned/embedded mode (non-external), when no server is
 	// running, server-dependent checks should be skipped gracefully (StatusOK)
 	// instead of reporting false errors. The embedded SharedStore checks
 	// already cover data integrity.
+	clearDoltPortEnv(t)
 	tmpDir := t.TempDir()
 	beadsDir := filepath.Join(tmpDir, ".beads")
 	if err := os.MkdirAll(beadsDir, 0o755); err != nil {
@@ -28,7 +43,7 @@ func TestRunDoltHealthChecks_DoltBackendNoServer(t *testing.T) {
 		t.Fatalf("failed to write config: %v", err)
 	}
 
-	// No BEADS_DOLT_SERVER_PORT set → port 0 → no server running
+	// Both port variables cleared above → port 0 → no server running
 	// No BEADS_DOLT_SHARED_SERVER → owned mode (not external)
 	checks := RunDoltHealthChecks(tmpDir)
 	if len(checks) != 7 {
@@ -229,6 +244,50 @@ func TestDescribeUncommittedTables_AllIgnoredIsClean(t *testing.T) {
 	}
 }
 
+// TestResolveGlobalDoltDatabase pins each arm of the GH#6599 resolver directly.
+// The end-to-end coverage in dolt_phantom_test.go is //go:build cgo and skips
+// whenever the shared Dolt test container is unreachable, so these are the arms
+// that run everywhere, including the CGO_ENABLED=0 lane: no server, no skip.
+func TestResolveGlobalDoltDatabase(t *testing.T) {
+	// Shared-server mode is ON here and the stamp is deliberately not
+	// doltserver.GlobalDatabaseName, so this is the one configuration that
+	// discriminates "the stamp is read first" from "the mode gate is read
+	// first" — reordering the two arms returns the constant and reddens this.
+	t.Run("stamp wins ahead of the mode gate", func(t *testing.T) {
+		t.Setenv("BEADS_DOLT_SHARED_SERVER", "1")
+		cfg := &configfile.Config{GlobalDoltDatabase: "beads_global_renamed"}
+		if got := resolveGlobalDoltDatabase(cfg); got != "beads_global_renamed" {
+			t.Errorf("resolveGlobalDoltDatabase(stamped) = %q, want the stamp %q", got, "beads_global_renamed")
+		}
+	})
+
+	// BEADS_DOLT_SHARED_SERVER="1" forces IsSharedServerMode() true before it
+	// consults config.yaml, so this arm cannot be quieted by the host's config.
+	t.Run("unstamped config falls back to the routed constant", func(t *testing.T) {
+		t.Setenv("BEADS_DOLT_SHARED_SERVER", "1")
+		if got := resolveGlobalDoltDatabase(&configfile.Config{}); got != doltserver.GlobalDatabaseName {
+			t.Errorf("resolveGlobalDoltDatabase(unstamped) = %q, want %q", got, doltserver.GlobalDatabaseName)
+		}
+	})
+
+	t.Run("nil config falls back to the routed constant", func(t *testing.T) {
+		t.Setenv("BEADS_DOLT_SHARED_SERVER", "1")
+		if got := resolveGlobalDoltDatabase(nil); got != doltserver.GlobalDatabaseName {
+			t.Errorf("resolveGlobalDoltDatabase(nil) = %q, want %q", got, doltserver.GlobalDatabaseName)
+		}
+	})
+
+	t.Run("unstamped per-project workspace resolves to nothing", func(t *testing.T) {
+		t.Setenv("BEADS_DOLT_SHARED_SERVER", "0")
+		if doltserver.IsSharedServerMode() {
+			t.Skip("shared-server mode enabled via config.yaml; cannot exercise the per-project arm")
+		}
+		if got := resolveGlobalDoltDatabase(&configfile.Config{}); got != "" {
+			t.Errorf("resolveGlobalDoltDatabase(unstamped, per-project) = %q, want \"\" so the skip arm never matches", got)
+		}
+	})
+}
+
 // TestDoltLocksAndDoltStatusShareOneFilter is the anti-drift guard. The two
 // checks previously kept independent skip-lists that diverged; if a future
 // change reintroduces a second private filter, the shared helper stops being
@@ -245,5 +304,23 @@ func TestDoltLocksAndDoltStatusShareOneFilter(t *testing.T) {
 		if got := describeUncommittedTables([]doltStatusRow{{table: table, status: "modified"}}); len(got) != 0 {
 			t.Errorf("describeUncommittedTables(%q) = %v, want empty", table, got)
 		}
+	}
+}
+
+func TestIssuesProbeQuery(t *testing.T) {
+	tests := []struct {
+		name   string
+		dbName string
+		want   string
+	}{
+		{"plain", "beads_x", "SELECT COUNT(*) FROM `beads_x`.issues LIMIT 1"},
+		{"backtick", "evil`; DROP TABLE x", "SELECT COUNT(*) FROM `evil``; DROP TABLE x`.issues LIMIT 1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := issuesProbeQuery(tt.dbName); got != tt.want {
+				t.Errorf("issuesProbeQuery(%q) = %q, want %q", tt.dbName, got, tt.want)
+			}
+		})
 	}
 }

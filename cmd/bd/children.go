@@ -1,9 +1,16 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
+
 	"github.com/spf13/cobra"
 
 	"github.com/steveyegge/beads/internal/metrics"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 var childrenCmd = &cobra.Command{
@@ -33,6 +40,44 @@ Examples:
 
 		parentID := args[0]
 		pretty, _ := cmd.Flags().GetBool("pretty")
+		if graphPreviewActive {
+			if graphPreviewTypeGeneration != 9 {
+				return graphFailure("capability_unavailable", "graph children requires the current graph Type installation", 5)
+			}
+			if err := graphPreviewFlags(cmd); err != nil {
+				return err
+			}
+			selected, err := graphPreviewIssueSelector(parentID)
+			if err != nil {
+				return graphFailure("invalid_selector", err.Error(), 2)
+			}
+			return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+				children, err := s.ListChildrenLegacy(ctx, selected.Path)
+				return children, "", err
+			}, func(value any, _ string) error {
+				children := value.([]*types.IssueWithCounts)
+				if jsonOutput {
+					encoded, err := json.Marshal(children)
+					if err != nil {
+						return err
+					}
+					if len(encoded) > graphIssueListOutputLimit {
+						return graphFailure("capability_unavailable", "children JSON exceeds preview output limit", 5)
+					}
+					return outputJSON(children)
+				}
+				if len(children) == 0 {
+					_, err := fmt.Fprintf(cmd.OutOrStdout(), "Issue '%s' has no children\n", parentID)
+					return err
+				}
+				var out strings.Builder
+				for _, child := range children {
+					formatIssueCompact(&out, child.Issue, child.Labels, nil, nil, selected.Path, nil)
+				}
+				_, err := fmt.Fprint(cmd.OutOrStdout(), out.String())
+				return err
+			})
+		}
 
 		_ = listCmd.Flags().Set("parent", parentID)
 		defer func() { _ = listCmd.Flags().Set("parent", "") }()

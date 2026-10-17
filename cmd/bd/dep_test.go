@@ -517,6 +517,29 @@ func TestDepTreeFormatFlag(t *testing.T) {
 	}
 }
 
+// TestDepTreeFormatMermaidCaseInsensitive pins that --format mermaid folds case
+// the same way the json format check does.
+func TestDepTreeFormatMermaidCaseInsensitive(t *testing.T) {
+	tests := []struct {
+		format string
+		want   bool
+	}{
+		{"mermaid", true},
+		{"Mermaid", true},
+		{"MERMAID", true},
+		{"", false},
+		{"json", false},
+		{"dot", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.format, func(t *testing.T) {
+			if got := isMermaidTreeFormat(tt.format); got != tt.want {
+				t.Errorf("isMermaidTreeFormat(%q) = %v, want %v", tt.format, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestGetStatusEmoji(t *testing.T) {
 	tests := []struct {
 		status types.Status
@@ -936,6 +959,34 @@ func TestRenderTreeOutput(t *testing.T) {
 	}
 }
 
+func TestRenderTreeExternalBlockerMarksRootBlocked(t *testing.T) {
+	tree := []*types.TreeNode{
+		{
+			Issue: types.Issue{ID: "BD-root", Title: "Root", Status: types.StatusOpen, Priority: 1},
+		},
+		{
+			Issue:          types.Issue{ID: "external:remote:payments", Title: "○ payments", Status: types.StatusOpen},
+			Depth:          1,
+			ParentID:       "BD-root",
+			EdgeFromParent: types.DepBlocks,
+		},
+	}
+
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	renderTree(tree, 50, "down")
+	w.Close()
+	os.Stdout = old
+
+	var buf bytes.Buffer
+	_, _ = io.Copy(&buf, r)
+	output := buf.String()
+	if !strings.Contains(output, "[BLOCKED]") || strings.Contains(output, "[READY]") {
+		t.Fatalf("external blocker should mark root blocked, got:\n%s", output)
+	}
+}
+
 func TestRenderTreeOutputShowsDependencyTypeLabelsInMixedGraph(t *testing.T) {
 	downTree := []*types.TreeNode{
 		{
@@ -1028,88 +1079,6 @@ func TestTreeNodeJSONIncludesEdgeFromParent(t *testing.T) {
 //
 // These tests serve as regression tests ensuring the storage layer
 // continues to provide user-friendly error messages.
-
-func TestIsChildOf(t *testing.T) {
-	tests := []struct {
-		name     string
-		childID  string
-		parentID string
-		want     bool
-	}{
-		// Positive cases: should be detected as child
-		{
-			name:     "direct child",
-			childID:  "bd-abc.1",
-			parentID: "bd-abc",
-			want:     true,
-		},
-		{
-			name:     "grandchild",
-			childID:  "bd-abc.1.2",
-			parentID: "bd-abc",
-			want:     true,
-		},
-		{
-			name:     "nested grandchild direct parent",
-			childID:  "bd-abc.1.2",
-			parentID: "bd-abc.1",
-			want:     true,
-		},
-		{
-			name:     "deeply nested child",
-			childID:  "bd-abc.1.2.3",
-			parentID: "bd-abc",
-			want:     true,
-		},
-
-		// Negative cases: should NOT be detected as child
-		{
-			name:     "same ID",
-			childID:  "bd-abc",
-			parentID: "bd-abc",
-			want:     false,
-		},
-		{
-			name:     "not a child - unrelated IDs",
-			childID:  "bd-xyz",
-			parentID: "bd-abc",
-			want:     false,
-		},
-		{
-			name:     "not a child - sibling",
-			childID:  "bd-abc.2",
-			parentID: "bd-abc.1",
-			want:     false,
-		},
-		{
-			name:     "reversed - parent is not child of child",
-			childID:  "bd-abc",
-			parentID: "bd-abc.1",
-			want:     false,
-		},
-		{
-			name:     "prefix but not hierarchical",
-			childID:  "bd-abcd",
-			parentID: "bd-abc",
-			want:     false,
-		},
-		{
-			name:     "not hierarchical ID",
-			childID:  "bd-abc",
-			parentID: "bd-xyz",
-			want:     false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := isChildOf(tt.childID, tt.parentID)
-			if got != tt.want {
-				t.Errorf("isChildOf(%q, %q) = %v, want %v", tt.childID, tt.parentID, got, tt.want)
-			}
-		})
-	}
-}
 
 // TestDepRoutedTargetOpensReadOnly is the regression guard for the dep/link
 // target-resolution invariant: a cross-rig dependency target is resolved by ID

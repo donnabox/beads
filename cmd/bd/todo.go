@@ -12,6 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
+	"github.com/steveyegge/beads/issueops"
 )
 
 var todoCmd = &cobra.Command{
@@ -39,6 +40,9 @@ TODOs can be promoted to full issues by changing type or priority:
 
 		// Delegate to the shared, non-emitting list core so a single `bd todo`
 		// records exactly one cli_command event ("todo"), not also "todo-list".
+		if graphPreviewActive {
+			return runGraphPreviewTodoList(cmd)
+		}
 		return runTodoListCore(cmd, args)
 	},
 }
@@ -50,8 +54,6 @@ var addTodoCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		CheckReadonly("todo add")
-
 		evt := metrics.NewCommandEvent("todo-add")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -59,6 +61,10 @@ var addTodoCmd = &cobra.Command{
 			}
 		}()
 
+		if graphPreviewActive {
+			return runGraphPreviewTodoAdd(cmd, args)
+		}
+		CheckReadonly("todo add")
 		if usesProxiedServer() {
 			return runTodoAddProxiedServer(cmd, rootCtx, args)
 		}
@@ -114,6 +120,9 @@ var listTodosCmd = &cobra.Command{
 			}
 		}()
 
+		if graphPreviewActive {
+			return runGraphPreviewTodoList(cmd)
+		}
 		return runTodoListCore(cmd, args)
 	},
 }
@@ -186,8 +195,6 @@ var doneTodoCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		CheckReadonly("todo done")
-
 		evt := metrics.NewCommandEvent("todo-done")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -195,6 +202,10 @@ var doneTodoCmd = &cobra.Command{
 			}
 		}()
 
+		if graphPreviewActive {
+			return runGraphPreviewTodoDone(cmd, args)
+		}
+		CheckReadonly("todo done")
 		if usesProxiedServer() {
 			return runTodoDoneProxiedServer(cmd, rootCtx, args)
 		}
@@ -254,12 +265,13 @@ func init() {
 	todoCmd.AddCommand(doneTodoCmd)
 
 	// Add flags
-	addTodoCmd.Flags().IntP("priority", "p", 2, "Priority (0-4, default 2)")
+	addTodoCmd.Flags().IntP("priority", "p", issueops.DefaultCreatePriority, "Priority (0-4, default 2)")
 	addTodoCmd.Flags().StringP("description", "d", "", "Description")
 
 	listTodosCmd.Flags().Bool("all", false, "Show all TODOs including completed")
 
 	doneTodoCmd.Flags().String("reason", "", "Reason for closing (default: Completed)")
+	doneTodoCmd.Flags().String("if-revision", "", "Require this observed Issue revision for a single graph TODO (graph preview only)")
 
 	// Register with root
 	rootCmd.AddCommand(todoCmd)

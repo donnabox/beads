@@ -131,9 +131,16 @@ func PromoteFromEphemeralInTx(ctx context.Context, tx DBTX, id string, actor str
 
 	// The bead keeps its ID across promotion; only its plane changes. Journal
 	// one update carrying the now-durable snapshot, after derived blocked-state
-	// maintenance has settled.
+	// maintenance has settled — and mint its first version: the promoted row
+	// is new durable state on the issues plane (a wisp is never versioned, so
+	// nothing precedes it), minted once after its labels, dependencies and
+	// comments have been copied across. That makes the mint create-shaped
+	// (design §16.2b): the issues row inserted above has no
+	// participation_generation, since a wisp never declares one, and the
+	// update-shaped entry would read that NULL as legacy and skip this mint
+	// and every later one.
 	if err := RecordEventInTx(ctx, tx, EventUpdate, id, actor); err != nil {
 		return err
 	}
-	return nil
+	return RecordVersionForCreateInTx(ctx, tx, id, actor)
 }

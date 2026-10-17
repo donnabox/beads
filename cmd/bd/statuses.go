@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/metrics"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 )
@@ -51,6 +52,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewStatuses(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("statuses")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -76,6 +80,21 @@ Examples:
 
 		return renderStatuses(customStatuses)
 	},
+}
+
+func runGraphPreviewStatuses(cmd *cobra.Command, args []string) error {
+	if err := graphPreviewFlags(cmd); err != nil {
+		return err
+	}
+	if len(args) != 0 {
+		return graphFailure("invalid_selector", "bd statuses takes no arguments", 2)
+	}
+	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+		statuses, err := s.ListCustomStatuses(ctx)
+		return statuses, "", err
+	}, func(result any, _ string) error {
+		return renderStatuses(result.([]types.CustomStatus))
+	})
 }
 
 func renderStatuses(customStatuses []types.CustomStatus) error {

@@ -319,6 +319,33 @@ contexts: the budget covers a claim inside its serialization-retry budget plus
 its commit, because killing such a connection early would leave the client
 unable to tell whether its write landed.
 
+**A large `POST /v0/beads/issues:batchApply` (over 100 items) extends this
+budget rather than being cut off by it.** Such a request can legitimately still
+be running at up to `--large-apply-ceiling` (5 minutes by default) when
+shutdown begins, so the drain budget computed at shutdown start extends to that
+request's own remaining deadline, plus 5 seconds to write its response back,
+instead of the ordinary 20 seconds — the in-flight write is waited out, not
+killed mid-commit. A large apply still *queued* for the one-wide large-apply
+semaphore when shutdown begins is refused with `503` immediately rather than
+being admitted or extending the drain further.
+
+**The orchestrator's stop grace (e.g. a Kubernetes `terminationGracePeriodSeconds`)
+must be at least `--large-apply-ceiling` plus 5 seconds.** The drain logic above
+only runs inside this process; an external `SIGKILL` after the orchestrator's
+own grace period expires cuts the process off regardless of what the drain was
+waiting for, which can still sever an in-flight large apply the drain would
+otherwise have waited out. Size the grace period to the ceiling plus those 5
+seconds, not to the ordinary 20s drain.
+
+**Raising `--large-apply-ceiling` past about 5m15s also outruns bd's own HTTP
+client.** It waits 6 minutes for a batch apply over 100 items: the default
+ceiling plus what the server may spend around it (the 30s request read, the
+10s wait for the large-apply slot, 5s to write the answer back). The server
+does not advertise its ceiling, so a client cannot wait longer for a server
+that grants more, and an apply that runs past the client's 6 minutes is
+reported to the caller as a timeout with an unknown outcome while the server
+goes on to commit it.
+
 Journal streams are the exception, and they have to be: a held-open response
 would otherwise sit through the whole budget and then be killed anyway. They get
 an explicit close signal when the drain starts and end on their own within a
