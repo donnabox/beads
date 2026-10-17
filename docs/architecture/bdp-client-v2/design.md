@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T09:03:51Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T09:22:30Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T09:03:51Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | PR158 receipt-root correction published9d2cd44; exactCI39019562524 running | Verify terminal exact CI before clean-green next-alias rebind |
-| Conditional reviewer | Independent PR158 publication scope/ancestry/source audit complete | Idle; exact CI still pending |
-| Event reviewer | Alias concrete plan-v2 frozen and native/root accepted | Idle; clean-green receipt rebind and actual council remain required |
-| Native reviewer | Final receipt local/installed audit complete | Idle; all19fresh stages pass, original bootstrap-only reuse distinct |
+| Root | PR158 exact CI green; alias actual Claude PLAN launched PID55727/session7410 | Monitor actual review, disposition findings before any source release |
+| Conditional reviewer | Alias clean rebind and CLOSED preparation independently accepted | Audit launch and eventual actual PLAN findings/access/source continuity |
+| Event reviewer | Alias clean-base rebind and review packet frozen | Idle; no alias source authoring released |
+| Native reviewer | Independent PR158 exact CI audit accepted | Idle; full raw-job and masked historical-record limits retained |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -328,6 +328,11 @@ Next alias detailedplan remains closed on dirty planning basis pending PR158 exa
 
 
 [Independent publication audit](receipt-root-minimum-validation-successor-1/native-publication-audit.md) confirms all679committed/current bytes equal the tested map, exactsixfilepatch/sole088parent/pinned spec, bothremoteheads and truthful PR158body. Root read and accepts that identity/scope audit; exactCI39019562524 remains in progress. No green inference, merge or support activation.
+
+
+**PR158 exact CI is green; next alias PLAN review is active.** [CI39019562524](https://github.com/gastownhall/bdp/actions/runs/39019562524) completed09:12:31Z on unchanged9d2cd441: all27steps successful,9416tests/186files passed/1skip,7preflight, static/build/package smoke/historicalReadgate. [Root exact-head record](receipt-root-minimum-validation-successor-1/exact-head-ci.json)46060916 and [independent CI audit](receipt-root-minimum-validation-successor-1/native-exact-ci-audit.md)55d43283 verify exact source, remote head and complete3,635,502-byte raw job log cbc63047. Initial formatted log is partial and preserved separately. Seven masking-damaged observation lines, including historical22, are not recovered or claimed intact; new receiptE5 is intact with200/503/503/404/404 and reported clean child/store closure. CI workspace payloada6af remains distinct from local packed63dd. Historical Read evidence identity remains unchanged. No remote process census is claimed. PR150d4 freshly remains frozen and green; PR158 stays separate subsequent implementation.
+
+[Clean alias rebind](receipt-root-next-serving-audit/clean-base-successor-1/report.md) and [native closure](receipt-root-next-serving-audit/clean-base-successor-1/native-clean-rebind.md)9374e477 verify all679current/committed bytes; only two receipt formatter test files differ from old dirty basis and all four alias paths are unchanged. Plan5bfe41fe/selection45be3d0a/workloada3cb519e preserve scope and prospective counts. Root accepted [native review preparation](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/native-preparation-review.md)2da7bf4f and independently rehashed all679source/25absolutecontexts/17artifacts. [Root release](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/root-release.json) opens exactly one read-only actualClaude PLAN review, not source authoring. Closedbinding1f40efe retained separately; releasedbinding6ccd8196; immutable preparation index still binds the closed bytes. Actual PID55727/session7410 began09:21:36Z with defaultmodel/read-only tools/strict emptyMCP,3600s deadline and TERM3595, no retry. Full plan/selection/workload inline and absolute context paths address the earlier relative-access limitation without relabeling it. Review is running with no terminal verdict yet. Findings disposition and a fresh source check are required before authoring. S1/G2 and public-profile gates remain unchanged.
 
 ## Current priority: BDP profile structure and implementation
 
