@@ -1,0 +1,344 @@
+packages/server/src/transaction-read.test.ts:757:20 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    755 │       [{ limit: 11 }, "limit-exceeded"],
+    756 │       [{ selector: "$[?" }, "invalid-parameter"],
+  > 757 │       [{ selector: "$[?@.properties.n == '" + "x".repeat(4100) + "']" }, "limit-exceeded"],
+        │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    758 │     ] as const) {
+    759 │       await expect(
+  
+  i Unsafe fix: Use a template literal.
+  
+     755  755 │         [{ limit: 11 }, "limit-exceeded"],
+     756  756 │         [{ selector: "$[?" }, "invalid-parameter"],
+     757      │ - ······[{·selector:·"$[?@.properties.n·==·'"·+·"x".repeat(4100)·+·"']"·},·"limit-exceeded"],
+          757 │ + ······[{·selector:·`$[?@.properties.n·==·'${"x".repeat(4100)}']`·},·"limit-exceeded"],
+     758  758 │       ] as const) {
+     759  759 │         await expect(
+  
+
+packages/server/src/transaction-http.test.ts:1180:40 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1178 │       const entries = commandEntries(value);
+    1179 │       expect(entries).toHaveLength(1);
+  > 1180 │       const resource = commandResource(entries[0]!.resource, {
+         │                                        ^^^^^^^^^^^
+    1181 │         id: `${f.runtime.scope}beads/${key}`,
+    1182 │         type: bead,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1178 1178 │         const entries = commandEntries(value);
+    1179 1179 │         expect(entries).toHaveLength(1);
+    1180      │ - ······const·resource·=·commandResource(entries[0]!.resource,·{
+         1180 │ + ······const·resource·=·commandResource(entries[0]?.resource,·{
+    1181 1181 │           id: `${f.runtime.scope}beads/${key}`,
+    1182 1182 │           type: bead,
+  
+
+packages/server/src/transaction-http.test.ts:1248:38 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1246 │   expect(seeded).toHaveLength(3);
+    1247 │   for (const [index, name] of ["a", "b"].entries()) {
+  > 1248 │     const resource = commandResource(seeded[index]!.resource, {
+         │                                      ^^^^^^^^^^^^^^
+    1249 │       id: `${f.runtime.scope}beads/${name}`,
+    1250 │       type: bead,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1246 1246 │     expect(seeded).toHaveLength(3);
+    1247 1247 │     for (const [index, name] of ["a", "b"].entries()) {
+    1248      │ - ····const·resource·=·commandResource(seeded[index]!.resource,·{
+         1248 │ + ····const·resource·=·commandResource(seeded[index]?.resource,·{
+    1249 1249 │         id: `${f.runtime.scope}beads/${name}`,
+    1250 1250 │         type: bead,
+  
+
+packages/server/src/transaction-http.test.ts:1255:34 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1253 │     expect(seeded[index]).toEqual({ operationIndex: index, outcome: "created", resource });
+    1254 │   }
+  > 1255 │   const victim = commandResource(seeded[2]!.resource, {
+         │                                  ^^^^^^^^^^
+    1256 │     id: `${f.runtime.scope}links/victim`,
+    1257 │     type: link,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1253 1253 │       expect(seeded[index]).toEqual({ operationIndex: index, outcome: "created", resource });
+    1254 1254 │     }
+    1255      │ - ··const·victim·=·commandResource(seeded[2]!.resource,·{
+         1255 │ + ··const·victim·=·commandResource(seeded[2]?.resource,·{
+    1256 1256 │       id: `${f.runtime.scope}links/victim`,
+    1257 1257 │       type: link,
+  
+
+packages/server/src/transaction-http.test.ts:1292:38 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1290 │   ) {
+    1291 │     expect(entries).toHaveLength(1);
+  > 1292 │     const resource = commandResource(entries[0]!.resource, {
+         │                                      ^^^^^^^^^^^
+    1293 │       id: `${f.runtime.scope}beads/${name}`,
+    1294 │       type: bead,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1290 1290 │     ) {
+    1291 1291 │       expect(entries).toHaveLength(1);
+    1292      │ - ····const·resource·=·commandResource(entries[0]!.resource,·{
+         1292 │ + ····const·resource·=·commandResource(entries[0]?.resource,·{
+    1293 1293 │         id: `${f.runtime.scope}beads/${name}`,
+    1294 1294 │         type: bead,
+  
+
+packages/server/src/transaction-http.test.ts:1323:37 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1321 │     properties: { title: "l" },
+    1322 │   });
+  > 1323 │   const firstLink = commandResource(createdLink[0]!.resource, {
+         │                                     ^^^^^^^^^^^^^^^
+    1324 │     id: `${f.runtime.scope}links/l`,
+    1325 │     type: link,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1321 1321 │       properties: { title: "l" },
+    1322 1322 │     });
+    1323      │ - ··const·firstLink·=·commandResource(createdLink[0]!.resource,·{
+         1323 │ + ··const·firstLink·=·commandResource(createdLink[0]?.resource,·{
+    1324 1324 │       id: `${f.runtime.scope}links/l`,
+    1325 1325 │       type: link,
+  
+
+packages/server/src/transaction-http.test.ts:1335:36 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1333 │     propertiesChange: [{ op: "replace", path: "/title", value: "l2" }],
+    1334 │   });
+  > 1335 │   const lastLink = commandResource(updatedLink[0]!.resource, {
+         │                                    ^^^^^^^^^^^^^^^
+    1336 │     id: `${f.runtime.scope}links/l`,
+    1337 │     type: link,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1333 1333 │       propertiesChange: [{ op: "replace", path: "/title", value: "l2" }],
+    1334 1334 │     });
+    1335      │ - ··const·lastLink·=·commandResource(updatedLink[0]!.resource,·{
+         1335 │ + ··const·lastLink·=·commandResource(updatedLink[0]?.resource,·{
+    1336 1336 │       id: `${f.runtime.scope}links/l`,
+    1337 1337 │       type: link,
+  
+
+packages/server/src/transaction-read.test.ts:1316:20 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1314 │     expect(rows.map((r) => r.id)).toEqual(names.map((n) => url(`links/${n}`)));
+    1315 │     for (const row of rows) {
+  > 1316 │       const name = String(row.id).split("/").at(-1)!;
+         │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1317 │       expect(row).toEqual({
+    1318 │         id: url(`links/${name}`),
+  
+
+packages/server/src/transaction-read.test.ts:1396:41 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1394 │       } else await expect(delivery).rejects.toThrow("outside supported subset");
+    1395 │       expect(invoked).not.toHaveBeenCalled();
+  > 1396 │       expect(body(await minimum.perform(requests[0]!))).toEqual(descriptor);
+         │                                         ^^^^^^^^^^^^
+    1397 │       const external = { kind: "resource", resource: "type", id: link } as ReadRequest;
+    1398 │       expect(body(await facet.perform(external))).toEqual(types[1]);
+  
+
+packages/server/src/transaction-read.test.ts:1411:37 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1409 │       { plane, facet } = f.open();
+    1410 │     const read = plane.minimumFor(principal, f.minimum());
+  > 1411 │     const type = await read.perform(requests[0]!);
+         │                                     ^^^^^^^^^^^^
+    1412 │     expect(body(type)).toEqual(descriptor);
+    1413 │     const inventory = await read.perform(requests[1]!);
+  
+
+packages/server/src/transaction-read.test.ts:1413:42 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1411 │     const type = await read.perform(requests[0]!);
+    1412 │     expect(body(type)).toEqual(descriptor);
+  > 1413 │     const inventory = await read.perform(requests[1]!);
+         │                                          ^^^^^^^^^^^^
+    1414 │     expect(body(inventory)).toEqual({
+    1415 │       items: [types[0], types[1], descriptor]
+  
+
+packages/server/src/transaction-read.test.ts:1416:28 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1414 │     expect(body(inventory)).toEqual({
+    1415 │       items: [types[0], types[1], descriptor]
+  > 1416 │         .map((t) => ({ id: t!.id, name: t!.name, describes: t!.describes }))
+         │                            ^^
+    1417 │         .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1418 │       next: null,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1414 1414 │       expect(body(inventory)).toEqual({
+    1415 1415 │         items: [types[0], types[1], descriptor]
+    1416      │ - ········.map((t)·=>·({·id:·t!.id,·name:·t!.name,·describes:·t!.describes·}))
+         1416 │ + ········.map((t)·=>·({·id:·t?.id,·name:·t!.name,·describes:·t!.describes·}))
+    1417 1417 │           .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1418 1418 │         next: null,
+  
+
+packages/server/src/transaction-read.test.ts:1416:41 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1414 │     expect(body(inventory)).toEqual({
+    1415 │       items: [types[0], types[1], descriptor]
+  > 1416 │         .map((t) => ({ id: t!.id, name: t!.name, describes: t!.describes }))
+         │                                         ^^
+    1417 │         .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1418 │       next: null,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1414 1414 │       expect(body(inventory)).toEqual({
+    1415 1415 │         items: [types[0], types[1], descriptor]
+    1416      │ - ········.map((t)·=>·({·id:·t!.id,·name:·t!.name,·describes:·t!.describes·}))
+         1416 │ + ········.map((t)·=>·({·id:·t!.id,·name:·t?.name,·describes:·t!.describes·}))
+    1417 1417 │           .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1418 1418 │         next: null,
+  
+
+packages/server/src/transaction-read.test.ts:1416:61 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1414 │     expect(body(inventory)).toEqual({
+    1415 │       items: [types[0], types[1], descriptor]
+  > 1416 │         .map((t) => ({ id: t!.id, name: t!.name, describes: t!.describes }))
+         │                                                             ^^
+    1417 │         .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1418 │       next: null,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1414 1414 │       expect(body(inventory)).toEqual({
+    1415 1415 │         items: [types[0], types[1], descriptor]
+    1416      │ - ········.map((t)·=>·({·id:·t!.id,·name:·t!.name,·describes:·t!.describes·}))
+         1416 │ + ········.map((t)·=>·({·id:·t!.id,·name:·t!.name,·describes:·t?.describes·}))
+    1417 1417 │           .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1418 1418 │         next: null,
+  
+
+packages/server/src/transaction-read.test.ts:1444:8 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1442 │     ]);
+    1443 │     for (const [request, previous] of [
+  > 1444 │       [requests[0]!, type],
+         │        ^^^^^^^^^^^^
+    1445 │       [requests[1]!, inventory],
+    1446 │     ] as const) {
+  
+
+packages/server/src/transaction-read.test.ts:1445:8 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1443 │     for (const [request, previous] of [
+    1444 │       [requests[0]!, type],
+  > 1445 │       [requests[1]!, inventory],
+         │        ^^^^^^^^^^^^
+    1446 │     ] as const) {
+    1447 │       for (const position of ["pos-1", "pos-2"]) {
+  
+
+packages/server/src/transaction-read.test.ts:1545:49 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1543 │       });
+    1544 │       if (kind === "incident") assertLinks(items(second), ["out"]);
+  > 1545 │       else expect(items(second)).toEqual([{ id: types[0]!.id, name: "Bead", describes: "bead" }]);
+         │                                                 ^^^^^^^^^
+    1546 │       await expect(pending.perform(parsed)).rejects.toThrow("outside supported subset");
+    1547 │     },
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1543 1543 │         });
+    1544 1544 │         if (kind === "incident") assertLinks(items(second), ["out"]);
+    1545      │ - ······else·expect(items(second)).toEqual([{·id:·types[0]!.id,·name:·"Bead",·describes:·"bead"·}]);
+         1545 │ + ······else·expect(items(second)).toEqual([{·id:·types[0]?.id,·name:·"Bead",·describes:·"bead"·}]);
+    1546 1546 │         await expect(pending.perform(parsed)).rejects.toThrow("outside supported subset");
+    1547 1547 │       },
+  
+
+packages/server/src/transaction-read.test.ts:1570:23 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1568 │       });
+    1569 │       cleanup.push(() => release.resolve());
+  > 1570 │       const request = requests[index]!;
+         │                       ^^^^^^^^^^^^^^^^
+    1571 │       const pending = service.readAtMinimum(principal, f.minimum("pos-2")).perform(request);
+    1572 │       await entered.promise;
+  
+
+packages/server/src/transaction-read.test.ts:1623:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1621 │         controller = new AbortController();
+    1622 │       controller.abort();
+  > 1623 │       const suffix = ["types/task", "types/", "beads/a?view=links"][index]!;
+         │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1624 │       const spy = vi.spyOn(DatabaseSync.prototype, "prepare");
+    1625 │       await expect(
+  
+
+packages/server/src/transaction-read.test.ts:1643:18 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1641 │       const pending = service
+    1642 │         .readAtMinimum(principal, f.minimum("pos-2"))
+  > 1643 │         .perform(requests[index]!, { signal: abort.signal });
+         │                  ^^^^^^^^^^^^^^^^
+    1644 │       const rejected = expect(pending).rejects.toThrow("abort");
+    1645 │       await entered.promise;
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 30.
+Checked 4 files in 89ms. No fixes applied.
+Found 44 warnings.
+Found 6 infos.

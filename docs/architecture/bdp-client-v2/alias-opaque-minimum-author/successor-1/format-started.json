@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/biome.json",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-alias-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+  "outerSeconds": 60,
+  "termAfterSeconds": 55,
+  "automaticRetries": 0,
+  "authorization": "Root source-only formatting instruction, two files only",
+  "toolsRecord": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "b677321f92c56396d877d85b7ba1a2e0be3c65f8d530e7e3b61f74647e602767"
+  },
+  "beforeFiles": {
+    "packages/server/src/transaction-http.test.ts": "5a496d35fbfc5018a63f66aa59c6525299cc0479d063cb49e87b2e6c344e1d96",
+    "apps/bdptest/src/transactional-alias-installed.test.ts": "851b6db8710fe3aaee54ced9deea791bb6e71103cde085c8af35055902cb9b28"
+  }
+}
