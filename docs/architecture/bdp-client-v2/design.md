@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T08:31:33Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T08:34:21Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T08:31:33Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | ActualClaude full receipt CODE running PID91639/session38478; static prefix stopped at formatting | Preserve frozen source until verdict; then disposition layout-only successor; runtime closed |
-| Conditional reviewer | Receipt validation N1 cwd closure complete; reviewing next alias recommendation | Recommendation critique only; no authoring/execution |
-| Event reviewer | Receipt CODE packet delivered; next live-alias recommendation frozen | Idle; no source edits |
-| Native reviewer | Audit actual static prefix and prepare bounded format-only successor plan | No source edits while CODE review runs; preserve failed-format evidence |
+| Root | ActualClaude full receipt CODE running PID91639/session38478; formatter successor plan accepted | Preserve source until terminal verdict/disposition; runtime closed |
+| Conditional reviewer | Formatter-only plan and alias recommendation reviews complete | Idle; ready for actual CODE findings audit |
+| Event reviewer | Prepare bounded alias detailed plan incorporating native critique | Plan only against explicit dirty receipt basis; no source or execution |
+| Native reviewer | Static outcome audit and formatter-only successor plan complete | Idle; no authoring until root post-verdict release |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -305,6 +305,11 @@ Receipt validation preparation found and corrected one command-directory defect 
 [Root static prefix](receipt-root-minimum-validation/root-static-prefix.json): fresh offlineinstall0/4.083s, measuredtools0/7.598s and typecheck0/4.956s passed on exact draft. Formatcheck exited1/4.280s for four layout sites in two testfiles; no fixes applied, source unchanged, no cleanup failures/survivors. Lint/build/source/installed were not run and execution gate is now closed. Layout-only successor planning proceeds while actual full CODE review retains its immutable inputs; no blind retry or product failure claim.
 
 [Next recommendation](receipt-root-next-serving-audit/plan.md)96327248 identifies a concrete live-alias opaque-minimum private500; alias-specific condition may reuse existing waiter without broadening incident-Link behavior. Recommendation-only against dirty receipt source, independent critique pending; no source authoring or qualification. Receipt completion takes priority. PR150d4 remains frozen and exactgreen; PR157088 unchanged/green.
+
+
+**Formatter-only successor plan reviewed; source remains frozen.** [Plan](receipt-root-minimum-author/format-successor-plan/plan.md)7e8f3907 and [native review](receipt-root-minimum-author/format-successor-plan/native-plan-review.md)dbc4c633 verify exactly four formatter-log replacements, reversible in memory to original two-file bytes. Root accepts the plan only; source authoring waits for actual full CODE terminal/findings. Original passing typecheck and failed format identities remain unchanged. Fresh successor static diagnostics and explicit unchanged dependency/tool reuse binding are required; no automatic full council rerun solely layout. All42 sampled static-stage PIDs freshly absent, no source mutation/runtime execution.
+
+[Alias recommendation critique](receipt-root-next-serving-audit/native-recommendation-review.md)79d7dadb supports a private alias tag on both existing404 and successful-wait predicates while leaving incident-Link classification unchanged. Preserve facet-time tuple capture but re-resolve alias/target/context per attempt; detailed planning must account for existing mixed HTTP no-context branch, finite cancellation/drain and distinct historical installed90s cohort. Detailed plan preparation only; current receipt review/validation remains priority. PR150d4 and PR157088 unchanged/green; incremental bus empty through this check.
 
 ## Current priority: BDP profile structure and implementation
 

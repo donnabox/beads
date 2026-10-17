@@ -1,0 +1,25 @@
+{
+  "state": "PLAN ONLY; actual source frozen during CODE review",
+  "sourceBindingSha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477",
+  "formatLogPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/format-check.log",
+  "formatLogSha256": "26d19938157c3b1fd73dad45e8381320bf8d3c4d7abc4b682a80a653d8def39e",
+  "formatExitSha256": "e0469da64645a4e1bf7b926babba9d8c02f4841f619ae0b9d6756ecdd4f5e5f7",
+  "files": {
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": {
+      "beforeSha256": "257bca572efb1900fbfbcdc4aafbce8fc9b01895feb87781ba42f5dc97b8b779",
+      "proposedAfterSha256": "df501f4671decf2e6fd81ff76864450312bed17c76d0be52cb1c2efb16c37b09",
+      "inverseRestoresExactBytes": true
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "beforeSha256": "b5b8cd2712f92837a1ab6b676d9b27bdd4e7662cf3256a6853b0f1206aae29f0",
+      "proposedAfterSha256": "ba23d242e73a67765db4de77ff0d43f691feb68641ffdf8071a5ded4dc05cb08",
+      "inverseRestoresExactBytes": true
+    }
+  },
+  "proposedPatchSha256": "b5eb9d7c2c1f6ed9482a1a30151bc7c4c0a00c01d217932c0c192944f97e315b",
+  "replacementsSha256": "7f90cae10384ae137d101b84bc24d5dc8f669e3ae20a0b3bf5582e99ffdfce2a",
+  "sites": 4,
+  "filesChanged": 2,
+  "unchangedTrackedFiles": 677,
+  "sourceEdited": false
+}
