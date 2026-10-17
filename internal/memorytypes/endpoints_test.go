@@ -6,9 +6,10 @@ import (
 	"testing"
 )
 
-func TestCandidateEndpointPairs(t *testing.T) {
-	// The draft descriptors are an independent, test-only oracle. No descriptor
-	// parsing or illustrative identities are part of the production package.
+func TestProductEndpointPairs(t *testing.T) {
+	// Product expectations come from memory.md §4.2, independent of the retained
+	// broader BDP experiment. Experimental descriptors cross-check only that
+	// every accepted product pair is a subset, never authorize extra endpoints.
 	var fixture struct {
 		Definitions []struct {
 			ID         string `json:"id"`
@@ -39,11 +40,15 @@ func TestCandidateEndpointPairs(t *testing.T) {
 					source.CanonicalIdentity = "source"
 					target.CanonicalIdentity = "target"
 					target.Pinned = true
-					want := false
+					explorationAllows := false
 					for _, pair := range definition.Properties.LinkConstraints.Pairs {
 						if pair.Source.matches(t, source) && pair.Target.matches(t, target) {
-							want = true
+							explorationAllows = true
 						}
+					}
+					want := productPair(kind, source, target)
+					if want && !explorationAllows {
+						t.Fatal("product pair absent from exploration", source, target)
 					}
 					err := ValidateEndpoints(kind, source, target)
 					if (err == nil) != want {
@@ -129,7 +134,7 @@ func TestPinsSelfAndCorrelatedPairs(t *testing.T) {
 			t.Errorf("kind %d accepted self across pins", kind)
 		}
 	}
-	for _, kind := range []LinkKind{Supports, Challenges, MemorySupersedes} {
+	for _, kind := range []LinkKind{Supports, Challenges} {
 		if err := ValidateEndpoints(kind, memory, other); err == nil {
 			t.Errorf("kind %d accepted unpinned citation", kind)
 		}
@@ -180,8 +185,8 @@ func TestUnresolvedAndExternalFacts(t *testing.T) {
 		}
 	}
 	remote := EndpointFacts{Class: CrossScopeBead, CanonicalIdentity: "opaque-remote", Pinned: true}
-	if err := ValidateEndpoints(Supports, memory, remote); err != nil {
-		t.Fatal(err)
+	if err := ValidateEndpoints(Supports, memory, remote); err == nil {
+		t.Fatal("external Bead admitted outside release scope")
 	}
 	resource := EndpointFacts{Class: ExternalResource, CanonicalIdentity: "opaque-resource", Pinned: true}
 	if err := ValidateEndpoints(Supports, memory, resource); err == nil {
@@ -203,22 +208,80 @@ func TestCandidateMembership(t *testing.T) {
 		} `json:"declarations"`
 	}
 	readJSON(t, "testdata/candidate/definitions.json", &fixture)
-	if len(fixture.Declarations) != 5 {
-		t.Fatal("candidate changed conformance declarations")
+	if len(fixture.Declarations) != 10 {
+		t.Fatal("candidate changed ten supplied conformance declarations")
 	}
-	seen := map[BeadKind]bool{}
+	links := map[string]LinkKind{"memory-guidance": Guidance, "memory-applies-to": AppliesTo, "memory-supports": Supports, "memory-challenges": Challenges, "memory-supersedes": MemorySupersedes}
+	seen := map[string]bool{}
 	for _, declaration := range fixture.Declarations {
 		name := strings.TrimPrefix(declaration.Source, "https://example.org/memory-types/")
-		kind, ok := fixtureKinds[name]
-		if !ok || kind == Memory || seen[kind] {
-			t.Fatalf("unexpected child declaration %s", declaration.Source)
+		if seen[name] {
+			t.Fatal("duplicate declaration", name)
 		}
-		seen[kind] = true
-		if declaration.Target.URI != "https://example.org/memory-types/memory" || declaration.Target.Revision != "memory-contract-1" {
-			t.Fatal("candidate exact parent changed")
+		seen[name] = true
+		if kind, ok := fixtureKinds[name]; ok && kind != Memory {
+			if declaration.Target.URI != "https://example.org/memory-types/memory" || declaration.Target.Revision != "memory-contract-1" {
+				t.Fatal("changed Memory parent", declaration)
+			}
+			if !kind.ConformsTo(Memory) {
+				t.Fatal("missing Memory membership", kind)
+			}
+		} else if kind, ok := links[name]; ok {
+			if declaration.Target.URI != "https://example.org/memory-types/association" || declaration.Target.Revision != "association-contract-1" {
+				t.Fatal("changed Association parent", declaration)
+			}
+			if !kind.ConformsTo(Association) {
+				t.Fatal("missing Association membership", kind)
+			}
+		} else {
+			t.Fatal("unrecognized declaration", name)
 		}
-		if !kind.ConformsTo(Memory) {
-			t.Fatal("missing candidate membership", kind)
+	}
+}
+
+// Independent release table from product prose; the source is not a required
+// Type-definition encoding. Other local Beads and all external categories refuse.
+func productPair(kind LinkKind, source, target EndpointFacts) bool {
+	if source.Class != LocalBead || target.Class != LocalBead {
+		return false
+	}
+	_, sm := fixtureMemoryKinds[source.Kind]
+	_, tm := fixtureMemoryKinds[target.Kind]
+	si, ti := source.Kind == Issue, target.Kind == Issue
+	switch kind {
+	case Association:
+		return sm && ti || si && tm || sm && tm
+	case Guidance:
+		return si && tm
+	case AppliesTo:
+		return sm && ti || sm && tm
+	case Supports, Challenges, MemorySupersedes:
+		return sm && tm
+	}
+	return false
+}
+
+func TestAssociationFamilyAndSupersedesSelection(t *testing.T) {
+	kinds := []LinkKind{Association, Guidance, AppliesTo, Supports, Challenges, MemorySupersedes}
+	for _, kind := range kinds {
+		if !kind.ConformsTo(Association) || !kind.ConformsTo(kind) {
+			t.Errorf("missing fixed family membership %d", kind)
+		}
+		for _, other := range kinds {
+			if other != Association && other != kind && kind.ConformsTo(other) {
+				t.Errorf("nominal membership confused with common family: %d -> %d", kind, other)
+			}
+		}
+	}
+	if UnknownLink.ConformsTo(Association) || LinkKind(255).ConformsTo(Association) || Association.ConformsTo(UnknownLink) {
+		t.Fatal("unknown Link membership")
+	}
+	source := EndpointFacts{Class: LocalBead, Kind: Procedure, CanonicalIdentity: "new"}
+	target := EndpointFacts{Class: LocalBead, Kind: Memory, CanonicalIdentity: "previous"}
+	for _, pin := range []bool{false, true} {
+		target.Pinned = pin
+		if err := ValidateEndpoints(MemorySupersedes, source, target); err != nil {
+			t.Fatalf("Supersedes explicit pin=%v: %v", pin, err)
 		}
 	}
 }

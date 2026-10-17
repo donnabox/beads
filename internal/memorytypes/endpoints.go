@@ -1,6 +1,6 @@
 package memorytypes
 
-// EndpointClass distinguishes local contract evidence from opaque references.
+// EndpointClass distinguishes local contract evidence from unsupported external references.
 // Zero is deliberately unresolved, never a wildcard local Bead. The caller must
 // prove Bead categories actually identify Beads, never Links masquerading as Beads.
 type EndpointClass uint8
@@ -19,7 +19,7 @@ const (
 // For a local endpoint, Kind must describe the selected live or retained state,
 // not necessarily its current state. The caller must separately prove existence,
 // visibility, retention, contract revision, and non-workflow participation.
-// Opaque external categories carry no verified Kind.
+// Opaque external categories carry no verified Kind and are refused in this release.
 type EndpointFacts struct {
 	Class             EndpointClass
 	Kind              BeadKind
@@ -43,7 +43,7 @@ func ValidateEndpoints(kind LinkKind, source, target EndpointFacts) error {
 	if source.CanonicalIdentity == target.CanonicalIdentity {
 		return invalid("/target", "an identity different from source, regardless of revision pins")
 	}
-	if (kind == Supports || kind == Challenges || kind == MemorySupersedes) && !target.Pinned {
+	if (kind == Supports || kind == Challenges) && !target.Pinned {
 		return invalid("/target/revision", "an explicitly pinned citation target")
 	}
 	for _, pair := range pairs(kind) {
@@ -60,15 +60,13 @@ func endpointFacts(e EndpointFacts, path string) error {
 	}
 	switch e.Class {
 	case LocalBead:
-		if e.Kind < Memory || e.Kind > OtherBead {
-			return invalid(path, "a resolved local contract classification")
+		if e.Kind < Memory || e.Kind > Issue {
+			return invalid(path, "a resolved local Issue or Memory family contract")
 		}
 	case CrossScopeBead, ExternalResource:
-		if e.Kind != UnknownBead {
-			return invalid(path, "an opaque external reference without a claimed verified local type")
-		}
+		return invalid(path, "a same-scope Issue or Memory; external endpoints are outside this release")
 	default:
-		return invalid(path, "a resolved local classification or explicit opaque external category")
+		return invalid(path, "a resolved local Issue or Memory classification")
 	}
 	return nil
 }
@@ -76,25 +74,16 @@ func endpointFacts(e EndpointFacts, path string) error {
 type endpointMatch uint8
 
 const (
-	local endpointMatch = iota
-	memory
+	memory endpointMatch = iota
 	issue
-	crossScope
-	external
 )
 
 func (m endpointMatch) matches(e EndpointFacts) bool {
 	switch m {
-	case local:
-		return e.Class == LocalBead
 	case memory:
 		return e.Class == LocalBead && e.Kind.IsMemory()
 	case issue:
 		return e.Class == LocalBead && e.Kind == Issue
-	case crossScope:
-		return e.Class == CrossScopeBead
-	case external:
-		return e.Class == ExternalResource
 	}
 	return false
 }
@@ -104,13 +93,13 @@ type endpointPair struct{ source, target endpointMatch }
 func pairs(k LinkKind) []endpointPair {
 	switch k {
 	case Association:
-		return []endpointPair{{memory, local}, {local, memory}, {memory, crossScope}, {local, crossScope}, {crossScope, memory}, {crossScope, local}, {memory, external}, {external, memory}}
+		return []endpointPair{{memory, issue}, {issue, memory}, {memory, memory}}
 	case Guidance:
-		return []endpointPair{{issue, memory}, {issue, crossScope}, {crossScope, memory}}
+		return []endpointPair{{issue, memory}}
 	case AppliesTo:
-		return []endpointPair{{memory, local}, {memory, crossScope}, {memory, external}, {crossScope, local}}
+		return []endpointPair{{memory, issue}, {memory, memory}}
 	case Supports, Challenges, MemorySupersedes:
-		return []endpointPair{{memory, memory}, {memory, crossScope}, {crossScope, memory}}
+		return []endpointPair{{memory, memory}}
 	}
 	return nil
 }

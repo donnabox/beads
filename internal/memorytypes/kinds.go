@@ -53,3 +53,10 @@ const (
 )
 
 func (k LinkKind) valid() bool { return k >= Association && k <= MemorySupersedes }
+
+// ConformsTo reports nominal or Association-family membership in this fixed
+// release catalog. A future dynamic catalog must use actual conformance rather
+// than treat these six supplied kinds as the permanently closed family.
+func (k LinkKind) ConformsTo(contract LinkKind) bool {
+	return k.valid() && contract.valid() && (k == contract || contract == Association)
+}

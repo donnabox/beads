@@ -1,5 +1,5 @@
 {
-  "_comment": "Local F0 regression cases; schemaValid marks explicit schema/domain differences (interval order and stricter rejection of trailing-newline format-checker bugs). Candidate checker format behavior is pinned, not a new date-time standard.",
+  "_comment": "Local F0 regression cases. schemaValid marks deliberate stricter rejection of trailing-newline format-checker bugs. Body is primary; no structured interval or duplicate primary-field contract is implied.",
   "cases": [
     {
       "label": "memory inherits body requirement",
@@ -40,8 +40,7 @@
       "label": "observation inherits body requirement",
       "type": "observation",
       "properties": {
-        "title": "x",
-        "statement": "seen"
+        "title": "x"
       },
       "valid": false,
       "path": "/properties/body"
@@ -52,7 +51,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "extension": {
           "unknown": [
             null,
@@ -68,8 +66,7 @@
       "type": "observation",
       "properties": {
         "title": "Title",
-        "body": null,
-        "statement": "seen"
+        "body": null
       },
       "valid": false,
       "path": "/properties/body"
@@ -78,8 +75,7 @@
       "label": "decision inherits body requirement",
       "type": "decision",
       "properties": {
-        "title": "x",
-        "choice": "A"
+        "title": "x"
       },
       "valid": false,
       "path": "/properties/body"
@@ -90,7 +86,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "choice": "A",
         "extension": {
           "unknown": [
             null,
@@ -106,8 +101,7 @@
       "type": "decision",
       "properties": {
         "title": "Title",
-        "body": null,
-        "choice": "A"
+        "body": null
       },
       "valid": false,
       "path": "/properties/body"
@@ -116,10 +110,7 @@
       "label": "procedure inherits body requirement",
       "type": "procedure",
       "properties": {
-        "title": "x",
-        "steps": [
-          "do"
-        ]
+        "title": "x"
       },
       "valid": false,
       "path": "/properties/body"
@@ -130,9 +121,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "steps": [
-          "do"
-        ],
         "extension": {
           "unknown": [
             null,
@@ -148,10 +136,7 @@
       "type": "procedure",
       "properties": {
         "title": "Title",
-        "body": null,
-        "steps": [
-          "do"
-        ]
+        "body": null
       },
       "valid": false,
       "path": "/properties/body"
@@ -160,8 +145,7 @@
       "label": "policy inherits body requirement",
       "type": "policy",
       "properties": {
-        "title": "x",
-        "rule": "must"
+        "title": "x"
       },
       "valid": false,
       "path": "/properties/body"
@@ -172,7 +156,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "extension": {
           "unknown": [
             null,
@@ -188,8 +171,7 @@
       "type": "policy",
       "properties": {
         "title": "Title",
-        "body": null,
-        "rule": "must"
+        "body": null
       },
       "valid": false,
       "path": "/properties/body"
@@ -198,8 +180,7 @@
       "label": "lesson inherits body requirement",
       "type": "lesson",
       "properties": {
-        "title": "x",
-        "takeaway": "learn"
+        "title": "x"
       },
       "valid": false,
       "path": "/properties/body"
@@ -210,7 +191,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "takeaway": "learn",
         "extension": {
           "unknown": [
             null,
@@ -226,8 +206,7 @@
       "type": "lesson",
       "properties": {
         "title": "Title",
-        "body": null,
-        "takeaway": "learn"
+        "body": null
       },
       "valid": false,
       "path": "/properties/body"
@@ -238,7 +217,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": ""
       },
       "valid": false,
@@ -250,7 +228,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-02-29t12:00:00z"
       },
       "valid": true
@@ -261,7 +238,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2023-02-29T12:00:00Z"
       },
       "valid": false,
@@ -273,7 +249,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-01-01T24:00:00Z"
       },
       "valid": false,
@@ -285,7 +260,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-01-01T00:00:00+24:00"
       },
       "valid": false,
@@ -297,7 +271,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-01-01T00:00:00+00:60"
       },
       "valid": false,
@@ -309,7 +282,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-01-01T00:00:00,1Z"
       },
       "valid": false,
@@ -321,7 +293,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-01-01T00:00:00"
       },
       "valid": false,
@@ -333,7 +304,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2024-01-01T00:00:00.12345678901234567890Z"
       },
       "valid": true
@@ -344,89 +314,10 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "statement": "seen",
         "observedAt": "2016-12-31T23:59:60Z"
       },
       "valid": false,
       "path": "/properties/observedAt"
-    },
-    {
-      "label": "equal instants",
-      "type": "memory",
-      "properties": {
-        "title": "Title",
-        "body": "",
-        "applicability": {
-          "description": "test",
-          "validFrom": "2024-01-01T00:00:00Z",
-          "validUntil": "2024-01-01T00:00:00.0Z"
-        }
-      },
-      "valid": false,
-      "path": "/properties/applicability/validUntil",
-      "schemaValid": true
-    },
-    {
-      "label": "equal zones",
-      "type": "memory",
-      "properties": {
-        "title": "Title",
-        "body": "",
-        "applicability": {
-          "description": "test",
-          "validFrom": "2024-01-01T00:00:00Z",
-          "validUntil": "2023-12-31T19:00:00-05:00"
-        }
-      },
-      "valid": false,
-      "path": "/properties/applicability/validUntil",
-      "schemaValid": true
-    },
-    {
-      "label": "subnano order",
-      "type": "memory",
-      "properties": {
-        "title": "Title",
-        "body": "",
-        "applicability": {
-          "description": "test",
-          "validFrom": "2024-01-01T00:00:00.0000000001Z",
-          "validUntil": "2024-01-01T00:00:00.0000000002Z"
-        }
-      },
-      "valid": true,
-      "schemaValid": true
-    },
-    {
-      "label": "fraction reverse",
-      "type": "memory",
-      "properties": {
-        "title": "Title",
-        "body": "",
-        "applicability": {
-          "description": "test",
-          "validFrom": "2024-01-01T00:00:00.2Z",
-          "validUntil": "2024-01-01T00:00:00.11Z"
-        }
-      },
-      "valid": false,
-      "path": "/properties/applicability/validUntil",
-      "schemaValid": true
-    },
-    {
-      "label": "timezone normalized order",
-      "type": "memory",
-      "properties": {
-        "title": "Title",
-        "body": "",
-        "applicability": {
-          "description": "test",
-          "validFrom": "2024-01-01T00:00:00Z",
-          "validUntil": "2023-12-31T23:30:00-01:00"
-        }
-      },
-      "valid": true,
-      "schemaValid": true
     },
     {
       "label": "authority urn:example:opaque",
@@ -434,7 +325,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "urn:example:opaque"
       },
       "valid": true
@@ -445,7 +335,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "mailto:person@example.com"
       },
       "valid": true
@@ -456,7 +345,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "https://example.com/a%20b#part"
       },
       "valid": true
@@ -467,7 +355,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "https://example.com/a b"
       },
       "valid": false
@@ -478,7 +365,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "urn:example:%QQ"
       },
       "valid": false
@@ -489,7 +375,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "/relative"
       },
       "valid": false
@@ -500,7 +385,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "https://[notipv6]/"
       },
       "valid": false
@@ -511,7 +395,6 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "rule": "must",
         "authority": "https://example.com/\u00e9"
       },
       "valid": false
@@ -567,7 +450,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "https://[v1.test]/"
       },
       "valid": true
@@ -578,7 +460,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "urn:test:a[b]"
       },
       "valid": false
@@ -589,7 +470,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "https://host/path?x=[y]"
       },
       "valid": false
@@ -600,7 +480,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "https://a[b]@host/"
       },
       "valid": false
@@ -611,7 +490,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "https://[2001:db8::1]/"
       },
       "valid": true
@@ -631,7 +509,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "https://%41.example/"
       },
       "valid": true
@@ -642,7 +519,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "https://host/#x#y"
       },
       "valid": false
@@ -653,7 +529,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "http://[fe80::1%25eth0]/"
       },
       "valid": false
@@ -664,7 +539,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "http://host:/"
       },
       "valid": true
@@ -675,7 +549,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "urn:"
       },
       "valid": true
@@ -686,7 +559,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "rule",
         "authority": "http://host:abc/"
       },
       "valid": false
@@ -697,8 +569,7 @@
       "properties": {
         "title": "x",
         "body": "",
-        "observedAt": "2024-01-01T00:00:00Z\n",
-        "statement": "test"
+        "observedAt": "2024-01-01T00:00:00Z\n"
       },
       "valid": false,
       "schemaValid": true,
@@ -710,8 +581,7 @@
       "properties": {
         "title": "x",
         "body": "",
-        "authority": "https://example.com/a\n",
-        "rule": "test"
+        "authority": "https://example.com/a\n"
       },
       "valid": false,
       "schemaValid": true,
@@ -752,7 +622,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "test",
         "authority": 42
       },
       "valid": false,
@@ -764,7 +633,6 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "test",
         "authority": null
       },
       "valid": false,
@@ -776,11 +644,188 @@
       "properties": {
         "title": "x",
         "body": "",
-        "rule": "test",
         "authority": []
       },
       "valid": false,
       "path": "/properties/authority"
+    },
+    {
+      "label": "memory permits empty body without duplicate primary field",
+      "type": "memory",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "memory does not interpret old primary-field extensions",
+      "type": "memory",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "observation permits empty body without duplicate primary field",
+      "type": "observation",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "observation does not interpret old primary-field extensions",
+      "type": "observation",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "decision permits empty body without duplicate primary field",
+      "type": "decision",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "decision does not interpret old primary-field extensions",
+      "type": "decision",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "procedure permits empty body without duplicate primary field",
+      "type": "procedure",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "procedure does not interpret old primary-field extensions",
+      "type": "procedure",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "policy permits empty body without duplicate primary field",
+      "type": "policy",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "policy does not interpret old primary-field extensions",
+      "type": "policy",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "lesson permits empty body without duplicate primary field",
+      "type": "lesson",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "lesson does not interpret old primary-field extensions",
+      "type": "lesson",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "deferred applicability interval field validFrom",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": {
+          "description": "Context",
+          "validFrom": "2026-01-01T00:00:00Z"
+        }
+      },
+      "valid": false,
+      "path": "/properties/applicability/validFrom"
+    },
+    {
+      "label": "deferred applicability interval field validUntil",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": {
+          "description": "Context",
+          "validUntil": "2026-01-01T00:00:00Z"
+        }
+      },
+      "valid": false,
+      "path": "/properties/applicability/validUntil"
     }
   ]
 }

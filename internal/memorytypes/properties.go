@@ -21,7 +21,7 @@ func (v *Violation) Error() string { return fmt.Sprintf("%s: expected %s", v.Pat
 func invalid(path, expected string) error { return &Violation{path, expected} }
 
 // ValidateProperties checks the complete prospective properties object, including
-// inherited Memory requirements and applicability interval order. It does not
+// inherited Memory requirements. It does not
 // merge patches, infer a type, insert defaults, or mutate the input.
 func ValidateProperties(kind BeadKind, data json.RawMessage) error {
 	if !kind.IsMemory() {
@@ -43,31 +43,17 @@ func ValidateProperties(kind BeadKind, data json.RawMessage) error {
 	}
 	switch kind {
 	case Observation:
-		if err := textField(obj, "statement", "/properties", true, true); err != nil {
-			return err
-		}
 		if raw, ok := obj["observedAt"]; ok {
-			_, err := instant(raw, "/properties/observedAt")
-			return err
+			return instant(raw, "/properties/observedAt")
 		}
 	case Decision:
-		if err := textField(obj, "choice", "/properties", true, true); err != nil {
-			return err
-		}
 		if raw, ok := obj["alternatives"]; ok {
-			return textArray(raw, "/properties/alternatives", false)
+			return textArray(raw, "/properties/alternatives")
 		}
-	case Procedure:
-		return textArray(obj["steps"], "/properties/steps", true)
 	case Policy:
-		if err := textField(obj, "rule", "/properties", true, true); err != nil {
-			return err
-		}
 		if raw, ok := obj["authority"]; ok {
 			return referenceValue(raw, "/properties/authority")
 		}
-	case Lesson:
-		return textField(obj, "takeaway", "/properties", true, true)
 	}
 	return nil
 }
@@ -117,13 +103,10 @@ func textField(obj map[string]json.RawMessage, key, path string, required, nonbl
 	return err
 }
 
-func textArray(raw json.RawMessage, path string, nonempty bool) error {
+func textArray(raw json.RawMessage, path string) error {
 	var values []json.RawMessage
 	if err := json.Unmarshal(raw, &values); err != nil || values == nil {
 		return invalid(path, "an array of nonblank strings")
-	}
-	if nonempty && len(values) == 0 {
-		return invalid(path, "at least one step")
 	}
 	for i, value := range values {
 		if _, err := textValue(value, fmt.Sprintf("%s/%d", path, i), true); err != nil {

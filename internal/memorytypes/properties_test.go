@@ -37,8 +37,8 @@ func TestCandidateProperties(t *testing.T) {
 		Cases []propertyCase `json:"cases"`
 	}
 	readJSON(t, "testdata/candidate/schema-cases.json", &fixture)
-	if len(fixture.Cases) != 60 {
-		t.Fatalf("source fixture count = %d, expected 60", len(fixture.Cases))
+	if len(fixture.Cases) != 64 {
+		t.Fatalf("source fixture count = %d, expected 64", len(fixture.Cases))
 	}
 	for _, c := range fixture.Cases {
 		t.Run(c.Label, func(t *testing.T) { checkProperties(t, c) })
@@ -132,7 +132,7 @@ func TestCandidateProvenance(t *testing.T) {
 		} `json:"files"`
 	}
 	readJSON(t, "testdata/candidate/provenance.json", &manifest)
-	if manifest.Commit != "d6337ab96e93d1b9a7b93beb4aea6d48bd179311" {
+	if manifest.Commit != "50b13ee08f79a00bf8b135495b3b4d432f811992" {
 		t.Fatal("unexpected candidate commit", manifest.Commit)
 	}
 	for _, file := range manifest.Files {

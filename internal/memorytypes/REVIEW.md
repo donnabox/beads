@@ -4,7 +4,7 @@ This is implementation review evidence, not a normative specification or runtime
 adoption claim. No storage, CLI, installed catalog, provenance representation,
 retyping operation, or protocol capability is added.
 
-## Inputs and scope
+## Historical review at implementation 499c227fa
 
 Historical implementation commit `1935d820ba1f8bdd42bb1897438f04e34b486627`
 was reviewed against public `gastownhall/bdp` candidate
@@ -26,7 +26,7 @@ The five child property schemas were byte-identical. The changes were:
   dispatch cases. Seven former kind refusals are now positive cases. Retired cases
   are not reported as passed.
 
-The final pin is public `gastownhall/bdp`
+The pin for that implementation is public `gastownhall/bdp`
 `d6337ab96e93d1b9a7b93beb4aea6d48bd179311`. All nine copied JSON inputs were
 fetched again and verified byte-identical to `0b151ac9`; their SHA256s are recorded
 in `testdata/candidate/provenance.json`. The later prose-only CLI direction does
@@ -48,7 +48,7 @@ not expand this package's scope. Memory remains a proposed specification.
 | 10. Shared enum-range guard | Deferred optional polish. The bounds intentionally differ: `OtherBead` is an endpoint classification but not a conformance contract. A shared maximum would erase that distinction. Unknown and OtherBead conformance behavior is tested. |
 | 11. Reference diagnostic | Invalid authority branch shapes now report `a URI string or {uri, revision} reference`; tests assert the structured expectation. Inception-method diagnostic concerns are obsolete after removal. |
 
-## Verification
+## Historical verification at implementation 499c227fa
 
 Executed in the isolated Beads worktree on final Preview 2 base
 `703bb13e91aa2cab2092443319139006d74242c8`:
@@ -70,3 +70,69 @@ binary, real database, or shared-server qualification was run. The source owner'
 full artifact checker (which also needs shared Types artifacts) is distinct from
 this package's property oracle and was not run here. Parent owns final review,
 publication, and release admission.
+
+## Current body-primary and Association-family reconciliation
+
+This normal follow-up to implementation `499c227fa5d0c208db0bf8d63c27e6fae9927483`
+pins public `gastownhall/bdp` candidate
+`50b13ee08f79a00bf8b135495b3b4d432f811992`. Inputs were first compared with
+body-primary successor `72023840672b1fb5407ae8b2729a9408992f392a`, then fetched and
+compared again at `50b13ee`. All nine copied inputs and hashes now bind to the latter.
+Earlier reviewed commits and the evidence above retain their original identity.
+
+Accepted product changes:
+
+- All six Memory Types require only common title/body. Empty body remains valid.
+  Optional observedAt, alternatives, authority and applicability.description retain
+  their contracts. The former statement/choice/steps/rule/takeaway requirements are
+  removed; old root fields can survive as uninterpreted extensions.
+- Structured applicability intervals are deferred. Comparison code is removed;
+  the still-closed applicability object rejects validFrom/validUntil. Timestamp
+  format checking remains for Observation.observedAt. Obsolete interval tests were
+  retired rather than relabelled as passes; unknown fields and format edge cases
+  remain covered where applicable.
+- Explicit Type-only change is semantic and revision-worthy. The caller contract
+  now says to compare affiliation as well as properties for no-op detection. F0
+  does not implement mutation, revision allocation, or prose-quality validation.
+- Association is directly authorable and is the common Link Type. Five supplied
+  specializations conform to it and inherit optional nonblank note. A pure fixed
+  Link-family predicate distinguishes nominal equality from family membership;
+  future dynamic conformance is not specified as a permanently closed union.
+- Only Supports and Challenges require exact targets. Supersedes accepts current
+  or exact targets without implying redirects, deletion, incoming-link rewriting,
+  or automatic repair.
+
+The new main document is a product proposal; it does not prescribe a BDP
+Type-definition representation. The retained exploratory definitions still have
+broader wildcard/external endpoint arms. The worker raised that discrepancy and
+parent explicitly selected the release product table: only local Issue/Memory
+pairs are accepted. OtherBead and external categories refuse. Pair tests now use
+the product §4.2 table independently; exploratory definitions supply only a subset
+cross-check, not an authority for additional admission. Self-links still compare
+canonical identity, and each allowed arm remains a correlated source/target pair.
+
+The exploratory graph now contains ten declarations (five Memory children plus
+five Association children). Tests check those supplied declarations without making
+that representation a product prerequisite. No Inception/provenance representation,
+Type installation, generic query engine, CLI or storage surface was added.
+
+Current exact checks:
+
+- `internal/memorytypes/check.sh -race -cover`: passed, 94.0% Go statement coverage,
+  no race report. Offline oracle passed 137 property cases (64 source + 73 local).
+  All six Link kinds receive common property cases; 600 endpoint combinations
+  exercise the release product table, plus explicit pin/refusal/family checks.
+- Exact upstream `scripts/check_memory_examples.py`, default mode, executed from
+  `/tmp/trish-f0-family-source-check` with its own pinned artifacts and the package's
+  pinned Python environment: passed seven schemas, 64 cases, nine Bead and seven
+  local Link excerpts, without shared BDP inputs. This validates examples/properties,
+  not graph mutation or runtime behavior. Optional `--with-bdp-exploration` mode was
+  not run and is not counted as release qualification.
+- `make ci-pr-lint`: passed zero issues on native, Windows non-CGO and Darwin
+  non-CGO; formatting passed.
+- `python3 tools/bazel/go_srcs.py --check`, `bash -n internal/memorytypes/check.sh`,
+  and `git diff --check`: passed. Existing BUILD source list remains unchanged.
+
+No Bazel execution, full-repository suite, engine, installed binary or shared-server
+qualification is claimed. Parent retains final review/publication authority. The
+package still has no runtime callers.

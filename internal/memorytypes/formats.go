@@ -8,30 +8,26 @@ import (
 	"time"
 )
 
-// Require an explicit timezone, valid calendar date, and decimal
-// fraction (not Go time.Parse's extra comma syntax). Keep fractions separately
-// so interval ordering does not lose precision beyond nanoseconds.
+// Require an explicit timezone, valid calendar date, and decimal fraction
+// (not Go time.Parse's extra comma syntax). No interval semantics are implied.
 var timestampShape = regexp.MustCompile(`^([0-9]{4}-[0-9]{2}-[0-9]{2})[Tt]([0-9]{2}:[0-9]{2}:[0-9]{2})(\.[0-9]+)?([Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$`)
 
-type timestamp struct {
-	seconds  time.Time
-	fraction string
-}
-
-func instant(raw json.RawMessage, path string) (timestamp, error) {
+func instant(raw json.RawMessage, path string) error {
 	text, err := textValue(raw, path, false)
 	if err != nil {
-		return timestamp{}, err
+		return err
 	}
 	parts := timestampShape.FindStringSubmatch(text)
 	if parts == nil {
-		return timestamp{}, invalid(path, "an RFC3339 date-time")
+		return invalid(path, "an RFC3339 date-time")
 	}
+	// Only format validation is needed: arbitrary fractional digits are already
+	// checked above, so parsing whole seconds does not lose comparison precision.
 	seconds, err := time.Parse(time.RFC3339, parts[1]+"T"+parts[2]+strings.ToUpper(parts[4]))
 	if err != nil || seconds.Year() == 0 {
-		return timestamp{}, invalid(path, "an RFC3339 date-time")
+		return invalid(path, "an RFC3339 date-time")
 	}
-	return timestamp{seconds, strings.TrimRight(strings.TrimPrefix(parts[3], "."), "0")}, nil
+	return nil
 }
 
 func applicability(raw json.RawMessage) error {
@@ -40,31 +36,10 @@ func applicability(raw json.RawMessage) error {
 	if err != nil {
 		return err
 	}
-	if err := closed(obj, path, "description", "validFrom", "validUntil"); err != nil {
+	if err := closed(obj, path, "description"); err != nil {
 		return err
 	}
-	if err := textField(obj, "description", path, true, true); err != nil {
-		return err
-	}
-	var from, until timestamp
-	fromRaw, hasFrom := obj["validFrom"]
-	untilRaw, hasUntil := obj["validUntil"]
-	if hasFrom {
-		from, err = instant(fromRaw, path+"/validFrom")
-		if err != nil {
-			return err
-		}
-	}
-	if hasUntil {
-		until, err = instant(untilRaw, path+"/validUntil")
-		if err != nil {
-			return err
-		}
-	}
-	if hasFrom && hasUntil && !(from.seconds.Before(until.seconds) || (from.seconds.Equal(until.seconds) && from.fraction < until.fraction)) {
-		return invalid(path+"/validUntil", "an instant strictly after validFrom")
-	}
-	return nil
+	return textField(obj, "description", path, true, true)
 }
 
 func referenceValue(raw json.RawMessage, path string) error {
