@@ -1,0 +1,112 @@
+{
+  "finalized": true,
+  "sourceScopes": {
+    "new": 4,
+    "historical": 1,
+    "total": 5
+  },
+  "operationTargets": {
+    "createBead": "create-bead",
+    "updateBead": "update-bead",
+    "deleteBead": "delete-bead",
+    "createLink": "create-link",
+    "updateLink": "update-link",
+    "deleteLink": "delete-link",
+    "putAlias": "put-alias",
+    "deleteAlias": "delete-alias",
+    "updateWhere": "update-where",
+    "deleteWhere": "delete-where",
+    "batch": "batch",
+    "sequence": "sequence"
+  },
+  "sourceLabels": [
+    "scope-event-sse-minimum-owner",
+    "scope-event-sse-minimum-capture",
+    "scope-event-sse-minimum-abort",
+    "scope-event-sse-minimum-http",
+    "finite-event-minimum-http"
+  ],
+  "workload": {
+    "prospectiveOnly": true,
+    "source": {
+      "callbacks": 8,
+      "newCallbacks": 4,
+      "legacyCallbacks": 4,
+      "http": 108,
+      "newHttp": 31,
+      "legacyHttp": [
+        28,
+        13,
+        4,
+        32
+      ],
+      "stores": 8,
+      "listeners": 5,
+      "ownerLifetimes": 8,
+      "newReports": 4,
+      "existingReports": 1,
+      "commits": 9
+    },
+    "installed": {
+      "callbacks": 2,
+      "http": 11,
+      "historicalHttp": 5,
+      "newHttp": 6,
+      "children": 3,
+      "stores": 2
+    },
+    "combined": {
+      "callbacks": 10,
+      "http": 119,
+      "stores": 10,
+      "ownerLifetimes": 11,
+      "commits": 11
+    },
+    "newOwnerServiceSubsetOnly": {
+      "liveOwnerBeginCalls": 18,
+      "rawClosedOwnerProbes": 1,
+      "serviceBeginCalls": 7,
+      "waits": 2,
+      "minimumClockCalls": 6,
+      "commits": 4,
+      "stores": 3
+    },
+    "newHttpStatuses": {
+      "200": 6,
+      "503": 10,
+      "500": 8,
+      "400": 3,
+      "404": 1,
+      "401": 1,
+      "304": 1,
+      "412": 1
+    },
+    "deadlinesMs": {
+      "newSourceCallbackUnchanged": 5000,
+      "heldEnteredGuard": 1000,
+      "newInstalledWork": 45000,
+      "newInstalledRequestAndRecorder": 5000,
+      "newInstalledTotalCleanup": 10000,
+      "newInstalledCallback": 60000,
+      "outerSupervisor": 120000,
+      "outerTERM": 115000
+    },
+    "runtimeAttempts": "Unmeasured; do not infer retry counts from deadlines or request counts.",
+    "corrections": {
+      "N1": "Historical successor1 assumed three Events; replaced by F1 five-Event accounting",
+      "N2": "D final positive uses callback-owned recorder/controller; no helper edit",
+      "N3": "A row1 preparations unobserved false/null; rows2-14 actual prepare-call counts, not executions/allocation",
+      "F1": "Seed preserved;five Events/three pages2+2+1, D31",
+      "F2": "Additional legacy32 callback, one commit, one store/listener; pair-only exception"
+    },
+    "amendedLegacyStatuses": {
+      "200": 6,
+      "503": 10,
+      "500": 10,
+      "400": 4,
+      "404": 2
+    }
+  },
+  "reportSchemasSha256": "56edaf44faaa82b6febb493a7c7ceabc99e3f391b461fdd9dbe61931717bee0f",
+  "historicalPrefixExact": true
+}

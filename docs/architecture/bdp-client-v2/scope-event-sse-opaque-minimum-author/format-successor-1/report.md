@@ -1,0 +1,7 @@
+# Formatting-only source successor
+
+Applied exactly six actual Biome diagnostic layout sites as text: five in transaction-event-sse.test.ts and one in transactional-event-sse-installed.test.ts. No formatter execution or optional CODE F2–F8 edit occurred. The changes compact one call, wrap one dynamic import, remove one extra blank line, wrap a ternary, expand one object, and wrap one bounded call. Formatter trailing-comma placement is included; this is layout-only, not literally whitespace-only.
+
+exact-replacements.json records every old/new region. Each inverse reconstructs the full predecessor file byte-for-byte. The remaining677 tracked files, including all production, document, amended finite regression, historical prefixes, schema/report/selection/workload/deadline logic, are unchanged. All679 successor hashes are frozen with full seven-file draft.patch and separate two-file correction.patch;672 files remain identical to base HEAD. Historic SSE source/installed prefixes and progress2060 changefeed SSE limitation remain byte-exact.
+
+The original author/CODE packet and original typecheck pass/format failure remain immutable. Copied format-check records are explicitly the ORIGINAL failed diagnostic, not a successor attempt or pass. Root source-only authorization followed actual completed CODE review/no semantic blockers and raw1 format log180798e9. All future validation is closed pending native/root closure. No formatter, typecheck, lint, tests, imports, build, install, runtime, commit or push ran for this successor.

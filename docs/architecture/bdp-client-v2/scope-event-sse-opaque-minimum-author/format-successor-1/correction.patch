@@ -1,0 +1,79 @@
+--- before/apps/bdptest/src/transactional-event-sse-installed.test.ts
++++ after/apps/bdptest/src/transactional-event-sse-installed.test.ts
+@@ -1597,7 +1597,11 @@
+     expect(recorder.headers["content-length"]).toBeUndefined();
+     expect(recorder.headers["etag"]).toBeUndefined();
+     context(recorder.headers);
+-    await bounded(recorder.until(() => idFrames(recorder).length >= 1), workEnd, "SSE Event");
++    await bounded(
++      recorder.until(() => idFrames(recorder).length >= 1),
++      workEnd,
++      "SSE Event",
++    );
+     const beforeClose = [...idFrames(recorder)];
+     expect(beforeClose).toHaveLength(1);
+     sameFrame(beforeClose[0]!, event);
+--- before/packages/server/src/transaction-event-sse.test.ts
++++ after/packages/server/src/transaction-event-sse.test.ts
+@@ -1033,13 +1033,7 @@
+     reads++;
+     preparations = 0;
+     try {
+-      const result = f.owner.beginEventScan(
+-        sourceUrl,
+-        after,
+-        minimum,
+-        invalidReconnect,
+-        admission,
+-      );
++      const result = f.owner.beginEventScan(sourceUrl, after, minimum, invalidReconnect, admission);
+       cases.push({
+         label,
+         outcome: result.kind,
+@@ -1171,8 +1165,9 @@
+ // Appended src-graph fixture; the historical owner/runtime helpers above are unchanged.
+ async function scopeSseMinimumService() {
+   const { createTransactionService } = await import("./transaction-service.js");
+-  const { TransactionMinimumUnproved, TransactionMinimumFailure } =
+-    await import("./transaction-consistency.js");
++  const { TransactionMinimumUnproved, TransactionMinimumFailure } = await import(
++    "./transaction-consistency.js"
++  );
+   const f = ownerFixture();
+   let seedCommits = 0;
+   const receipt = f.run([create("a")]);
+@@ -1518,7 +1513,6 @@
+   );
+   if (failures.length) throw new AggregateError(failures, "Scope SSE minimum abort failed");
+ });
+-
+ 
+ it("serves initial Scope Event SSE opaque minima before conditional admission", async () => {
+   const f = await runtimeFixture();
+@@ -1622,8 +1616,12 @@
+         if (method === "GET")
+           expect(JSON.parse(stream.body)).toMatchObject({
+             status,
+-            code: status === 401 ? "unauthenticated" :
+-              target === "events/?after=" ? "invalid-parameter" : "malformed-request",
++            code:
++              status === 401
++                ? "unauthenticated"
++                : target === "events/?after="
++                  ? "invalid-parameter"
++                  : "malformed-request",
+           });
+       } else {
+         expect(safeContext(stream.headers)).toEqual(expectedContext);
+@@ -1716,7 +1714,10 @@
+       `${scope}links/l`,
+     ]);
+     for (const event of baseline)
+-      expect(event).toMatchObject({ source: `${scope}events/`, transaction: seed.body.transaction });
++      expect(event).toMatchObject({
++        source: `${scope}events/`,
++        transaction: seed.body.transaction,
++      });
+     expect(baseline[3]!.data).toMatchObject({
+       endpoint: "source",
+       link: { id: `${scope}links/l`, type: linkType },
