@@ -1,0 +1,18 @@
+{
+  "descriptors": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/bead",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/bead\",\"name\":\"Bead\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/n\"}"
+    },
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/link",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/link\",\"name\":\"Link\",\"describes\":\"link\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/n\",\"source\":{\"conformsTo\":[\"https://reference.invalid/acme/types/bead\"],\"external\":\"none\"},\"target\":{\"conformsTo\":[\"https://reference.invalid/acme/types/bead\"],\"external\":\"none\"}}"
+    }
+  ],
+  "schemas": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/schemas/n",
+      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/n\",\"type\":\"object\",\"properties\":{\"n\":{\"type\":\"number\"}},\"required\":[\"n\"],\"additionalProperties\":false}"
+    }
+  ]
+}
