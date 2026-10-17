@@ -1,0 +1,695 @@
+{
+  "_comment": "Local F0 regression cases; schemaValid overrides valid only for separate domain checks. Candidate checker format behavior is pinned, not a new date-time standard.",
+  "cases": [
+    {
+      "label": "memory inherits body requirement",
+      "type": "memory",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "memory accepts extensions without mutation",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "memory null body is not empty",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "observation inherits body requirement",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "statement": "seen"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "observation accepts extensions without mutation",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "observation null body is not empty",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": null,
+        "statement": "seen"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "decision inherits body requirement",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "choice": "A"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "decision accepts extensions without mutation",
+      "type": "decision",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "choice": "A",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "decision null body is not empty",
+      "type": "decision",
+      "properties": {
+        "title": "Title",
+        "body": null,
+        "choice": "A"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "procedure inherits body requirement",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "steps": [
+          "do"
+        ]
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "procedure accepts extensions without mutation",
+      "type": "procedure",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "steps": [
+          "do"
+        ],
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "procedure null body is not empty",
+      "type": "procedure",
+      "properties": {
+        "title": "Title",
+        "body": null,
+        "steps": [
+          "do"
+        ]
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "policy inherits body requirement",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "rule": "must"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "policy accepts extensions without mutation",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "policy null body is not empty",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": null,
+        "rule": "must"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "lesson inherits body requirement",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "takeaway": "learn"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "lesson accepts extensions without mutation",
+      "type": "lesson",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "takeaway": "learn",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "lesson null body is not empty",
+      "type": "lesson",
+      "properties": {
+        "title": "Title",
+        "body": null,
+        "takeaway": "learn"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "empty",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": ""
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "lowercase valid leap date",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-02-29t12:00:00z"
+      },
+      "valid": true
+    },
+    {
+      "label": "bad date",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2023-02-29T12:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "24 hour",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-01-01T24:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "bad offset hour",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-01-01T00:00:00+24:00"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "bad offset minute",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-01-01T00:00:00+00:60"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "comma fraction",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-01-01T00:00:00,1Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "missing zone",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-01-01T00:00:00"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "arbitrary fraction",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2024-01-01T00:00:00.12345678901234567890Z"
+      },
+      "valid": true
+    },
+    {
+      "label": "leap second rejected by pinned checker",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "statement": "seen",
+        "observedAt": "2016-12-31T23:59:60Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "equal instants",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "applicability": {
+          "description": "test",
+          "validFrom": "2024-01-01T00:00:00Z",
+          "validUntil": "2024-01-01T00:00:00.0Z"
+        }
+      },
+      "valid": false,
+      "path": "/properties/applicability/validUntil",
+      "schemaValid": true
+    },
+    {
+      "label": "equal zones",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "applicability": {
+          "description": "test",
+          "validFrom": "2024-01-01T00:00:00Z",
+          "validUntil": "2023-12-31T19:00:00-05:00"
+        }
+      },
+      "valid": false,
+      "path": "/properties/applicability/validUntil",
+      "schemaValid": true
+    },
+    {
+      "label": "subnano order",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "applicability": {
+          "description": "test",
+          "validFrom": "2024-01-01T00:00:00.0000000001Z",
+          "validUntil": "2024-01-01T00:00:00.0000000002Z"
+        }
+      },
+      "valid": true,
+      "schemaValid": true
+    },
+    {
+      "label": "fraction reverse",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "applicability": {
+          "description": "test",
+          "validFrom": "2024-01-01T00:00:00.2Z",
+          "validUntil": "2024-01-01T00:00:00.11Z"
+        }
+      },
+      "valid": false,
+      "path": "/properties/applicability/validUntil",
+      "schemaValid": true
+    },
+    {
+      "label": "timezone normalized order",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "applicability": {
+          "description": "test",
+          "validFrom": "2024-01-01T00:00:00Z",
+          "validUntil": "2023-12-31T23:30:00-01:00"
+        }
+      },
+      "valid": true,
+      "schemaValid": true
+    },
+    {
+      "label": "authority urn:example:opaque",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "urn:example:opaque"
+      },
+      "valid": true
+    },
+    {
+      "label": "authority mailto:person@example.com",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "mailto:person@example.com"
+      },
+      "valid": true
+    },
+    {
+      "label": "authority https://example.com/a%20b#part",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "https://example.com/a%20b#part"
+      },
+      "valid": true
+    },
+    {
+      "label": "authority https://example.com/a b",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "https://example.com/a b"
+      },
+      "valid": false
+    },
+    {
+      "label": "authority urn:example:%QQ",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "urn:example:%QQ"
+      },
+      "valid": false
+    },
+    {
+      "label": "authority /relative",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "/relative"
+      },
+      "valid": false
+    },
+    {
+      "label": "authority https://[notipv6]/",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "https://[notipv6]/"
+      },
+      "valid": false
+    },
+    {
+      "label": "authority https://example.com/\u00e9",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "rule": "must",
+        "authority": "https://example.com/\u00e9"
+      },
+      "valid": false
+    },
+    {
+      "label": "closed pointer escaping",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "inception": {
+          "method": "unknown",
+          "a/b~c": false
+        }
+      },
+      "valid": false,
+      "path": "/properties/inception/a~1b~0c"
+    },
+    {
+      "label": "Unicode whitespace",
+      "type": "memory",
+      "properties": {
+        "title": "\u00a0\u2003",
+        "body": ""
+      },
+      "valid": false,
+      "path": "/properties/title"
+    },
+    {
+      "label": "link null note",
+      "type": "link",
+      "properties": {
+        "note": null
+      },
+      "valid": false,
+      "path": "/properties/note"
+    },
+    {
+      "label": "link extension",
+      "type": "link",
+      "properties": {
+        "future": [
+          1,
+          null,
+          {}
+        ]
+      },
+      "valid": true
+    },
+    {
+      "label": "URI grammar https://[v1.test]/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "https://[v1.test]/"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI grammar urn:test:a[b]",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "urn:test:a[b]"
+      },
+      "valid": false
+    },
+    {
+      "label": "URI grammar https://host/path?x=[y]",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "https://host/path?x=[y]"
+      },
+      "valid": false
+    },
+    {
+      "label": "URI grammar https://a[b]@host/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "https://a[b]@host/"
+      },
+      "valid": false
+    },
+    {
+      "label": "URI grammar https://[2001:db8::1]/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "https://[2001:db8::1]/"
+      },
+      "valid": true
+    },
+    {
+      "label": "Python whitespace controls",
+      "type": "memory",
+      "properties": {
+        "title": "\u001c",
+        "body": ""
+      },
+      "valid": false
+    },
+    {
+      "label": "URI components https://%41.example/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "https://%41.example/"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI components https://host/#x#y",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "https://host/#x#y"
+      },
+      "valid": false
+    },
+    {
+      "label": "URI components http://[fe80::1%25eth0]/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "http://[fe80::1%25eth0]/"
+      },
+      "valid": false
+    },
+    {
+      "label": "URI components http://host:/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "http://host:/"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI components urn:",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "urn:"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI components http://host:abc/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "rule",
+        "authority": "http://host:abc/"
+      },
+      "valid": false
+    }
+  ]
+}

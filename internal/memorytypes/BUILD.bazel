@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "memorytypes",
+    srcs = [
+        "endpoints.go",
+        "formats.go",
+        "kinds.go",
+        "properties.go",
+    ],
+    importpath = "github.com/steveyegge/beads/internal/memorytypes",
+    visibility = ["//:__subpackages__"],
+)
+
+go_test(
+    name = "memorytypes_test",
+    srcs = [
+        "endpoints_test.go",
+        "properties_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":memorytypes"],
+)
