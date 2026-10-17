@@ -1,0 +1,7 @@
+{
+  "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+  "before": "        if (deadlineExceeded || child.child.exitCode !== 0 || child.child.signalCode !== null)\n          throw new Error(\"installed finite Event child close was not clean and timely\");\n        closed = true;\n        if (directory) rmSync(directory, { recursive: true, force: true });\n",
+  "after": "        if (deadlineExceeded || child.child.exitCode !== 0 || child.child.signalCode !== null) {\n          failures.push(new Error(\"installed finite Event child close was not clean and timely\"));\n        } else {\n          closed = true;\n          if (directory) rmSync(directory, { recursive: true, force: true });\n        }\n",
+  "exactOccurrences": 1,
+  "reverseReproducesPredecessor": true
+}
