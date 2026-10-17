@@ -1,0 +1,38 @@
+{
+  "prefixes": {
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "bytes": 35759,
+      "sha256": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+      "requirement": "original complete bytes remain exact prefix; append only"
+    },
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "bytes": 40642,
+      "sha256": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+      "requirement": "original complete bytes remain exact prefix; append only"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "bytes": 138654,
+      "sha256": "c12343963d0f3b3500f67c66fe55279111b3441f2ee33d2ee25ba4842c4522e6",
+      "requirement": "original complete bytes remain exact prefix; append only"
+    }
+  },
+  "productionChangedOnly": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "boundedTestExceptions": {
+    "packages/server/src/transaction-events.test.ts": {
+      "beforeSha256": "4f439f1c7b02dbd1e5a65fcc675d24386cf1901a9e3f7ba1819cfc1d47317555",
+      "beforeBytes": 87177,
+      "changedRegionStartByte": 58641,
+      "changedRegionEndByteExclusive": 58717,
+      "unchangedPrefixSha256": "609a6a51e66898935a73b30e07d8aa620765f86bc63628ccf6b87e29c3c7ba32",
+      "unchangedSuffixSha256": "35446c25f65079a16c8f745384fda860bf9f833fba8d6cdf5ee82986033f7348",
+      "oldRegionUtf8": "    await pair(\"events/\", { ...opaque, accept: \"text/event-stream\" }, 500);\n",
+      "allowedReplacementUtf8": "    await pair(\n      \"events/\",\n      { ...opaque, accept: \"text/event-stream\" },\n      503,\n      \"catch-up-timeout\",\n      true,\n    );\n",
+      "expectedAfterSha256": "708fafc31d031abdff6434110d36d4bfd1126d38cbb977d81af1da1703121673",
+      "requirement": "Only this call replacement/layout; no adjacent comment exists, generic private-gap comment and every other byte preserved. No source edits executed by this plan."
+    }
+  }
+}

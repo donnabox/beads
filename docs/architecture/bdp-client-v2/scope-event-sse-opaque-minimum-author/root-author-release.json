@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-17T16:37:10.858885+00:00",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+  "branch": "codex/vickie-scope-event-sse-opaque-minimum",
+  "baseHead": "bbfa5b2cac0e381b497384e3a8e29cd937ea2738",
+  "baseCI": 39044573943,
+  "planSha256": "0d0a4e0e4343de675bc72cd15b39b18b64cbac32a26af234ca5584d8f73c7c1c",
+  "planIndexSha256": "931ad04bb307596442a5d97ced0529e224ece89c362f3a8ea94bd76f3862e412",
+  "nativeClosureSha256": "6aa259a9ad94d4dd234ebfbb8a67d23ef7d9cfffbff54b24b622aafede5af126",
+  "claudeFindingsAuditSha256": "ac7fafe6c0c964fbcb541ac278d3e5470df2a90960f4c756f726c2c7394797ca",
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/transaction-events.test.ts"
+  ],
+  "scope": "SOURCE_DRAFT_ONLY",
+  "preservationSha256": "9c748973bad86ba80d9f63c74d4ccb411e105d038dd71ac1249d21e1f54e96d8",
+  "selectionSha256": "350e303ba12f441b96ffa701d3efa4963f68e00025444d257e2795c2679a6b3a",
+  "workloadSha256": "7776bacfd1c360f74b890bec13b0473663d347c09d2aa4132fa88568e349a923",
+  "sourceAuthoringReleased": true,
+  "runtimeReleased": false,
+  "testBuildInstallFormatterReleased": false,
+  "commitPushReleased": false,
+  "nextGate": "Freeze exact seven-file source then native and actual Claude CODE review; closed validation adaptation requires root release"
+}
