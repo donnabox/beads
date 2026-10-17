@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T03:29:45Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T03:40:33Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,8 +77,8 @@ Checkpoint 2026-10-17T03:29:45Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | PR154 exact CI38995336477 green at f6204255 | Full27 steps passed; separate subsequent candidate, frozen PR150 unchanged |
-| Conditional author / actual Claude | Source frozen; code-review packet launched by root | Claude PID98412 started03:28:45Z; no source edits or execution until dispositions |
+| Root | Bead static prefix inspected; formatting-only failure preserved | Bootstrap and typecheck pass; all remaining validation closed, frozen PR150 unchanged |
+| Conditional author / actual Claude | Source frozen; code-review packet launched by root | Claude PID98412 started03:28:45Z; frozen source unchanged; static prefix separately root-released, runtime closed |
 | Event reviewer | Final CLOSED validation prepared | Actual source and observation schemas bound;2bootstrap+21stages, all gates false |
 | Native reviewer | Code review clean; validation helper review active | Source679/preservation verified; no static/runtime execution yet |
 
@@ -177,6 +177,9 @@ Author [successor-3](finite-event-minimum-author/successor-3/report.md), binding
 **Bead Event code frozen and council running.** [Author report](bead-event-minimum-author/report.md), binding65cc7b8f/fullpatch33c7e004, contains exactly six files (886insertions/21deletions) on isolated dirty f620;673other files,25284-byte historical installed prefix and existing callbacks preserved except accepted sentinel/comment/title changes. Root read the complete diff and rehashed679live inputs. [Native code review](bead-event-minimum-author/native-code-review.md)7b829ddc found no actionable blocker; no execution inferred. [Actual Claude CODE packet](bead-event-minimum-code-review/plan.md), prompt e767fefb/runnerceeca94f, launched root-released read-only PID98412 at2026-10-17T03:28:45Z, same3600s/TERM3595/no retry/model override. Stream progress visible; verdict pending. One mistyped author Python path failed before launch with no mutation, recorded as authoring invocation failure, not test evidence.
 
 [Final CLOSED validation adaptation](bead-event-minimum-validation/finalized-plan.md), implementation03874b77/source7c120a0e/audit8a94cbbb, binds actual25source callbacks and20observation records plus3 separate installed4/3/11 callback/audit pairs. Source D37 ordered observations and elapsed remain measured separately from historical59 code-derived traffic; no measured128total claim. Two fresh bootstrap stages plus21validation stages; every execution/council gate false. Native helper review underway. No bootstrap, test, build, formatter, runtime, commit or push of product source yet. Frozen PR150 and green PR151/154 untouched.
+
+
+**Bead static prefix executed; bounded formatting repair pending.** [Native helper review](bead-event-minimum-validation/native-preparation-review.md)4faaca31 is clean. Root inspected actual supervisor/gates/audit and bootstrap/static commands, independently rehashed72 implementation files/16 references/679 sources, and released only fresh offline frozen-lock scripts-disabled bootstrap plus static prefix. Install passed4.781s; measured tool capture passed8.809s; TypeScript passed5.230s. Actual tools are Biome2.5.7/Vitest4.1.10/TypeScript7.0.2, bound to fresh install evidence. [Format check](bead-event-minimum-validation/run/format-check.exit.json) failed raw1 in4.527s with exactly two formatting diagnostics: AggregateError line wrapping in transaction-events.test.ts and test.each callback wrapping/indentation in transaction-service.test.ts. No fixes applied; all679 source bytes unchanged, no cleanup or sampled survivors. Failure/log retained; no automatic retry. All execution gates closed on failure; lint/build/source/runtime/installed stages unrun. Native reviewer is preparing a bounded two-file mechanical successor plan while actual Claude CODE review continues on the unchanged frozen draft. No product commit/push, checkpoint replacement, new capability claim or user decision required.
 
 ## Current priority: BDP profile structure and implementation
 
