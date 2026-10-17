@@ -1,0 +1,51 @@
+{
+  "finalized": true,
+  "reportSchemasSha256": "c08334d504d8fd0bef23866bea32d7af1832475676b0a46952115ddcc7e83c12",
+  "newSourceLabels": {
+    "current-observation-service": 1,
+    "current-observation-nondisclosure": 1,
+    "current-observation-drain": 5,
+    "current-observation-page-retention": 1,
+    "current-observation-http": 1
+  },
+  "legacyLabels": {
+    "alias-minimum-capture": 2,
+    "alias-minimum-missing": 4,
+    "alias-minimum-transition": 1,
+    "alias-minimum-drain": 1,
+    "current-minimum-incident-wait": 1,
+    "fresh-snapshot-opaque-owner": 1,
+    "finite-event-minimum-owner": 1,
+    "finite-event-minimum-http": 1,
+    "bead-event-minimum-owner": 1,
+    "bead-event-minimum-http": 1,
+    "link-event-minimum-owner": 1,
+    "link-event-minimum-http": 1,
+    "scope-event-sse-minimum-owner": 1,
+    "scope-event-sse-minimum-capture": 1,
+    "scope-event-sse-minimum-abort": 1,
+    "scope-event-sse-minimum-http": 1,
+    "changefeed-opaque-boundaries": 1,
+    "changefeed-opaque-http": 1,
+    "alias-minimum-http": 1,
+    "parser-refusal-source": 3,
+    "fresh-snapshot-opaque-http": 1,
+    "receipt-root-minimum-http": 1
+  },
+  "legacyAttribution": "Fresh selected legacy callbacks; inherited counters/report schemas remain distinct. Actual full callback semantic assertions, not these metadata counts, establish behavior.",
+  "knownSourceFinding": "Link HTTP500 aggregate still12 in frozen draft although rowtable implies8; no source fix/validation approval in this packet.",
+  "operationTargets": {
+    "createBead": "create-bead",
+    "updateBead": "update-bead",
+    "deleteBead": "delete-bead",
+    "createLink": "create-link",
+    "updateLink": "update-link",
+    "deleteLink": "delete-link",
+    "putAlias": "put-alias",
+    "deleteAlias": "delete-alias",
+    "updateWhere": "update-where",
+    "deleteWhere": "delete-where",
+    "batch": "batch",
+    "sequence": "sequence"
+  }
+}

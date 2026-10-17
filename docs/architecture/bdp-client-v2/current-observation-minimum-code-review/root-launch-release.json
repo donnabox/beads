@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-17T19:24:46.398358+00:00",
+  "authority": "One read-only actual Claude CODE review only, 1800 seconds, no retry. No product execution or source correction.",
+  "closedBindingSha256": "1d67e07a9ceb78b287234a38be1bf97373a31a596c7b2b0ff8eac9734fc8f290",
+  "releasedBindingSha256": "d22bd980d6aeb4a5d3e5bc4b84e39cdf4e173cf479cf56c011af3c645804b916",
+  "nativeMechanicsSha256": "53e7b5624071aa4b33ee51510ac69833fcb436f371fd776a37825f12adf6f266",
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "patchSha256": "194419e1b5210531b781fd822dd8e0de1be4d2c18c70e4d9a77a503a0a78bf7c",
+  "changedFields": [
+    "rootLaunchReleased"
+  ],
+  "knownFinding": "Native N1: Link Event HTTP 500 aggregate expects 12, should be 8. Preserved unchanged pending independent CODE review and disposition."
+}

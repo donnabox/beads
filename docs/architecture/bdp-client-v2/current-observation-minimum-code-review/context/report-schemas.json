@@ -1,0 +1,990 @@
+{
+  "kind": "draft-emitted-report-contracts-not-runtime-evidence",
+  "newSourceRecords": 9,
+  "newInstalledRecords": 1,
+  "contracts": {
+    "current-observation-service": {
+      "records": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "observation",
+          "operations",
+          "entries",
+          "waits",
+          "clockCalls",
+          "attempts",
+          "mutations",
+          "closeCalls",
+          "closed",
+          "directoryAbsent",
+          "failureCount",
+          "rows"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "observation": {
+            "const": "current-observation-service"
+          },
+          "operations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "method",
+                "context",
+                "minimum"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "type": "string"
+                },
+                "context": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "scopeEpoch",
+                        "authorizationView",
+                        "scopePosition"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "scopeEpoch": {
+                          "type": "string"
+                        },
+                        "authorizationView": {
+                          "type": "string"
+                        },
+                        "scopePosition": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "minimum": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "waits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clockCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mutations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closeCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closed": {
+            "type": "boolean"
+          },
+          "directoryAbsent": {
+            "type": "boolean"
+          },
+          "failureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "surface",
+                "minimum",
+                "outcome",
+                "context"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "surface": {
+                  "type": "string"
+                },
+                "minimum": {
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string"
+                },
+                "context": {
+                  "type": "object",
+                  "required": [
+                    "scopeEpoch",
+                    "authorizationView",
+                    "scopePosition"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "scopeEpoch": {
+                      "type": "string"
+                    },
+                    "authorizationView": {
+                      "type": "string"
+                    },
+                    "scopePosition": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "successExpected": {
+        "operations": 25,
+        "attempts": 35,
+        "waits": 10,
+        "clockCalls": 45,
+        "mutations": 2,
+        "closeCalls": 1,
+        "closed": true,
+        "directoryAbsent": true,
+        "failureCount": 0,
+        "rowsLength": 25,
+        "entriesLength": 35
+      }
+    },
+    "current-observation-nondisclosure": {
+      "records": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "observation",
+          "operations",
+          "entries",
+          "waits",
+          "clockCalls",
+          "attempts",
+          "mutations",
+          "closeCalls",
+          "closed",
+          "directoryAbsent",
+          "failureCount",
+          "liveProbes",
+          "policyReplacements",
+          "rows"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "observation": {
+            "const": "current-observation-nondisclosure"
+          },
+          "operations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "method",
+                "context",
+                "minimum"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "type": "string"
+                },
+                "context": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "scopeEpoch",
+                        "authorizationView",
+                        "scopePosition"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "scopeEpoch": {
+                          "type": "string"
+                        },
+                        "authorizationView": {
+                          "type": "string"
+                        },
+                        "scopePosition": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "minimum": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "waits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clockCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mutations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closeCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closed": {
+            "type": "boolean"
+          },
+          "directoryAbsent": {
+            "type": "boolean"
+          },
+          "failureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "liveProbes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "policyReplacements": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "label",
+                "outcome"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "successExpected": {
+        "operations": 12,
+        "attempts": 12,
+        "waits": 2,
+        "clockCalls": 14,
+        "mutations": 1,
+        "liveProbes": 1,
+        "policyReplacements": 1,
+        "closeCalls": 1,
+        "closed": true,
+        "directoryAbsent": true,
+        "failureCount": 0,
+        "rowsLength": 12
+      }
+    },
+    "current-observation-drain": {
+      "records": 5,
+      "schema": {
+        "type": "object",
+        "required": [
+          "observation",
+          "operations",
+          "entries",
+          "waits",
+          "clockCalls",
+          "attempts",
+          "mutations",
+          "closeCalls",
+          "closed",
+          "directoryAbsent",
+          "failureCount",
+          "surface",
+          "liveProbes",
+          "postCloseProbes",
+          "settled",
+          "closeSettled"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "observation": {
+            "const": "current-observation-drain"
+          },
+          "operations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "method",
+                "context",
+                "minimum"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "type": "string"
+                },
+                "context": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "scopeEpoch",
+                        "authorizationView",
+                        "scopePosition"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "scopeEpoch": {
+                          "type": "string"
+                        },
+                        "authorizationView": {
+                          "type": "string"
+                        },
+                        "scopePosition": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "minimum": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "waits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clockCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mutations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closeCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closed": {
+            "type": "boolean"
+          },
+          "directoryAbsent": {
+            "type": "boolean"
+          },
+          "failureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "surface": {
+            "enum": [
+              "type",
+              "types",
+              "incident",
+              "page",
+              "discovery"
+            ]
+          },
+          "liveProbes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "postCloseProbes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "settled": {
+            "type": "boolean"
+          },
+          "closeSettled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "successExpected": {
+        "operations": 2,
+        "attempts": 2,
+        "waits": 1,
+        "clockCalls": 3,
+        "mutations": 1,
+        "liveProbes": 1,
+        "postCloseProbes": 1,
+        "closeCalls": 1,
+        "closed": true,
+        "settled": true,
+        "closeSettled": true,
+        "directoryAbsent": true,
+        "failureCount": 0,
+        "entriesLength": 2,
+        "distinctSurfaces": 5
+      }
+    },
+    "current-observation-page-retention": {
+      "records": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "observation",
+          "calls",
+          "ownerOpens",
+          "offlineInspections",
+          "rows",
+          "payloadUnchanged",
+          "closed"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "observation": {
+            "const": "current-observation-page-retention"
+          },
+          "calls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ownerOpens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "offlineInspections": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "label",
+                "outcome",
+                "context"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string"
+                },
+                "context": {
+                  "type": "object",
+                  "required": [
+                    "scopeEpoch",
+                    "authorizationView",
+                    "scopePosition"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "scopeEpoch": {
+                      "type": "string"
+                    },
+                    "authorizationView": {
+                      "type": "string"
+                    },
+                    "scopePosition": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "payloadUnchanged": {
+            "type": "boolean"
+          },
+          "closed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "successExpected": {
+        "calls": 8,
+        "ownerOpens": 2,
+        "offlineInspections": 2,
+        "rowsLength": 8,
+        "payloadUnchanged": true,
+        "closed": true
+      }
+    },
+    "current-observation-http": {
+      "records": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "observation",
+          "elapsedMs",
+          "attempted",
+          "responses",
+          "waits",
+          "clockCalls",
+          "closed",
+          "directory",
+          "directoryAbsent",
+          "failureCount"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "observation": {
+            "const": "current-observation-http"
+          },
+          "elapsedMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "attempted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "label",
+                "method",
+                "url",
+                "status",
+                "bytes",
+                "headers"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "headers": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "waits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clockCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "closed": {
+            "type": "boolean"
+          },
+          "directory": {
+            "type": "string"
+          },
+          "directoryAbsent": {
+            "type": "boolean"
+          },
+          "failureCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "successExpected": {
+        "attempted": 37,
+        "responsesLength": 37,
+        "waits": 10,
+        "closed": true,
+        "directoryAbsent": true,
+        "failureCount": 0,
+        "statusCounts": {
+          "200": 7,
+          "503": 10,
+          "410": 8,
+          "409": 8,
+          "404": 2,
+          "400": 1,
+          "401": 1
+        },
+        "methodCounts": {
+          "POST": 3,
+          "GET": 21,
+          "HEAD": 13
+        }
+      }
+    },
+    "private-installed-current-observation-minimum": {
+      "records": 1,
+      "schema": {
+        "type": "object",
+        "required": [
+          "observation",
+          "outcome",
+          "declaredSourceCommit",
+          "workspaceDirty",
+          "entry",
+          "entrySha256",
+          "binding",
+          "artifactBytes",
+          "elapsedMs",
+          "attempted",
+          "exchanges",
+          "completedResponses",
+          "deadlineExceeded",
+          "cleanupExceeded",
+          "launchAttempted",
+          "startupCompleted",
+          "closed",
+          "childClose",
+          "childPid",
+          "childExitCode",
+          "childSignalCode",
+          "directory",
+          "directoryAbsent",
+          "activeRequests",
+          "pendingOperations",
+          "failureCount",
+          "failureCategories",
+          "claimEligible",
+          "retention",
+          "startupLimitation"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "observation": {
+            "const": "private-installed-current-observation-minimum"
+          },
+          "outcome": {
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          },
+          "declaredSourceCommit": {
+            "type": "string"
+          },
+          "workspaceDirty": {
+            "type": "boolean"
+          },
+          "entry": {
+            "type": "string"
+          },
+          "entrySha256": {
+            "type": "string"
+          },
+          "binding": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "artifactBytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "elapsedMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "attempted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exchanges": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completedResponses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "ordinal",
+                "label",
+                "method",
+                "url",
+                "credential",
+                "requestBodyBytes",
+                "requestBodySha256",
+                "minimumFieldOccurrences",
+                "status",
+                "bodyOctets",
+                "bodySha256",
+                "headers"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "ordinal": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "label": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "credential": {
+                  "type": "string"
+                },
+                "requestBodyBytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "requestBodySha256": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "minimumFieldOccurrences": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "minItems": 3,
+                  "maxItems": 3
+                },
+                "status": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "bodyOctets": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "bodySha256": {
+                  "type": "string"
+                },
+                "headers": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "deadlineExceeded": {
+            "type": "boolean"
+          },
+          "cleanupExceeded": {
+            "type": "boolean"
+          },
+          "launchAttempted": {
+            "type": "boolean"
+          },
+          "startupCompleted": {
+            "type": "boolean"
+          },
+          "closed": {
+            "type": "boolean"
+          },
+          "childClose": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "signal"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "signal": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "childPid": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "childExitCode": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "childSignalCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "directory": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "directoryAbsent": {
+            "type": "boolean"
+          },
+          "activeRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pendingOperations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failureCategories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "claimEligible": {
+            "const": false
+          },
+          "retention": {
+            "type": "string"
+          },
+          "startupLimitation": {
+            "type": "string"
+          }
+        }
+      },
+      "successExpected": {
+        "outcome": "passed",
+        "attempted": 37,
+        "exchanges": 37,
+        "completedResponsesLength": 37,
+        "deadlineExceeded": false,
+        "cleanupExceeded": false,
+        "launchAttempted": true,
+        "startupCompleted": true,
+        "closed": true,
+        "childClose": {
+          "code": 0,
+          "signal": null
+        },
+        "childExitCode": 0,
+        "childSignalCode": null,
+        "directoryAbsent": true,
+        "activeRequests": 0,
+        "pendingOperations": 0,
+        "failureCount": 0,
+        "claimEligible": false,
+        "statusCounts": {
+          "200": 7,
+          "503": 10,
+          "410": 8,
+          "409": 8,
+          "404": 2,
+          "400": 1,
+          "401": 1
+        },
+        "methodCounts": {
+          "POST": 3,
+          "GET": 21,
+          "HEAD": 13
+        }
+      }
+    }
+  },
+  "legacy": "Existing selected reports remain separately attributed. Do not require only9 total source JSON reports: selected historical callbacks emit their existing observations. Historical installed22 remains separate from new37; sibling5 unselected.",
+  "limitations": [
+    "B row outcomes are asserted classifications; actual attempts, contexts and wait/clock counts are separately recorded.",
+    "D payloadUnchanged/closed logged only after synchronous actual comparison/closure succeeds.",
+    "Wire body/schema/content/header oracles execute inside callbacks; retained safe metadata does not reproduce full bodies.",
+    "Standalone source E does not report raw socket close inventory; runtime close is observed. Installed F records ClientRequest close plus child close event.",
+    "No measurement has run; these are desired success constraints derived from drafted source."
+  ]
+}

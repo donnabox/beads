@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-17T18:49:36.672946+00:00",
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "actualReview": {
+    "exit": 0,
+    "elapsedSeconds": 1341.9023480410688,
+    "rawSha256": "d639718f621023d8e5a182c8626392140333ea39069e2215276abc5dc2786dfe",
+    "finalSha256": "5978d2705666cae554f70dbf2c4d57d5bd75b53fe31c2e626d70a7d1f9c09842",
+    "terminalAudit": "24b5045445947579c67b74a114eb602e711fe92d0e86a4158a016378592aaa50",
+    "findingsAudit": "c792bcb6adfc80a93798fe1c853a48963f205ba1eaa043f58d28e73fcb438c8b"
+  },
+  "findings": [
+    {
+      "id": 1,
+      "disposition": "accept",
+      "correction": "Initial wait checkpoint8 retained; both later checkpoints10; traffic unchanged."
+    },
+    {
+      "id": 2,
+      "disposition": "accept",
+      "correction": "Single postclose real owner.withRead returns entry-refused/not-accepting; no extra call."
+    },
+    {
+      "id": 3,
+      "disposition": "accept",
+      "correction": "Exact-title separate historical22/new37; unchanged sibling5 fullCI only; wholefile64/3/3 distinguished."
+    },
+    {
+      "id": 4,
+      "disposition": "accept",
+      "correction": "One strict beads/?cursor=missing and one retained snapshot?snapshot=unissued sentinel; two replacements unchanged67calls."
+    },
+    {
+      "id": 5,
+      "disposition": "accept",
+      "correction": "Typed failure and context identity; epochfirst bothmismatch direct assertion explicitly additional legacy assertion, not new A\u2013F traffic."
+    },
+    {
+      "id": 6,
+      "disposition": "accept",
+      "correction": "D synchronous noawait clockadvance\u2192failedread\u2192close/offline inspection; no timer change."
+    },
+    {
+      "id": 7,
+      "disposition": "accept",
+      "correction": "Discovery intentionally inherits invalid-owner-first current checker."
+    },
+    {
+      "id": 8,
+      "disposition": "accept",
+      "correction": "Wire unsupported defensive-only; direct store/service unsupported controls preserved."
+    },
+    {
+      "id": 9,
+      "disposition": "accept",
+      "correction": "Retain compatibility export/catch; externally patched counterfactual unchanged and correctly attributed."
+    },
+    {
+      "id": 10,
+      "disposition": "accept",
+      "correction": "E uses32Bead batch,update32 issuing exercisedpage,Link; source-local twoTypes and receipt/readmax2. Firstbatch maypage but adds no fetch. F defaults unchanged; freshbuildbeforecollect."
+    },
+    {
+      "id": 11,
+      "disposition": "accept",
+      "correction": "Preserve existing taxonomy/locality; document direct nonlocal Type label change without claiming wirecoverage."
+    }
+  ],
+  "authorization": "Immutable successor2 plan/selection/workload correction only, exact16files and existing new traffic/deadlines; native closure then root source release required.",
+  "sourceAuthoringReleased": false,
+  "runtimeReleased": false,
+  "newProductDecision": false,
+  "S1G2PublicGatesUnchanged": true
+}
