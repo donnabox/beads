@@ -225,7 +225,12 @@ func BuildListFilter(in issueops.ListRequest, cfg ListConfig) (types.IssueFilter
 	statusParts := splitStatusSelector(in.Status)
 	statusAll := len(statusParts) == 1 && statusParts[0] == "all"
 
-	if in.ReadyFlag {
+	// --ready defaults to open (the blocker-aware query's historical pin),
+	// but an explicit --status is an intersection, not an override. Dropping
+	// the selector used to answer `bd list --status X --ready` with the
+	// unfiltered ready set (GH#5832). `--status all` is the no-filter
+	// spelling, so the open default still applies there.
+	if in.ReadyFlag && (len(statusParts) == 0 || statusAll) {
 		s := types.StatusOpen
 		filter.Status = &s
 	} else if len(statusParts) > 0 && !statusAll {
@@ -362,11 +367,6 @@ func BuildListFilter(in issueops.ListRequest, cfg ListConfig) (types.IssueFilter
 		}
 	}
 
-	if cfg.IsInfra(in.IssueType) {
-		ephemeral := true
-		filter.Ephemeral = &ephemeral
-	}
-
 	if in.ParentID != "" {
 		pid := in.ParentID
 		filter.ParentID = &pid
@@ -410,7 +410,8 @@ func BuildListFilter(in issueops.ListRequest, cfg ListConfig) (types.IssueFilter
 // account of WHAT IT IS, so that a "show everything" frontend has exactly one
 // thing to skip. Two kinds live here: the type-level exclusions that make the
 // default listing show durable work only (templates, gates, infra types), and
-// the plane decision — whether the wisps TABLE is read at all.
+// the plane decision — whether the wisps TABLE is read at all, and for a named
+// infra type whether only its ephemeral rows are.
 //
 // IncludeAllTypes lifts them ALL by skipping this function entirely, which is
 // what makes it future-proof: a suppression added here is automatically lifted
@@ -437,13 +438,27 @@ func applyTypeSuppressions(in issueops.ListRequest, cfg ListConfig, filter *type
 
 	// The plane bit. Three requests admit the wisp table: an explicit
 	// IncludeEphemeral, IncludeInfra (which admits the plane AND drops the
-	// infra-type exclusions above), and naming an infra type (which routed to
-	// the plane alone in BuildListFilter). Everything else is the durable
-	// listing. IncludeAllTypes is a fourth, via the early return above — it is
-	// the union of these flags, so it must decide the plane too, not only the
-	// type exclusions.
+	// infra-type exclusions above), and naming an infra type (which narrows to
+	// its ephemeral rows, below). Everything else is the durable listing.
+	// IncludeAllTypes is a fourth, via the early return above — it is the union
+	// of these flags, so it must decide the plane too, not only the type
+	// exclusions.
 	if !in.IncludeEphemeral && !in.IncludeInfra && (in.IssueType == "" || !cfg.IsInfra(in.IssueType)) {
 		filter.SkipWisps = true
+	}
+
+	// Naming an infra type narrows the read to its EPHEMERAL rows alone, which
+	// is where creating one puts it. IncludeEphemeral lifts that narrowing,
+	// because it promises the durable answer PLUS the plane, never the plane
+	// instead: an infra-typed row can still be durable — a promoted wisp, an
+	// issue retyped after it was created, or one written before its type
+	// joined types.infra — and while the narrowing held, `bd search --type
+	// message` (whose scope sets the flag) dropped exactly those rows with exit
+	// 0. IncludeInfra alone keeps the narrowing, and BuildCountFilter's
+	// IncludeInfra arm mirrors both halves (GH#4387).
+	if cfg.IsInfra(in.IssueType) && !in.IncludeEphemeral {
+		ephemeral := true
+		filter.Ephemeral = &ephemeral
 	}
 }
 
@@ -465,9 +480,10 @@ func splitStatusSelector(status string) []string {
 // pinned-carrying beads: the pinned or hooked status, or — when the selector
 // actually applies to the query — the "all" selector, which promises every
 // status. The pinned default is not forced off for a filter that asks for
-// those beads. allApplies is false under --ready, which forces status open
-// and otherwise ignores the selector, so "all" must not lift the pinned
-// default there.
+// those beads. allApplies is false under --ready: `--status all` (and the
+// omitted selector) still pin open, so "all" must not lift the pinned
+// default there. Explicit selectors are honored under --ready (GH#5832);
+// pinned and hooked still return true regardless of allApplies.
 func statusSelectsPinned(parts []string, allApplies bool) bool {
 	for _, part := range parts {
 		switch part {

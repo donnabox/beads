@@ -31,6 +31,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewPriority(cmd, args)
+		}
 		CheckReadonly("priority")
 
 		evt := metrics.NewCommandEvent("priority")
@@ -78,10 +81,10 @@ Examples:
 		updates := map[string]interface{}{
 			"priority": priority,
 		}
-		if err := issueStore.UpdateIssue(ctx, result.ResolvedID, updates, actor); err != nil {
+		if err := issueStore.UpdateIssue(ctx, result.ResolvedID, updates, currentActor()); err != nil {
 			return HandleErrorRespectJSON("updating %s: %v", id, err)
 		}
-		if err := commitPendingIfEmbedded(ctx, issueStore, actor, doltAutoCommitParams{
+		if err := commitPendingIfEmbedded(ctx, issueStore, currentActor(), doltAutoCommitParams{
 			Command:  "priority",
 			IssueIDs: []string{result.ResolvedID},
 		}); err != nil {

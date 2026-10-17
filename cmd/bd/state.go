@@ -71,6 +71,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewState(cmd, args[0], args[1], false)
+		}
 		evt := metrics.NewCommandEvent("state")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -197,7 +200,10 @@ func runSetState(ctx context.Context, issueID, dimension, newValue, reason strin
 		eventDesc = fmt.Sprintf("Set %s to %s", dimension, newValue)
 	}
 	if reason != "" {
-		eventDesc += "\n\nReason: " + reason
+		// The same marker types.GateDescription writes, from the one constant
+		// that owns its spelling — types.GateReason reads any description
+		// carrying it, so the two writers must not drift apart by accident.
+		eventDesc += types.ReasonMarker + reason
 	}
 
 	lifecycle, err := openIssueLifecycle()
@@ -223,14 +229,13 @@ func runSetState(ctx context.Context, issueID, dimension, newValue, reason strin
 	// could not write, so an event that disagreed with its subject's plane
 	// fails the command instead of silently landing in the wrong table.
 	created, err := lifecycle.Create(ctx, issueops.CreateRequest{
-		Actor: actor,
+		Actor: currentActor(),
 		Issue: &types.Issue{
 			Title:       eventTitle,
 			Description: eventDesc,
 			Status:      types.StatusClosed,
 			Priority:    4,
 			IssueType:   types.TypeEvent,
-			CreatedBy:   getActorWithGit(),
 			Ephemeral:   details.Ephemeral,
 			NoHistory:   details.NoHistory,
 		},
@@ -251,12 +256,15 @@ func runSetState(ctx context.Context, issueID, dimension, newValue, reason strin
 	// failed. The plane needs no branch: IssuePlaneOnly stays false and the
 	// role resolves it inside its own transaction.
 	if _, err := lifecycle.Update(ctx, issueops.UpdateRequest{
-		Actor:   actor,
+		Actor:   currentActor(),
 		IssueID: fullID,
 		Patch: issueops.IssuePatch{Labels: issueops.LabelPatch{
 			Add:    []string{newLabel},
 			Remove: removeStateLabel(oldLabel),
 		}},
+		// bd set-state has always edited templates; the role's template guard
+		// stands down for it (issueops.UpdateRequest.AllowTemplate).
+		AllowTemplate: true,
 	}); err != nil {
 		return HandleErrorRespectJSON("setting %s: %v", dimension, err)
 	}
@@ -302,6 +310,9 @@ Example:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewState(cmd, args[0], "", true)
+		}
 		evt := metrics.NewCommandEvent("state-list")
 		defer func() {
 			if c := metrics.Global(); c != nil {

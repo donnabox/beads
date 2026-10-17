@@ -17,6 +17,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage/backends"
 	"github.com/steveyegge/beads/internal/storage/contextinfo"
 	"github.com/steveyegge/beads/internal/storage/domain"
+	"github.com/steveyegge/beads/internal/storage/externaldeps"
 	"github.com/steveyegge/beads/internal/storage/uow"
 	"github.com/steveyegge/beads/issueops"
 	"github.com/steveyegge/beads/memoryops"
@@ -47,11 +48,12 @@ const (
 )
 
 var (
-	serveAddr             string
-	serveAllowNonLoopback bool
-	serveAuthTokenFile    string
-	serveInsecureNoAuth   bool
-	serveAllowedHosts     []string
+	serveAddr              string
+	serveAllowNonLoopback  bool
+	serveAuthTokenFile     string
+	serveInsecureNoAuth    bool
+	serveAllowedHosts      []string
+	serveLargeApplyCeiling time.Duration
 )
 
 var serveCmd = &cobra.Command{
@@ -60,8 +62,25 @@ var serveCmd = &cobra.Command{
 	Long: `Serve the beads HTTP API — the same work surface the CLI answers, for
 automation clients that would otherwise fork a bd subprocess per call.
 
-The wire contract is described by an OpenAPI document (/v0); GET
-/v0/beads/context reports which operations this build actually implements.
+GRAPH WORKSPACE PREVIEW
+
+  In an initialized graph workspace backed by ordinary shared-server Dolt,
+  this command serves BDP Read at the persisted Scope URL path: discovery,
+  Resources, Types, properties, filtered inventories, incident Links and retained
+  pages. It accepts --readonly and publishes no HTTP write operations, History,
+  aliases, /healthz or legacy /v0 routes. Embedded graph serving is refused.
+  Use the authenticated Scope or bdp.json read for readiness. Every accepted
+  token can read the complete workspace; cursors expire after five minutes
+  and do not survive process restart. Stop serving before restoring storage.
+  Bind a stable address reachable through the initialized Scope URL. Host
+  aliases do not change canonical identities. See docs/reference/graph-preview.md.
+
+LEGACY ISSUE WORKSPACES
+
+  The following operation and probe descriptions apply to legacy Issue mode.
+  Its wire contract is described by an OpenAPI document (/v0); GET
+  /v0/beads/context reports which operations this build actually implements.
+  Deployment, token rotation and Host controls also apply to graph mode.
 
 DEPLOYMENT
 
@@ -149,6 +168,14 @@ DESTRUCTIVE OPERATIONS
   address can erase closed work; bind it accordingly.`,
 	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			cmd.SilenceErrors, cmd.SilenceUsage = true, true
+			opts, err := resolveServeConfig()
+			if err != nil {
+				return HandleError("%v", err)
+			}
+			return runGraphServe(cmd, opts)
+		}
 		return runServe()
 	},
 }
@@ -175,6 +202,8 @@ func registerServeFlags(cmd *cobra.Command) {
 		"Serve a non-loopback bind with NO authentication. Every peer that can reach the address gets full read and claim access")
 	cmd.Flags().StringArrayVar(&serveAllowedHosts, "allowed-host", nil,
 		"Additional Host header value to answer to, e.g. a service DNS name. Repeatable; matched exactly, with no wildcards")
+	cmd.Flags().DurationVar(&serveLargeApplyCeiling, "large-apply-ceiling", httpapi.DefaultLargeApplyCeiling,
+		"Whole-run budget for a POST issues:batchApply request over 100 items (a ceiling, not a target; requests at or under 100 items are unaffected). Must be positive. The orchestrator's stop grace must be at least this long plus 5s, or an external SIGKILL can cut off an in-flight large apply a graceful drain would otherwise have waited out; see engdocs/SERVE_RUNBOOK.md")
 }
 
 // serveOptions is the part of a server's configuration that depends on NEITHER
@@ -187,11 +216,12 @@ func registerServeFlags(cmd *cobra.Command) {
 // server configuration that cannot yet describe a server. The field names match
 // Config's because they become those fields verbatim, in applyTo.
 type serveOptions struct {
-	Addr             string
-	AllowNonLoopback bool
-	InsecureNoAuth   bool
-	AllowedHosts     []string
-	Auth             *httpapi.TokenFileAuth
+	Addr              string
+	AllowNonLoopback  bool
+	InsecureNoAuth    bool
+	AllowedHosts      []string
+	Auth              *httpapi.TokenFileAuth
+	LargeApplyCeiling time.Duration
 }
 
 // applyTo writes the operator's choices onto the configuration a database arm
@@ -203,6 +233,7 @@ func (o serveOptions) applyTo(cfg *httpapi.Config) {
 	cfg.InsecureNoAuth = o.InsecureNoAuth
 	cfg.AllowedHosts = o.AllowedHosts
 	cfg.Auth = o.Auth
+	cfg.LargeApplyCeiling = o.LargeApplyCeiling
 }
 
 // resolveServeConfig turns the flags and their environment fallbacks into the
@@ -215,13 +246,17 @@ func (o serveOptions) applyTo(cfg *httpapi.Config) {
 // standing in, and must not arrive after a database has been opened.
 func resolveServeConfig() (serveOptions, error) {
 	cfg := serveOptions{
-		Addr:             serveAddr,
-		AllowNonLoopback: serveAllowNonLoopback,
-		InsecureNoAuth:   serveInsecureNoAuth,
-		AllowedHosts:     serveAllowedHosts,
+		Addr:              serveAddr,
+		AllowNonLoopback:  serveAllowNonLoopback,
+		InsecureNoAuth:    serveInsecureNoAuth,
+		AllowedHosts:      serveAllowedHosts,
+		LargeApplyCeiling: serveLargeApplyCeiling,
 	}
 	if _, err := httpapi.ValidateBindAddr(serveAddr, serveAllowNonLoopback); err != nil {
 		return cfg, err
+	}
+	if serveLargeApplyCeiling <= 0 {
+		return cfg, fmt.Errorf("--large-apply-ceiling must be positive, got %s", serveLargeApplyCeiling)
 	}
 
 	tokenFile := serveAuthTokenFile
@@ -308,6 +343,9 @@ func runServe() error {
 			CycleDetector:     roles.cycles,
 			EdgeReader:        roles.edges,
 			GraphCounter:      roles.edgeCounter,
+			BatchGetter:       roles.batchGetter,
+			LeaseReclaimer:    roles.leaseReclaimer,
+			Heartbeater:       roles.heartbeater,
 			Relations:         roles.relations,
 			Commenter:         roles.commenter,
 			BlockingAnnotator: roles.blocking,
@@ -332,9 +370,13 @@ func runServe() error {
 			// extraction, this flag and the maintenance ticker cannot disagree
 			// about whether this workspace journals.
 			EventsJournalEnabled: journalEnabled,
-			Workspace:            info,
-			SchemaVersion:        JSONSchemaVersion,
-			Mode:                 serveResolvedMode(info, db),
+			// The roles above come from the storage chain, which interposes
+			// the external-dependency policy (wireStorageDecorators); the
+			// handshake advertises it only if that layer is really there.
+			ExternalDependencyPolicy: externaldeps.Applied(store),
+			Workspace:                info,
+			SchemaVersion:            JSONSchemaVersion,
+			Mode:                     serveResolvedMode(info, db),
 		})
 	}
 
@@ -345,6 +387,11 @@ func runServe() error {
 	// firing them. This is the unit-of-work twin of the
 	// (*storage.HookFiringStore).Unwrap the store-shaped source takes.
 	provider := uow.UnwrapProvider(uowProvider)
+	if provider != nil {
+		// Remove hooks, then restore the external-dependency policy. The policy
+		// is not a hook and must remain on every served ready/claim path.
+		provider = wireExternalDependencyUOWProvider(provider)
+	}
 	if provider == nil {
 		// Server, external-server and shared-server workspaces: PersistentPreRunE
 		// builds a DoltStore for those and no unit-of-work provider, so serve
@@ -371,6 +418,14 @@ func runServe() error {
 		info.Database = topology.database
 		p, err := newSQLServerUOWProvider(rootCtx, info.BeadsDir, topology)
 		if err != nil {
+			// A daemon has no operator watching a prompt, so a migration-gate
+			// refusal here must fail startup loudly and completely: the whole
+			// block, in the service log, naming the one-time `bd migrate
+			// schema` that unblocks it. No prompt, no auto-consent, no
+			// half-started daemon serving a schema it refused to reconcile.
+			if rendered := renderTypedOpenError(err); rendered {
+				return SilentExit()
+			}
 			return HandleError("bd serve: %v", err)
 		}
 		defer func() {
@@ -382,7 +437,7 @@ func runServe() error {
 				fmt.Fprintf(os.Stderr, "bd serve: closing the unit-of-work provider: %v\n", err)
 			}
 		}()
-		provider = p
+		provider = wireExternalDependencyUOWProvider(p)
 	}
 
 	defer startServeEventsJournalMaintenance(info.BeadsDir, provider)()
@@ -395,10 +450,11 @@ func runServe() error {
 		// is still the workspace's answer and still has to be handed in — the
 		// provider knows how to READ the journal, not whether this workspace has
 		// one.
-		EventsJournalEnabled: eventsjournal.EnabledFor(info.BeadsDir),
-		Workspace:            info,
-		SchemaVersion:        JSONSchemaVersion,
-		Mode:                 serveResolvedMode(info, db),
+		EventsJournalEnabled:     eventsjournal.EnabledFor(info.BeadsDir),
+		ExternalDependencyPolicy: externaldeps.AppliedToProvider(provider),
+		Workspace:                info,
+		SchemaVersion:            JSONSchemaVersion,
+		Mode:                     serveResolvedMode(info, db),
 	})
 }
 
@@ -595,7 +651,7 @@ func serveDatabaseSource(beadsDir string) (serveDatabase, error) {
 // the server, which no client can discover before connecting. bd already
 // answers this question the same way one layer down, where a backend that
 // cannot guarantee mutation-free access is turned away rather than opened
-// anyway (backendSupportsStrictReadonly, cmd/bd/main.go).
+// anyway (the proxy.readonly.unsupported refusal in cmd/bd/main.go).
 //
 // The value is read from the global rather than a flag lookup because
 // `readonly` is also a config key, and PersistentPreRunE has already folded
@@ -650,6 +706,9 @@ type serveRoleSource interface {
 	CycleDetector() (issueops.CycleDetector, error)
 	EdgeReader() (issueops.EdgeReader, error)
 	GraphCounter() (issueops.GraphCounter, error)
+	BatchGetter() (issueops.BatchGetter, error)
+	LeaseReclaimer() (issueops.LeaseReclaimer, error)
+	Heartbeater() (issueops.Heartbeater, error)
 	IssueRelations() (issueops.Relations, error)
 	Commenter() (issueops.Commenter, error)
 	BlockingAnnotator() (issueops.BlockingAnnotator, error)
@@ -716,6 +775,9 @@ func serveIssueRoles(src serveRoleSource, journalEnabled bool) (serveRoles, erro
 		{"cycle detector", func() (err error) { roles.cycles, err = src.CycleDetector(); return }},
 		{"edge reader", func() (err error) { roles.edges, err = src.EdgeReader(); return }},
 		{"graph counter", func() (err error) { roles.edgeCounter, err = src.GraphCounter(); return }},
+		{"batch getter", func() (err error) { roles.batchGetter, err = src.BatchGetter(); return }},
+		{"lease reclaimer", func() (err error) { roles.leaseReclaimer, err = src.LeaseReclaimer(); return }},
+		{"heartbeater", func() (err error) { roles.heartbeater, err = src.Heartbeater(); return }},
 		{"issue relations", func() (err error) { roles.relations, err = src.IssueRelations(); return }},
 		{"commenter", func() (err error) { roles.commenter, err = src.Commenter(); return }},
 		{"blocking annotator", func() (err error) { roles.blocking, err = src.BlockingAnnotator(); return }},
@@ -816,23 +878,38 @@ type serveRoles struct {
 	// hook decorator like the two below it — a release is an update, so
 	// HookFiringStore.Releaser fires the workspace's on_update script — which
 	// is why it comes off the PEELED store with the rest.
-	releaser     issueops.Releaser
-	lifecycle    issueops.Lifecycle
-	settings     issueops.WorkspaceConfig
-	stats        issueops.StatsReporter
-	cycles       issueops.CycleDetector
-	edges        issueops.EdgeReader
-	edgeCounter  issueops.GraphCounter
-	relations    issueops.Relations
-	commenter    issueops.Commenter
-	blocking     issueops.BlockingAnnotator
-	tree         issueops.TreeWalker
-	readyCounter issueops.ReadyCounter
-	counter      issueops.Counter
-	querier      issueops.Querier
-	sweeper      issueops.Sweeper
-	deleter      issueops.Deleter
-	batchCreator issueops.BatchCreator
+	releaser    issueops.Releaser
+	lifecycle   issueops.Lifecycle
+	settings    issueops.WorkspaceConfig
+	stats       issueops.StatsReporter
+	cycles      issueops.CycleDetector
+	edges       issueops.EdgeReader
+	edgeCounter issueops.GraphCounter
+	// batchGetter is the one-snapshot, many-ids read behind
+	// POST /v0/beads/issues:batchGet. Its hook decorator recurses to the inner
+	// getter WITHOUT wrapping it — a read fires no completion hooks — so it is
+	// taken off the peeled store with the rest for uniformity rather than out
+	// of necessity.
+	batchGetter issueops.BatchGetter
+	// leaseReclaimer is the stale-lease sweep behind
+	// POST /v0/beads/issues:reclaim. Its hook decorator WRAPS (a reclaim is an
+	// update per reverted row), which is why it comes off the peeled store with
+	// the releaser: bd serve runs no hooks. heartbeater, the lease refresh
+	// behind POST /v0/beads/issues/{id}:heartbeat, comes off the same store
+	// for the same reason: its decorator WRAPS too, firing on_update for a
+	// re-arm (a refresh fires nothing).
+	leaseReclaimer issueops.LeaseReclaimer
+	heartbeater    issueops.Heartbeater
+	relations      issueops.Relations
+	commenter      issueops.Commenter
+	blocking       issueops.BlockingAnnotator
+	tree           issueops.TreeWalker
+	readyCounter   issueops.ReadyCounter
+	counter        issueops.Counter
+	querier        issueops.Querier
+	sweeper        issueops.Sweeper
+	deleter        issueops.Deleter
+	batchCreator   issueops.BatchCreator
 	// dependencyEditor is the second role here whose accessor recurses through
 	// the hook decorator, so taking it off the peeled store is not optional:
 	// HookFiringStore.DependencyEditor fires the workspace's update hook per

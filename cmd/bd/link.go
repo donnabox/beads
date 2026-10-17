@@ -8,13 +8,16 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
+	"github.com/steveyegge/beads/issueops"
 )
 
 var linkCmd = &cobra.Command{
 	Use:     "link <id1> <id2>",
 	GroupID: "issues",
-	Short:   "Link two issues with a dependency",
-	Long: `Link two issues with a dependency.
+	Short:   "Create, inspect, update and delete Links",
+	Long: `Use bd link create/list/show/update/delete/versions/compare/count for Links
+in a graph workspace. The two-ID form remains the ordinary Dependency
+shorthand.
 
 Shorthand for 'bd dep add <id1> <id2>'. By default creates a "blocks"
 dependency (id2 blocks id1). Use --type to specify a different relationship.
@@ -27,6 +30,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewLink(cmd, args)
+		}
 		CheckReadonly("link")
 
 		evt := metrics.NewCommandEvent("link")
@@ -63,8 +69,10 @@ Examples:
 		defer toCleanup()
 
 		dt := types.DependencyType(depType)
-		if isDisallowedHierarchicalDependency(fromID, toID, dt) {
-			return HandleErrorRespectJSON("cannot add dependency: %s is already a child of %s. Children inherit dependency on parent completion via hierarchy. Adding an explicit dependency would create a deadlock", fromID, toID)
+		// bd link writes through the store's own dependency verb rather than
+		// the DependencyEditor role, so it asks the role's rule directly.
+		if err := issueops.CheckDottedChildDependency(fromID, toID, dt); err != nil {
+			return HandleErrorRespectJSON("%v", err)
 		}
 
 		if !dt.IsValid() {
@@ -77,13 +85,13 @@ Examples:
 			Type:        dt,
 		}
 
-		if err := fromStore.AddDependencyWithOptions(ctx, dep, actor, storage.DependencyAddOptions{EmitEvent: true}); err != nil {
+		if err := fromStore.AddDependencyWithOptions(ctx, dep, currentActor(), storage.DependencyAddOptions{EmitEvent: true}); err != nil {
 			return HandleErrorRespectJSON("%v", err)
 		}
 
 		warnIfCyclesExist(fromStore)
 
-		if err := commitPendingIfEmbedded(ctx, fromStore, actor, doltAutoCommitParams{
+		if err := commitPendingIfEmbedded(ctx, fromStore, currentActor(), doltAutoCommitParams{
 			Command:  "link",
 			IssueIDs: []string{fromID, toID},
 		}); err != nil {
