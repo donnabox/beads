@@ -1,0 +1,116 @@
+{
+  "state": "CLOSED PLAN ONLY; no executable adaptation or mutable-source binding",
+  "configurationFinalized": false,
+  "executionAuthorized": false,
+  "sourceBindingFinalized": false,
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+  "branch": "codex/vickie-changefeed-opaque-minimum",
+  "baselineHead": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "candidateSourceBinding": null,
+  "futureCommit": null,
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "changefeed-history-external",
+    "review-changefeed-history-external",
+    "changefeed-opaque-external",
+    "review-changefeed-opaque-external"
+  ],
+  "commonStagePolicy": {
+    "outerSeconds": 120,
+    "termAfterSeconds": 115,
+    "killBySeconds": 120,
+    "automaticRetries": 0,
+    "requiredRawExit": 0,
+    "ownedTemporaryRoot": "/private/tmp",
+    "processSamplesSeconds": 30,
+    "stopFirstFailure": true
+  },
+  "selectionFile": "selection.json",
+  "workloadFile": "workload.json",
+  "freshBootstrap": {
+    "reusePreviousBootstrap": false,
+    "install": "pinned Node + pnpm install --offline --ignore-scripts --frozen-lockfile",
+    "bindAfterInstall": "actual Vitest/Biome/native binaries/dependency inventories and lock; no assumed inherited tool hashes"
+  },
+  "installed": {
+    "entry": "run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entryEnvironment": "BDP_TRANSACTIONAL_INSTALLED_ENTRY",
+    "headEnvironment": "BDP_TRANSACTIONAL_SOURCE_COMMIT",
+    "headAttribution": "base5ceb plus independently pinned reviewed dirty source/fullpatch/build; no claim base commit contains the draft",
+    "historical": {
+      "title": "observes genuine installed current context on changefeed parameter refusals",
+      "observation": "private-installed-changefeed-parameter-context",
+      "requests": 10,
+      "children": 1,
+      "stores": 1,
+      "workSeconds": 45,
+      "callbackSeconds": 60,
+      "historicalLifecycleUnchanged": true
+    },
+    "new": {
+      "title": "observes genuine installed finite start-now opaque minimum refusal",
+      "observation": "private-installed-changefeed-opaque-minimum",
+      "requests": 4,
+      "children": 1,
+      "stores": 1,
+      "workSeconds": 45,
+      "callbackSeconds": 60,
+      "requestSeconds": 5,
+      "totalCleanupSeconds": 10,
+      "maxResponseBytes": 32768,
+      "maxHeaderBytes": 16384,
+      "maxRequestBodyBytes": 65536,
+      "maxTargetBytes": 8192,
+      "statuses": [
+        200,
+        200,
+        503,
+        503
+      ]
+    },
+    "consumerInstallCwd": "run/consumer",
+    "rootAcceptanceRequired": "actual consumer lock SHA + archive/entry/inventory/build proof before installed selections"
+  },
+  "pending": [
+    "frozen author packet and all679 actual bytes/fullpatch/exact six-file scope",
+    "actual source observation field schemas and literal expanded titles",
+    "code council dispositions and root diagnostic/runtime releases",
+    "new workspace dependency/tool measurements",
+    "fresh build/archive/consumer lock and proof hashes"
+  ],
+  "requiredPublicationChecks": [
+    "fresh boundary check",
+    "fresh preflight",
+    "fresh package smoke",
+    "historical Read evidence verification with original artifact attribution",
+    "ordinary commit all679 byte mapping and exact six-file diff",
+    "exact-head full CI including required bd CLI matrix; no inherited green claim"
+  ]
+}
