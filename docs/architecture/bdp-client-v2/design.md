@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T06:57:01Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T07:12:32Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T06:57:01Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Snapshot static prefix independently audited; actual full Claude CODE review running PID98177/session84812 | Inspect actual verdict before build/runtime release; PR150 stays frozen |
-| Conditional reviewer | Receipt-root recommendation critique complete | Review detailed plan after author freeze; no source changes |
-| Event reviewer | Prepare detailed receipt-root plan-v2 incorporating native critique | Recommendation only; actual council and clean-base rebind required before authoring |
-| Native reviewer | Snapshot five-stage static audit complete; idle | Ready for actual code findings audit when review completes |
+| Root | Snapshot PR157 published after all21 local stages and full CODE council; exactCI39012707852 running | Verify exact CI; PR150 stays frozen |
+| Conditional reviewer | Receipt concrete plan-v2 native review complete, no findings | Clean-base rebind review after Snapshot green; no source changes |
+| Event reviewer | Receipt plan-v2 and original Claude PLAN packet frozen and CLOSED | Rebind in separate successor only after Snapshot exact CI green; original unlaunched |
+| Native reviewer | Snapshot final installed audit clean; independent committed-source publication audit active | Verify679 tested bytes/scope/ordinary ancestry; no runtime rerun |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -265,6 +265,15 @@ PR150d4 and PR1560f215 exact remote heads and CI success freshly reverified. Inc
 **Snapshot static evidence independently closed; code review remains live.** [Native actual prefix audit](snapshot-opaque-minimum-validation/native-static-prefix-audit.md)3b2643fc confirms all five stage outcomes/commands/logs,135packetfiles/72refs/679source/11tools and all45sampledPIDs absent. Actual warning inventory remains61warnings/7infos with48notdisplayed; no baseline equivalence. Runtime still requires the unfinished fullClaudeCODE verdict; real PID98177 and advancing streamed records verified at more than16minutes, no timeout/retry/approval inferred. PR150d4 and PR1560f215 remote heads and successful checks freshly reverified; no bus messages after06:45:27.
 
 [Next bounded recommendation](snapshot-opaque-next-serving-audit/plan.md)525a3fb0 identifies actual owned receipt-root opaque-minimum private500, preserving page behavior, principal nondisclosure and minimum-before-retention. [Independent recommendation critique](snapshot-opaque-next-serving-audit/native-recommendation-review.md)477641ce supports the root-only scope and requires an explicit deterministic waiter seam because four newly waiting requests plus an existing1.1s delay would exceed the unchanged5s callback. Detailed plan preparation incorporates exact capture/lifecycle/retention evidence and bounded source/installed counts; no source edits, execution, new signal API, S1/G2 ruling or discovery advertisement. Current Snapshot validation takes priority.
+
+
+**Fresh Snapshot opaque-minimum implementation published separately.** [PR157](https://github.com/gastownhall/bdp/pull/157) is draft at **08812c6c752c06cd0edf1af2878b2367692e5b32**, tree **9b6f50b9a6b9eea953a6407599090c259cf97331**, soleparentPR156/0f215. Fresh GET/HEAD matching opaque minima now enter bounded contextual503 waiting; retained controls remain separate. [Commit mapping](snapshot-opaque-minimum-validation/root-commit-verification.json) verifies all679 tested bytes unchanged and exactly seven intended files, clean tree and GitHub origin. [Exact CI39012707852](https://github.com/gastownhall/bdp/actions/runs/39012707852) is running; no green result yet. Subsequent implementation, excluded from frozenPR150d4; no main merge or checkpoint scope expansion.
+
+Actual full Claude CODE completed exit0/1381.092s with one successful terminal, unchanged inputs and no surviving sampled processes. [Root dispositions](snapshot-opaque-minimum-code-review-successor-1/root-dispositions.json) and independent findings audit accept no blocking defects. O1 cancellation scheduling and O3 aggregate waiter counts retain explicit limitations; optional expansions deferred, no unsupported claims. Native successor closure and inverse reconstruction remain bound to exact seven-file draft.
+
+[Root final validation](snapshot-opaque-minimum-validation/root-final-validation.json) and [independent final audit](snapshot-opaque-minimum-validation/native-final-installed-audit.md) a58d3965 verify all21 fresh stages raw0/accepted, source22callbacks/13newrecords, build476, archives321members and consumer870files17links. Packed payload13e0362e and consumerlockd4cfcf39 remain distinct from dirty base/source commit attribution. Historical31 plus new3 actual exchanges across three clean children; new GET/HEAD503 each about1.003seconds, HEAD zero bytes. All360 sampled PIDs absent; two fixture stores by code, new owned directory directly absent, historical path not emitted and cleanup supported by child outcomes/supervisor census. No evidence relabeling or profile claim. Static lint retained61warnings7infos,48notdisplayed.
+
+Next [receipt-root concrete plan-v2](snapshot-opaque-next-serving-audit/plan-v2.md) ce6af377 and [native review](snapshot-opaque-next-serving-audit/native-plan-v2-review.md)8fe1cf41 are frozen; root read and accepts bounded six-file design pending actualClaude PLAN review. Original closed/unlaunched packet binds dirty Snapshot planning state and must not be launched after commit. Once Snapshot exact CI is green, create a separately preserved clean-base rebind and review any input differences. No receipt authoring/runtime release yet; no new product decision required. S1/G2 and unsupported public claims remain gated.
 
 ## Current priority: BDP profile structure and implementation
 

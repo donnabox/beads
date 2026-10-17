@@ -9,11 +9,27 @@
     "bind-workspace-tools",
     "typecheck",
     "format-check",
-    "lint"
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "snapshot-history-external",
+    "review-snapshot-history-external",
+    "snapshot-opaque-external",
+    "review-snapshot-opaque-external"
   ],
   "staticValidationAuthorized": true,
   "nativeCodeReviewDisposed": true,
-  "actualClaudeReviewDisposed": false,
+  "actualClaudeReviewDisposed": true,
   "implementationIndexSha256": "7fbd1ebaea003b1c71ddab0e1978596bf92f7ab466bb946c40ca46fbe2e9ed4e",
   "sourceBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/source-binding.json",
@@ -28,10 +44,16 @@
     "sha256": "471c688743db01e9a9e0310a8841dfe975283da15945593f0ebd8a802be4484c"
   },
   "rootDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/root-static-disposition.json",
-    "sha256": "ebd94997c3db8bfdbd7941b125f4e3e961aa3413730496b165ac607531358f9e"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/root-runtime-disposition.json",
+    "sha256": "19c48568dd8e5759f6ef11afeddb05fe4f27e28ae1a8615c4c935052b7d22a5d"
   },
-  "consumerLockSha256": null,
-  "installedProvenance": null,
-  "consumerInventory": null
+  "consumerLockSha256": "d4cfcf39c6bae2cb8039f3247ae688d191ea921a9010b5fec07446c089c227f1",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/installed-provenance.json",
+    "sha256": "2e3b439f49c494aa2522f401ee5c7eb83c0089e5ae4bbf878f2bd0881e8a5ae2"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/installed-consumer-inventory.json",
+    "sha256": "4ca68cd29e26acd580ca6c23d7cfacf678c379227654cd66f308fd80517e5221"
+  }
 }

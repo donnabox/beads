@@ -1,0 +1,289 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum
+
+stdout | packages/server/src/transaction-http.test.ts > serves fresh Snapshot opaque minima with terminal preflight and retained fences
+{"observation":"fresh-snapshot-opaque-http","requests":27,"responses":[{"method":"POST","path":"/acme/operations/batch","status":200},{"method":"GET","path":"/acme/snapshot","status":200},{"method":"HEAD","path":"/acme/snapshot","status":200},{"method":"GET","path":"/acme/snapshot","status":503},{"method":"GET","path":"/acme/snapshot","status":503},{"method":"GET","path":"/acme/snapshot","status":503},{"method":"GET","path":"/acme/snapshot","status":503},{"method":"HEAD","path":"/acme/snapshot","status":503},{"method":"HEAD","path":"/acme/snapshot","status":503},{"method":"HEAD","path":"/acme/snapshot","status":503},{"method":"HEAD","path":"/acme/snapshot","status":503},{"method":"GET","path":"/acme/snapshot","status":500},{"method":"HEAD","path":"/acme/snapshot","status":500},{"method":"GET","path":"/acme/snapshot","status":500},{"method":"HEAD","path":"/acme/snapshot","status":500},{"method":"GET","path":"/acme/snapshot","status":400},{"method":"HEAD","path":"/acme/snapshot","status":400},{"method":"GET","path":"/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed","status":500},{"method":"HEAD","path":"/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed","status":500},{"method":"GET","path":"/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed&stream=beads&page=unused","status":500},{"method":"HEAD","path":"/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed&stream=beads&page=unused","status":500},{"method":"GET","path":"/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed","status":200},{"method":"HEAD","path":"/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed","status":200},{"method":"GET","path":"/acme/snapshot?unsupported=x","status":400},{"method":"HEAD","path":"/acme/snapshot?unsupported=x","status":400},{"method":"GET","path":"/acme/snapshot","status":401},{"method":"HEAD","path":"/acme/snapshot","status":401}],"statusCounts":{"200":5,"400":4,"401":2,"500":8,"503":8},"waits":8}
+
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > serves canonical routes without advertising missing discovery or directory
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > orders body bounds, media and carrier/key syntax before authentication
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > preserves conflict-before-negotiation and replay-before-capacity without binding refused keys
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > keeps POST conditions out of mutation guards and serves failed receipts with200
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > serves receipt current context, HEAD and conditions without using execution facts as validators
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > authenticates and hides receipts before minimum-control refusal or conditional shortcuts
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > fails minimum controls closed before ordinary Read and expired cursor conditional decisions
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > enforces method and root rules without a receipt listing
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > keeps transport principal distinct from actor and rejects writes by read-only credentials
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > runs ordered member transactions and canonical dependencies and replays singleton keys
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > rejects sequence carrier syntax/keys/negotiation before claiming any member
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > commits a prefix and independent tail around a retained alias member failure
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > resolves earlier alias writes and mixed allocated/pinned operands at HTTP member turns
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > rejects invalid set Selector grammar and admits valid deep content without partial effects
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > preserves retained receipt identities across actual listener close/reopen and detail expiry
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > finishes accepted sequence work after actual client disconnect and while closing the listener
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > joins a live member receipt with202 then200 without a second execution
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > serves actual alias redirects and canonical property validators with current context
+ ↓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > rejects duplicate keys and invalid UTF8 over the real transport without capturing a key
+ ↓ packages/server/src/transaction-http.test.ts > keeps a configured canonical identity across different loopback listener ports
+ ↓ packages/server/src/transaction-http.test.ts > maps a finite unresolved comparison to temporary refusal without disclosing or executing it
+ ↓ packages/server/src/transaction-http.test.ts > preserves maintenance faults as bodyless internal errors before direct admission
+ ↓ packages/server/src/transaction-http.test.ts > keeps a live listener from serving through an owner fenced by injected commit uncertainty
+ ↓ packages/server/src/transaction-http.test.ts > routes unsupported raw methods by target before Fetch construction or receipt authentication
+ ↓ packages/server/src/transaction-http.test.ts > ignores partial and malformed copied read controls on each mutation carrier
+ ↓ packages/server/src/transaction-http.test.ts > ignores complete copied tuples on every Transactional mutation target
+ ↓ packages/server/src/transaction-http.test.ts > copied read controls preserve key revision and negotiation admission
+ ↓ packages/server/src/transaction-http.test.ts > keeps receipt minimum enforcement after commands ignore copied controls
+ ↓ packages/server/src/transaction-http.test.ts > does not invent a Read method table for unrouted or noncanonical operation URLs
+ ↓ packages/server/src/transaction-http.test.ts > accepts byte-bounded deep sequences and keeps sequence capacity distinct from direct transaction capacity
+ ↓ packages/server/src/transaction-http.test.ts > honors complete minimum tuples on point/properties/receipt GET and HEAD before conditions
+ ↓ packages/server/src/transaction-http.test.ts > waits outside the owner until a real concurrent HTTP commit satisfies a point minimum
+ ↓ packages/server/src/transaction-http.test.ts > uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses
+ ↓ packages/server/src/transaction-http.test.ts > preserves authentication on commands carrying copied read controls without reserving keys
+ ↓ packages/server/src/transaction-http.test.ts > serves missing Resource404 with current context before semantic minimum comparisons
+ ↓ packages/server/src/transaction-http.test.ts > uses the final actual attempt context for GET and HEAD timeouts after real progress
+ ↓ packages/server/src/transaction-http.test.ts > preserves concrete query syntax failures and accepts the reserved genesis minimum
+ ↓ packages/server/src/transaction-http.test.ts > serves immutable receipt pages at the exact configured maximum 1
+ ↓ packages/server/src/transaction-http.test.ts > serves immutable receipt pages at the exact configured maximum 2
+ ↓ packages/server/src/transaction-http.test.ts > serves immutable receipt pages at the exact configured maximum 5
+ ↓ packages/server/src/transaction-http.test.ts > orders page nondisclosure, minimum waits, expiry and representation using actual owner state
+ ↓ packages/server/src/transaction-http.test.ts > keeps singleton, alias, no-op, failed and sequence outcomes valid with a page maximum of one
+ ↓ packages/server/src/transaction-http.test.ts > checks a stored failed receipt minimum before read-triggered retention disposal over HTTP
+ ↓ packages/server/src/transaction-http.test.ts > refuses unsupported root controls after nondisclosure but before read-triggered retention
+ ↓ packages/server/src/transaction-http.test.ts > keeps failed parent rows unchanged for nonexistent page reads with any controls
+ ↓ packages/server/src/transaction-http.test.ts > serves both set targets with method/auth/shape precedence and no unsupported-key capture
+ ↓ packages/server/src/transaction-http.test.ts > shares set singleton/batch receipts and preserves original numeric pointers on actual wire
+ ↓ packages/server/src/transaction-http.test.ts > evaluates each served set against staged state and rolls back a late failed patch
+ ↓ packages/server/src/transaction-http.test.ts > does not implicitly match pinned endpoints and atomically rolls back the incomplete cascade
+ ↓ packages/server/src/transaction-http.test.ts > finishes an admitted set after actual client disconnect and replays it after reopen
+ ↓ packages/server/src/transaction-http.test.ts > finishes known root shape checks before a private depth gap on actual HTTP
+ ↓ packages/server/src/transaction-http.test.ts > finishes known member shape checks before a private depth gap on actual HTTP
+ ↓ packages/server/src/transaction-http.test.ts > finishes known member-key shape checks before a private depth gap on actual HTTP
+ ↓ packages/server/src/transaction-http.test.ts > finishes known set-patch shape checks before a private depth gap on actual HTTP
+ ↓ packages/server/src/transaction-http.test.ts > finishes known later-member shape checks before a private depth gap on actual HTTP
+ ↓ packages/server/src/transaction-http.test.ts > rejects updateWhere sequence members before any member key or receipt is captured
+ ↓ packages/server/src/transaction-http.test.ts > rejects deleteWhere sequence members before any member key or receipt is captured
+ ↓ packages/server/src/transaction-http.test.ts > preserves actual singleton bytes and wrapper-equivalent deep content without accepting a body operation override
+ ↓ packages/server/src/transaction-http.test.ts > deterministically re-enters after a behind beads collection attempt and exposes the intervening commit
+ ↓ packages/server/src/transaction-http.test.ts > deterministically re-enters after a behind links collection attempt and exposes the intervening commit
+ ↓ packages/server/src/transaction-http.test.ts > preserves materialized collection control Problems before a behind minimum without waiting
+ ↓ packages/server/src/transaction-http.test.ts > stops beads/ GET retries after synchronized actual Node disconnect
+ ↓ packages/server/src/transaction-http.test.ts > stops beads/a GET retries after synchronized actual Node disconnect
+ ↓ packages/server/src/transaction-http.test.ts > stops snapshot GET retries after synchronized actual Node disconnect
+ ↓ packages/server/src/transaction-http.test.ts > stops snapshot HEAD retries after synchronized actual Node disconnect
+ ✓ packages/server/src/transaction-http.test.ts > serves complete fresh Snapshot minima with exact timeout, foreign and conditional context 78ms
+ ↓ packages/server/src/transaction-http.test.ts > serves canonical current Type and incident minimums with truthful context and parser boundaries
+ ↓ packages/server/src/transaction-http.test.ts > serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries
+ ↓ packages/server/src/transaction-http.test.ts > carries current owner context on direct conflict, operation-limit and both negotiation refusals
+ ↓ packages/server/src/transaction-http.test.ts > preserves absent context on excluded direct receiving and authorization refusals
+ ↓ packages/server/src/transaction-http.test.ts > serves current comparison deadline context without timeout effects or receipt disclosure
+ ↓ packages/server/src/transaction-http.test.ts > observes sequence refusal context with 413 first and retains only genuine seed receipts
+ ↓ packages/server/src/transaction-http.test.ts > observes sequence refusal context with 406 first and retains only genuine seed receipts
+ ↓ packages/server/src/transaction-http.test.ts > reuses refused sequence member keys for different identities without extra receipt rows
+ ↓ packages/server/src/transaction-http.test.ts > serves exact fixed Selector boundaries and leaves refused keys unused
+ ↓ packages/server/src/transaction-http.test.ts > serves Selector syntax and prior-key precedence over capacity
+ ↓ packages/server/src/transaction-http.test.ts > serves current missing receipt root and page context without changing nondisclosure or HEAD
+ ↓ packages/server/src/transaction-http.test.ts > serves retained direct key conflicts and genuine fresh deep effects
+ ↓ packages/server/src/transaction-http.test.ts > rejects malformed minimum tuples across read routes without entering the actual owner
+ ↓ packages/server/src/transaction-http.test.ts > rejects raw repeated minimum fields and keeps receiving HEAD and SSE refusals finite
+ ↓ packages/server/src/transaction-http.test.ts > enforces the minimum-receiving-malformed-request boundary over the emitted listener
+ ↓ packages/server/src/transaction-http.test.ts > waits for current Resources and initial collections with unknown minima and preserves residual refusals
+ ↓ packages/server/src/transaction-http.test.ts > compares retained sequence members and accepts deep input while preserving receiving failures
+ ↓ packages/server/src/transaction-http.test.ts > rejects collection parser errors before unknown minimum support checks
+ ↓ packages/server/src/transaction-http.test.ts > preserves parser refusal parity on noncollection and excluded query routes
+ ↓ packages/server/src/transaction-http.test.ts > preserves receiving and HTTP error precedence for parser refusals
+ ✓ packages/server/src/transaction-http.test.ts > serves fresh Snapshot opaque minima with terminal preflight and retained fences 19ms
+stdout | packages/server/src/transaction-service.test.ts > captures fresh Snapshot create opaque controls across independent commits
+{"observation":"fresh-snapshot-opaque-capture","kind":"create","serviceSnapshotCalls":2,"ownerSnapshotCalls":4,"waits":2,"probes":2,"transactions":1,"finalPosition":"pos-1"}
+
+stdout | packages/server/src/transaction-service.test.ts > captures fresh Snapshot preflight opaque controls across independent commits
+{"observation":"fresh-snapshot-opaque-capture","kind":"preflight","serviceSnapshotCalls":2,"ownerSnapshotCalls":4,"waits":2,"probes":2,"transactions":1,"finalPosition":"pos-1"}
+
+stdout | packages/server/src/transaction-service.test.ts > cancels and drains fresh Snapshot create opaque waits
+{"observation":"fresh-snapshot-opaque-lifecycle","kind":"create","serviceSnapshotCalls":4,"delegatedOwnerCalls":5,"waits":3,"probes":3,"postCloseOwnerRefusals":1}
+
+stdout | packages/server/src/transaction-service.test.ts > cancels and drains fresh Snapshot preflight opaque waits
+{"observation":"fresh-snapshot-opaque-lifecycle","kind":"preflight","serviceSnapshotCalls":4,"delegatedOwnerCalls":5,"waits":3,"probes":3,"postCloseOwnerRefusals":1}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: malformed-aborted
+{"observation":"fresh-snapshot-opaque-order","label":"malformed-aborted","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":0,"waits":0}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: malformed-invalid-kind
+{"observation":"fresh-snapshot-opaque-order","label":"malformed-invalid-kind","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":0,"waits":0}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: retained-unknown
+{"observation":"fresh-snapshot-opaque-order","label":"retained-unknown","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":0,"waits":0}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: retained-known
+{"observation":"fresh-snapshot-opaque-order","label":"retained-known","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":0,"waits":0}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: closed-malformed
+{"observation":"fresh-snapshot-opaque-order","label":"closed-malformed","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":0,"waits":0}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: closed-unknown-fresh
+{"observation":"fresh-snapshot-opaque-order","label":"closed-unknown-fresh","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":0,"waits":0}
+
+stdout | packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: unknown-preaborted
+{"observation":"fresh-snapshot-opaque-order","label":"unknown-preaborted","serviceSnapshotCalls":2,"setupOwnerCalls":1,"checkedOwnerCalls":0,"clockCalls":1,"waits":0}
+
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > requires explicit owner lifetime and a bound that fits retained inline receipts
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > shares singleton, batch and sequence keys and serves actual canonical afterstate
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > retains execution facts while observing a newer head, even after the postimage is deleted
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > authenticates before lookup and uniformly hides other principals, roots and unknown URLs
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > freezes receipt bytes and context before a later caller can commit
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > retains completed identity, forgets expired failed detail and preserves current observation across reopen
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > serves pending duplicates without another execution and retracts abandoned pending on recovery
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > drains detached admitted sequence deliveries before releasing the owner
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > drains admitted singleton delivery and rejects calls on previously acquired Read facets
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > releases only its unexecuted sequence tail after scheduler failure and preserves a foreign pending key
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > refuses inline scheduling and retains both scheduler and cancellation failure causes
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > ignores repeated scheduler callbacks without running a member twice
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > uses the original finite comparison budget while an earlier sequence dependency is unresolved
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > recovers an abrupt service process exit at after-admission with original durable disposition
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > recovers an abrupt service process exit at after-effects with original durable disposition
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > recovers an abrupt service process exit at delivered with original durable disposition
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > preserves original scheduling and failed owner cleanup causes on later service access
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > fits the largest supported receipt in the declared bound without inventing a page
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > does not use supplied revision attribution as a receipt access principal
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > projects sequence retained member facts and current serving context in the owner entry
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > freezes complete deep sequence observations across fresh execution and retained replay
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > does not return an observed sequence when the final owner observation fails
+ ↓ packages/server/src/transaction-service.test.ts > same-entry direct receipt delivery > does not re-expire a first terminal delivery after a clock jump (failed=false)
+ ↓ packages/server/src/transaction-service.test.ts > same-entry direct receipt delivery > does not re-expire a first terminal delivery after a clock jump (failed=true)
+ ↓ packages/server/src/transaction-service.test.ts > same-entry direct receipt delivery > fresh and retained replay deliveries never use receipt-ID scans
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > isolates concurrent immutable controls and never holds SQLite during a wait
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > checks minimum before read-triggered expiry but honors independently forgotten receipts (false)
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > checks minimum before read-triggered expiry but honors independently forgotten receipts (true)
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > drains a bounded pending read on close and respects an aborted reader
+ ↓ packages/server/src/transaction-service.test.ts > drains concurrent receipt-page waits on close while admitted commits can satisfy them
+ ↓ packages/server/src/transaction-service.test.ts > cancels finite Event waits through the facet and drains uncancelled waits before owner close
+ ✓ packages/server/src/transaction-service.test.ts > drains admitted finite Snapshot observation and refuses new work while closing 7ms
+ ↓ packages/server/src/transaction-service.test.ts > cancels separate streams on shutdown, drains admitted finite work and refuses stale registration
+ ✓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > freezes create controls and retries after a real independent commit 40ms
+ ✓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > freezes preflight controls and retries after a real independent commit 3ms
+ ✓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > keeps create timeout and pre-abort distinct from owner work 3ms
+ ✓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > keeps preflight timeout and pre-abort distinct from owner work 2ms
+ ✓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > uses one service call for each fresh HTTP branch, with terminal preflight 12ms
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > copies exactly one owner entry and parses only after releasing it
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > keeps entry refusal distinct from structural validation failure
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > captures nested limits once and enforces the captured values after caller mutation
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > keeps the replay position floor and complete genesis groups through receipt expiry and reopen
+ ↓ packages/server/src/transaction-service.test.ts > captured pagination callback receivers > reads each callback once but keeps state on the original pagination receiver
+ ↓ packages/server/src/transaction-service.test.ts > captured pagination callback receivers > preserves validation for an invalid clock without rereading its getter
+ ↓ packages/server/src/transaction-service.test.ts > captured pagination callback receivers > preserves validation for an invalid generateOpaqueToken without rereading its getter
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > preserves synchronous no-minimum timing and ignores its signal and wait policy
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > returns an immutable same-entry eligible prefix for pos-1 after release
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > returns an immutable same-entry eligible prefix for pos-0 after release
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > returns an immutable same-entry eligible prefix for genesis after release
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > captures immutable minimum controls and releases the owner during controlled catch-up
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > releases the owner after an in-entry scopeEpoch refusal
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > releases the owner after an in-entry authorizationView refusal
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > times out after two controlled attempts without assembly and leaves the owner reusable
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > rejects pre-abort before entry and pending abort before retry
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > drains an admitted discovery wait before closing the owner
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > keeps malformed input, entry refusal, provider and parser failures distinct
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > retains the captured signal inside the second owner read after a genuine behind wait
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > rejects a service delivery signal getter without invoking it or entering the owner
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > keeps captured delivery options across a held wait (abort original: false)
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > keeps captured delivery options across a held wait (abort original: true)
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > uses one synchronous owner entry and freezes each current refusal tuple without admission
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > preserves reentrant and failed-owner causes and sanitizes unexpected refusal observation faults with 33 members
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > preserves reentrant and failed-owner causes and sanitizes unexpected refusal observation faults with 1 members
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > keeps early sequence refusals unobserved and observes deep negotiation refusal
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting local schema observation > uses one synchronous owner entry and freezes each current schema tuple without admission
+ ↓ packages/server/src/transaction-service.test.ts > preserves schema observation reentrancy, owner-fault causes and synchronous close refusal
+ ↓ packages/server/src/transaction-service.test.ts > preserves current receipt absence context across ordinary and minimum service entrypoints
+ ↓ packages/server/src/transaction-service.test.ts > rejects an old selected Event packet before stream registration and accepts a current lease
+ ↓ packages/server/src/transaction-service.test.ts > captures an initial Scope Event opaque tuple across one bounded wait
+ ↓ packages/server/src/transaction-service.test.ts > cancels and drains initial Scope Event opaque waits
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Scope Event preflight before malformed capture: already-aborted
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Scope Event preflight before malformed capture: invalid-policy
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Scope Event preflight before malformed capture: throwing-clock
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Scope Event preflight before malformed capture: nonfinite-clock
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight
+ ↓ packages/server/src/transaction-service.test.ts > captures an initial Bead Event opaque tuple across one bounded wait
+ ↓ packages/server/src/transaction-service.test.ts > cancels and drains initial Bead Event opaque waits
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: already-aborted
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: invalid-policy
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: throwing-clock
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: nonfinite-clock
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: malformed-after-valid-preflight
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: noncanonical-query
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Bead Event classification and preflight: relative-source
+ ↓ packages/server/src/transaction-service.test.ts > captures an initial Link Event opaque tuple across one bounded wait
+ ↓ packages/server/src/transaction-service.test.ts > cancels and drains initial Link Event opaque waits
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Link Event classification and preflight: already-aborted
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Link Event classification and preflight: malformed-after-valid-preflight
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Link Event classification and preflight: noncanonical-query
+ ↓ packages/server/src/transaction-service.test.ts > preserves initial Link Event classification and preflight: relative-source
+ ✓ packages/server/src/transaction-service.test.ts > captures fresh Snapshot create opaque controls across independent commits 3ms
+ ✓ packages/server/src/transaction-service.test.ts > captures fresh Snapshot preflight opaque controls across independent commits 3ms
+ ✓ packages/server/src/transaction-service.test.ts > cancels and drains fresh Snapshot create opaque waits 2ms
+ ✓ packages/server/src/transaction-service.test.ts > cancels and drains fresh Snapshot preflight opaque waits 2ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: malformed-aborted 1ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: malformed-invalid-kind 1ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: retained-unknown 1ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: retained-known 1ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: closed-malformed 1ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: closed-unknown-fresh 1ms
+ ✓ packages/server/src/transaction-service.test.ts > preserves fresh Snapshot capture and refusal order: unknown-preaborted 1ms
+stdout | packages/server/src/transaction-snapshot.test.ts > gates fresh Snapshot opaque minima before allocation and expiry
+{"observation":"fresh-snapshot-opaque-owner","snapshotCalls":14,"preEntryExcludedCalls":4,"offlineInspections":2,"baseline":{"snapshots":1,"records":1,"pages":2,"disposition":"{\"epoch\":\"4c6b5ce7-ba1f-4be6-a6cf-ccb0a75908ad\",\"view\":\"development-all-visible\",\"position\":1,\"created\":1000000,\"expires\":1300000,\"expired\":false,\"counts\":[1,0],\"bytes\":272,\"plan\":\"48e8abe14c88c019b5e0146188f762a6efb7ec27c19d263a91313aa44d9cfb04\",\"seed\":\"d50b729c4e0501ca1ce49a5a4f6aba79cca0073e2e00051e0864f2d5d99ff046\",\"pageCounts\":[1,1],\"binding\":\"c6646270725adce07dac1bd05e5b29072915065de94abb9c0b110e58b655141b\"}"},"after":{"snapshots":1,"records":1,"pages":2,"disposition":"{\"epoch\":\"4c6b5ce7-ba1f-4be6-a6cf-ccb0a75908ad\",\"view\":\"development-all-visible\",\"position\":1,\"created\":1000000,\"expires\":1300000,\"expired\":false,\"counts\":[1,0],\"bytes\":272,\"plan\":\"48e8abe14c88c019b5e0146188f762a6efb7ec27c19d263a91313aa44d9cfb04\",\"seed\":\"d50b729c4e0501ca1ce49a5a4f6aba79cca0073e2e00051e0864f2d5d99ff046\",\"pageCounts\":[1,1],\"binding\":\"c6646270725adce07dac1bd05e5b29072915065de94abb9c0b110e58b655141b\"}"}}
+
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures a schema-valid frozen empty genesis without changing graph, receipts or position
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures complete canonical streams larger than a page and transaction, survives mutation and reopen, then rendezvous with feed
+ ↓ packages/server/src/transaction-snapshot.test.ts > expiry is fixed, inclusive at the promised instant, reclaims in entry and permanently distinguishes issued from unknown
+ ↓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-copy preserves the appropriate durable disposition without graph effects
+ ↓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-commit preserves the appropriate durable disposition without graph effects
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-record rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: changed-record rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: oversized-record rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-range rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-kind rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-context rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-anchor rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-expiry rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > page token is bound through its Snapshot and stream and cannot be borrowed
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses missing owned or endpoint data before issuing a capture
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses prior format before maintenance and preserves actual file bytes; changed current configuration is also refused
+ ↓ packages/server/src/transaction-snapshot.test.ts > checks total authority count and byte bounds before loading malformed bodies
+ ↓ packages/server/src/transaction-snapshot.test.ts > fences uncertain before-COMMIT, then recovery determines whether a capture was issued
+ ↓ packages/server/src/transaction-snapshot.test.ts > fences uncertain after-COMMIT, then recovery determines whether a capture was issued
+ ↓ packages/server/src/transaction-snapshot.test.ts > failed Snapshot rollback fences tentative pages until reopen
+ ↓ packages/server/src/transaction-snapshot.test.ts > an abrupt exit during capture leaves no issued tentative handle after reopen
+ ↓ packages/server/src/transaction-snapshot.test.ts > accepts the 4096-resource boundary and canonical identity order, refuses one more
+ ↓ packages/server/src/transaction-snapshot.test.ts > actual complete R-sized records bind 32MiB capture, 4MiB pages and 64MiB aggregate before handle count
+ ↓ packages/server/src/transaction-snapshot.test.ts > permanent 65536 issued-identity bound refuses new issuance even after all detail expired
+ ↓ packages/server/src/transaction-snapshot.test.ts > independent expected inventory rejects coherent omissions and early termination even when individual wire records remain valid
+ ↓ packages/server/src/transaction-snapshot.test.ts > new private Snapshot entry points do not escape package public exports
+ ↓ packages/server/src/transaction-snapshot.test.ts > retains bounded recognition of issued page tokens after expiry/reopen, while unknown or borrowed continuations stay 404
+ ↓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 9
+ ↓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 99
+ ↓ packages/server/src/transaction-snapshot.test.ts > shares one validated authority-record pass across owned topology and reuses hot SQL
+ ↓ packages/server/src/transaction-snapshot.test.ts > orders canonical percent-encoded BMP and supplementary identities with matching owned streams
+ ↓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses different-view before retracting a pending claim
+ ↓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses prior-format-9 before retracting a pending claim
+ ↓ packages/server/src/transaction-snapshot.test.ts > startup sweep validates the same canonical position as reads and rolls back pending recovery on refusal
+ ↓ packages/server/src/transaction-snapshot.test.ts > decodes only the bounded live subset when compact expired history grows
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses forged-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses missing-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses nonboolean-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses malformed-json classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > validates a cold expired commitment on lookup without decoding all cold history during capture
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned records during startup recovery with rollback and no file mutation
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned pages during startup recovery with rollback and no file mutation
+ ↓ packages/server/src/transaction-snapshot.test.ts > asserts the internal expiry-before-capture precondition instead of ignoring retained expired detail
+ ↓ packages/server/src/transaction-snapshot.test.ts > continues to refuse impossible excess live handles as integrity corruption
+ ↓ packages/server/src/transaction-snapshot.test.ts > pairs expected preflight and retained failures inside the same entry after atomic rollback
+ ↓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-copy failure and its committed disposition
+ ↓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-commit failure and its committed disposition
+ ✓ packages/server/src/transaction-snapshot.test.ts > checks each fresh Snapshot minimum before any handle, record, page or expiry work 44ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > does not expire retained Snapshot details on an ineligible fresh attempt 4ms
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures and reopens deep owned Links without losing JSON value equality
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects deep owned-Link divergence before Snapshot issuance
+ ✓ packages/server/src/transaction-snapshot.test.ts > gates fresh Snapshot opaque minima before allocation and expiry 5ms
+
+ Test Files  3 passed (3)
+      Tests  22 passed | 218 skipped (240)
+   Start at  00:04:25
+   Duration  1.17s (transform 401ms, setup 24ms, import 747ms, tests 238ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/focused-source.results.json
