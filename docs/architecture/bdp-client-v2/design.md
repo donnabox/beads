@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T06:18:50Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T06:39:51Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T06:18:50Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Snapshot v3 accepted; isolated source authoring released | Review exact frozen draft before code council/validation; PR150 stays frozen |
-| Conditional author | Implement exact seven-file Snapshot opaque-minimum v3 in new checkout | Source-only; freeze/report, no product execution/commit/push |
-| Event reviewer | Native v3 closure complete, all12findings disposed; idle | Independent code review after author freeze |
-| Native reviewer | Prepare CLOSED fresh Snapshot validation packet | Pending source binding; no commands/tests/install/build/services released |
+| Root | Corrected Snapshot source frozen; actual full Claude CODE review running PID98177/session84812 | Inspect actual verdict and finalized validation packet; PR150 stays frozen |
+| Conditional author | Successor-1 complete; idle | Original source/closed packet preserved, exact N1/N2 and formatting only |
+| Event reviewer | Independent successor closure and CODE packet verification | Native full original review found N1/N2; root accepted exact correction, final native closure pending |
+| Native reviewer | Finalize CLOSED fresh Snapshot validation against successor-1 | Reconcile actual schemas; no validation execution released |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -246,6 +246,15 @@ Actual Claude Snapshot PLAN PID76938 remains running with continued stream progr
 [Plan-v3](link-event-next-serving-audit/plan-v3.md)e2df7de5, binding65f0ed53 and [native closure](link-event-next-serving-audit/native-plan-v3-closure.md)c31d4e10 dispose all12findings without further corrections. Only A13→14owner calls changes workload;2syncofflineinspections/3owneropens remain1store. Other22sourcecallbacks,45network+15handler and installed31+3/3children/2stores/deadlines unchanged. Root read fullv3delta/closure and rehashed679source/12context/sixartifact pins.
 
 [Source-only release](snapshot-opaque-minimum-author/root-author-release.json) at2026-10-17T06:18:05Z creates isolated /Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum, branch codex/vickie-snapshot-opaque-minimum, clean0f215 with all679baseline bytes verified. Exact seven reviewedfiles authorized; no productexecution/import/install/build/tests/staticchecks/commit/push. Author implements then freezes for full independent CODE council. Validator independently prepares CLOSED source-pending fresh packet; no execution release. No S1/G2/foreign/main/PR150 changes and no public profile claim. Actual planreviewsession51206 completed and drained.
+
+
+**Snapshot source corrected and full CODE council started.** Original seven-file draft bindingc2dada60/patch7f6ed2cd remains preserved. [Native full code review](snapshot-opaque-minimum-author/native-code-review.md)1b408604 found two bounded corrections: NonNullable helper options under exactOptionalPropertyTypes and callback-local exact Retry-After1. These are source findings, not fabricated compiler failures. [Root disposition](snapshot-opaque-minimum-author/root-native-dispositions.json) accepts both. Original CODE packet remains CLOSED and unlaunched.
+
+[Successor-1](snapshot-opaque-minimum-author/successor-1/author-report.md) bindingd3c60986/fullpatch32395d9d/index2853f07b contains only N1/N2 plus actual pinned Biome2.5.7 formatting. One format invocation raw0/0.118s fixed four testfiles; exact inverse restores every original byte. Production files unchanged, all672 outside scope unchanged; selection/workload/schema bytes unchanged. Root independently rehashed original/successor indices, all679 source, exactpatch/status, formatter logs/tool bytes. No typecheck/lint/tests/build/install/service results claimed.
+
+[Actual full Claude CODE release](snapshot-opaque-minimum-code-review-successor-1/root-release.json) launched2026-10-17T06:39:19Z, PID98177/session84812, releasedbindingdab1a251 (closed99901a09 preserved), preparationindexcace15c3. Root read full prompt/plan/proven runner and rehashed seven files/695context/36artifact pins. Runner/parser/args unchanged; defaultmodel,Read/Glob/Grep,3600s/TERM3595/no retry. Real process and stream progress verified; no verdict yet. Independent native successor closure continues. Fresh Snapshot validation finalization reconciles actual E ok/returned-ownership/no-headers schema, D relative routes and A1/1/2 disposition; all execution gates remain closed. Original pending validation packet preserved.
+
+PR150d4 and PR1560f215 exact remote heads and CI success freshly reverified. Incremental bus read since06:18:56 returned only our own checkpoint; four local inbox entries are older Trish handoffs already superseded by the explicit branch-only hold, no new authorization. No main/shared-design/PR merge, cleanup, release or pin change. S1/G2 remain unresolved affected-claim gates.
 
 ## Current priority: BDP profile structure and implementation
 

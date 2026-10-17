@@ -1,0 +1,20 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-code-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-code-review/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-link-event-minimum")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+ def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+@@ -11,7 +11,7 @@
+ before=snap()
+ for key in ["files","context","artifacts","head","promptSha256","runnerSha256"]: assert before[key]==b[key], key
+ assert set(subprocess.check_output(["git","diff","--name-only","HEAD"],cwd=w,text=True).splitlines())==set(b["files"])
+-assert before["status"]==b["expectedGitStatus"], "Exact frozen six-file dirty scope required"
++assert before["status"]==b["expectedGitStatus"], "Exact frozen seven-file dirty scope required"
+ parser=runpy.run_path(str(p/"parse-stream.py"))
+ args=json.loads((p/"arguments.json").read_text())
+ guard();os.umask(0o077);(p/"source-before.json").write_text(json.dumps(before,indent=2))

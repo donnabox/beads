@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-17T06:37:26.147135+00:00",
+  "originalSourceBinding": "c2dada60d8fb1b6243628f3f09d30b7b012c4214852b6c5d0ba76e00f88865fb",
+  "nativeReviewSha256": "1b4086049b0b4ed0653602c0958458dbc40e2103fe4fd55d52b7dff058841fc4",
+  "findings": {
+    "N1": "Accept NonNullable helper parameter. Source-based exactOptionalPropertyTypes defect, no compiler failure claimed.",
+    "N2": "Accept callback-local Retry-After exactly1 in new installed GET/HEAD assertions; historical helper unchanged."
+  },
+  "successorAuthorized": "Only N1/N2 plus actual pinned Biome formatting confined to seven owned files; preserve original source/packets and actual diagnostics. Refreeze all679 with reversible delta.",
+  "claudeReview": "Original closed packet remains unlaunched; corrected successor requires full CODE review.",
+  "execution": "No tests/build/install/runtime/commit/push released. Bounded formatter only authorized."
+}

@@ -1,0 +1,31 @@
+Perform an independent full CODE review of the frozen seven-file fresh Snapshot opaque-minimum implementation. Do not write or modify any files. Output findings only in stdout. Do not run tests, commands, imports, builds, installs, services, network requests, formatter or other reviewers. You have Read/Glob/Grep only.
+
+Working directory: /Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum
+Exact baseline HEAD: 0f215c05678f507dd8a39ee08e288f0901710135 (dirty seven-file draft; do not assume HEAD alone includes the change).
+Full complete patch: /Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-code-review/context/full.patch
+Read the complete patch, then the changed sections and relevant surrounding implementations/tests in all seven files:
+- packages/server/src/transaction-http.ts
+- packages/server/src/transaction-service.ts
+- packages/server/src/transaction-store.ts
+- packages/server/src/transaction-snapshot.test.ts
+- packages/server/src/transaction-service.test.ts
+- packages/server/src/transaction-http.test.ts
+- apps/bdptest/src/transactional-snapshot-installed.test.ts
+
+Read /Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-code-review/context/plan-v3.md for the accepted bounded behavior and exclusions, then actual source independently. Selection/workload/preservation and observation-schemas in the same context directory describe expected tests, not passing results. Source-authoring-release and source-binding distinguish the original clean Link plan checkout from this actual isolated Snapshot checkout. Actual Claude previously reviewed plan-v2; plan-v3 dispositions narrow accepted corrections and defer optional expansions. No previous code approval or successful validation is assumed. Immutable design.md snapshot is subordinate context; do not read mutable live workstream plans or historical validation paperwork.
+
+Relevant normative source: docs/specs/bdp.md lines5841–5851 (general remaining-read choice vs Resource-specific MUST and Snapshot caveat),5876–5878 (conditional ordering),5901–5911 (fresh Snapshot GET/HEAD); extend source reading as needed. This chooses bounded waiting only for complete lexical unknown minima on current matched epoch/view at fresh canonical no-query Snapshot create/preflight. Do not generalize Resource MUST or resolve retained S1/G2/foreign policy. Retained controls, unknown-plus-foreign, public discovery/admission and profile qualification remain unsupported/excluded.
+
+Production review priorities:
+1. HTTP retains auth/malformed/query/method routing, minimum===undefined fence, pure candidate and exactly one terminal service.snapshot call. Unknown fresh matched tuple produces bounded contextual503; HEAD/conditionals/media cannot bypass; retained/foreign outcomes remain distinct.
+2. Service strict-first capture: catch only TypeError from strict helper; lexical failure rethrows original; kind read outside both catches. Snapshot retains synchronous capture-first order, unlike Event. Known/no-minimum kind/lifecycle behavior stays unchanged; only new opaque kind is frozen/reused. No tuple recapture on asynchronous retry/deadline reset.
+3. Direct owner independently reclassifies; context then instant order remains; opaque eligibility failure before expiry/capacity/copy/handle/page allocation, outside SnapshotFailure conversion. Retained error distinction and existing known/no-minimum behavior preserved.
+Read transaction-consistency.ts, transaction-snapshot.ts, service lifecycle run/close, read-lifetime.ts/read-request.ts, transaction-runtime.ts as needed. These are available complete, not limited excerpts.
+
+Test/code review priorities:
+- All new A–F code, types, fixture validity and shutdown ordering; actual assertions vs intended claims. A14 calls, synchronous offline baseline1snapshot/1record/2pages and unchanged disposition before final helper reopen; pos-01 one call. B two kinds: frozen controls, independent real commit,4 owner attempts/2 waits/probes. C two kinds: abort does not interrupt deferred wait, drain and synchronous closing refusal;5 delegated owner calls plus separate real-owner post-close probe. F7 capture/lifecycle/pre-abort rows preserve exact error delivery/counts.
+- D27 network calls incl real seed,8 contextual503, retained/foreign/receiving/query/auth controls. Only observable HEAD metadata/empty body/original retained bytes claimed, not internal allocation/expiry. Existing one-service-call handler loop grows10→15 independently.
+- E3 raw installed requests (seedPOST,GET,HEAD), one callback-local exact executor with exactly three permitted routes, predispatch max3+final3 check, real receipt schema/result, raw serialization/octet/digest/minimum/Host/write/wire checks. Existing shared45000ms/request5000ms/callback60000ms bounds unchanged; per-request and cleanup-inclusive timing. Read scripts/transaction-installed-observation.mjs and installedTransactionBinding support. Verified clean timely child close before directory removal; actual failure metadata, no fabricated survivor status or unsafe finally override. Existing31-exchange callback only exchange19 expectation changes; shared helpers/historical evidence unchanged.
+- Verify22 source callbacks plus15 handler/45 network, installed31+3 across2stores/3sequentialchildren. Counts are prospective; nothing ran. Check static type correctness and assertion integrity without execution. No new public claims or evidence relabeling.
+
+Give findings first with severity, exact file/line, concrete causal evidence and smallest correction. Separate integration-blocking defects from optional improvements. If no blockers, state that explicitly and list material limitations. Do not infer approval merely from plan acceptance or matching diagnostic counts. Read broader relevant code when necessary, but keep review bounded to this complete implementation.
