@@ -1,0 +1,39 @@
+{
+  "authorIndexSha256": "e94a2ce59c1ddab279adc2e29c4512ce65556cb2bd92f838a9e6e37363112fe9",
+  "sourceBindingSha256": "cb403c8a0ed4f58cb60788d45ff06206e58f6320a58f23c03fecebc05da52e8d",
+  "fullPatchSha256": "8bfd4de504851d43267296d0d1cacf02ac61f3a3aba5e2c7534fb7d59eafc1aa",
+  "sourceCount": 679,
+  "dirtyFiles": {
+    "packages/server/src/transaction-http.ts": {
+      "beforeSha256": "6d570df85e21526c59ad84115d0bbf9fb7b1d1158efe68850fad84d9fa57ee42",
+      "afterSha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "beforeSha256": "1eea06b33d70585de2bc1d9ffc05772f787d62616b50e119a574d145c344ac6c",
+      "afterSha256": "dd4534569ed7acad76f0389ef5fd0e6cea631b9602e7bf9e6b607b086269a1ad"
+    },
+    "packages/server/src/transaction-store.ts": {
+      "beforeSha256": "816f8c006cde78965e20fe765f06e02b1f0afd4de69d081209952ed836344baa",
+      "afterSha256": "14bb328f20e0980a14acfa88b5ec7e8daa4e7c83eb6b203a6afe3e048689a2c3"
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "beforeSha256": "eb9fa9c8138cf81d8071107bcdcabd168be6933de00e178b8c5ec40af444080e",
+      "afterSha256": "8defa654808f746b5202806a31c76a481773c3f187ff694b0984aa27e19ad729"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "beforeSha256": "4345d1405e98820879fc84a5e88b4afee73bfe6ee07ae2bc01e084b225da73ad",
+      "afterSha256": "7757be6ccda0bbb4d271d6432069a7161d1f06dea73de65925e8716fabb7d299"
+    },
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "beforeSha256": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+      "afterSha256": "1054a0b8151017faca5f02105b2d581d53e731bc579f9c98ca7062a9f39aa83d"
+    }
+  },
+  "outsideOwnedUnchanged": 673,
+  "initialMechanicsIndexSha256": "caba85260f50a8f817b500088851f96e0c1924b9ff4dadb6ab0fab90ef82b366",
+  "runnerUnchangedFromInitial": true,
+  "planReviewContextLimitation": "Actual PLAN reviewer used inline plan and repository source but did not read copied provenance contexts; independent audit is separate. CODE prompt supplies explicit absolute paths.",
+  "authorLimitations": "Read full author report: satisfied unsupported Accept is existing empty406; recorder.close does not expose stored failure, positive/terminal checks must be judged as implemented, not assumed. New installed9 terminal records plus separate tenth SSE.",
+  "sourceAuthoringReleased": false,
+  "rootLaunchReleased": false
+}
