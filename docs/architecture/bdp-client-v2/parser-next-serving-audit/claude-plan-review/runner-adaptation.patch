@@ -1,0 +1,21 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-code-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-next-serving-audit/claude-plan-review/run.py
+@@ -10,7 +10,7 @@
+ def snap():return {"files":{f:sha((w/f).read_bytes()) for f in b["files"]},"context":{f:sha(Path(f).read_bytes()) for f in b["context"]},"artifacts":{f:sha(Path(f).read_bytes()) for f in b["artifacts"]},"head":subprocess.check_output(["git","rev-parse","HEAD"],cwd=w,text=True).strip(),"promptSha256":sha((p/"prompt.txt").read_bytes()),"runnerSha256":sha((p/"run.py").read_bytes())}
+ before=snap()
+ for key in ["files","context","artifacts","head","promptSha256","runnerSha256"]: assert before[key]==b[key], key
+-assert set(subprocess.check_output(["git","diff","--name-only","HEAD"],cwd=w,text=True).splitlines())==set(b["files"])
++assert not subprocess.check_output(["git","status","--porcelain"],cwd=w,text=True).strip(), "Review source must be clean"
+ parser=runpy.run_path(str(p/"parse-stream.py"))
+ args=json.loads((p/"arguments.json").read_text())
+ guard();os.umask(0o077);(p/"source-before.json").write_text(json.dumps(before,indent=2))
+@@ -84,7 +84,8 @@
+             except ProcessLookupError:pass
+ remaining=[r for r in processes() if (c is not None and r[2]==str(c.pid)) or int(r[0]) in sampled]
+ after=snap()
+-source_unchanged=before["files"]==after["files"] and before["context"]==after["context"] and before["head"]==after["head"]
++clean_after=not subprocess.check_output(["git","status","--porcelain"],cwd=w,text=True).strip()
++source_unchanged=clean_after and before["files"]==after["files"] and before["context"]==after["context"] and before["head"]==after["head"]
+ packet_unchanged=before["artifacts"]==after["artifacts"] and before["promptSha256"]==after["promptSha256"] and before["runnerSha256"]==after["runnerSha256"]
+ classification=parser["classify"](results,exit_code=c.returncode if c else None,timed_out=timed,parse_errors=parse_errors,source_unchanged=source_unchanged,packet_unchanged=packet_unchanged,remaining=remaining,cleanup_required=cleanup_required,wrapper_error=wrapper_error)
+ result={"classification":classification,"reviewComplete":classification=="review_complete","approvalInferred":False,"exitCode":c.returncode if c else None,"timeout":timed,"elapsedSeconds":time.monotonic()-start,"sourceInputsUnchanged":source_unchanged,"packetUnchanged":packet_unchanged,"sampledPids":sorted(sampled),"remainingProcesses":remaining,"cleanupRequired":cleanup_required,"wrapperErrorType":wrapper_error,"streamRecords":records,"streamBytes":bytes_seen,"parseErrors":parse_errors,"terminalResultCount":len(results),"lastEventElapsed":last_event,"streamSha256":sha((p/"stream.jsonl").read_bytes()),"stderrSha256":sha((p/"stderr.txt").read_bytes())}
