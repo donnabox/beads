@@ -1,0 +1,755 @@
+{
+  "freshStages": [
+    {
+      "stage": "typecheck",
+      "exitSha256": "8b078933827082e3856aaefde99fa0d02b7edddec0342bf36bf3ee26a3e4e37a",
+      "elapsedSeconds": 8.291459749918431,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    {
+      "stage": "format-check",
+      "exitSha256": "a39115ebf73c76584f492e8db9a135c654cb48860c4afae089c2d28988e4b2ed",
+      "elapsedSeconds": 5.710381917189807,
+      "logSha256": "ff37a61ca549abe62341448332e3b9235f9c4043c176d39ce99e2abb7eaad10e"
+    },
+    {
+      "stage": "lint",
+      "exitSha256": "cd5aa314e9598f070d5c9bc0d3754bc8c983e386e10f744426c11d85d90e0f66",
+      "elapsedSeconds": 5.954279915895313,
+      "logSha256": "273c91fb1ee462863710ef511dc87bf731de264aa6fb2fd0051e174079ebeae4"
+    },
+    {
+      "stage": "fresh-build",
+      "exitSha256": "c3133073765e2e343be770c67fc9fb905002a09b7cd4a92dc275a0736dd404c5",
+      "elapsedSeconds": 7.496075541712344,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    {
+      "stage": "bind-fresh-build",
+      "exitSha256": "5572a229302b0cce2c6286b3efa198f36a0b947e4cdef5ca6839d3b24ab65ca5",
+      "elapsedSeconds": 13.361528458073735,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "focused-source",
+      "exitSha256": "d4f57158f4c7a139a8b92c19d7b2adabeae3e13c4c0d6f684a96aa159af18380",
+      "elapsedSeconds": 9.38302491698414,
+      "logSha256": "03263973497ef0badd2454afa456907b8a0e801b03030d4ab03f93c5cf1f716a"
+    },
+    {
+      "stage": "review-focused-source",
+      "exitSha256": "6059e8471045919a3e03122c9945bc53d582fd04f66331885d441b57d3c5f304",
+      "elapsedSeconds": 12.850435374770314,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "node-version",
+      "exitSha256": "e80f20f0eec9f1765143835cbbefca8f28d9395c2deb10b18a4b42b28d04e023",
+      "elapsedSeconds": 5.707317290827632,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    {
+      "stage": "prepare-package-directory",
+      "exitSha256": "b2b244d71d3d67eaeda3efba914b3e4b99b2112fe2050bc801fdd7f60d55d61b",
+      "elapsedSeconds": 12.721537999808788,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "pack-protocol",
+      "exitSha256": "8e1254a67b487830f2651d056c8b1ca9bd737757b317c814b99c66542161caa9",
+      "elapsedSeconds": 6.289075874723494,
+      "logSha256": "1ba2a5900f4dbf9fb7adf29b2d61b2faf12b360e1adf358d0d048394840a16a0"
+    },
+    {
+      "stage": "pack-server",
+      "exitSha256": "8a422086695b1351cf3ad20cb3ec050a5884e2423c5d1a45f6160358170a182f",
+      "elapsedSeconds": 6.5261393752880394,
+      "logSha256": "0dfefb7a97bb654897a0b3130bde90d14b7016c7216134f4f94881655a8f0b4c"
+    },
+    {
+      "stage": "verify-archives",
+      "exitSha256": "d118b20751c610583d21d99063cfc894bfc1d7152f647f4a655e04557c284ae3",
+      "elapsedSeconds": 13.539011291693896,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "prepare-consumer",
+      "exitSha256": "db4f537f947abd09a7ee605428dae63f7acaad07e71451d6e8a52c03d14eb8ed",
+      "elapsedSeconds": 13.169690750073642,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "consumer-install",
+      "exitSha256": "12efb91874eb562137f8e8b90079bca3d84d5975c7034080975273ad059b781c",
+      "elapsedSeconds": 7.22372454078868,
+      "logSha256": "01ab6b363165666a7d7c5892925fea4a6dbf04de750c54602626afb70123ee88"
+    }
+  ],
+  "sourceIdentity": "bed43347256ca5a8b68883a42971a3c8e69a7f541e351d94e607f0ebc449a3b1",
+  "sourceFilesRehashed": 679,
+  "sampledPidsNowAbsent": 285,
+  "sourceObservations": [
+    {
+      "observation": "scope-event-sse-minimum-owner",
+      "reads": 14,
+      "seedCommits": 1,
+      "cases": [
+        {
+          "label": "setup",
+          "outcome": "packet",
+          "groupObserverActive": false,
+          "groupPrepareCalls": null,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "unknown",
+          "outcome": "TransactionMinimumUnproved",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "pos-01",
+          "outcome": "TransactionMinimumUnproved",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "future",
+          "outcome": "TransactionMinimumFailure",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "foreign",
+          "outcome": "TransactionMinimumUnsupported",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "foreign",
+          "outcome": "TransactionMinimumUnsupported",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "default",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "after",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "invalid-reconnect",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "bead",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "link",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "missing",
+          "outcome": "missing",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "malformed",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "known",
+          "outcome": "packet",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 2,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ]
+    },
+    {
+      "observation": "scope-event-sse-minimum-capture",
+      "seedCommits": 1,
+      "interveningCommits": 1,
+      "serviceCalls": 5,
+      "ownerAttempts": 3,
+      "waits": 1,
+      "clockCalls": 4,
+      "ownerCloseCalls": 1,
+      "attempts": [
+        {
+          "minimum": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "minimum": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "minimum": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "outcome": "packet",
+          "context": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "probes": [
+        {
+          "call": 1,
+          "outcome": "TypeError"
+        },
+        {
+          "call": 2,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 3,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 4,
+          "outcome": "TypeError"
+        },
+        {
+          "call": 5,
+          "outcome": "Error"
+        }
+      ],
+      "finalContext": {
+        "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "closed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-abort",
+      "seedCommits": 1,
+      "interveningCommits": 0,
+      "serviceCalls": 2,
+      "ownerAttempts": 1,
+      "waits": 1,
+      "clockCalls": 2,
+      "ownerCloseCalls": 1,
+      "rawPostCloseProbes": 1,
+      "probes": [
+        {
+          "call": 1,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 2,
+          "outcome": "Error"
+        }
+      ],
+      "operationOutcome": "aborted",
+      "synchronouslyUnsettled": true,
+      "closed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-http",
+      "requests": 31,
+      "records": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "target": "operations/batch",
+          "status": 200,
+          "bodyBytes": 1024,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 1301,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "status": 200,
+          "bodyBytes": 1541,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "status": 200,
+          "bodyBytes": 735,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 7,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 9,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 11,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 12,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 13,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 14,
+          "method": "GET",
+          "target": "events/",
+          "status": 400,
+          "bodyBytes": 118,
+          "context": {}
+        },
+        {
+          "ordinal": 15,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 400,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 16,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 17,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 18,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 19,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 20,
+          "method": "GET",
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 21,
+          "method": "GET",
+          "target": "events/?after=",
+          "status": 400,
+          "bodyBytes": 118,
+          "context": {}
+        },
+        {
+          "ordinal": 22,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 23,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 24,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 25,
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 26,
+          "method": "GET",
+          "target": "links/l?view=events",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 27,
+          "method": "GET",
+          "target": "beads/missing?view=events",
+          "status": 404,
+          "bodyBytes": 134,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 28,
+          "method": "GET",
+          "target": "events/",
+          "status": 401,
+          "bodyBytes": 136,
+          "context": {}
+        },
+        {
+          "ordinal": 29,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 304,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 30,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 412,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 31,
+          "method": "GET",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 3828,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        }
+      ],
+      "seedCommits": 1,
+      "elapsedMs": 294.83191599999986,
+      "baselinePages": [
+        {
+          "target": "events/",
+          "eventCount": 2,
+          "next": "https://event-sse.invalid/acme/events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "eventCount": 2,
+          "next": "https://event-sse.invalid/acme/events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "eventCount": 1,
+          "next": null,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        }
+      ],
+      "positive": {
+        "ready": true,
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "no-store, no-transform",
+          "content-type": "text/event-stream",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Sat, 17 Oct 2026 17:58:48 GMT",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "framesBeforeClose": [
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/a\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"de3653e1-171a-46a3-a758-3c86db700c6c\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\",\"ordinal\":1,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/b\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"6d0af67b-fdb2-4575-b0fb-b46fc98042ca\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\",\"ordinal\":2,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"ea7ad20f-3059-4502-88ee-70a0e9021af7\",\"properties\":{\"n\":0},\"metadata\":{},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\",\"ordinal\":3,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"source\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\",\"ordinal\":4,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"target\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}"
+        ],
+        "framesAfterDrain": [
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/a\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"de3653e1-171a-46a3-a758-3c86db700c6c\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\",\"ordinal\":1,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/b\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"6d0af67b-fdb2-4575-b0fb-b46fc98042ca\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\",\"ordinal\":2,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"ea7ad20f-3059-4502-88ee-70a0e9021af7\",\"properties\":{\"n\":0},\"metadata\":{},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\",\"ordinal\":3,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"source\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\",\"ordinal\":4,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"target\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}"
+        ],
+        "liveBeforeClose": {
+          "aborted": false,
+          "destroyed": false,
+          "elapsedMs": 2.998832999999877
+        },
+        "drained": true
+      },
+      "failureCount": 0
+    },
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    }
+  ],
+  "actualArtifacts": {
+    "consumer/pnpm-lock.yaml": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2/run/consumer/pnpm-lock.yaml",
+      "sha256": "6a28d6746154693a1ea27a3608f3f20cb5fe1513b503fb598498c079ffbdae27"
+    },
+    "build-artifacts.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2/run/build-artifacts.json",
+      "sha256": "dd9580384c71420326c94aaa3c009b59b025d1de4523d05c3ecf4afcae141583"
+    },
+    "tar-source-provenance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2/run/tar-source-provenance.json",
+      "sha256": "55f6e7f2739271a254e392b47de0e03756440a575943c02cae4ae0326e861c8b"
+    },
+    "focused-source.results.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2/run/focused-source.results.json",
+      "sha256": "dace1f6d87ce7a5ef2d493137e86478dbd73f9ab544a4cfa0c40b49fcf5b2bb7"
+    }
+  },
+  "buildArtifactCount": 476,
+  "archiveMembers": {
+    "protocol": 63,
+    "server": 258
+  },
+  "externalValidationExecuted": false,
+  "requiredChecksExecutedByThisWorker": false,
+  "lintWarnings": 87,
+  "lintInfos": 4,
+  "bootstrapAttribution": "Only2original implementation prerequisite records reused;19later stages fresh,14complete so far."
+}

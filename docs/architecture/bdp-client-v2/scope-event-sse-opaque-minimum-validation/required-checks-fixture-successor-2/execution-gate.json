@@ -1,10 +1,18 @@
 {
-  "released": false,
+  "released": true,
   "session": "2026-10-08T20:26:35Z-81e5",
-  "approvedStages": [],
-  "actualClaudeReviewDisposed": false,
-  "nativeCodeReviewDisposed": false,
-  "freshBuild": null,
+  "approvedStages": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "actualClaudeReviewDisposed": true,
+  "nativeCodeReviewDisposed": true,
+  "freshBuild": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2/run/build-artifacts.json",
+    "sha256": "dd9580384c71420326c94aaa3c009b59b025d1de4523d05c3ecf4afcae141583"
+  },
   "sourceBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2/source-binding.json",
     "sha256": "74cba5a75d6e43858e1ef09f719d1a967052bc9de0ec614e0bf6b397ca597c03"
