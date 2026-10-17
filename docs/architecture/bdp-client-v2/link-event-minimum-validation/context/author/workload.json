@@ -1,0 +1,328 @@
+{
+  "state": "authored prospective workload; not executed evidence",
+  "totals": {
+    "existingSourceCallbacks": 25,
+    "newSourceCallbacks": 8,
+    "sourceCallbacks": 33,
+    "installedCallbacks": 4,
+    "stores": 37,
+    "inProcessListeners": 4,
+    "sequentialInstalledChildren": 4,
+    "emittedHttp": 163,
+    "installedHttp": 22,
+    "allHttp": 185
+  },
+  "sourceObservations": {
+    "link-event-minimum-owner": {
+      "reads": 11,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    "link-event-minimum-capture": {
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ],
+      "seedMutations": 1
+    },
+    "link-event-minimum-cancel-drain": {
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1,
+      "seedMutations": 1
+    },
+    "link-event-minimum-preflight": {
+      "labels": [
+        "already-aborted",
+        "malformed-after-valid-preflight",
+        "noncanonical-query",
+        "relative-source"
+      ],
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReadsByLabel": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "waits": 0
+    },
+    "link-event-minimum-http": {
+      "calls": 35,
+      "statuses": {
+        "200": 8,
+        "400": 4,
+        "404": 3,
+        "500": 12,
+        "503": 8
+      },
+      "orderedRequests": [
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503,
+          "control": "opaque"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503,
+          "control": "opaque"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503,
+          "control": "If-None-Match:*"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503,
+          "control": "If-None-Match:*"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503,
+          "control": "If-Match:wrong"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503,
+          "control": "If-Match:wrong"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200,
+          "control": "known-current"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 200,
+          "control": "known-current"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200,
+          "control": "no-minimum"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 200,
+          "control": "no-minimum"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "foreign-epoch"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "foreign-epoch"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "foreign-view"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "foreign-view"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "Accept:text/event-stream"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "Accept:text/event-stream"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events&after=<encoded-actual-setup-cursor>",
+          "status": 500,
+          "control": "after"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events&after=<encoded-actual-setup-cursor>",
+          "status": 500,
+          "control": "after"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "Last-Event-ID:actual-setup-cursor"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "Last-Event-ID:actual-setup-cursor"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "Accept:image/png"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500,
+          "control": "Accept:image/png"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 400,
+          "control": "partial-tuple"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 400,
+          "control": "partial-tuple"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "links/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200,
+          "control": "delete-links/gone"
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone?view=events",
+          "status": 503,
+          "control": "actual-retained-context"
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/gone?view=events",
+          "status": 503,
+          "control": "actual-retained-context"
+        }
+      ],
+      "elapsedMsIncludesCleanup": true
+    }
+  },
+  "installedObservation": {
+    "name": "private-installed-link-event-minimum",
+    "exchanges": 4,
+    "seedOperations": 3,
+    "routes": [
+      {
+        "method": "POST",
+        "suffix": "operations/batch",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "suffix": "links/known?view=events",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "suffix": "links/known?view=events",
+        "status": 503
+      },
+      {
+        "method": "HEAD",
+        "suffix": "links/known?view=events",
+        "status": 503
+      }
+    ],
+    "cleanupState": "Actual child PID/exit/directory measured at execution, not fabricated now"
+  },
+  "amendedBeadHttp": {
+    "calls": 37,
+    "status503": 10,
+    "status500": 12,
+    "elapsedSpanUnchanged": true
+  },
+  "auditStopMarginMs": 4000,
+  "marginAppliesTo": [
+    "bead-event-minimum-http",
+    "link-event-minimum-http"
+  ],
+  "sourceFrameworkTimeoutMs": 5000,
+  "httpWaitCountsDerivedNotInstrumented": true,
+  "postBootstrapStages": 23,
+  "installedStageAuditPairs": 4
+}

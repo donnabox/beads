@@ -1,0 +1,111 @@
+--- initial-pending/commands.json
++++ source-bound-closed/commands.json
+@@ -190,7 +190,7 @@
+         "linkAndAmendedBeadAuditElapsedExclusiveMs": 4000,
+         "implicitSourceCallbackMs": 5000,
+         "existingRetryAttempts": null,
+-        "attribution": "Prospective accepted plan-v3 plus root dispositions; source not yet authored/frozen; no observed counts or full-profile claim."
++        "attribution": "Authored frozen Link draft plus preserved/amended25 callbacks; counts are prospective, not execution results or whole-profile support."
+       }
+     },
+     "review-focused-source": {
+@@ -554,7 +554,7 @@
+     "require-from-string": "2.0.2"
+   },
+   "rootCheckpoints": [
+-    "Finalize actual authored six-file source/selection/index before any stage",
++    "Root/native final packet inspection then explicitly finalize execution configuration and regenerate index before any stage",
+     "Root release fresh offline bootstrap only, then actual measured workspace tools",
+     "Root static-only prefix or completed native+actual Claude dispositions for runtime",
+     "Fresh build and full inventory before any selected source module collection",
+@@ -564,7 +564,7 @@
+     "All23 validation stages and immediate audits before ordinary commit; exact CI later"
+   ],
+   "configurationFinalized": false,
+-  "sourceSelectionState": "PENDING_AUTHORED_LINK_SOURCE: exact names prospective; source binding absent",
++  "sourceSelectionState": "VERIFIED frozen author draft; execution configuration deliberately CLOSED pending root/native packet inspection",
+   "validationOrder": [
+     "typecheck",
+     "format-check",
+@@ -600,5 +600,6 @@
+     "total": 25,
+     "installedCallbackAuditPairs": 4
+   },
+-  "reusedPrerequisiteStages": []
++  "reusedPrerequisiteStages": [],
++  "sourceBindingFinalized": true
+ }
+--- initial-pending/audit-expectations.json
++++ source-bound-closed/audit-expectations.json
+@@ -515,5 +515,5 @@
+   ],
+   "httpAuditElapsedCeilingExclusiveMs": 4000,
+   "implicitSourceCallbackMs": 5000,
+-  "contractState": "PROVISIONAL planned field names and literal missing/query routes; must reconcile against frozen author draft before finalization"
++  "contractState": "Verified against frozen author binding14f6ceef: exact reporting fields, labels, literal route choices and ordered workload; no execution"
+ }
+--- initial-pending/base-tools.json
++++ source-bound-closed/base-tools.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "Actual executable hashes read only; source lock checked from clean planning base, not authored-source binding",
++  "state": "Actual executable identities read without invocation; source lock linked to frozen Link draft; fresh workspace tool capture remains required",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "tools": {
+     "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": {
+--- initial-pending/preparation.md
++++ source-bound-closed/preparation.md
+@@ -1,17 +1,15 @@
+-# Closed Link validation preparation
++# Closed Link validation preparation — frozen source bound
+ 
+-This packet implements the accepted Link plan and root findings dispositions under context/. It is validation machinery only, not a new workstream plan. Source authoring has not occurred: configurationFinalized=false, sourceBinding=null, and every execution/review/root release flag is false. No product command, test, install, formatter, build, service or helper was executed to prepare it.
++This packet implements the accepted Link plan and root findings dispositions under context/. It is validation machinery, not a new workstream plan. The original unbound packet is preserved byte-for-byte in initial-closed-preparation, including index c4e03b7d. Actual author draft is now frozen and all679 files verified on isolated codex/vickie-link-event-minimum, base5bcd. Six owned files, fullpatch7c8d17d9 and normalized source-binding.json are bound;673 other files and installed historical37245-byte prefix are preserved. source-binding.pending.json is historical only, retained alongside its initial snapshot.
+ 
+-The actual root-created checkout is vickie-link-event-minimum at base 5bcd277. Its future dirty six-file draft is deliberately not pinned yet. source-binding.pending.json is not a usable source binding. Before release, compare real source callback names, exact report field names/route literals, all679 bytes, diff, default helper and37245-byte installed prefix preservation with the author packet. Reconcile provisional audit expectations, add immutable author/native/Claude disposition references, create exact source-binding.json, and regenerate the index. Root inspects the final packet and alone releases it.
++Every execution/configuration release remains CLOSED by root instruction: configurationFinalized=false even though sourceBindingFinalized=true, execution released=false, no approved stages and no actual/native code-review disposition. Root/native final inspection must explicitly flip the configuration readiness field and regenerate/pin the index before root can release any stage. No product command, test, install, formatter, build, service or validation helper was executed during preparation.
+ 
+-The successful Bead successor proof chain is preserved in baseline/. packages.py is byte-identical. run.py only adds the new Link pair to end-of-attempt consumer verification. gate.py restores the original successful fresh-bootstrap path rather than reusing another checkout's install, reanchors to5bcd and adds the Link pair. No bootstrap/static/build/runtime evidence is reused. The full adaptation.patch is reviewable.
++The33 source names/four installed selectors and28 prospective source records were reconciled to actual source and author workload. Link owner groupReadsAfterHidden, F4 labels/clock/owner shape, D links/l, links/gone, links/missing and unsupported=x, and E links/known exactly match. No literal choice remains provisional. Both amended Bead D37 and Link D35 retain cleanup-inclusive elapsed and the audit fails at>=4000ms, without changing implicit5000ms callbacks or80ms minimum budget. HTTP wait counts remain derived; old historical59 is not claimed as new measured aggregate.
+ 
+-There are two fresh prerequisites (offline ignore-scripts frozen-lockfile workspace install and measured tool capture), then23 validation stages. Prefix release checks every predecessor; static diagnostics may run only on explicit root authorization while council is pending. Runtime requires both code-review dispositions. Fresh build/inventory precedes source collection, including the dynamic emitted runtime import. Exact33 callback names and no other execution are audited immediately.
++The successful Bead proof chain remains in baseline/. packages.py stays byte-identical; supervisor only adds Link pair consumer verification; gate restores proven fresh-bootstrap path with no predecessor reuse. There are2 fresh prerequisites plus23 validation stages, no stale21-stage claim. All stages retain120s supervision, no retry, isolated owned-group cleanup, sampled-process/store checks, source/build/consumer verification and stop-on-first-failure. Unknown or forced cleanup fails and preserves evidence.
+ 
+-The source auditor expects28 individually attributed records, retaining old Scope/Bead and four Link preflight rows. Both amended Bead D37 and new Link D35 have exact ordered response/route checks plus elapsed>=4000ms failure, leaving the implicit5000ms callback timeout unchanged. No retry/widening follows a margin failure; preserve the attempt for root-reviewed split. HTTP wait totals remain derived, not measured counters. Old historical59 workload is not promoted to measured aggregate.
++The frozen17 dependency inputs and3 base executables are actual read-only hashes. Workspace node_modules was absent at binding; workspace tools are intentionally not invented. Root may release only offline ignore-scripts frozen-lockfile install then measured tool capture, followed by explicit static diagnostics. Runtime requires both actual Claude and native full-code dispositions. Current immutable council context is completed plan review only; context/council-status.json states full-code review remains pending.
+ 
+-After fresh archives and member/source comparison, create a new external consumer with offline ignore-scripts install. Root pins the actual lock before provenance verification and pins the complete consumer inventory/proof before external collection. Link4, Bead4, Scope3 and historical11 execute as four sequential separate callbacks, each immediately audited for exact selector, response sequence, actual payload/entry/fixture binding and clean known exit/store absence. Link setup must be pos1. Historical scope and bytes remain separately attributed. Payload recursion, version/lock/link fences and no public qualification remain unchanged.
++Fresh build/inventory precedes all source module collection including emitted HTTP imports. Source callbacks run once with immediate exact-name/count/order/cleanup audit. Fresh archives/member/source proof and new offline external consumer follow. Root independently pins actual consumer lock before verify-installed-consumer and whole inventory/provenance before external collection. Link4, Bead4, Scope3 and historical11 run as four sequential distinct callbacks, each immediately audited; routes/headers/context/actual payload/entry/fixture and clean known exit/store absence remain bound. No public qualification or source-attestation claim.
+ 
+-All stages retain120s outer supervision, no retry, isolated process-group cleanup, sampled-process and owned-store checks, source/build/consumer verification before and after execution. Unknown or forced cleanup fails. Partial results do not satisfy the next stage. No execution output directory is fabricated.
+-
+-Pending review details: Link owner report field groupReadsAfterHidden is provisionally copied from Bead; unknown route links/missing and query unsupported=x are provisional literal choices to compare against the author draft. No semantic expectation is relaxed by finalizing those literals. Historical installed prefix37245 bytes and production/parser/default fixture preservation are source-review obligations before execution.
++After all stages, root owns exact dirty-to-commit mapping, publication and exact-head CI/integration. No main/release/Preview2 or frozen PR150 mutation is authorized here. See source-reconciliation.json, prerequisite-binding.json, context-snapshots.json, adaptation.patch and finalization.patch for exact evidence.
+--- initial-pending/report.md
++++ source-bound-closed/report.md
+@@ -1 +1 @@
+-Closed packet prepared; no execution or source mutation. Baseline successful Bead chain adapted to fresh2+23 stages,33 source callbacks and4 separate installed/audit pairs. Source identity and all release gates remain pending/false. Four Python helpers were parsed with the standard-library AST parser only. See preparation.md and adaptation.patch. Counts are prospective workload, not results or qualification. Root must independently inspect actual authored source binding and final helpers before release.
++Frozen-source preparation complete, execution closed. Source identity 9ec1d3433641f3ff643b9297a77220a2bbe3b95d862300c76b64e3e34d322af3; normalized binding 97629a7fac3bc7b2e122b3446b1151497e60e8585e3ba8ebb9fa8c6d6503a2c9. All679 actual source files and exact six-file patch match author;33 source/four installed selectors and Link35/Bead37 report contracts reconciled.2 fresh prerequisites+23 validation stages, no evidence reuse. Installed prefix37245 bytes preserved. All four helper bytes unchanged from initial closed preparation; AST parsing only, no helper invocation. Root/native inspection and explicit configuration/index finalization remain before any stage, actual code council before runtime. Initial pending packet preserved distinctly.
+--- initial-pending/structural-check.json
++++ source-bound-closed/structural-check.json
+@@ -1,7 +1,7 @@
+ {
+   "kind": "Data-only preparation inspection; no helper invocation",
+   "configurationFinalized": false,
+-  "sourceBindingPresent": false,
++  "sourceBindingPresent": true,
+   "runtimeDirectoryPresent": false,
+   "freshBootstrapStages": 2,
+   "postBootstrapStages": 23,
+@@ -29,6 +29,9 @@
+   "pythonHelpersParsedOnly": 4,
+   "allIndexedFilesAndReferencePinsMatch": true,
+   "allStageBounds120sNoRetry": true,
+-  "authorConfirmedProspectiveContracts": "groupReadsAfterHidden:0; links/l, links/gone, links/missing and unsupported=x; E links/known; cleanup-inclusive elapsed; final actual draft must still be compared",
+-  "qualification": false
++  "authorConfirmedProspectiveContracts": "Verified directly in frozen source and author workload; no provisional choices remain",
++  "qualification": false,
++  "sourceContractsReconciledToFrozenAuthor": true,
++  "authorSourceIdentity": "9ec1d3433641f3ff643b9297a77220a2bbe3b95d862300c76b64e3e34d322af3",
++  "rootExecutionReleased": false
+ }
