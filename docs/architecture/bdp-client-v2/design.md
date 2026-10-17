@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T08:34:21Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T08:45:34Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -78,8 +78,8 @@ Checkpoint 2026-10-17T08:34:21Z. **ACTIVE — Transactional first; ordinary Upda
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | ActualClaude full receipt CODE running PID91639/session38478; formatter successor plan accepted | Preserve source until terminal verdict/disposition; runtime closed |
-| Conditional reviewer | Formatter-only plan and alias recommendation reviews complete | Idle; ready for actual CODE findings audit |
-| Event reviewer | Prepare bounded alias detailed plan incorporating native critique | Plan only against explicit dirty receipt basis; no source or execution |
+| Conditional reviewer | Alias concrete plan-v2 review complete, no correction | Idle; ready for receipt actual CODE findings audit |
+| Event reviewer | Alias concrete plan-v2 frozen; root read full plan and verified index | Idle; clean-green receipt rebind and council still required |
 | Native reviewer | Static outcome audit and formatter-only successor plan complete | Idle; no authoring until root post-verdict release |
 
 
@@ -310,6 +310,9 @@ Receipt validation preparation found and corrected one command-directory defect 
 **Formatter-only successor plan reviewed; source remains frozen.** [Plan](receipt-root-minimum-author/format-successor-plan/plan.md)7e8f3907 and [native review](receipt-root-minimum-author/format-successor-plan/native-plan-review.md)dbc4c633 verify exactly four formatter-log replacements, reversible in memory to original two-file bytes. Root accepts the plan only; source authoring waits for actual full CODE terminal/findings. Original passing typecheck and failed format identities remain unchanged. Fresh successor static diagnostics and explicit unchanged dependency/tool reuse binding are required; no automatic full council rerun solely layout. All42 sampled static-stage PIDs freshly absent, no source mutation/runtime execution.
 
 [Alias recommendation critique](receipt-root-next-serving-audit/native-recommendation-review.md)79d7dadb supports a private alias tag on both existing404 and successful-wait predicates while leaving incident-Link classification unchanged. Preserve facet-time tuple capture but re-resolve alias/target/context per attempt; detailed planning must account for existing mixed HTTP no-context branch, finite cancellation/drain and distinct historical installed90s cohort. Detailed plan preparation only; current receipt review/validation remains priority. PR150d4 and PR157088 unchanged/green; incremental bus empty through this check.
+
+
+**Alias detailed plan frozen for native review.** [Plan-v2](receipt-root-next-serving-audit/plan-v2.md)16ffb544/indexc5a2d706 specifies four files,17sourcecases/28network plus3in-process Requests, installed historical36+new6 with3sequentialchildren/2stores. These are prospective bounded selections, not observations. Root read the full plan and independently verified its six indexed artifacts; [Native concrete review](receipt-root-next-serving-audit/native-plan-v2-review.md)44a3b166 finds no correction; root read and accepts its bounded plan assessment. Current source is explicitly dirty receipt planning basis, so a preserved clean-green rebind and actualClaude PLAN disposition remain required before authoring. Actual receipt CODE still streaming on PID91639, with no terminal verdict; frozen source and closed runtime gate retained. No new bus messages or branch/CI changes.
 
 ## Current priority: BDP profile structure and implementation
 
