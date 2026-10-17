@@ -1,7 +1,8 @@
 package memorytypes
 
 // EndpointClass distinguishes local contract evidence from opaque references.
-// Zero is deliberately unresolved, never a wildcard local Bead.
+// Zero is deliberately unresolved, never a wildcard local Bead. The caller must
+// prove Bead categories actually identify Beads, never Links masquerading as Beads.
 type EndpointClass uint8
 
 const (
@@ -13,6 +14,8 @@ const (
 
 // EndpointFacts contains only facts needed by the fixed relationship predicates.
 // CanonicalIdentity must be normalized by the caller, excluding the revision.
+// It uses one identity namespace across all classes: changing classification or
+// locality must not change an identity or allow a self-link.
 // For a local endpoint, Kind must describe the selected live or retained state,
 // not necessarily its current state. The caller must separately prove existence,
 // visibility, retention, contract revision, and non-workflow participation.

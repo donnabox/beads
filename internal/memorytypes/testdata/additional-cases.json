@@ -1,5 +1,5 @@
 {
-  "_comment": "Local F0 regression cases; schemaValid overrides valid only for separate domain checks. Candidate checker format behavior is pinned, not a new date-time standard.",
+  "_comment": "Local F0 regression cases; schemaValid marks explicit schema/domain differences (interval order and stricter rejection of trailing-newline format-checker bugs). Candidate checker format behavior is pinned, not a new date-time standard.",
   "cases": [
     {
       "label": "memory inherits body requirement",
@@ -522,13 +522,13 @@
       "properties": {
         "title": "Title",
         "body": "",
-        "inception": {
-          "method": "unknown",
+        "applicability": {
+          "description": "test",
           "a/b~c": false
         }
       },
       "valid": false,
-      "path": "/properties/inception/a~1b~0c"
+      "path": "/properties/applicability/a~1b~0c"
     },
     {
       "label": "Unicode whitespace",
@@ -690,6 +690,97 @@
         "authority": "http://host:abc/"
       },
       "valid": false
+    },
+    {
+      "label": "observedAt trailing newline checker divergence",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00Z\n",
+        "statement": "test"
+      },
+      "valid": false,
+      "schemaValid": true,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "authority trailing newline checker divergence",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://example.com/a\n",
+        "rule": "test"
+      },
+      "valid": false,
+      "schemaValid": true,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "uninterpreted root extensions 59",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "kind": null,
+        "inception": 42
+      },
+      "valid": true
+    },
+    {
+      "label": "uninterpreted root extensions 60",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "kind": {
+          "future": [
+            "x"
+          ]
+        },
+        "inception": {
+          "method": "not-an-admission-field",
+          "future": null
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "authority neither reference branch 42",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "test",
+        "authority": 42
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority neither reference branch None",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "test",
+        "authority": null
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority neither reference branch []",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "rule": "test",
+        "authority": []
+      },
+      "valid": false,
+      "path": "/properties/authority"
     }
   ]
 }

@@ -36,14 +36,6 @@ func ValidateProperties(kind BeadKind, data json.RawMessage) error {
 			return err
 		}
 	}
-	if _, exists := obj["kind"]; exists {
-		return invalid("/properties/kind", "no kind discriminator")
-	}
-	if raw, ok := obj["inception"]; ok {
-		if err := inception(raw); err != nil {
-			return err
-		}
-	}
 	if raw, ok := obj["applicability"]; ok {
 		if err := applicability(raw); err != nil {
 			return err
@@ -89,9 +81,6 @@ func ValidateLinkProperties(kind LinkKind, data json.RawMessage) error {
 	obj, err := object(data, "/properties")
 	if err != nil {
 		return err
-	}
-	if _, exists := obj["kind"]; exists {
-		return invalid("/properties/kind", "no kind discriminator")
 	}
 	return textField(obj, "note", "/properties", false, true)
 }
@@ -162,30 +151,6 @@ func closed(obj map[string]json.RawMessage, path string, allowed ...string) erro
 			escaped := strings.ReplaceAll(strings.ReplaceAll(key, "~", "~0"), "/", "~1")
 			return invalid(path+"/"+escaped, "no additional member")
 		}
-	}
-	return nil
-}
-
-func inception(raw json.RawMessage) error {
-	const path = "/properties/inception"
-	obj, err := object(raw, path)
-	if err != nil {
-		return err
-	}
-	if err := closed(obj, path, "method", "origin"); err != nil {
-		return err
-	}
-	method, err := textValue(obj["method"], path+"/method", false)
-	if err != nil {
-		return err
-	}
-	switch method {
-	case "native", "converted", "imported", "unknown":
-	default:
-		return invalid(path+"/method", "native, converted, imported or unknown")
-	}
-	if origin, ok := obj["origin"]; ok {
-		return referenceValue(origin, path+"/origin")
 	}
 	return nil
 }

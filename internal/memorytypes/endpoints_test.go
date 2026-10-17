@@ -23,7 +23,7 @@ func TestCandidateEndpointPairs(t *testing.T) {
 		} `json:"definitions"`
 	}
 	readJSON(t, "testdata/candidate/definitions.json", &fixture)
-	links := map[string]LinkKind{"memory-related": Association, "memory-guidance": Guidance, "memory-applies-to": AppliesTo, "memory-supports": Supports, "memory-challenges": Challenges, "memory-supersedes": MemorySupersedes}
+	links := map[string]LinkKind{"association": Association, "memory-guidance": Guidance, "memory-applies-to": AppliesTo, "memory-supports": Supports, "memory-challenges": Challenges, "memory-supersedes": MemorySupersedes}
 	variants := []EndpointFacts{{Class: LocalBead, Kind: Memory}, {Class: LocalBead, Kind: Observation}, {Class: LocalBead, Kind: Decision}, {Class: LocalBead, Kind: Procedure}, {Class: LocalBead, Kind: Policy}, {Class: LocalBead, Kind: Lesson}, {Class: LocalBead, Kind: Issue}, {Class: LocalBead, Kind: OtherBead}, {Class: CrossScopeBead}, {Class: ExternalResource}}
 	count := 0
 	for _, definition := range fixture.Definitions {
@@ -56,6 +56,11 @@ func TestCandidateEndpointPairs(t *testing.T) {
 	if count != 6 {
 		t.Fatalf("checked %d candidate relationships, expected 6", count)
 	}
+}
+
+// Independent test-side family inventory; never use production IsMemory here.
+var fixtureMemoryKinds = map[BeadKind]struct{}{
+	Memory: {}, Observation: {}, Decision: {}, Procedure: {}, Policy: {}, Lesson: {},
 }
 
 type candidateEndpoint struct {
@@ -97,7 +102,7 @@ func (c candidateEndpoint) matches(t *testing.T, e EndpointFacts) bool {
 			if ref.Revision != "memory-contract-1" {
 				t.Fatal("changed exact contract", ref)
 			}
-			if e.Kind.IsMemory() {
+			if _, known := fixtureMemoryKinds[e.Kind]; known {
 				return true
 			}
 		case "https://example.org/types/beads/issue":
@@ -214,6 +219,30 @@ func TestCandidateMembership(t *testing.T) {
 		}
 		if !kind.ConformsTo(Memory) {
 			t.Fatal("missing candidate membership", kind)
+		}
+	}
+}
+
+func TestNoEntirelyExternalPair(t *testing.T) {
+	for _, kind := range []LinkKind{Association, Guidance, AppliesTo, Supports, Challenges, MemorySupersedes} {
+		for _, sourceClass := range []EndpointClass{CrossScopeBead, ExternalResource} {
+			for _, targetClass := range []EndpointClass{CrossScopeBead, ExternalResource} {
+				source := EndpointFacts{Class: sourceClass, CanonicalIdentity: "source", Pinned: true}
+				target := EndpointFacts{Class: targetClass, CanonicalIdentity: "target", Pinned: true}
+				if err := ValidateEndpoints(kind, source, target); err == nil {
+					t.Errorf("kind %d admits all-external pair: %v -> %v", kind, sourceClass, targetClass)
+				}
+			}
+		}
+	}
+}
+
+func TestClassificationDoesNotChangeIdentity(t *testing.T) {
+	memory := EndpointFacts{Class: LocalBead, Kind: Memory, CanonicalIdentity: "same"}
+	for _, class := range []EndpointClass{CrossScopeBead, ExternalResource} {
+		other := EndpointFacts{Class: class, CanonicalIdentity: "same", Pinned: true}
+		if err := ValidateEndpoints(Association, memory, other); err == nil {
+			t.Errorf("class %d created a new identity namespace", class)
 		}
 	}
 }

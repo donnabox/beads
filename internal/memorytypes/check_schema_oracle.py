@@ -1,10 +1,10 @@
 """Offline candidate-schema oracle; no runtime or installation claim.
 
-Run: uv run --no-project --with 'jsonschema[format]==4.25.1' python \
-    internal/memorytypes/check_schema_oracle.py
-Only Python dependency acquisition may use the network. Schema references cannot.
+Use internal/memorytypes/check.sh for the combined F0 acceptance checks.
+See README.md for explicitly acquiring pinned oracle dependencies beforehand.
 """
 import json
+from importlib.metadata import version
 from pathlib import Path
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry
@@ -20,6 +20,9 @@ def unavailable(uri):
     raise NoSuchResource(ref=uri)
 
 
+for package, expected_version in {"jsonschema": "4.25.1", "rfc3987": "1.3.8", "rfc3339-validator": "0.1.4"}.items():
+    assert version(package) == expected_version, f"{package} must be {expected_version}"
+
 checker = FormatChecker()
 # Fail rather than silently disabling an optional format dependency.
 for format_name, invalid_value in (("date-time", "not-an-instant"), ("uri", "/relative")):
@@ -32,7 +35,9 @@ for name, filename in NAMES.items():
                                            format_checker=checker)
 count = 0
 for path in (ROOT / "candidate" / "schema-cases.json", ROOT / "additional-cases.json"):
-    for case in json.loads(path.read_text())["cases"]:
+    cases = json.loads(path.read_text())["cases"]
+    assert cases, f"no cases in {path}"
+    for case in cases:
         chosen = [validators[case["type"]]]
         if case["type"] not in ("memory", "link"):
             chosen.append(validators["memory"])

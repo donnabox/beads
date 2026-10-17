@@ -37,8 +37,8 @@ func TestCandidateProperties(t *testing.T) {
 		Cases []propertyCase `json:"cases"`
 	}
 	readJSON(t, "testdata/candidate/schema-cases.json", &fixture)
-	if len(fixture.Cases) != 72 {
-		t.Fatalf("source fixture count = %d, expected 72", len(fixture.Cases))
+	if len(fixture.Cases) != 60 {
+		t.Fatalf("source fixture count = %d, expected 60", len(fixture.Cases))
 	}
 	for _, c := range fixture.Cases {
 		t.Run(c.Label, func(t *testing.T) { checkProperties(t, c) })
@@ -50,6 +50,9 @@ func TestAdditionalProperties(t *testing.T) {
 		Cases []propertyCase `json:"cases"`
 	}
 	readJSON(t, "testdata/additional-cases.json", &fixture)
+	if len(fixture.Cases) == 0 {
+		t.Fatal("additional regression cases are empty")
+	}
 	for _, c := range fixture.Cases {
 		t.Run(c.Label, func(t *testing.T) { checkProperties(t, c) })
 	}
@@ -60,7 +63,12 @@ func checkProperties(t *testing.T, c propertyCase) {
 	before := bytes.Clone(c.Properties)
 	var err error
 	if c.Type == "link" {
-		err = ValidateLinkProperties(Association, c.Properties)
+		for _, kind := range []LinkKind{Association, Guidance, AppliesTo, Supports, Challenges, MemorySupersedes} {
+			err = ValidateLinkProperties(kind, c.Properties)
+			if (err == nil) != c.Valid {
+				t.Fatalf("link kind %d: valid=%v, want %v; error=%v", kind, err == nil, c.Valid, err)
+			}
+		}
 	} else {
 		kind, ok := fixtureKinds[c.Type]
 		if !ok {
@@ -124,7 +132,7 @@ func TestCandidateProvenance(t *testing.T) {
 		} `json:"files"`
 	}
 	readJSON(t, "testdata/candidate/provenance.json", &manifest)
-	if manifest.Commit != "38791e4cc6e16cf661fa839303d4ff315d49ab3d" {
+	if manifest.Commit != "d6337ab96e93d1b9a7b93beb4aea6d48bd179311" {
 		t.Fatal("unexpected candidate commit", manifest.Commit)
 	}
 	for _, file := range manifest.Files {
@@ -135,6 +143,17 @@ func TestCandidateProvenance(t *testing.T) {
 		digest := sha256.Sum256(data)
 		if hex.EncodeToString(digest[:]) != file.SHA256 {
 			t.Errorf("changed candidate fixture: %s", file.File)
+		}
+	}
+}
+
+func TestAuthorityReferenceDiagnostic(t *testing.T) {
+	for _, value := range []string{"42", "null", "[]"} {
+		data := json.RawMessage(`{"title":"policy","body":"","rule":"rule","authority":` + value + `}`)
+		err := ValidateProperties(Policy, data)
+		var violation *Violation
+		if !errors.As(err, &violation) || violation.Expected != "a URI string or {uri, revision} reference" {
+			t.Fatalf("authority %s: wrong expectation: %v", value, err)
 		}
 	}
 }

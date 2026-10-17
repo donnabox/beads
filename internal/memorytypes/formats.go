@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Match the pinned checker: explicit timezone, valid calendar date, and decimal
+// Require an explicit timezone, valid calendar date, and decimal
 // fraction (not Go time.Parse's extra comma syntax). Keep fractions separately
 // so interval ordering does not lose precision beyond nanoseconds.
 var timestampShape = regexp.MustCompile(`^([0-9]{4}-[0-9]{2}-[0-9]{2})[Tt]([0-9]{2}:[0-9]{2}:[0-9]{2})(\.[0-9]+)?([Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$`)
@@ -74,7 +74,7 @@ func referenceValue(raw json.RawMessage, path string) error {
 	}
 	obj, err := object(raw, path)
 	if err != nil {
-		return err
+		return invalid(path, "a URI string or {uri, revision} reference")
 	}
 	if err := closed(obj, path, "uri", "revision"); err != nil {
 		return err
