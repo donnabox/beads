@@ -12,8 +12,9 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 )
 
-// HeartbeatIssue refreshes only the native node-local lease. Its retained
-// Issue version and graph revision deliberately remain unchanged.
+// HeartbeatIssue refreshes the native node-local lease without changing
+// retained History. Re-arming a missing lease is a durable native mutation
+// and advances both the Issue version and its graph revision.
 func (s *Store) HeartbeatIssue(ctx context.Context, path, actor string) (IssueRecord, error) {
 	return s.HeartbeatIssueSelected(ctx, IssueSelector{Path: path}, actor)
 }
@@ -39,15 +40,26 @@ func (s *Store) HeartbeatIssueSelected(ctx context.Context, selector IssueSelect
 		if err != nil {
 			return err
 		}
-		if err := issueops.HeartbeatIssueInTx(ctx, tx, before.Properties.ID, actor); err != nil {
+		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
+		defer unscope()
+		renewal, err := issueops.RenewLeaseInTx(ctx, tx, before.Properties.ID, actor)
+		if err != nil {
 			return err
+		}
+		if renewal.Rearmed {
+			if err := s.touchCoordination(ctx, tx); err != nil {
+				return err
+			}
+			if err := s.recordIssueMappingInTx(ctx, tx, path, before.Properties.ID); err != nil {
+				return err
+			}
 		}
 		result, err = s.showIssueInTx(ctx, tx, path)
 		if err != nil {
 			return err
 		}
-		if result.Revision != before.Revision {
-			return fmt.Errorf("%w: heartbeat changed the retained Issue version", ErrInvalidStore)
+		if (result.Revision != before.Revision) != renewal.Rearmed {
+			return fmt.Errorf("%w: heartbeat revision disagrees with lease re-arm", ErrInvalidStore)
 		}
 		return nil
 	})

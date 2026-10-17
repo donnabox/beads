@@ -107,11 +107,12 @@ func TestGraphIssueMissingNodeLocalLeaseRemainsReadableAndHeartbeatRearms(t *tes
 				t.Fatalf("foreign rearm changed state: %v", err)
 			}
 			rearmed, err := s.HeartbeatIssue(ctx, "beads/work", "holder")
-			if err != nil || rearmed.Revision != claimed.Issue.Revision || rearmed.Properties.LeaseExpiresAt == nil || rearmed.Properties.HeartbeatAt == nil {
+			if err != nil || rearmed.Revision == claimed.Issue.Revision || rearmed.Properties.LeaseExpiresAt == nil || rearmed.Properties.HeartbeatAt == nil {
 				t.Fatalf("holder rearm: %+v %v", rearmed, err)
 			}
-			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 3)
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 4)
 			assertIssueEditVersion(t, ctx, s, "beads/work", claimed.Issue)
+			assertIssueEditVersion(t, ctx, s, "beads/work", rearmed)
 			var eventsAfter, journalAfter int
 			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM events WHERE issue_id=?`, original.Properties.ID).Scan(&eventsAfter); err != nil {
 				t.Fatal(err)
@@ -119,8 +120,23 @@ func TestGraphIssueMissingNodeLocalLeaseRemainsReadableAndHeartbeatRearms(t *tes
 			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM bd_events_journal WHERE issue_id=?`, original.Properties.ID).Scan(&journalAfter); err != nil {
 				t.Fatal(err)
 			}
-			if eventsAfter != eventsBefore || journalAfter != journalBefore {
-				t.Fatalf("lease rearm minted durable audit: events %d->%d journal %d->%d", eventsBefore, eventsAfter, journalBefore, journalAfter)
+			// This graph workspace does not enable the optional JSONL journal,
+			// but the native audit event and both retained histories advance.
+			if eventsAfter != eventsBefore+1 || journalAfter != journalBefore {
+				t.Fatalf("lease rearm audit: events %d->%d journal %d->%d", eventsBefore, eventsAfter, journalBefore, journalAfter)
+			}
+			var rearmEvents int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM events WHERE issue_id=? AND event_type=? AND actor=?`,
+				original.Properties.ID, types.EventLeaseRearmed, "holder").Scan(&rearmEvents); err != nil || rearmEvents != 1 {
+				t.Fatalf("lease rearm event=%d: %v", rearmEvents, err)
+			}
+			refreshed, err := s.HeartbeatIssue(ctx, "beads/work", "holder")
+			if err != nil || refreshed.Revision != rearmed.Revision {
+				t.Fatalf("holder refresh after rearm: %+v %v", refreshed, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 4)
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM events WHERE issue_id=?`, original.Properties.ID).Scan(&eventsAfter); err != nil || eventsAfter != eventsBefore+1 {
+				t.Fatalf("refresh audit events=%d: %v", eventsAfter, err)
 			}
 		})
 	}
