@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/dberrors"
 	"github.com/steveyegge/beads/internal/storage/uow"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/issueops"
+	"github.com/steveyegge/beads/memoryops"
 )
 
 // exportSource abstracts the storage reads `bd export` performs, so the one
@@ -30,16 +33,17 @@ type exportSource interface {
 	// hardcoded defaults). A nil/empty result makes the caller fall back to
 	// domain.DefaultInfraTypes(), mirroring the pre-seam behavior.
 	GetInfraTypes(ctx context.Context) map[string]bool
-	// SearchIssues returns the full, untruncated result set for the export
-	// filter (Limit=0, MaxRows=0). Implementations MUST fail rather than
-	// return a truncated page — export is a data-integrity path.
-	SearchIssues(ctx context.Context, query string, filter types.IssueFilter) ([]*types.Issue, error)
+	// ExportIssues returns the full, untruncated export set for req.
+	// Implementations MUST fail rather than return a truncated or shortened
+	// set — export is a data-integrity path.
+	ExportIssues(ctx context.Context, req issueops.ExportRequest) ([]*types.Issue, error)
 	// GetConfig reads one config key from the database (used for the
 	// export.exclude_owners owner-filter keys).
 	GetConfig(ctx context.Context, key string) (string, error)
-	// GetAllConfig reads the whole config table (used to extract kv.memory.*
-	// rows when memories are exported).
-	GetAllConfig(ctx context.Context) (map[string]string, error)
+	// ExportMemories returns every persistent memory (`bd remember`), keyed
+	// by the user key without the kv.memory. prefix. Like ExportIssues, it
+	// MUST fail rather than return a partial set.
+	ExportMemories(ctx context.Context) (map[string]string, error)
 	// LoadExportRelations bulk-loads labels, dependency records, comments,
 	// comment counts, and dependency counts for the searched issues.
 	LoadExportRelations(ctx context.Context, issues []*types.Issue) (exportRelations, error)
@@ -89,8 +93,8 @@ func (storeExportSource) GetInfraTypes(ctx context.Context) map[string]bool {
 	return store.GetInfraTypes(ctx)
 }
 
-func (storeExportSource) SearchIssues(ctx context.Context, query string, filter types.IssueFilter) ([]*types.Issue, error) {
-	return store.SearchIssues(ctx, query, filter)
+func (src storeExportSource) ExportIssues(ctx context.Context, req issueops.ExportRequest) ([]*types.Issue, error) {
+	return store.SearchIssues(ctx, "", exportIssueFilter(ctx, src, req))
 }
 
 func (storeExportSource) GetConfig(ctx context.Context, key string) (string, error) {
@@ -100,8 +104,24 @@ func (storeExportSource) GetConfig(ctx context.Context, key string) (string, err
 	return store.GetConfig(ctx, key)
 }
 
-func (storeExportSource) GetAllConfig(ctx context.Context) (map[string]string, error) {
-	return store.GetAllConfig(ctx)
+func (storeExportSource) ExportMemories(ctx context.Context) (map[string]string, error) {
+	allConfig, err := store.GetAllConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return memoriesFromConfig(allConfig), nil
+}
+
+// memoriesFromConfig extracts the persistent memories from a whole config
+// table: its kv.memory.* rows, keyed by the user key.
+func memoriesFromConfig(allConfig map[string]string) map[string]string {
+	memories := map[string]string{}
+	for k, v := range allConfig {
+		if userKey, ok := strings.CutPrefix(k, kvPrefix+memoryPrefix); ok {
+			memories[userKey] = v
+		}
+	}
+	return memories
 }
 
 func (storeExportSource) LoadExportRelations(ctx context.Context, issues []*types.Issue) (exportRelations, error) {
@@ -177,8 +197,9 @@ func (s *uowExportSource) GetInfraTypes(ctx context.Context) map[string]bool {
 	return infra
 }
 
-func (s *uowExportSource) SearchIssues(ctx context.Context, query string, filter types.IssueFilter) ([]*types.Issue, error) {
-	page, err := s.uw.IssueUseCase().SearchIssues(ctx, query, filter)
+func (s *uowExportSource) ExportIssues(ctx context.Context, req issueops.ExportRequest) ([]*types.Issue, error) {
+	filter := exportIssueFilter(ctx, s, req)
+	page, err := s.uw.IssueUseCase().SearchIssues(ctx, "", filter)
 	if err != nil {
 		return nil, err
 	}
@@ -196,8 +217,12 @@ func (s *uowExportSource) GetConfig(ctx context.Context, key string) (string, er
 	return s.uw.ConfigUseCase().GetConfig(ctx, key)
 }
 
-func (s *uowExportSource) GetAllConfig(ctx context.Context) (map[string]string, error) {
-	return s.uw.ConfigUseCase().GetAllConfig(ctx)
+func (s *uowExportSource) ExportMemories(ctx context.Context) (map[string]string, error) {
+	allConfig, err := s.uw.ConfigUseCase().GetAllConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return memoriesFromConfig(allConfig), nil
 }
 
 // LoadExportRelations reproduces the classic bulk loaders over the
@@ -207,10 +232,14 @@ func (s *uowExportSource) GetAllConfig(ctx context.Context) (map[string]string, 
 //     by wisps-table membership (issueops.PartitionWispIDsInTx). Row flags are
 //     NOT a substitute for that partition — a promoted no-history wisp is a
 //     durable issues-table row that (as wild data from the pre-bd-r9uce
-//     promote) still carries NoHistory=true — so both
-//     planes are queried with the FULL ID set and merged. The planes are
-//     ID-disjoint (GH#4455 cross-table guard), so at most one plane returns
-//     rows for any id and the merge cannot collide.
+//     promote) still carries NoHistory=true — so membership is read from the
+//     wisps table itself (WispPlaneIDs), never inferred. The durable plane is
+//     then queried with the FULL ID set and the wisp plane only with that
+//     membership subset (wispReaderIDs), and the two are merged. Unreadable
+//     membership fails OPEN to the full id list, so a nil set is never
+//     mistaken for "no wisps" (wy-237yfi). The planes are ID-disjoint
+//     (GH#4455 cross-table guard), so at most one plane returns rows for any
+//     id and the merge cannot collide.
 //   - Dependency records: domain GetIssueDependencyRecords already partitions
 //     internally (same issueops helper), so one call covers both planes.
 //   - Dependency counts: classic GetDependencyCountsInTx queries BOTH dep
@@ -219,7 +248,12 @@ func (s *uowExportSource) GetAllConfig(ctx context.Context) (map[string]string, 
 //     queried for the full ID set and summed here too.
 //
 // Wisp-plane reads tolerate a rig without the wisp tables (IsTableNotExist),
-// mirroring the dependency-counts leg.
+// mirroring the dependency-counts leg. The three wisp-relation readers below
+// keep that blanket check: each is a single-table read, so blanket and
+// table-specific are the same test there. The membership probe is the
+// exception — WispPlaneIDs renders FROM wisps LEFT JOIN leases, so its
+// tolerance is pinned to a missing `wisps` table and a broken database
+// surfaces as an error instead of an empty wisp plane.
 func (s *uowExportSource) LoadExportRelations(ctx context.Context, issues []*types.Issue) (exportRelations, error) {
 	rel := exportRelations{
 		labels:        map[string][]string{},
@@ -259,7 +293,24 @@ func (s *uowExportSource) LoadExportRelations(ctx context.Context, issues []*typ
 	}
 	mergeExportMap(rel.commentCounts, counts)
 
-	wispLabels, err := s.uw.LabelUseCase().GetLabelsForWisps(ctx, allIDs) //nolint:forbidigo // bulk relation load; see GetLabelsForIssues above
+	// The wisp_labels / wisp_comments rows of a wisp are keyed by an issue_id
+	// that lives in the WISPS table (promotion moves them to the durable
+	// tables, issueops.MoveIssuePersistenceInTx), so the three wisp readers
+	// below only need the ids that are wisps right now. Handing them the
+	// whole workspace was pure waste — on a 19k-issue rig with no wisps it
+	// was three 19k-placeholder statements answering nothing (wy-237yfi).
+	// CountsByWispIDs is NOT narrowed: its inbound leg counts wisp -> durable
+	// edges under the durable target's id.
+	// A nil set means membership could NOT be read (the wisps table is
+	// absent, the tolerated case) — never "no wisps": fail open to the full
+	// id list so the readers below keep their own table-not-exist tolerance.
+	wispSet, err := s.WispPlaneIDs(ctx, allIDs)
+	if err != nil {
+		return exportRelations{}, err
+	}
+	wispIDs := wispReaderIDs(allIDs, wispSet)
+
+	wispLabels, err := s.uw.LabelUseCase().GetLabelsForWisps(ctx, wispIDs) //nolint:forbidigo // bulk relation load; see GetLabelsForIssues above
 	if err != nil {
 		if !dberrors.IsTableNotExist(err) {
 			return exportRelations{}, fmt.Errorf("load wisp labels: %w", err)
@@ -267,7 +318,7 @@ func (s *uowExportSource) LoadExportRelations(ctx context.Context, issues []*typ
 	} else {
 		mergeExportMap(rel.labels, wispLabels)
 	}
-	wispComments, err := s.uw.CommentUseCase().GetCommentsForWisps(ctx, allIDs)
+	wispComments, err := s.uw.CommentUseCase().GetCommentsForWisps(ctx, wispIDs)
 	if err != nil {
 		if !dberrors.IsTableNotExist(err) {
 			return exportRelations{}, fmt.Errorf("load wisp comments: %w", err)
@@ -275,7 +326,7 @@ func (s *uowExportSource) LoadExportRelations(ctx context.Context, issues []*typ
 	} else {
 		mergeExportMap(rel.comments, wispComments)
 	}
-	wispCounts, err := s.uw.CommentUseCase().GetWispCommentCounts(ctx, allIDs)
+	wispCounts, err := s.uw.CommentUseCase().GetWispCommentCounts(ctx, wispIDs)
 	if err != nil {
 		if !dberrors.IsTableNotExist(err) {
 			return exportRelations{}, fmt.Errorf("load wisp comment counts: %w", err)
@@ -319,17 +370,47 @@ func (s *uowExportSource) LoadExportRelations(ctx context.Context, issues []*typ
 	return rel, nil
 }
 
+// wispPlaneSubset returns, in input order, the ids that wispSet marks as
+// wisp-plane; none marked yields nil, and the bulk readers answer nil with no
+// statement at all. The caller decides what a nil SET means (see
+// LoadExportRelations: unreadable membership fails open, never empty).
+func wispPlaneSubset(ids []string, wispSet map[string]bool) []string {
+	var out []string
+	for _, id := range ids {
+		if wispSet[id] {
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+// wispReaderIDs is the caller-side policy wispPlaneSubset defers: a nil set
+// means membership was UNREADABLE (WispPlaneIDs tolerated a missing wisps
+// table), so every id goes to the wisp readers and they keep their own
+// table-not-exist tolerance; a non-nil set — even an empty one — is the
+// answer, and only the ids in it go.
+func wispReaderIDs(ids []string, wispSet map[string]bool) []string {
+	if wispSet == nil {
+		return ids
+	}
+	return wispPlaneSubset(ids, wispSet)
+}
+
 // WispPlaneIDs classifies by wisps-table membership through the plane-pinned
 // GetWispsByIDs read (row flags are NOT a substitute — see the exportSource
-// interface comment). A rig without the wisp tables has no wisp-plane rows,
-// mirroring the tolerance of the wisp-plane legs in LoadExportRelations.
+// interface comment). A rig without the wisps table has no wisp-plane rows
+// (nil set), mirroring the tolerance of the wisp-plane legs in
+// LoadExportRelations. Only the WISPS table is optional: the read joins
+// leases, and a blanket table-not-exist check would report a broken
+// database as an empty wisp plane (the issue_search.go missingOptionalWispTable
+// lesson), so the tolerance is pinned to that one table name.
 func (s *uowExportSource) WispPlaneIDs(ctx context.Context, ids []string) (map[string]bool, error) {
 	if len(ids) == 0 {
 		return nil, nil
 	}
 	wisps, err := s.uw.IssueUseCase().GetWispsByIDs(ctx, ids)
 	if err != nil {
-		if dberrors.IsTableNotExist(err) {
+		if dberrors.IsMissingTable(err, "wisps") {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("wisp plane membership: %w", err)
@@ -348,4 +429,107 @@ func mergeExportMap[V any](dst, src map[string]V) {
 	for k, v := range src {
 		dst[k] = v
 	}
+}
+
+// roleExportSource is the export read set of a remote backend, which serves
+// no raw search and no bulk relation read. The issues and every relation come
+// from ONE library entry, issueops.ReadExport, composed over role reads every
+// deployed server publishes (listIssues, listDependencies, getIssue). The
+// JSONL is then built by the same runExportFromSource as on every other route.
+type roleExportSource struct {
+	rows map[string]issueops.ExportRow
+}
+
+// GetInfraTypes is unused on this route: only exportIssueFilter, the filter of
+// the store-shaped sources, reads it. ReadExport's listing excludes the infra
+// set the server resolves for its own workspace.
+func (s *roleExportSource) GetInfraTypes(ctx context.Context) map[string]bool {
+	return store.GetInfraTypes(ctx)
+}
+
+func (s *roleExportSource) ExportIssues(ctx context.Context, req issueops.ExportRequest) ([]*types.Issue, error) {
+	rd, err := store.IssueReader()
+	if err != nil {
+		return nil, err
+	}
+	edges, err := store.EdgeReader()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := issueops.ReadExport(ctx, rd, edges, req)
+	if err != nil {
+		return nil, err
+	}
+	s.rows = make(map[string]issueops.ExportRow, len(rows))
+	issues := make([]*types.Issue, 0, len(rows))
+	for _, row := range rows {
+		s.rows[row.Issue.ID] = row
+		issues = append(issues, row.Issue)
+	}
+	return issues, nil
+}
+
+func (s *roleExportSource) GetConfig(ctx context.Context, key string) (string, error) {
+	return store.GetConfig(ctx, key)
+}
+
+// ExportMemories reads the served memory plane (listMemories). The config
+// table cannot stand in for it on this route: the server's settings
+// enumeration withholds every kv.* row, memories included, so reading it
+// exported no memory at all.
+func (s *roleExportSource) ExportMemories(ctx context.Context) (map[string]string, error) {
+	memories, err := store.Memories()
+	if err != nil {
+		return nil, err
+	}
+	res, err := memories.List(ctx, memoryops.ListRequest{})
+	if err != nil {
+		return nil, err
+	}
+	return res.Memories, nil
+}
+
+// LoadExportRelations hands back what ReadExport already read; it issues no
+// request of its own.
+func (s *roleExportSource) LoadExportRelations(_ context.Context, issues []*types.Issue) (exportRelations, error) {
+	rel := exportRelations{
+		labels:        map[string][]string{},
+		deps:          map[string][]*types.Dependency{},
+		comments:      map[string][]*types.Comment{},
+		commentCounts: map[string]int{},
+		depCounts:     map[string]*types.DependencyCounts{},
+	}
+	for _, issue := range issues {
+		row, ok := s.rows[issue.ID]
+		if !ok {
+			continue
+		}
+		if len(row.Issue.Labels) > 0 {
+			rel.labels[issue.ID] = row.Issue.Labels
+		}
+		if len(row.Issue.Dependencies) > 0 {
+			rel.deps[issue.ID] = row.Issue.Dependencies
+		}
+		if len(row.Issue.Comments) > 0 {
+			rel.comments[issue.ID] = row.Issue.Comments
+		}
+		rel.commentCounts[issue.ID] = row.CommentCount
+		rel.depCounts[issue.ID] = &types.DependencyCounts{DependencyCount: row.DependencyCount, DependentCount: row.DependentCount}
+	}
+	return rel, nil
+}
+
+// WispPlaneIDs answers nothing: no served read publishes plane membership
+// (listIssues rows carry no plane field, however the listing is scoped), so a
+// remote export stamps no row wisp_plane. A current import pins an
+// unmarked no-history row to the durable plane (applyImportWispPlane). That
+// is right for a durable row that still carries the flag (a legacy promotion,
+// or an earlier unmarked import) and wrong for a genuine no-history wisp,
+// which imports onto the Dolt-versioned issues plane. It is the same data-safe
+// degradation as a store without storeWispPartitioner: a missing marker
+// mis-planes a row, while a wrong one re-planes a durable row and drops its
+// relations (bd-r9uce), so the marker is never inferred from flags. Serving
+// the membership is bd-1lbvas.
+func (s *roleExportSource) WispPlaneIDs(context.Context, []string) (map[string]bool, error) {
+	return nil, nil
 }

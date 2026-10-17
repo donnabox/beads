@@ -1254,7 +1254,7 @@ func RunIssueOperationsRequestValuesAreNotMutated(t *testing.T, ctx context.Cont
 		t.Fatalf("create result labels = %v, want exactly the one requested label", created.Issue.Labels)
 	}
 	created.Issue.Labels[0] = "corrupted-label"
-	if callerLabels[0] != "caller-label" {
+	if len(callerLabels) != 1 || callerLabels[0] != "caller-label" {
 		t.Errorf("the create result's labels alias the caller's slice: %v", callerLabels)
 	}
 	assertIssueOperationsLabels(t, ctx, fixture, createdID, "after corrupting the create result", "caller-label")
@@ -1479,7 +1479,7 @@ func RunIssueOperationsUpdateWritesEveryScalarPatchField(t *testing.T, ctx conte
 		{"defer_until", patchedDefer.Format(issueOperationsStoredTimeLayout)},
 	}
 
-	written, err := fixture.Operations.Update(ctx, publicops.UpdateRequest{Actor: "writer", IssueID: id, Patch: patch})
+	written, err := fixture.Operations.Update(ctx, publicops.UpdateRequest{Actor: "writer", IssueID: id, Patch: patch, ForceNotesOverwrite: true})
 	if err != nil {
 		t.Fatalf("full scalar patch on %s: %v", id, err)
 	}

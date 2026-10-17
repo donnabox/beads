@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -955,5 +956,85 @@ func TestDoctor_ExplicitPathOverridesBEADS_DIR(t *testing.T) {
 	markerPath := filepath.Join(checkPath, ".beads", "explicit-marker")
 	if _, err := os.Stat(markerPath); os.IsNotExist(err) {
 		t.Error("Expected to find explicit-marker in chosen path - wrong directory was selected")
+	}
+}
+
+// bd doctor runs the versionable-issues check and files it with the other data checks.
+// With no database there is nothing to inspect, so it passes; what this holds is that
+// the check is in the run, once, under the name and category a person reads and that
+// the JSON carries, in the shape every check has.
+func TestDoctorRunsTheVersionableIssuesCheck(t *testing.T) {
+	tmpDir := t.TempDir()
+	if err := os.Mkdir(filepath.Join(tmpDir, ".beads"), 0750); err != nil {
+		t.Fatal(err)
+	}
+
+	result := runDiagnostics(tmpDir)
+
+	var found []doctorCheck
+	for _, check := range result.Checks {
+		if check.Name == "Versionable Issues" {
+			found = append(found, check)
+		}
+	}
+	if len(found) != 1 {
+		t.Fatalf("doctor ran the Versionable Issues check %d times, want once", len(found))
+	}
+	if found[0].Category != doctor.CategoryData {
+		t.Errorf("category = %q, want %q", found[0].Category, doctor.CategoryData)
+	}
+	if found[0].Status != statusOK {
+		t.Errorf("with no database the check is %q (%s), want %q", found[0].Status, found[0].Message, statusOK)
+	}
+
+	raw, err := json.Marshal(result)
+	if err != nil {
+		t.Fatalf("marshal result: %v", err)
+	}
+	var decoded struct {
+		Checks []map[string]any `json:"checks"`
+	}
+	if err := json.Unmarshal(raw, &decoded); err != nil {
+		t.Fatalf("unmarshal result: %v", err)
+	}
+	var entry map[string]any
+	for _, check := range decoded.Checks {
+		if check["name"] == "Versionable Issues" {
+			entry = check
+		}
+	}
+	if entry == nil {
+		t.Fatal("the JSON result does not carry the Versionable Issues check")
+	}
+	for _, key := range []string{"name", "status", "message", "category"} {
+		if v, ok := entry[key].(string); !ok || v == "" {
+			t.Errorf("JSON entry has no %q: %v", key, entry)
+		}
+	}
+}
+
+// A check that is not clean fails the run, so doctor's exit status says what its output
+// says. The check is what a store is held to before versioned history is turned on, and
+// a pre-flight whose status a script reads has to be able to fail. Producing a non-clean
+// answer takes a database, so this holds the registration itself: the check, its
+// category, and the step that clears the overall result on a warning or an error,
+// together and in that order, the way the neighbouring checks are registered.
+func TestDoctorFailsTheRunWhenTheVersionableIssuesCheckIsNotClean(t *testing.T) {
+	src, err := os.ReadFile("doctor.go")
+	if err != nil {
+		t.Fatalf("read doctor.go: %v", err)
+	}
+	call := regexp.MustCompile(`(\w+) := convertWithCategory\(doctor\.CheckVersionableIssuesWithStore\(sharedStore\), doctor\.CategoryData\)\n`)
+	if n := len(call.FindAllIndex(src, -1)); n != 1 {
+		t.Fatalf("doctor.go registers the versionable-issues check %d times in the data category, want once", n)
+	}
+	loc := call.FindSubmatchIndex(src)
+	name := regexp.QuoteMeta(string(src[loc[2]:loc[3]]))
+	after := regexp.MustCompile(`\A\tresult\.Checks = append\(result\.Checks, ` + name + `\)\n` +
+		`\tif ` + name + `\.Status == statusError \|\| ` + name + `\.Status == statusWarning \{\n` +
+		`\t\tresult\.OverallOK = false\n` +
+		`\t\}\n`)
+	if !after.Match(src[loc[1]:]) {
+		t.Errorf("the registration of the versionable-issues check is not followed by appending it to the result and clearing OverallOK on a warning or an error")
 	}
 }

@@ -11,6 +11,7 @@ This directory contains examples of how to integrate bd with AI agents and workf
 - **[claude-desktop-mcp/](claude-desktop-mcp/)** - MCP server for Claude Desktop integration
 
 ### Tools & Utilities
+- **[bdp-read/](bdp-read/)** - Read and enumerate the experimental graph over BDP HTTP with Python, including pagination and token authentication
 - **[monitor-webui/](monitor-webui/)** - Standalone web interface for real-time issue monitoring and visualization
 - **[git-hooks/](git-hooks/)** - Pre-configured git hooks for automatic Dolt sync
 <!-- REMOVED (bd-4c74): branch-merge example - collision resolution no longer needed with hash IDs -->
