@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T18:21:26Z. **ACTIVE — separate changefeed PR161 ready and exact-CI green; Scope Event SSE published draft PR162; local validation complete, exact CI pending. Next coherent minimum closure PLAN in actual Claude review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T18:28:55Z. **ACTIVE — separate changefeed PR161 ready and exact-CI green; Scope Event SSE PR162 ready with local validation and exact CI passed. Next coherent minimum closure PLAN in actual Claude review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current finite delivery checklist — October 17 operator priority
 
@@ -70,7 +70,7 @@ The finish line is a complete installed reference implementation of the pinned r
 
 | Remaining delivery item | Current gap and exit |
 |---|---|
-| D1 — Required consistency paths | Fresh Scope Event SSE is draft PR162 with completed local validation; exact CI pending. Reconcile remaining Resource Event SSE/reconnect, changefeed SSE/explicit-after/genesis/retained and foreign-opaque combinations against the pinned contract; replace required-path private unsupported responses with valid behavior and installed proof. |
+| D1 — Required consistency paths | Fresh Scope Event SSE PR162 is ready with local validation and exact CI passed. Reconcile remaining Resource Event SSE/reconnect, changefeed SSE/explicit-after/genesis/retained and foreign-opaque combinations against the pinned contract; replace required-path private unsupported responses with valid behavior and installed proof. |
 | D2 — Two established semantic questions | S1: retained Snapshot/continuation minimum against current serving context versus immutable anchor. G2: metadata-only incident-Link membership in Bead Events. Resolve explicitly before affected full-support claims; do not infer new semantics. |
 | D3 — Cold-client discovery and public profile selection | Private installed RU cold discovery already serves actual Scope/descriptor/nine-target Directory navigation. TX twelve-target assembly exists but its discovery HTTP refuses and strict discoveryObserved also rejects opaque minima. Complete TX wire discovery, ordinary installed RU/TX startup/admission and fresh cumulative evidence without out-of-band client target knowledge. |
 | D4 — Supported configuration and triggered-law qualification | Demonstrate applicable installed schema/ownership, authorization/view and erasure/recovery behavior. Existing bounded all-visible→empty policy and erasure framing are implemented; remaining applicability must be justified, never silently omitted. |
@@ -91,9 +91,9 @@ Source audit at bbfa5b2 plus frozen Scope SSE draft confirms that sets, sequence
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | PR161 ready on exact-green bbfa5b2 | Native raw-log audit accepted; frozen PR159/150 preserved |
+| Root | PR162 ready on exact-green d9c3eb9; next PLAN council running | Local and CI evidence accepted, remaining D1–D5 inventory current |
 | Conditional reviewer | Actual Claude PLAN initial and terminal provenance audit | Launched18:20:36Z PID58666/session74669; no writer or runtime release |
-| Event reviewer | Exact PR162 push CI39057001387 terminal audit | Keep draft pending actual green; no source changes |
+| Event reviewer | Exact PR162 terminal audit6e4e4ba7 accepted | Idle; all27steps passed, reviewed source and separate CI/local provenance verified |
 | Native reviewer | Final clean PLAN mechanics bf1ce45f accepted | Idle; native and root verified40entries/679source/19contexts/13artifacts |
 
 
@@ -522,6 +522,11 @@ Fresh workspace install6.799s/tool binding12.271s/typecheck8.042s passed. Actual
 
 
 **Current-observation minimum actual PLAN council launched.** Root independently verified final40entry indexf915310d and679clean committed source files/19immutablecontexts/13artifacts on d9c3eb9. [Native mechanics review](current-observation-minimum-plan/claude-plan-review/native-mechanics-review.md)bf1ce45f accepted the exact clean supervisor adaptation. [Root launch release](current-observation-minimum-plan/claude-plan-review/root-launch-release.json)18:20:30Z preserves indexedclosedbinding3e450587 and changes only rootLaunchReleased to released1981e1af. Actual Claude started18:20:36Z PID58666/session74669, one1800s read-only attempt. Conditional audits initial/terminal provenance; source remains frozen. No outcome or implementation approval inferred. PR162 exact CI remains in progress; Event audits terminal logs before any ready transition.
+
+
+**Scope Event SSE PR162 exact CI accepted and ready.** Root independently verified exactd9c3eb9 pushCI39057001387 all27successfulsteps and accepted [native terminal audit](scope-event-sse-opaque-minimum-validation/fixture-successor-2/ci/native-terminal-audit.md)6e4e4ba7/index90b8cce6. Raw3726192bytes/SHA135583ca preserved;9441tests passed/oneoptional skip/186files plus7preflight and requiredCLI. CI historical5/new6 Event witnesses and five source reports parse; seven other masked reports remain unparsed. CIworkspace-dist is distinct from localexternalconsumer. [Ready verification](scope-event-sse-opaque-minimum-validation/fixture-successor-2/ci/ready-verification.json) confirms unchangedhead and updatedbody; [direct Trish notice](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6238566290). No main/fullprofile/release claim.
+
+**Current-observation actual PLAN review remains active.** [Initial launch audit](current-observation-minimum-plan/claude-plan-review/launch-audit.md)6625918e independently verifies authorizedbindingtransition and40entries/679source/19contexts/13artifacts. Root observed PID58666 alive at elapsed7m49s, no exit file,1962structuralrecords and empty stderr. These are live observations only, not completion/access/approval claims. Reactivate Conditional terminal audit after actual exit; no writer until council dispositions.
 
 ## Current priority: BDP profile structure and implementation
 
