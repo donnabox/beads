@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-17T14:08:31.970312+00:00",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+  "branch": "codex/vickie-changefeed-opaque-minimum",
+  "base": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "exactBaseCI": 39035528845,
+  "plan": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-3/plan.md",
+  "planSha256": "2f950b90595b799153efd454b78d8b95c1042de1ce20e01554adaa0c1173fced",
+  "nativeClosureSha256": "e7263b689840ef0b951988883092e409cfb85f3710e6636e8f303ef5ba2c7c22",
+  "actualClaudeReview": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/final-review.txt",
+  "disposition": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/root-dispositions.json",
+  "ownedMaximumFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "authorization": "Author frozen source draft only; no tests/build/install/process runtime/commit/push. Freeze source patch,all tracked hashes,exact selection and actual source-derived measurements for native+Claude CODE council. No main/shared design/Types/Janet changes.",
+  "baselineSha256": "e2f9ccfa9bd3a8aaffa3747bd16e93b138aa579fc08b5098288ca98cb1abe9ec"
+}

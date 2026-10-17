@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 989578,
+    "stop_reason": "end_turn",
+    "session_id": "2b8ba0c8-2934-420d-a55d-9f446a62770e",
+    "total_cost_usd": 6.615696499999999,
+    "usage": {
+      "input_tokens": 98,
+      "cache_creation_input_tokens": 196980,
+      "cache_read_input_tokens": 6036621,
+      "output_tokens": 64697,
+      "output_tokens_details": {
+        "thinking_tokens": 49553
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 196980,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 6025,
+          "cache_read_input_tokens": 194524,
+          "cache_creation_input_tokens": 7202,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 7202
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 9566,
+        "outputTokens": 21,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.009670999999999999,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 98,
+        "outputTokens": 64697,
+        "cacheReadInputTokens": 6036621,
+        "cacheCreationInputTokens": 196980,
+        "webSearchRequests": 0,
+        "costUSD": 6.606025499999999,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 49553,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 62,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Verdict\n\n**No blockers.** The plan's semantics, ordering claims, counts and normative basis check out against the actual tree at `5ceb213`. Findings 1\u20133 are precision/scope gaps I'd close before authoring (all are text edits to the plan, not design changes); 4\u20139 are nits and optional suggestions. Everything below is source-derived from reading the repo; nothing was executed.\n\n---\n\n## Findings\n\n**1. HTTP: the required statement reorder is never stated (Medium \u2014 close before authoring)**\n*Plan:* \u00a7\"Exact production seam\", item 1. *Source:* `packages/server/src/transaction-http.ts:470\u2013481`.\nThe new predicate reads `media` and `effective`, but today `minimum` is computed **first** (470\u2013472), `media` at 473, raw `fields` at 476\u2013478, the repeated-SSE throw at 479\u2013480, `effective` at 481. The plan prescribes \"for selected paths choose `currentReadMinimumHeaders`; otherwise `transactionMinimumHeaders`\" without saying the `minimum` computation must move below `effective`. *Impact:* an author following the text literally cannot choose the helper; whoever reorders silently also moves `minimum` **after** the repeated-Last-Event-ID throw, which the plan elsewhere pins (\"preserve \u2026 repeated-SSE refusal/effective-after precedence\"), so the reorder looks like a deviation under review. It is in fact behavior-preserving \u2014 both header helpers swallow their own errors (`transaction-consistency.ts:63\u201384`) and `hasMinimumControls` cannot throw (`transaction-http.ts:152\u2013156`). *Correction:* add one sentence \u2014 \"Compute media, raw reconnect fields, the repeated-SSE refusal and effective intent first, then eligibility, then minimum; this is a pure reorder because both header helpers catch internally.\"\n\n**2. The implementation-progress record is left contradicted and is outside the five-file maximum (Medium \u2014 root scope decision)**\n*Plan:* \u00a7\"Exact production seam\" first paragraph (\"Maximum five existing files\") and \u00a7\"Outcome \u2026 exclusions\". *Source:* `docs/design/transaction-implementation-progress.md:1273` (\"Remaining unsupported minimum forms stay explicit development gaps\", inside the changefeed slice at 1249\u20131275) and `:722\u2013725` (\"unknown opaque position spellings also retain that gap\").\nThose statements become partly false once fresh start-now opaque minima wait and return 503. Sibling slices in this same family did amend this file (alias minima at `:701\u2013718`, fresh Snapshot creation at `:730\u2013735`). The plan excludes documentation without naming the omission. *Impact:* either the five-file freeze is breached at authoring time, or the repo ships a record that contradicts the code. *Correction:* one explicit sentence choosing (a) add `docs/design/transaction-implementation-progress.md` as a sixth owned file with a short appended paragraph, or (b) name the record amendment as a separate successor so the contradiction is deliberate.\n\n**3. \"Install counting delegates\" is not realizable as phrased; the owner is frozen (Medium \u2014 close before authoring)**\n*Plan:* \u00a7\"Exact source callbacks\", A/B/C/X (\"install counting delegates\", \"Callback-local spies/delegates\"). *Source:* `transaction-store.ts:1551` (`return Object.freeze({\u2026})`); existing helper `transaction-changefeed.test.ts:508\u2013542` passes `f.owner` directly and the plan pins it byte-identical.\n`vi.spyOn(owner, \"readChanges\")` and property assignment both fail on a frozen owner \u2014 which is exactly why the one existing instrumented callback spies on `DatabaseSync.prototype` instead (`transaction-changefeed.test.ts:414\u2013425`). The established idiom is a spread delegate at construction: `createTransactionService({ ...owner, readReceipt: countedReceipt }, \u2026)` (`transaction-service.test.ts:3544\u20133545`). *Impact:* a wasted authoring/execution cycle, and B's \"actual owner close\" plus the post-close raw probe depend on the wrapper forwarding `close()`; service construction also calls `owner.readConfiguration()` (`transaction-service.ts:111\u2013116`) and `owner.close()` on shutdown (`:745`). *Correction:* state that new callbacks build the service over a callback-local spread delegate (`{ ...f.owner, readChanges, captureChangesStart }`), passed either through the unchanged helper via a fixture-shaped literal or an inline `createTransactionService`, and that the spread preserves `close`/`readConfiguration`.\n\n**4. Two source anchors are off (Low)**\n*Plan:* \u00a71 \"retains lexical receiving before route lookup at 407\"; \u00a7Outcome \"store 1825\u20131888\". *Source:* lexical receiving is `transaction-http.ts:404\u2013405` (407 is the snapshot route's `fields`); `readChanges` spans `transaction-store.ts:1831\u20131891` (page construction 1877\u20131890 sits past the cited end; `captureChangesStart` is 1825\u20131830). The same 407 slip is inherited from `recommendation.md:13`. *Impact:* freeze/preservation steps keyed to ranges can mis-pin. *Correction:* cite 404\u2013405 and 1825\u20131891.\n\n**5. Section heading says three files, lists five (Low, cosmetic)**\n*Plan:* heading \"Exact production seam: three files, defaults preserved\" vs. its own first sentence and `plan-binding.json.ownedMaximumFiles` (5). *Correction:* \"five files (three production), defaults preserved\".\n\n**6. \"Returns \u2026 Unproved\" should be \"throws\" (Low)**\n*Plan:* \u00a73 \"A direct selected owner call returns actual TransactionMinimumUnproved\". *Source:* `transaction-consistency.ts:129` throws it; A correctly says \"must throw\". *Impact:* risks an author implementing a returned sentinel (which would bypass `waitForTransactionMinimum`'s catch at `:164\u2013169`). *Correction:* change \"returns\" to \"throws\".\n\n**7. B's \"without capture\" is imprecise (Low)**\n*Plan:* B, \"A valid post-close service call fails synchronously without capture\". The lexical tuple snapshot still runs before `run()`/`check()` (`transaction-service.ts:477\u2013481`, `140\u2013141`); only the admission capture is skipped. *Correction:* \"without admission capture\".\n\n**8. Optional: state that the selected opaque path can never succeed, and what that costs (Low, optional)**\n`position()` of an unrecognized token is permanently undefined (`transaction-consistency.ts:26\u201331, 120\u2013131`), so every attempt throws Unproved and the outcome is always 503 after the full budget. In the installed cohort there is no seam: budget defaults to 1000 ms with 5 ms sleeps (`:144, 176`) \u2248 200 real owner entries per opaque request, two such requests. That is the actual basis for the plan's 5 s installed request deadline. One sentence would make the margin explicit instead of implicit. (Precedent exists: `apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:502`, `transactional-collection-minimum-installed.test.ts:1139`.)\n\n**9. Optional: pre-empt the council question on caller-asserted leniency (Low, optional)**\nSibling slices expose leniency either via a dedicated method (`receiptAtMinimum`, `transaction-service.ts:609\u2013632`, with `readReceipt` unconditionally lenient at `transaction-store.ts:959\u2013971`) or via owner-side re-derivation (`readEvents` recomputes `initialMinimumSource`, `transaction-store.ts:1685\u20131693, 1704\u20131707`). This plan is the first where the owner trusts a caller flag. It is well justified \u2014 a start-now admission checkpoint is textually indistinguishable from a client `after=` continuation, and spec 5850\u20135851 excludes retained continuations from waiting \u2014 and the plan already disclaims a capability boundary. A one-line note that the owner *deliberately cannot* re-derive this (unlike `readEvents`) would close the obvious reviewer question.\n\n---\n\n## Verified accurate against source (not findings)\n\n- **Waiter preflight and C's clock counts.** `waitForTransactionMinimum` validates policy \u2192 `started = now()` \u2192 deadline \u2192 loop-top abort check (`transaction-consistency.ts:144\u2013161`). So budget 0 \u2192 0 clock calls; already-aborted \u2192 1; throwing/nonfinite clock \u2192 1. C's \"1,0,1,1\" is exactly right, as is \"zero readChanges and waits\".\n- **Anchor capture before preflight, fixed across retries.** `transaction-service.ts:481\u2013487`: `run` \u2192 `check` \u2192 synchronous `start()` \u2192 `captureChangesStart()` \u2192 waiter. Capture is already outside the retry callback; the plan's \"do not move capture into the retry callback\" preserves, not changes, this.\n- **Owner ordering.** `transaction-store.ts:1841\u20131856`: after-string check \u2192 tuple capture \u2192 `enter` \u2192 unsupported return before `readContext` \u2192 context/head \u2192 `checkpointPosition` \u2192 future refusal \u2192 missing-retained-row corruption \u2192 **then** minimum. The plan's sequence matches byte-for-byte in intent.\n- **A/B schedules.** Budget 2 / clock 0 yields `wait(Math.min(5, 2-0)) = 2` (\"records requested 2\"), second attempt at clock 2 hits `current >= deadline` \u2192 catch-up-timeout with the pos-2 context. Abort is only observed at loop top, so \"abort must precede release, and release must precede cleanup awaiting close\" is necessary, not decorative. `close()` is memoized (`transaction-service.ts:732\u2013733`), drains `active` via `allSettled` (`:737`) and closes the owner (`:745`) \u2014 so \"memoized repeated close is not a new owner lifetime\", synchronous post-close refusal (`:138`) and the raw closed-owner probe all hold.\n- **503 never degrades to 304/406/412.** `applyReadHttpSemantics` only transforms 200-JSON or 204 (`read-http.ts:10\u201339`) and HEAD content-length is the serialized GET body (`:42\u201345`); the catch-up-timeout mapping with `retry-after: 1` is `transaction-http.ts:640\u2013653, 112`. D rows 4\u20137 and the installed 503/HEAD parity assertions are sound; row 10's 400 comes from `transaction-http.ts:404\u2013405` with no context headers.\n- **JSON ignores Last-Event-ID.** `transaction-http.ts:476\u2013481` consults raw fields only when `media === \"sse\"`; spec 6043\u20136045 and 6185\u20136189 condition precedence on SSE. Correct, and correctly *not* copied from the Event path's header-absent fence (`:505\u2013514`).\n- **Pump/SSE stay strict.** `transaction-runtime.ts:208\u2013212` calls `changes({after}, undefined, nextSignal)` \u2014 three args, unaffected by an optional fourth. `Owner = ReturnType<typeof openTransactionStore>` (`transaction-service.ts:45`), so no extra type file is implicated.\n- **Spec citations.** 5819\u20135832 (lexical receiving; MUST NOT become 304/412/406/SSE; HEAD metadata), 5841\u20135851 (general remaining-read law; the narrower MUST really is scoped to \"current Bead or Link Resource or properties view\"; 5850\u20135851 excludes retained continuations), 6036\u20136053, 6149\u20136153 (\"the head checkpoint the authority observed when it admitted the request\"), 6185\u20136189, 6994\u20136995 all read as the plan describes. The plan does **not** overclaim a changefeed MUST.\n- **Arithmetic.** Existing finite callback = 15 dispatches (`transaction-changefeed.test.ts:617\u2013688`), known-minimum = 7 (`:689\u2013748`), parameter-context = 12 (`:804, 979`); 15+7+12+10 = 44, +14 installed = 58. 17 stores + corruption reopen (`:390`) + HTTP restart = 19 owner lifetimes. The A\u2013C/X subset sums exactly to 10 commits / 11 captures / 14 readChanges / 3 waits / 15 clocks, and the 9 observation records tally. All eight reused titles exist verbatim; the 17-alternative anchored pattern covers them.\n- **Five-file sufficiency (production side).** I searched for existing coverage that pins today's 500 for finite `start=now` + a *complete* opaque tuple and found none: `transaction-http.test.ts:4631\u20134647` sends a partial tuple (\u2192400), `transaction-sse.test.ts:316\u2013329` sends start=now JSON with no minimum headers, `:389\u2013414` uses a known pos-1 on SSE, and the bdptest changefeed cases use `after=genesis`/SSE. Conformance catalogs list requirements, not this gap's status. So apart from Finding 2, no out-of-scope file is forced.\n- **Gates.** The dynamic `../dist/transaction-runtime.js` import at `transaction-changefeed.test.ts:31\u201333` does make \"fresh build before collecting this module\" necessary. Eight packages exist. The launcher's internal 10 s bounded close/SIGKILL (`scripts/transaction-installed-observation.mjs:28\u201339`) matches \"retains its existing internal limits\". `redirect: \"manual\"` (`packages/conformance/src/http-executor.ts:291`) and socket destroy (`:913\u2013916`) back the \"no redirects\"/\"socket destroy contract is source-derived\" claims. `\"pos-01\"` is already the repo's idiom for a lexically valid non-positional token (`transaction-service.test.ts:3586`).\n\n---\n\n## Inaccessible context / incomplete inspection\n\n- No commands were run, so I did **not** recompute: the tree hash `7701b6a\u2026`, any of the 679 file hashes, the pinned `bdp.md` SHA, the installed callback byte range/hash, or PR160 CI state. I read only lines 1\u2013311 of `plan-binding.json` (745 lines); the remainder of the hash manifest is uninspected.\n- I verified the cited spec ranges in the **copied** `context/bdp.md`; I did not byte-compare that copy against the repo's `docs/specs/bdp.md`.\n- I used the `selection.json` / `workload.json` content as supplied inline in the request and did not open those files separately.\n- Not read: `correction-1.patch`, `correction-2.patch`, `correction-1-report.md`, `original-plan.md`, `successor-1-plan.md`, `changefeed-original-plan.md`, `parameter-context-plan.md`, `design.md`, `exact-head-ci-audit.md`. I read `original-native-critique.md` and `recommendation.md` as context only; my findings above were derived independently from the repo, and findings 1\u20133 are not raised in the native critique.\n- No S1/G2 or foreign-context policy judgement is offered, and nothing here asserts product completeness, CI status, or release readiness.",
+    "ttft_ms": 2821,
+    "type": "result",
+    "duration_ms": 989030,
+    "uuid": "5fda3fda-d40d-4545-a792-d6c1341c07f4",
+    "ttft_stream_ms": 2237,
+    "time_to_request_ms": 20,
+    "first_content_frame_ms": 2237,
+    "queued_turn_count": 0
+  }
+]
