@@ -1,8 +1,10 @@
 # Preview 3 planning and execution
 
-Last checked: October 16, 2026, 17:51 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 17, 2026, 11:33 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The Memory outcomes below are candidates to stage across previews toward V2, not a claim that every one is a Preview 3 cutline or has passed qualification; workstreams enter a preview cutline only by explicit decision.
+
+The public [Memory implementation status issue #7656](https://github.com/gastownhall/beads/issues/7656) is the row-by-row ledger for proposal requirements, code flow, gaps and accountable agents. This PR remains the fork's Preview 3 release-execution tracker.
 
 ## Why we are releasing previews
 
@@ -279,3 +281,9 @@ The failed PR113 head remains intact. A separate local-only clean child `b9eebc3
 The exact clean repair `b9eebc31f8e0f21b9a6154652476ed87027e9cad` / tree `3e62c742678e4ee77e116ab6a9250734b1862117` passed fresh complete scripts policy (2,034 named tests, zero FAIL, 12 conditional SKIP) and the sole serial installed Dolt 2.1.8 14-phase embedded/ordinary shared-server sweep (zero FAIL/SKIP, all 212 graph-preview CLI tests once, all servers closed). Independent read-only verification rehashed the 14 phase logs and checked exact CLI coverage. Frozen `qualify-46aa-bazel-timeout-attempt01/RESULT.md` SHA256 `4554fe2fd45d827bd042e7a97a736c02192a7dff62677c03811e533c33e56f9d` and raw runner log SHA256 `f35bbf573c8ddeab48b586fc3d2cb55118a935ba6eb8752a3f027968d3dea72f` are in Janet's qualification record.
 
 After fresh Janet claim checks, [draft PR113](https://github.com/donnabox/beads/pull/113) was ordinary nonforce-updated and read back OPEN at head `b9eebc31` on unchanged fork-main base `40b32324`; its updated body records the local result and earlier RED attempts. Actual GitHub merge `9b39cae84d3d6f0e32fda033add5078e8751486b` has exact base/source parents and the source-identical tree. **This new head is locally qualified, not yet hosted qualified.** Its own whole exact-merge required/Bazel/Docker gates, actual merge-built binary/client/Dolt provenance and independent frozen verification remain pending. The prior passing lanes and the green separate draft PR111/PR112 do not transfer to it. Upstream `bdd16d638` is one commit ahead of the pinned 46aa source and remains untested. Fork main and the dedicated local-only Preview 3 integration branch are unchanged. Tracker CI's stale reference-doc review-date failure remains separate and is not claimed green.
+
+## 2026-10-17 Memory implementation ledger opened; PR113 hosted checks green pending provenance
+
+After a fresh Janet claim check, the public upstream [Memory implementation status issue #7656](https://github.com/gastownhall/beads/issues/7656) was opened and its exact body read back. It tracks all R1–R31 requirements (including R27a), code flow to upstream, gaps, accountable agents and the existing Iris/Trish implementation plans. It marks no full Memory V2 requirement as complete and preserves the open cutline decisions; the older implementation tracker #6535 remains linked as historical phase context.
+
+PR113's new exact source `b9eebc31` / merge `9b39cae8` completed hosted run `39053451064` successfully. Its PR check rollup is 115 SUCCESS, 11 conditional SKIP, zero failures, including the previously failed Bazel path. This is hosted CI evidence, **not yet the complete independent frozen merge/binary/client/Dolt provenance receipt**. Root is collecting and verifying that evidence next. Live upstream advanced two untested commits past pinned 46aa to `4a67d0d0`; PR113 is near-current, not exact tip. Fork main is still `40b32324`; no integration-branch publication or upstream merge occurred.
