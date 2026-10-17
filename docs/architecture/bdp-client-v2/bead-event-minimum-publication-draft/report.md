@@ -1,0 +1,7 @@
+# Publication/checkpoint draft
+
+No commit, push, PR creation/edit or source execution performed. Verified PR154 is open/draft with head codex/vickie-finite-event-minimum at f620; both local and origin-tracking refs match. A first read-only PR lookup used the coordination owner instead of the implementation origin and returned repository-not-found; the verified Git origin gastownhall/bdp was then used successfully. No external writes occurred.
+
+Read actual completed successor static/build/source exits and actual per-case JSON plus immediate source audit.25 selected cases passed,0 failed;96 other collected tests were unselected, not silently counted as coverage. New Bead D37 responses and686ms elapsed are actual observations.128 total source HTTP is workload-derived, including historical59, not a separately measured aggregate. Packed/installed results and exact-head CI remain pending in this immutable draft. Root may finalize a new publication version only after auditing those results.
+
+checkpoint.json leaves future commit/tree/PR/CI identifiers null and states exact ordinary parent/all679 committed-byte mapping requirements. Actual code council retains original source identity plus the narrow formatting-equivalence closure; predecessor format failure is retained. The planning checkout was finite-event at clean f620, while actual author/validation checkout is isolated bead-event at the same dirty base. Final clean commit must not rewrite that provenance. PR150 remains frozen; this is a separate subsequent implementation slice.

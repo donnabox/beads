@@ -1,0 +1,275 @@
+--- original/gate.py
++++ successor-1/gate.py
+@@ -74,6 +74,26 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
++def verify_bootstrap_reuse(g):
++ reuse=read(P/'bootstrap-reuse-binding.json');require(reuse.get('mappingFinalized') is True,'Bootstrap source transition pending');old=document(reuse['sourceBinding']);new=g['_sourceBinding']
++ require(reuse['successorSourceBinding']==g['sourceBinding'] and reuse['successorSourceIdentity']==g['_sourceIdentity'],'Successor bootstrap link differs')
++ require(reuse['originalSourceIdentity']==sha(json.dumps(old['trackedSourceFiles'],sort_keys=True).encode()),'Original source identity differs')
++ require(old['head']==reuse['originalHead']==new['head'] and old['tree']==reuse['originalTree']==new['tree'],'Bootstrap base chronology differs')
++ changes=sorted(p for p,h in new['trackedSourceFiles'].items() if old['trackedSourceFiles'].get(p)!=h)
++ require(set(old['trackedSourceFiles'])==set(new['trackedSourceFiles']) and changes==reuse['allowedSourceChanges'],'Unreviewed source transition')
++ require(all(old['trackedSourceFiles'][p]==new['trackedSourceFiles'][p]==h for p,h in reuse['dependencyInputs'].items()),'Dependency inputs changed')
++ for p,h in reuse['records'].items():require(sha(Path(p).read_bytes())==h,'Bootstrap evidence changed '+p)
++ require(reuse['tools']==g['workspaceTools'],'Original tool record must be reused without relabeling')
++ disposition=document(reuse['rootBootstrapDisposition']);require(disposition['accepted'] is True and disposition['dependencyInstallAuthorized'] is True and disposition['sourceBindingSha256']==reuse['sourceBinding']['sha256'],'Original bootstrap release differs')
++ tb=document(reuse['tools']);tools_check(tb['tools'])
++ require(tb['sourceIdentity']==reuse['originalSourceIdentity'] and tb['head']==reuse['originalHead'] and tb['sourceLockSha256']==g['sourceLockSha256'],'Original tool chronology/lock differs')
++ directory=Path(reuse['directory']);cfg=read(P/'commands.json')
++ for name in reuse['stages']:
++  v=read(directory/(name+'.exit.json'));start=read(directory/(name+'.started.json'))
++  require(v['accepted'] and v['exit']==0 and v['sourceUnchanged'] and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Original bootstrap failed')
++  require(v['sourceIdentity']==start['sourceIdentity']==reuse['originalSourceIdentity'] and start['head']==reuse['originalHead'] and start['tree']==reuse['originalTree'],'Bootstrap source chronology changed')
++  require(sha((directory/(name+'.log')).read_bytes())==v['logSha256'],'Bootstrap log changed')
++ require(tb['installExitSha256']==sha((directory/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((directory/'workspace-install.log').read_bytes()),'Install/tool linkage differs')
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+@@ -96,15 +116,10 @@
+  if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
+  base=document(g['baseTools']);tools_check(base['tools'])
+  require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+- if name in ['workspace-install','bind-workspace-tools']:
+-  require(disposition.get('dependencyInstallAuthorized') is True,'Dependency preparation not released')
+-  if name=='workspace-install':require(not (W/'node_modules').exists(),'Workspace install already exists; preserve it and rebind explicitly')
+- else:
+-  tb=document(g['workspaceTools']);tools_check(tb['tools'])
+-  require(tb['sourceIdentity']==g['_sourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed tools source differs')
+-  require(tb['installExitSha256']==sha((E/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((E/'workspace-install.log').read_bytes()),'Install evidence changed')
+-  require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
+-  require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
++ require(disposition.get('bootstrapReuseAccepted') is True and disposition.get('bootstrapReuseBinding')=={'path':str(P/'bootstrap-reuse-binding.json'),'sha256':sha((P/'bootstrap-reuse-binding.json').read_bytes())},'Root bootstrap reuse acceptance absent')
++ verify_bootstrap_reuse(g)
++ require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
++ require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+--- original/commands.json
++++ successor-1/commands.json
+@@ -1,7 +1,5 @@
+ {
+   "finalOrder": [
+-    "workspace-install",
+-    "bind-workspace-tools",
+     "typecheck",
+     "format-check",
+     "lint",
+@@ -97,7 +95,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -117,7 +115,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/focused-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight|pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors|checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization|cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close|serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits|isolates\\ unresolved\\ metadata\\-only\\ incident\\ membership\\ while\\ Scope/Link\\ sources\\ remain\\ available|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Bead\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Bead\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ invalid\\-policy|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ throwing\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ nonfinite\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source)$"
+       ],
+@@ -183,7 +181,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -208,7 +206,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -226,7 +224,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -243,7 +241,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -255,7 +253,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -268,7 +266,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -278,7 +276,7 @@
+       ]
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -298,7 +296,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -317,7 +315,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/event-minimum-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-minimum-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout)$"
+       ],
+@@ -346,7 +344,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+         "minimum"
+       ],
+       "outerSeconds": 120,
+@@ -365,7 +363,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/event-missing-context-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-missing-context-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+       ],
+@@ -394,37 +392,8 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+         "missing"
+-      ],
+-      "outerSeconds": 120,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ]
+-    },
+-    "workspace-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "install",
+-        "--offline",
+-        "--ignore-scripts",
+-        "--frozen-lockfile"
+-      ],
+-      "outerSeconds": 120,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ]
+-    },
+-    "bind-workspace-tools": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/audit.py",
+-        "tools"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -442,7 +411,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/event-bead-minimum-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-bead-minimum-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ installed\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minimum\\ timeout)$"
+       ],
+@@ -471,7 +440,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+         "bead"
+       ],
+       "outerSeconds": 120,
+@@ -492,15 +461,15 @@
+     "require-from-string": "2.0.2"
+   },
+   "rootCheckpoints": {
+-    "beforeBootstrap": "Root exact frozen source and actual base tools acceptance; fresh worktree offline frozen-lock scripts-disabled install, no cross-worktree reuse.",
+-    "afterWorkspaceTools": "Root checks actual installed tool versions/realpaths/hashes and successful bootstrap records before static checks.",
++    "beforeBootstrap": "No install stage. Only original successful workspace-install + bind-workspace-tools records may be reused after exact finalized old-to-new source/dependency/tool mapping and root acceptance.",
++    "afterWorkspaceTools": "Original tool record retains original source attribution; rehash17 unchanged dependency inputs and11 actual tools, require root acceptance of bootstrap-reuse-binding before fresh static.",
+     "beforeRuntime": "Final exact source binding, native and actual Claude code dispositions required; build+binding before source/module collection.",
+     "afterConsumerInstall": "Stop; root pins newly measured consumer lock before verification.",
+     "afterConsumerVerification": "Stop; root accepts actual archive/source/payload/provenance and whole consumer inventory before external callbacks.",
+     "afterAllValidation": "Root may commit only after all source+three installed immediate audits and cleanup; exact679-byte equality maps honest dirty evidence to final clean commit."
+   },
+-  "configurationFinalized": true,
+-  "sourceSelectionState": "Bound to frozen six-file author source;25source+3installed exact selection, no execution",
++  "configurationFinalized": false,
++  "sourceSelectionState": "PENDING actual authored formatting successor; prior25+3 selection retained as required invariant, not future validation evidence",
+   "validationOrder": [
+     "typecheck",
+     "format-check",
+@@ -524,13 +493,14 @@
+     "event-missing-context-external",
+     "review-event-missing-context-external"
+   ],
+-  "bootstrapOrder": [
++  "bootstrapOrder": [],
++  "stageCounts": {
++    "reusedBootstrap": 2,
++    "validation": 21,
++    "newSupervisedAttempts": 21
++  },
++  "reusedPrerequisiteStages": [
+     "workspace-install",
+     "bind-workspace-tools"
+-  ],
+-  "stageCounts": {
+-    "bootstrap": 2,
+-    "validation": 21,
+-    "supervisedAttempts": 23
+-  }
++  ]
+ }
