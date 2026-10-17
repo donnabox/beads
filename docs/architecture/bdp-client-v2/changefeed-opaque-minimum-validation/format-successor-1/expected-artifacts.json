@@ -1,0 +1,14 @@
+{
+  "descriptors": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/task",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+    }
+  ],
+  "schemas": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"
+    }
+  ]
+}

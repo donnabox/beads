@@ -1,0 +1,24 @@
+{
+  "changes": {
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "before": "3413c3280cd93a0f9cc8b40072f9678182e42d7cd0f793114f0a4dcc8e9b8158",
+      "after": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf",
+      "replacementSites": 4
+    },
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+      "before": "6560198780d3d5e8f90b54ed2d012d403d7482c3b6c6a771e16958faf871d3fd",
+      "after": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b",
+      "replacementSites": 1
+    }
+  },
+  "inverseExact": true,
+  "unchangedOtherFiles": 677,
+  "productionAndDocumentationUnchanged": true,
+  "historicalPrefixesMatched": true,
+  "sourceWorkloadSelectionUnchanged": true,
+  "method": "Exact text replacements of actual Biome diagnostics; formatter not invoked",
+  "predecessorFormatLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/format-check.log",
+    "sha256": "6e91d643394def4f66985098d8d9318afdf69fe86bd6b97f69777d6b4fb13f2a"
+  }
+}
