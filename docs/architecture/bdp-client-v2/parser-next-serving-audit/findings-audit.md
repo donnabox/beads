@@ -1,0 +1,26 @@
+# Native audit of actual Claude finite Event plan findings
+
+Disposition: accept all four requested pre-authoring clarifications and eleven precision items, with the cleanup/reporting and binding corrections below. No new product decision or seventh owned file is needed. Source remains clean b76c3b7df77ea9b33611bc9027db651833e20abb; all twelve original source/spec/helper pins independently match. This audit is read-only apart from this guarded report.
+
+## Four findings
+
+- BL1 accepted. service.run calls check synchronously before creating/returning its promise (transaction-service.ts:139–154); owner.readEvents is synchronous and enter throws when closed (transaction-store.ts:396–407). Assert both while-closing service and post-close owner refusals with function-form toThrow, not rejects. Admitted cancellation/timeout remain promise rejections.
+- BL2 accepted as scope precision. transaction-http.ts is an owned file, so a whole-file freeze cannot coexist with its Event branch change. Freeze the exact canonical-Read parser/minimum region and the entire transaction-http.test.ts; isolate the HTTP delta to the Event branch, against real clean b76c. Preserve all other earlier parser/collection evidence bytes. Line numbers identify baseline regions, not stable post-edit positions. The six-file nomination remains sufficient.
+- BL3 accepted, but do not copy the proposed diagnostic literal blindly. The old installed callback unconditionally removes the directory after failed close; the new callback must not. Success requires a verified clean, timely child exit, not merely eventual exit or a resolved local timeout race. Failed/unknown close or deadline means failed evidence and preserved store. Record actual existsSync-derived directory presence and observed PID/exit/signal, with unknown/null when launcher never returned a handle. A preserved directory is not proof of a live child; do not label a known exited process a survivor. Cleanup must remain jointly bounded and must not remove a store while ownership is unresolved. No helper mutation is necessary or authorized.
+- BL4 accepted. Build a callback-local executor allowing exactly GET and HEAD on canonical events/, with its own attempted<=3 counter and response fingerprints. The historical route list lacks HEAD and its11-dispatch bound is inapplicable. Reuse module constants/validators/helpers, but construct a fresh local installed binding: the old binding variable belongs to the historical callback, not module scope. Preserve historical bytes.
+
+## Eleven precision items
+
+1. Accept conditional precedence citations at spec5876 and1986–1989. Non-200 responses already bypass successful conditional/negotiation rewriting in read-http.ts:10–46.
+2. Accept corrected count timing: C has3 delegated attempts at close invocation (setup, cancelled, first drain),5 total after drain, plus the separate post-close refusal.
+3. Accept a mutable-clock now() accessor advanced only by test gates; do not use tick++ or infer elapsed time from call count. B retains0/5/10 and two waits.
+4. Accept capture INSIDE run's start callback, immediately before invoking the waiter. run.check still throws synchronously before capture; capture failures from admitted malformed requests remain rejected promises because run catches start errors. Do not capture outside run or turn events into an async function (which would also change closing-refusal delivery). This preserves existing error precedence/delivery while capturing once before any attempt.
+5. Accept distinguishing outside-entry tuple capture from inside-entry source-existence/sentinel/minimum-comparison order.
+6. Accept setup-before-spy/reset discipline and truthful attribution. The excluded direct after/Resource TypeErrors prove capture exclusion only; nonvacuous no-retained-scan evidence comes from owner-entering Unproved/Unsupported/behind attempts, with seeded eligible positive control. Keep real withRead release probes scan-free.
+7. Accept import timing correction. Event runtime dist import is inside the callback; installed entry resolution occurs at module collection. Build-before-selected-test execution remains the conservative required stage ordering, with build-before-installed collection. No added regression file is implied.
+8. Accept compiling the existing transactionalProblem schema in transaction-events.test.ts for D. This stays in an owned file and adds no production/schema API.
+9. Accept explicit retained-gap wording: excluded unknown-minimum private500 behavior is preserved incomplete reference functionality, not declared conformant or newly approved policy. No S1/G2/foreign-context choice follows.
+10. Accept recording D's existing default5s bound and80ms minimum policy. Six real waits total roughly480ms plus fixture work; this is an estimate, not pass evidence. No timeout widening or unreviewed budget adjustment.
+11. Accept no catalog selection/coverage/qualification claim from D/E. Catalog bytes remain unchanged; evidence layers remain distinct.
+
+The exact predicate, known-minimum behavior and32+3 wire workload remain appropriate. Await successor-v3 delta inspection before closing these plan findings. No tests, imports, builds, installs, services, external review launch or product edits were performed.
