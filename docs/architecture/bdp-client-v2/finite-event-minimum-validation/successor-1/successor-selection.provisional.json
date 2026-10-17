@@ -1,0 +1,95 @@
+{
+  "state": "PENDING final source; prior reviewed selection only",
+  "predecessorSelection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/successor-selection.json",
+    "sha256": "4973251c5d3f19e1e0ea1a3030e401044f4272f2c1904912d2413733b6fa9c4d"
+  },
+  "sourceCallbacks": [
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "gates initial Scope Event unknown minima before retained scans",
+      "anchoredNamePattern": "^gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures an initial Scope Event opaque tuple across one bounded wait",
+      "anchoredNamePattern": "^captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains initial Scope Event opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves only initial finite Scope Event opaque minima through bounded waiting",
+      "anchoredNamePattern": "^serves\\ only\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: already-aborted",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+      "anchoredNamePattern": "^pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "checks minimum position before any retained group scan or body materialization",
+      "anchoredNamePattern": "^checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+      "anchoredNamePattern": "^cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits",
+      "anchoredNamePattern": "^serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits$"
+    }
+  ],
+  "installedCallbacks": [
+    {
+      "label": "event-minimum-external",
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes installed initial finite Scope Event opaque minimum timeout",
+      "expectedObservation": "private-installed-finite-event-minimum",
+      "expectedExchanges": 3,
+      "anchoredNamePattern": "^observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout$"
+    },
+    {
+      "label": "event-missing-context-external",
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD",
+      "expectedObservation": "private-installed-event-missing-context",
+      "expectedExchanges": 11,
+      "anchoredNamePattern": "^observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD$"
+    }
+  ],
+  "workloadFinalized": false,
+  "finalSourceBinding": null,
+  "finalWorkload": null
+}
