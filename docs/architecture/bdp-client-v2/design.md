@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T02:34:58Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T02:40:11Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T02:34:58Z. **ACTIVE — Transactional first; ordinary Upda
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | PR154 published f6204255; exact CI38995336477 running | All19 local stages passed; no integration until exact green CI/scope/tree checks |
-| Conditional author | Read-only next concrete serving blocker audit | Exact f620/pinned spec; no S1/G2 inference or implementation yet |
+| Conditional author | Preparing bounded initial finite Bead Event minimum plan | Exact f620/pinned spec; exact predicate/workload before council or source authoring |
 | Event reviewer | Actual seven-stage prefix audit complete; idle | Source13 passed; new32HTTP observed, historical59 source-derived |
-| Native reviewer | Final installed/package/source audit passed | Actual installed3+11, two clean children; published bytes verified |
+| Native reviewer | Independent next-serving recommendation review | Check Bead Event semantics, retained identity, preflight and S1/G2 fences |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -161,6 +161,8 @@ The [static audit](finite-event-minimum-validation/successor-1/static-prefix-aud
 Author [successor-3](finite-event-minimum-author/successor-3/report.md), binding737d1a9c/fullpatche3a7fb44, contains the exact one-block cleanup-preserving lint correction. [Native closure](finite-event-minimum-author/successor-3/native-closure.md) and [final binding review](finite-event-minimum-validation/successor-2/final-binding-review.md) accepted it. All **19 fresh validation stages passed** on source502d8fb1, including static3, clean build, exact13source callbacks/immediate audit, fresh archive/source comparison, external consumer install/verification and separate installed3+11 callbacks/audits. Lint retains19warnings/1info. Original failed formatter/lint attempts and original Claude source identity stay preserved, not relabeled.
 
 [Actual prefix audit](finite-event-minimum-validation/successor-2/actual-prefix-audit.md) and [final installed audit](finite-event-minimum-validation/successor-2/final-installed-audit.md) verify679source/476build files, protocol63/server258 archive members,870consumer files/17links, and independently reproduced payloadb9d1d50e595213b55bfb4a0da7ea536f3dd625239f7b09c7f6cf301b010243ed. Actual root-accepted consumer lockf386c3a33405d1fa7886901e5d68aaba657f9634046f577cbaccd6bbb99a5b62. New emitted32HTTP and installed3+11 observations passed; historical59 source traffic is not claimed as a measured combined total. Both installed children closed exit0/no signal/deadline; owned directories and all326 sampled PIDs absent. Scope remains initial finite canonical Scope Events JSON GET/HEAD; other private gaps remain explicit and full profiles unadvertised. Next safe serving audit is read-only while exact CI runs.
+
+**Next independent serving slice identified; planning only.** [Read-only audit](finite-event-next-serving-audit/plan.md), SHA b0450e3da3edec834aab7e6607264ad07aa9edb182f095029448efe3e76ddaff, identifies canonical initial finite Bead Event opaque minimum as a concrete remaining private500. Root inspected the three production seams and accepted bounded plan preparation, not authoring. Conditional author pins canonical classification, exact workloads and fixed deadlines; native reviewer independently checks retained/deleted Event identity, preflight and S1/G2 separation. Scope excludes Link Events, after/SSE and public discovery. PR154 exact CI still running with static/build steps successful; no new failure, no merge, frozen PR150 unchanged.
 
 ## Current priority: BDP profile structure and implementation
 
