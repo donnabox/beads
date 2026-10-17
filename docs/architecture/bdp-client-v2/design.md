@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T03:47:32Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T03:59:50Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -183,6 +183,11 @@ Author [successor-3](finite-event-minimum-author/successor-3/report.md), binding
 
 
 **Formatting successor scope accepted; execution remains closed.** [Bounded plan](bead-event-minimum-author/format-successor-plan/plan.md)d35a2be1/proposeddiffd874cb26 fixes only the two diagnosed test formatting locations; root read full diff and rehashed proposal/original attempt evidence. Native independent census found all47 sampled bootstrap/static PIDs absent. Source authoring awaits actual Claude terminal disposition; PID98412 remains live with streaming progress at18minutes, no verdict or retry. Event reviewer is preparing a CLOSED successor validation packet with explicit original bootstrap/tool attribution and two-test source mapping; fresh static/runtime evidence required. Original adaptations.json describes historical skeleton state, superseded by final bindings; retained unchanged. PR150 d4f3f4be,PR151 b76c3b7d andPR154 f6204255 remain exact-head green/open drafts; bus has no new messages since03:40:39Z.
+
+
+**Bead actual code council complete; exact formatting correction frozen.** Actual [Claude code review](bead-event-minimum-code-review/final-review.txt) completed exit0/1228.798s,5944records/one success terminal, unchanged source/context/packet, no cleanup/survivors. Root independently parsed rawstream252b8647 and matched final41d87a58/before-after/PID census; [native audit](bead-event-minimum-code-review/findings-audit.md)01269bf2 corroborates. [Root dispositions](bead-event-minimum-code-review/root-dispositions.json) accept no source blockers: fresh build remains before runtime; optional comment/count additions deferred; unselected/foreign/G2 gaps remain explicit; dirty-to-clean mapping remains mandatory.
+
+Root released only the approved two-test formatting replacements. [Frozen successor1](bead-event-minimum-author/successor-1/report.md) bindingbd234e41/fullpatch7df8d311/correctiond874cb26 has exact proposed bytes; root independently reversed both files and rehashed679current sources. [Native closure](bead-event-minimum-author/successor-1/native-closure.md)5c913dec verifies677other files unchanged and no semantic delta. Original Claude review remains attributed to original draft with narrow formatting equivalence; no fictitious rerun. Validation worker is finalizing explicit original-bootstrap reuse against actual corrected source; root/native final index review precedes fresh static/runtime release. No corrected-source execution/commit/push yet. One root empty checkpoint-preparation invocation used a mistyped Python path and failed before launch/no mutation; not validation evidence.
 
 ## Current priority: BDP profile structure and implementation
 
