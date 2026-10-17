@@ -1,0 +1,255 @@
+{
+  "accepted": true,
+  "scope": "bounded local reconciliation validation; exact resulting CI pending",
+  "head": "d7197e97a29bff8f075028419afad05388e2e655",
+  "tree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "completedAt": "2026-10-17T11:56:53.012213+00:00",
+  "stages": [
+    {
+      "name": "dependencies",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/dependencies.exit.json",
+      "sha256": "cb97e696d69103dc798d24cfdc1597c730d8a882d2e700b4d87204c7fa5035ce",
+      "elapsedSeconds": 0.4075265834107995
+    },
+    {
+      "name": "format-check",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/format-check.exit.json",
+      "sha256": "c22923a5e47f0132b73645fc4a62bb1ed450aabdd6572f206490e961dcd9416e",
+      "elapsedSeconds": 0.5211288747377694
+    },
+    {
+      "name": "lint",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/lint.exit.json",
+      "sha256": "3be6939cf038e099ba48930651fcb9fc903887d6e2a0921588d9482856ebc706",
+      "elapsedSeconds": 0.6395775000564754
+    },
+    {
+      "name": "check-boundaries",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/check-boundaries.exit.json",
+      "sha256": "0594d3198afcd1d55b8b059afff16588c5f3a5b86f272778007902b1208303c6",
+      "elapsedSeconds": 0.69175637466833
+    },
+    {
+      "name": "typecheck",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/typecheck.exit.json",
+      "sha256": "1e7a77edc1ff0fead7759b8d7f8ba7582e814cefc11b00cd8c4f2b6b33eda54f",
+      "elapsedSeconds": 1.0289686252363026
+    },
+    {
+      "name": "build",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build.exit.json",
+      "sha256": "4b260a69bb001f311e02d149dccd9389c151d7d378ec405f3b64bf9eeb1793be",
+      "elapsedSeconds": 1.0465777921490371
+    },
+    {
+      "name": "bind-build",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/bind-build.exit.json",
+      "sha256": "a37e3438839046f53f8972f74004341c44aef11827eb4f12a5d6e45b92f20729",
+      "elapsedSeconds": 0.9166418327949941
+    },
+    {
+      "name": "full-test",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.exit.json",
+      "sha256": "894289211d4f34596ccb0ef2d0e2de369928614ceff6f580d0bf3d8fa1aa1869",
+      "elapsedSeconds": 235.52901950012892
+    },
+    {
+      "name": "e2e-ready-preflight",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/e2e-ready-preflight.exit.json",
+      "sha256": "054343a876c04d343aae6ae7e8b68ab38c88d4d38b26d9c326d8eef2aa326421",
+      "elapsedSeconds": 1.2028053342364728
+    },
+    {
+      "name": "smoke",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/smoke.exit.json",
+      "sha256": "bec19f6876884b1b220349f28a42ec52988c69ae14f2429ac797e8b757ce3382",
+      "elapsedSeconds": 4.51832495816052
+    },
+    {
+      "name": "evidence-verify",
+      "origin": "reused-prefix",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/evidence-verify.exit.json",
+      "sha256": "ec68dcf7a14bc506568758b250d17451a2df2444c52d388105e954ded7eccd6d",
+      "elapsedSeconds": 0.5097054168581963
+    },
+    {
+      "name": "type-examples",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/type-examples.exit.json",
+      "sha256": "0e801c7b655711ad5e14c79f609c129c7f3943da2c081884fbf3a5d67a4cf201",
+      "elapsedSeconds": 0.4222383750602603
+    },
+    {
+      "name": "node-version",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/node-version.exit.json",
+      "sha256": "737141f679ba94391e04026cfafcae7197931ca1dc624b4cc4b5a65524c11782",
+      "elapsedSeconds": 0.1781233330257237
+    },
+    {
+      "name": "prepare-package-directory",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/prepare-package-directory.exit.json",
+      "sha256": "31d3bd57fbf7e426a1a4a354e5c56668b77c42316f0481f51ea5809606d29471",
+      "elapsedSeconds": 0.8817070419900119
+    },
+    {
+      "name": "pack-protocol",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/pack-protocol.exit.json",
+      "sha256": "80a435157d939763732d8a35bcdfacead5753d5dc04b83db0389d409e9b7c7d7",
+      "elapsedSeconds": 0.4043815420009196
+    },
+    {
+      "name": "pack-server",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/pack-server.exit.json",
+      "sha256": "4d21335271495b76f933bef64723dc4ccd4509a140647a137815499058e9ebba",
+      "elapsedSeconds": 0.47332687489688396
+    },
+    {
+      "name": "verify-archives",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/verify-archives.exit.json",
+      "sha256": "326064f6ea5b56a431ad475cb4c7f3202c12be36c159fed0afb48cc2e6d04dc1",
+      "elapsedSeconds": 0.9627408753149211
+    },
+    {
+      "name": "prepare-consumer",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/prepare-consumer.exit.json",
+      "sha256": "d0525e4e94df8e8564ff01dacee1173e74ac18061f8180fae1127e49963843ae",
+      "elapsedSeconds": 1.0534055000171065
+    },
+    {
+      "name": "consumer-install",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/consumer-install.exit.json",
+      "sha256": "7bcf62794b2e86a9df430efe29be1444f978bbe30972dc15770fe39e7a703652",
+      "elapsedSeconds": 0.6289233337156475
+    },
+    {
+      "name": "verify-installed-consumer",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/verify-installed-consumer.exit.json",
+      "sha256": "94da02845faa881eb7846391d4688bf4ccaa1548503eefd40d598d8dfc0771c7",
+      "elapsedSeconds": 1.085784540977329
+    },
+    {
+      "name": "packed-affected-1",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/packed-affected-1.exit.json",
+      "sha256": "842eeb03e351bc5f2fb8fb9088aab348f83f0ba543e0fcdfcb0f4e940239ebe2",
+      "elapsedSeconds": 16.337670540902764
+    },
+    {
+      "name": "packed-affected-2",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/packed-affected-2.exit.json",
+      "sha256": "a9716514e0eeb91a21bb77fe4139fbe837e45f4f5029f577126366fc16a58acc",
+      "elapsedSeconds": 1.3007051669992507
+    },
+    {
+      "name": "packed-affected-3",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/packed-affected-3.exit.json",
+      "sha256": "6f52d6ec19d68e6da014398033605dc14fd0ecc6d3bf315e93b46d2e0d38f732",
+      "elapsedSeconds": 3.4808829170651734
+    },
+    {
+      "name": "packed-affected-4",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/packed-affected-4.exit.json",
+      "sha256": "3f86a8cabda1d2561fd4ec4e2e337185f44342b39ca6c0bf7ee244a87d6c362c",
+      "elapsedSeconds": 5.130592625122517
+    },
+    {
+      "name": "packed-affected-5",
+      "origin": "fresh-continuation",
+      "exitRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/packed-affected-5.exit.json",
+      "sha256": "bca5012940985e2110a31ae81c1fde6530711c54403f8c610daf166b42aab98c",
+      "elapsedSeconds": 1.0724796671420336
+    }
+  ],
+  "reusedStageCount": 11,
+  "freshStageCount": 14,
+  "fullSuite": {
+    "origin": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/root-full-suite-acceptance.json",
+      "sha256": "3551d46048cc973a7a4b16b3202138c3f258fddb38583fa50024759f40f63528"
+    },
+    "passed": 9375,
+    "skipped": 1,
+    "requiredCli": "passed"
+  },
+  "typeExamples": "95 positive/negative shape cases passed with isolated explicit date-time dependency",
+  "packedCallbacks": 5,
+  "packedPayloadIdentity": "39e78bd02dfb98de71e03e71faf2af37b56ff3d724f4d2ea930bf3cecbaf2bd9",
+  "consumerLockSha256": "aa5ca8adb3ce1ac034ec434149a36fd6538649f2e68732df95da88093b65c991",
+  "consumerFiles": 871,
+  "consumerLinks": 17,
+  "sampledPids": [
+    50375,
+    50666,
+    50721,
+    50774,
+    50821,
+    50921,
+    51032,
+    51068,
+    51070,
+    51076,
+    51077,
+    51078,
+    53822,
+    53841,
+    53845,
+    53846,
+    55640,
+    55641,
+    57422,
+    57423,
+    58979,
+    58980,
+    60562,
+    60856,
+    61284,
+    61772,
+    61832,
+    61924,
+    74102,
+    74177,
+    74204,
+    74263,
+    74308,
+    74330,
+    74363,
+    74398,
+    74694,
+    74736,
+    74859,
+    75203,
+    75311,
+    75628
+  ],
+  "remainingSampledPids": [],
+  "historicalFailures": "Original ancestor-database full-suite failure and missing optional checker Type failure preserved, not relabeled",
+  "limitations": [
+    "Private diagnostic callbacks do not qualify public profiles",
+    "S1/G2 unresolved",
+    "Historical Read evidence retains original identity",
+    "Schema assertions read reconciled workspace schemas",
+    "Legacy SSE report lacks explicit child lifecycle inventory; bounded supervisor/process evidence retained"
+  ],
+  "mainLandingAuthorized": false
+}

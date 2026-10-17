@@ -1,0 +1,22 @@
+{
+  "bareFormatChecker": true,
+  "dateTimeRegistered": true,
+  "direct": {
+    "positive": true,
+    "negative": false
+  },
+  "schema": {
+    "positiveErrorCount": 0,
+    "negativeErrorCount": 1,
+    "negativeValidators": [
+      "format"
+    ]
+  },
+  "literalInterpreter": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-format-venv/bin/python",
+  "prefix": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-format-venv",
+  "providerPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-format-venv/lib/python3.14/site-packages/rfc3339_validator.py",
+  "providerVersion": "0.1.4",
+  "jsonschemaVersion": "4.26.0",
+  "sixVersion": "1.17.0",
+  "scope": "tool prerequisite only; no example-script or validation-stage pass"
+}

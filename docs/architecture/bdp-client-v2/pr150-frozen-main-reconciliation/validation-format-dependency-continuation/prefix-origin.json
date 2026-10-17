@@ -1,0 +1,230 @@
+{
+  "stageNames": [
+    "dependencies",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "typecheck",
+    "build",
+    "bind-build",
+    "full-test",
+    "e2e-ready-preflight",
+    "smoke",
+    "evidence-verify"
+  ],
+  "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+  "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor",
+  "stages": {
+    "dependencies": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/dependencies.started.json",
+        "sha256": "be3500c9e180563b8b11528683121bcedd60537470d74d30b18ed53cbceb4d34"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/dependencies.exit.json",
+        "sha256": "cb97e696d69103dc798d24cfdc1597c730d8a882d2e700b4d87204c7fa5035ce"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/dependencies.log",
+        "sha256": "0b94623d3cbd77577cebfdfcb924b2dd9a4742780b0d76b8f52ae94a7955ed8f"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/dependencies.processes.jsonl",
+        "sha256": "ef499fb3985ab08057869b9b3e1a423cdb040c645ec1a2add4805bd66cc79e9b"
+      }
+    },
+    "format-check": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/format-check.started.json",
+        "sha256": "cc73b869213a831a819b9e9b65ac78f12f86b512626b70d7bf91d10465c31c6b"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/format-check.exit.json",
+        "sha256": "c22923a5e47f0132b73645fc4a62bb1ed450aabdd6572f206490e961dcd9416e"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/format-check.log",
+        "sha256": "010feef7ebc7b2087d512541bb37aa168cc58f99e226d81c2a23b2ec3c814cf1"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/format-check.processes.jsonl",
+        "sha256": "ef301ced086cadbf4f8cc052e312eba9f478741ca1bad57004952eb20bdf76ef"
+      }
+    },
+    "lint": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/lint.started.json",
+        "sha256": "159253163bb51bd41f6785c826c4d2d539d6f4d1b7d74f95a22f17edd52215f2"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/lint.exit.json",
+        "sha256": "3be6939cf038e099ba48930651fcb9fc903887d6e2a0921588d9482856ebc706"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/lint.log",
+        "sha256": "27e86b2ed1aa397aad7aa1359863d7d79a7033dee24c17be1a1beec1bbd0f36e"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/lint.processes.jsonl",
+        "sha256": "31598410088eb4d21a444a69b2a74eccb3fb4d4553a7e5a6ffd4c8825504aa9f"
+      }
+    },
+    "check-boundaries": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/check-boundaries.started.json",
+        "sha256": "b96216fee0a3281d9ad2eadf5bc3f9fab2fac449c823468f27d78d7de89f6770"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/check-boundaries.exit.json",
+        "sha256": "0594d3198afcd1d55b8b059afff16588c5f3a5b86f272778007902b1208303c6"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/check-boundaries.log",
+        "sha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/check-boundaries.processes.jsonl",
+        "sha256": "d25dcc845d3073d61ecaaf0b33c240d1eb11c50d1d1f71281ba6fbed541c8c9e"
+      }
+    },
+    "typecheck": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/typecheck.started.json",
+        "sha256": "c6b1de8ce3445642dcde9c272f37558313dbc1eb15209947bd20ca7aa7c12cca"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/typecheck.exit.json",
+        "sha256": "1e7a77edc1ff0fead7759b8d7f8ba7582e814cefc11b00cd8c4f2b6b33eda54f"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/typecheck.log",
+        "sha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/typecheck.processes.jsonl",
+        "sha256": "756d1e0b94cbc9fa47f3668de757c572a28a12f40ca6a31685f751bb37b3c48f"
+      }
+    },
+    "build": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build.started.json",
+        "sha256": "1ca64018c340f59bf834ed2587af2ed0b1c921e102e1c3ffb6b76992acb91862"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build.exit.json",
+        "sha256": "4b260a69bb001f311e02d149dccd9389c151d7d378ec405f3b64bf9eeb1793be"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build.log",
+        "sha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build.processes.jsonl",
+        "sha256": "59a732677ffc396da928c164a038a0257d10689b27d829fcc807571496efc620"
+      }
+    },
+    "bind-build": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/bind-build.started.json",
+        "sha256": "eac2ba00a83871173fd57c79384827cb88b7f0b873b770a0cb948c42641efb05"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/bind-build.exit.json",
+        "sha256": "a37e3438839046f53f8972f74004341c44aef11827eb4f12a5d6e45b92f20729"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/bind-build.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/bind-build.processes.jsonl",
+        "sha256": "59f7846fed37c0e4989e02bf795583b2fa35f39abb99823ebd05b8a7eef4ad91"
+      }
+    },
+    "full-test": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.started.json",
+        "sha256": "de9ad9a5f195201fba7240f6d8972a98df687261f029c3f2640f59d56d319202"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.exit.json",
+        "sha256": "894289211d4f34596ccb0ef2d0e2de369928614ceff6f580d0bf3d8fa1aa1869"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.log",
+        "sha256": "8a742a2bc902b5938cbdb0ad93349fe3557b3224851158e9e07552c62c38350d"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.processes.jsonl",
+        "sha256": "942f25c11bea665f5c691d3fa7e210b6c272cc6fa15cc00e49c454d7b58087b2"
+      }
+    },
+    "e2e-ready-preflight": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/e2e-ready-preflight.started.json",
+        "sha256": "f038bc182082584bb818f96d91ec953a2b432b4b3724604a8d3989e5495d83ba"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/e2e-ready-preflight.exit.json",
+        "sha256": "054343a876c04d343aae6ae7e8b68ab38c88d4d38b26d9c326d8eef2aa326421"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/e2e-ready-preflight.log",
+        "sha256": "8147095140fb5dacb26d3697d80cca109e3dc5f803273f067450e86c3ffa175c"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/e2e-ready-preflight.processes.jsonl",
+        "sha256": "e5efa5d151ec17f5a87f5ec3b4b595b2b531e5a2460adf36505f80362e24002f"
+      }
+    },
+    "smoke": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/smoke.started.json",
+        "sha256": "50b31a3c4defd5c2aaf77c026b038c3ac3cbbe2adff0881d83857ce3ff93a55c"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/smoke.exit.json",
+        "sha256": "bec19f6876884b1b220349f28a42ec52988c69ae14f2429ac797e8b757ce3382"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/smoke.log",
+        "sha256": "dac89077b297b2d74fe19b275dc01de86469e576cad8ba125118c195212fe8d9"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/smoke.processes.jsonl",
+        "sha256": "4aad969d661423665d8d961c494023035ebd18645778287e88e7cee966521bfe"
+      }
+    },
+    "evidence-verify": {
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/evidence-verify.started.json",
+        "sha256": "9aac8cf43f573e0f0a14b79c391b8b87874c6c6fd699e5037bc951ef79509ede"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/evidence-verify.exit.json",
+        "sha256": "ec68dcf7a14bc506568758b250d17451a2df2444c52d388105e954ded7eccd6d"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/evidence-verify.log",
+        "sha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/evidence-verify.processes.jsonl",
+        "sha256": "2c6b32ccbcf9512dc9a002bf8f2cc2a851a07a64f7f81608f4886088438a3649"
+      }
+    }
+  },
+  "buildArtifacts": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build-artifacts.json",
+    "sha256": "8c53e912f90406831be452eb79fcde95bb5ecdb2641298c6a1e43f98d3708c54"
+  },
+  "rootFullSuiteAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/root-full-suite-acceptance.json",
+    "sha256": "3551d46048cc973a7a4b16b3202138c3f258fddb38583fa50024759f40f63528"
+  },
+  "fullTestJson": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.json",
+    "sha256": "5f056cc0b13e97b0d714c1368063f09aa80cb2b7d79e1107017d753b3720f0b0"
+  },
+  "attribution": "These11 stages ran in the predecessor with original tools; none ran in this continuation."
+}
