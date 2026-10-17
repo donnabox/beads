@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T08:51:25Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T09:02:52Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T08:51:25Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Receipt actual CODE completed and findings dispositioned; formatter-only successor authored | Source inverse closure accepted; inspect fresh validation preparation before execution |
-| Conditional reviewer | Source successor inverse closure complete; awaiting validation successor preparation review | No product execution or source edits |
+| Root | PR158 receipt-root correction published9d2cd44; exactCI39019562524 running | Verify terminal exact CI before clean-green next-alias rebind |
+| Conditional reviewer | Independent PR158 publication scope/ancestry/source audit | No main merge, source change or product execution |
 | Event reviewer | Alias concrete plan-v2 frozen and native/root accepted | Idle; clean-green receipt rebind and actual council remain required |
-| Native reviewer | Four formatter replacements authored; preparing distinct validation successor | Bootstrap-only reuse explicitly bound; fresh static results required; runtime closed |
+| Native reviewer | Final receipt local/installed audit complete | Idle; all19fresh stages pass, original bootstrap-only reuse distinct |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -318,6 +318,13 @@ Receipt validation preparation found and corrected one command-directory defect 
 **Receipt actual CODE council completed and dispositioned.** ActualClaude exited0 after1245.566s, one successful terminal/5083records, unchanged source and no survivors. [Root final dispositions](receipt-root-minimum-code-review/root-final-dispositions.json)2694312a and [native findings audit](receipt-root-minimum-code-review/findings-audit.md)8849fdf7 accept the actual four-site formatter correction; reject the claimed timeout double-count mechanism because rejection skips that branch; preserve optional diagnostics and private foreign-opaque exclusions. Review arithmetic is corrected to3/3 root attempts; actual tool evidence supports9contextpaths, not the review's claimed18. Full plan/selection/patch were also inline. No runtime success or profile qualification follows from review.
 
 [Formatter-only source successor](receipt-root-minimum-author/successor-1/report.md) is frozen at fullpatch6392e196/sourcebindingbe45052f/index044c33ae. Root verified all11indexed artifacts and679current source bytes, exactly two testfiles changed by four log-derived replacements,677otherfiles unchanged. Original six-file CODE source and failedformat attempt remain intact. [Independent inverse closure](receipt-root-minimum-author/successor-1/native-closure.md)30eace5e is clean and root-accepted; no additional full external run is required solely for the mechanical layout delta. A distinct validation successor will bind unchanged original install/tool evidence only and execute fresh typecheck/format/lint before runtime release. PR150d4 and PR157088 remain unchanged and exactgreen; incremental bus contains only own already-known update.
+
+
+**Receipt-root serving correction published separately as [PR158](https://github.com/gastownhall/bdp/pull/158).** Commit9d2cd441eac2be1d2b6487ab5648035e3219cc27/tree62628a006c36d101c310b5210de3f7e23d3a2fac has soleparent08812c6 (PR157). Owned current-context opaque minima now use bounded contextual503 waiting; principal/missing404, strict receipt pages and retention order remain preserved. Six files only, pinned specification unchanged. [Root committed-byte map](receipt-root-minimum-validation-successor-1/root-commit-verification.json) verifies all679tested bytes match the clean commit and remote/PR head. Exact[CI39019562524](https://github.com/gastownhall/bdp/actions/runs/39019562524) is running, not yet green. This is subsequent implementation outside frozenPR150d4.
+
+[Final local validation](receipt-root-minimum-validation-successor-1/root-final-validation.json)390a2aa0 and [independent installed audit](receipt-root-minimum-validation-successor-1/native-final-installed-audit.md)8589afc8 pass all19fresh stages: typecheck/format/lint, fresh build,12sourcecallbacks, package/consumer verification and historical22+new5 installed requests/two clean children. Only original successful install/tool capture reused with explicit unchanged17dependency/11tool/source-transition binding; original format failure remains intact. All476build entries/321archive members/870consumerfiles17links and8manifest graph verify; payload63ddf5df and actual accepted consumerlock5c2b3e74 match both children. Children40922/44593 exit0, two stores absent and all361sampled PIDs absent. Lint58warnings/6infos/44notshown retained. Source arithmetic is not measured profile completeness; both installed claims remain ineligible.
+
+Next alias detailedplan remains closed on dirty planning basis pending PR158 exactgreen and preserved clean-base rebind/actualClaude PLAN. No main/shared-design integration, cleanup, release, downstream pin or S1/G2 decision follows.
 
 ## Current priority: BDP profile structure and implementation
 

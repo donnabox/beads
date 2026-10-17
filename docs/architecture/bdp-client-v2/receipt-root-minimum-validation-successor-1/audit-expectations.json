@@ -1,0 +1,510 @@
+{
+  "finalized": true,
+  "state": "Reconciled against actual frozen six-file author draft; no executed observations",
+  "sourceObservationCount": 3,
+  "capture": {
+    "observation": "receipt-root-minimum-capture",
+    "roots": 10,
+    "waits": 4,
+    "clockCalls": 11,
+    "submits": 2
+  },
+  "captureKinds": [
+    "unproved",
+    "unproved",
+    "unproved",
+    "unproved",
+    "unproved",
+    "unproved",
+    "receipt",
+    "unsupported",
+    "missing",
+    "missing"
+  ],
+  "drain": {
+    "observation": "receipt-root-minimum-drain",
+    "roots": 2,
+    "waits": 1,
+    "clockCalls": 3,
+    "postCloseProbes": 1,
+    "closed": true
+  },
+  "http": {
+    "requests": 10,
+    "waits": 3,
+    "responses": {
+      "fields": [
+        "method",
+        "route",
+        "status",
+        "bodyOctets"
+      ],
+      "methods": [
+        "POST",
+        "GET",
+        "HEAD",
+        "GET",
+        "GET",
+        "HEAD",
+        "GET",
+        "HEAD",
+        "GET",
+        "GET"
+      ],
+      "statuses": [
+        200,
+        503,
+        503,
+        503,
+        500,
+        500,
+        400,
+        404,
+        404,
+        401
+      ],
+      "routeClasses": [
+        "batch",
+        "owned-root",
+        "owned-root",
+        "owned-root",
+        "owned-root",
+        "owned-root",
+        "owned-root",
+        "other-principal-root",
+        "missing-root",
+        "owned-root"
+      ]
+    }
+  },
+  "historical": {
+    "observation": "private-installed-minimum-receiving",
+    "keys": [
+      "observation",
+      "outcome",
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "binding",
+      "artifactBytes",
+      "attempted",
+      "exchanges",
+      "completedResponses",
+      "deadlineExceeded",
+      "cleanupExceeded",
+      "launchAttempted",
+      "startupCompleted",
+      "closed",
+      "childPid",
+      "childExitCode",
+      "childSignalCode",
+      "directory",
+      "directoryAbsent",
+      "failureCount",
+      "failureCategories",
+      "claimEligible",
+      "retention",
+      "startupLimitation"
+    ],
+    "labels": [
+      "seed-post-ignores-malformed-minimum",
+      "issue-real-page",
+      "all-absent",
+      "missing-two",
+      "head-missing-epoch",
+      "raw-duplicate-0",
+      "raw-duplicate-1",
+      "raw-duplicate-2",
+      "single-comma-value",
+      "malformed-receipt-writer",
+      "malformed-receipt-other",
+      "malformed-page-writer",
+      "malformed-page-other",
+      "foreign-unknown-receipt",
+      "foreign-unknown-page",
+      "own-unknown-receipt",
+      "own-unknown-page",
+      "compatible-missing",
+      "compatible-existing",
+      "same-view-ahead",
+      "anonymous-malformed",
+      "method-before-minimum"
+    ],
+    "methods": [
+      "POST",
+      "POST",
+      "GET",
+      "GET",
+      "HEAD",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "POST"
+    ],
+    "statuses": [
+      200,
+      200,
+      200,
+      400,
+      400,
+      400,
+      400,
+      400,
+      400,
+      400,
+      400,
+      400,
+      400,
+      404,
+      404,
+      503,
+      500,
+      404,
+      200,
+      503,
+      401,
+      405
+    ],
+    "routes": [
+      "batch",
+      "update-where",
+      "point",
+      "point",
+      "point",
+      "point",
+      "point",
+      "point",
+      "point",
+      "root",
+      "root",
+      "page",
+      "page",
+      "root",
+      "page",
+      "root",
+      "page",
+      "missing-point",
+      "point",
+      "point",
+      "point",
+      "point"
+    ],
+    "credentials": [
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "other",
+      "writer",
+      "other",
+      "other",
+      "other",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "writer",
+      "anonymous",
+      "writer"
+    ],
+    "minimumOccurrences": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1
+      ],
+      [
+        2,
+        1,
+        1
+      ],
+      [
+        1,
+        2,
+        1
+      ],
+      [
+        1,
+        1,
+        2
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ]
+    ],
+    "requests": 22,
+    "requestBodies": {
+      "1": {
+        "bytes": 3728,
+        "sha256": "aea2842b2d004b0483dd756a9e6f97c829883956b56e7f508295572392c9a3b6"
+      },
+      "2": {
+        "bytes": 179,
+        "sha256": "ba388a9fdbed4eae2e5221a425aa476720d2307d22553870faccf5403648cb2d"
+      }
+    }
+  },
+  "root": {
+    "observation": "private-installed-receipt-root-minimum",
+    "keys": [
+      "observation",
+      "outcome",
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "binding",
+      "artifactBytes",
+      "attempted",
+      "exchanges",
+      "completedResponses",
+      "deadlineExceeded",
+      "cleanupExceeded",
+      "launchAttempted",
+      "startupCompleted",
+      "closed",
+      "childPid",
+      "childExitCode",
+      "childSignalCode",
+      "directory",
+      "directoryAbsent",
+      "failureCount",
+      "failureCategories",
+      "claimEligible",
+      "retention",
+      "startupLimitation",
+      "activeRequests",
+      "pendingOperations"
+    ],
+    "labels": [
+      "seed",
+      "owned-root",
+      "owned-root-head",
+      "other-principal",
+      "missing-root"
+    ],
+    "methods": [
+      "POST",
+      "GET",
+      "HEAD",
+      "GET",
+      "GET"
+    ],
+    "statuses": [
+      200,
+      503,
+      503,
+      404,
+      404
+    ],
+    "routes": [
+      "batch",
+      "root",
+      "root",
+      "root",
+      "missing-root"
+    ],
+    "credentials": [
+      "writer",
+      "writer",
+      "writer",
+      "other",
+      "writer"
+    ],
+    "minimumOccurrences": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ]
+    ],
+    "requests": 5,
+    "requestBodies": {
+      "1": {
+        "bytes": 141,
+        "sha256": "d410567e7cbdcc4fab38e477c974ba3d2a321d98980134bea249a631562832a5"
+      }
+    }
+  },
+  "responseKeys": [
+    "ordinal",
+    "label",
+    "method",
+    "url",
+    "credential",
+    "requestBodyBytes",
+    "requestBodySha256",
+    "minimumFieldOccurrences",
+    "status",
+    "bodyOctets",
+    "bodySha256",
+    "headers"
+  ],
+  "headers": [
+    "bdp-scope-epoch",
+    "bdp-authorization-view",
+    "bdp-scope-position",
+    "content-type",
+    "content-length",
+    "cache-control",
+    "retry-after",
+    "www-authenticate",
+    "x-bdp-development",
+    "x-bdp-development-limit",
+    "etag",
+    "last-modified",
+    "allow",
+    "location",
+    "link"
+  ],
+  "artifactBytes": 328,
+  "prospectiveWorkload": {
+    "sourceCallbacks": 12,
+    "sourceStores": 12,
+    "sourceNetworkRequests": 36,
+    "sourceNetworkMethods": {
+      "POST": 6,
+      "GET": 21,
+      "HEAD": 9
+    },
+    "sourceServiceLiveRootAttempts": 28,
+    "sourceServiceLivePageAttempts": 4,
+    "separatePostCloseOwnerProbes": 1,
+    "sourceServiceWaits": 9,
+    "sourceServiceClockCalls": 33,
+    "sourceServiceMutations": 9,
+    "installedCallbacks": 2,
+    "installedRequests": 27,
+    "installedChildrenSequential": 2,
+    "installedStores": 2,
+    "allSelectedStores": 14
+  },
+  "attribution": "Only A/B/D instrumented; existing retention and historical source aggregate counts are not newly measured; bodies/semantic schema assertions remain in pinned callback"
+}

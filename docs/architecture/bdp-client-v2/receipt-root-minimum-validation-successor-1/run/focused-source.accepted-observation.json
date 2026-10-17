@@ -1,0 +1,206 @@
+{
+  "sourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+  "sourceBindingSha256": "db20a737d5f68364208c2b5670f8e38a01ee5666a3d7c94cccef955b49b8257f",
+  "qualification": false,
+  "selectedCallbacks": [
+    "captures opaque receipt root minima through real owner retries",
+    "drains an opaque receipt root wait before closing its owner",
+    "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+    "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+    "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque false)",
+    "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque true)",
+    "preserves current receipt absence context across ordinary and minimum service entrypoints",
+    "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+    "keeps receipt minimum enforcement after commands ignore copied controls",
+    "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+    "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+    "serves opaque receipt root minima before HTTP shortcuts with private fences"
+  ],
+  "resultsSha256": "776d57fb33ffdecb96fcc86b83bcb1b2347bf042b2ffdfd587b3201fa0739cb3",
+  "logSha256": "883dac98d14bb744bf6fa4c33a3d2adf07d61fbee06b87f0806b6934812ed977",
+  "actualInstrumentedObservations": [
+    {
+      "observation": "receipt-root-minimum-http",
+      "requests": 10,
+      "responses": [
+        {
+          "method": "POST",
+          "route": "batch",
+          "status": 200,
+          "bodyOctets": 636
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 503,
+          "bodyOctets": 127
+        },
+        {
+          "method": "HEAD",
+          "route": "owned-root",
+          "status": 503,
+          "bodyOctets": 0
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 503,
+          "bodyOctets": 127
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 500,
+          "bodyOctets": 0
+        },
+        {
+          "method": "HEAD",
+          "route": "owned-root",
+          "status": 500,
+          "bodyOctets": 0
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 400,
+          "bodyOctets": 118
+        },
+        {
+          "method": "HEAD",
+          "route": "other-principal-root",
+          "status": 404,
+          "bodyOctets": 0
+        },
+        {
+          "method": "GET",
+          "route": "missing-root",
+          "status": 404,
+          "bodyOctets": 134
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 401,
+          "bodyOctets": 136
+        }
+      ],
+      "waits": 3
+    },
+    {
+      "observation": "receipt-root-minimum-capture",
+      "roots": 10,
+      "waits": 4,
+      "clockCalls": 11,
+      "submits": 2,
+      "ownerObservations": [
+        {
+          "kind": "unproved",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "kind": "unproved",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "unproved",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "unproved",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "unproved",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "unproved",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "receipt",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "unsupported",
+          "context": null
+        },
+        {
+          "kind": "missing",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "kind": "missing",
+          "context": {
+            "scopeEpoch": "fab3cde9-0b1d-47bd-87f4-962e4aecbf25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ]
+    },
+    {
+      "observation": "receipt-root-minimum-drain",
+      "roots": 2,
+      "waits": 1,
+      "clockCalls": 3,
+      "postCloseProbes": 1,
+      "closed": true
+    }
+  ],
+  "plannedWorkload": {
+    "sourceCallbacks": 12,
+    "sourceStores": 12,
+    "sourceNetworkRequests": 36,
+    "sourceNetworkMethods": {
+      "POST": 6,
+      "GET": 21,
+      "HEAD": 9
+    },
+    "sourceServiceLiveRootAttempts": 28,
+    "sourceServiceLivePageAttempts": 4,
+    "separatePostCloseOwnerProbes": 1,
+    "sourceServiceWaits": 9,
+    "sourceServiceClockCalls": 33,
+    "sourceServiceMutations": 9,
+    "installedCallbacks": 2,
+    "installedRequests": 27,
+    "installedChildrenSequential": 2,
+    "installedStores": 2,
+    "allSelectedStores": 14
+  },
+  "attribution": "Only A/B/D instrumented; existing retention and historical source aggregate counts are not newly measured; bodies/semantic schema assertions remain in pinned callback",
+  "limits": "Twelve passed selected callbacks; only three new report records. No measured aggregate36 or inferred owner attempts from HTTP; exact wire length/header assertions remain in passing source callback."
+}

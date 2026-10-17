@@ -1,0 +1,62 @@
+{
+  "mappingFinalized": true,
+  "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run",
+  "stages": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/source-binding.json",
+    "sha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477"
+  },
+  "successorSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/source-binding.json",
+    "sha256": "db20a737d5f68364208c2b5670f8e38a01ee5666a3d7c94cccef955b49b8257f"
+  },
+  "originalHead": "08812c6c752c06cd0edf1af2878b2367692e5b32",
+  "originalTree": "9b6f50b9a6b9eea953a6407599090c259cf97331",
+  "originalSourceIdentity": "bc513ee5ce385ee501df49f6fb068646e1180d5a54cd2d679e4483a17f46c46d",
+  "successorSourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+  "allowedSourceChanges": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "dependencyInputs": {
+    ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+    ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
+    ".nvmrc": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+    "apps/bdp/package.json": "862dbaed2f8efb3cc039de70e2b6f928cea32a3dff24226242d6102a13ac3421",
+    "apps/bdpbd/package.json": "406919d9f53f4b102b0448472e5195ffb0f8ac332995d529084fe9905ff6849a",
+    "apps/bdptest/package.json": "38b8b72d245af1d147bc0e7ec90abc42c3f513468397d9886444c8ab46cfdb4a",
+    "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+    "packages/adapter-bd/package.json": "678e848888f078cdf2c3b2c26058ca973bf4739be13d1c3077c4d63e54c9cac3",
+    "packages/adapter-in-memory/package.json": "ef062f61923313e35d2165d72363310c22fadfb9081c0111805501918c68c93c",
+    "packages/bd-domain/package.json": "a72b9fcbe511216e1503e4748bed79a136f4c2d8728413c6e292646e0e3f8429",
+    "packages/client/package.json": "0891e97c217e6ecf514326746d06431f38838ffd5f0a6b91ede38493219b0128",
+    "packages/config/package.json": "983ca52c4463429c9c5dfe37ac1e7205f51b12d455d7057c45b987a638466c05",
+    "packages/conformance/package.json": "418d4d50ea4fbed59dbc2df3dc1298d30b56760428e47a5be1ae39a46960abc8",
+    "packages/protocol/package.json": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2",
+    "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+    "pnpm-workspace.yaml": "08d75840c97ab0e72d1d9b5b84a17e47a2e06cb159a5fbec5ee0a6a56682dad7"
+  },
+  "tools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/workspace-tools.json",
+    "sha256": "ab28e01e5aa3c002b8b1b1a666c9ea1ae6e0feac0c37555c190731eacd4b0177"
+  },
+  "records": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/workspace-install.started.json": "203f1daaa5582369f7d614ecdfbd310b549ec1534cf3fd53b597bf5aa6ec6d1a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/workspace-install.exit.json": "51e5626fb9f641dc003a9e313cd2ff068653061ad8a9d01c902a9e76395547c6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/workspace-install.log": "1c01d7e9417ddcf1dddecc7c3b9fc67c790926f36436136feed9030c380aca1c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/workspace-install.processes.jsonl": "ff053d44d320a7eb825d492b9ac99b620b0cc42eec9fad39e1ed1137f14f1e8f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/bind-workspace-tools.started.json": "b3df28b44947a769d7ff9bbdd23ca976ffb4cf918ab6640fdda23db2bdca34de",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/bind-workspace-tools.exit.json": "d30a99f37c5550e9c648b728b8691ec3d40130ef8940499b0aed4575846ff877",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/bind-workspace-tools.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/bind-workspace-tools.processes.jsonl": "6c60d238822b593dcfd350b89f00acbcdc82e62067387f3fe533fc7cec207877"
+  },
+  "rootBootstrapDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/root-static-disposition.json",
+    "sha256": "ba2a2e01ab3426671feda042e30c68e21401a36c9fa0f0834f38d3c656c3da7f"
+  },
+  "noRelabeling": "Only original successful install/tool capture reused; old typecheck and failed format retain original identity; all successor static stages fresh"
+}
