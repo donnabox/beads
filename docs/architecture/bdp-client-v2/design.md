@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T07:12:32Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T07:28:03Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T07:12:32Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Snapshot PR157 published after all21 local stages and full CODE council; exactCI39012707852 running | Verify exact CI; PR150 stays frozen |
-| Conditional reviewer | Receipt concrete plan-v2 native review complete, no findings | Clean-base rebind review after Snapshot green; no source changes |
-| Event reviewer | Receipt plan-v2 and original Claude PLAN packet frozen and CLOSED | Rebind in separate successor only after Snapshot exact CI green; original unlaunched |
-| Native reviewer | Snapshot final installed audit clean; independent committed-source publication audit active | Verify679 tested bytes/scope/ordinary ancestry; no runtime rerun |
+| Root | PR157 exactCI green/native audit clean; actual receipt Claude PLAN running PID64568/session93453 | Inspect terminal verdict before receipt authoring; PR150 stays frozen |
+| Conditional reviewer | Clean receipt rebind native review complete, no findings | Idle; no source changes |
+| Event reviewer | Clean receipt PLAN successor frozen and root-released to actualClaude | Idle pending verdict; original dirty packet preserved/unlaunched |
+| Native reviewer | Snapshot publication and exact CI audits clean | Preserve workspace/packed distinction and raw evidence limits |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -274,6 +274,16 @@ Actual full Claude CODE completed exit0/1381.092s with one successful terminal, 
 [Root final validation](snapshot-opaque-minimum-validation/root-final-validation.json) and [independent final audit](snapshot-opaque-minimum-validation/native-final-installed-audit.md) a58d3965 verify all21 fresh stages raw0/accepted, source22callbacks/13newrecords, build476, archives321members and consumer870files17links. Packed payload13e0362e and consumerlockd4cfcf39 remain distinct from dirty base/source commit attribution. Historical31 plus new3 actual exchanges across three clean children; new GET/HEAD503 each about1.003seconds, HEAD zero bytes. All360 sampled PIDs absent; two fixture stores by code, new owned directory directly absent, historical path not emitted and cleanup supported by child outcomes/supervisor census. No evidence relabeling or profile claim. Static lint retained61warnings7infos,48notdisplayed.
 
 Next [receipt-root concrete plan-v2](snapshot-opaque-next-serving-audit/plan-v2.md) ce6af377 and [native review](snapshot-opaque-next-serving-audit/native-plan-v2-review.md)8fe1cf41 are frozen; root read and accepts bounded six-file design pending actualClaude PLAN review. Original closed/unlaunched packet binds dirty Snapshot planning state and must not be launched after commit. Once Snapshot exact CI is green, create a separately preserved clean-base rebind and review any input differences. No receipt authoring/runtime release yet; no new product decision required. S1/G2 and unsupported public claims remain gated.
+
+
+**PR157 exact CI is green.** [CI39012707852](https://github.com/gastownhall/bdp/actions/runs/39012707852) completed2026-10-17T07:22:49Z on unchanged08812c6: all27steps passed,9410tests/186files/1skip and separate7preflight, build/package smoke/historicalReadgate. [Root exact-head record](snapshot-opaque-minimum-validation/exact-head-ci.json) binds raw3,624,129-byte log SHA5caeb249bf418ddcb2b3d56e4c9fe933e6ab2a1e220853427cf9f3fa9ef83e5e; [native audit](snapshot-opaque-minimum-validation/native-exact-ci-audit.md) independently confirms relevant source/installed observations and remote draft/head. Actual CI workspace payloadb4a00d74 remains distinct from packed13e0362e. Historical Read identity remains unchanged; no remote process census claim. Seven unrelated JSON lines are masking-damaged and neither repaired nor treated as intact records. [Native publication audit](snapshot-opaque-minimum-validation/native-publication-audit.md)92cd9187 confirms exact679committed/tested bytes and sole0f215parent.
+
+Receipt-root clean-base PLAN successor is now being prepared against exact08812c6; source bytes match the earlier dirty planning basis, metadata/clean guard changes are explicit and receive independent native review. Original unlaunched packet stays preserved. ActualClaude launch still root-gated; no product source authoring/runtime yet. FrozenPR150d4 and S1/G2 unchanged.
+
+
+**Receipt-root actual PLAN council launched on clean green Snapshot base.** [Separate clean-base successor](snapshot-opaque-next-serving-audit/clean-base-successor-1/plan-v2.md)7d58e4f4/index5b24d7e3 retains six-file semantics and unchanged selection2f816581; only two gate/chronology paragraphs changed. [Native delta review](snapshot-opaque-next-serving-audit/clean-base-successor-1/native-clean-rebind-review.md)bfd338c3 verifies all679committed/current bytes equal old planning map, original unlaunched packet intact,13context/12artifact/tool pins and proven clean PLAN runner with checkout-literal-only delta. Original dirty-source plan/packet stays closed and unlaunched.
+
+[Root release](snapshot-opaque-next-serving-audit/clean-base-successor-1/claude-plan-review/root-release.json)2026-10-17T07:27:35Z independently checks both indices, source/context/artifact/tool bytes, full plan and rebind/prompt/runner. Closedbinding60ecb72e preserved; releasedbindingd6e25afa. ActualClaude PID64568/session93453 started07:27:36Z, real process and streaming output verified. Configured defaultmodel/ReadGlobGrep/emptyMCP/no commands or writes,3600s/TERM3595/no retry. No terminal verdict yet; source authoring/runtime remain closed pending actual findings disposition. No main/PR150/S1/G2 changes.
 
 ## Current priority: BDP profile structure and implementation
 

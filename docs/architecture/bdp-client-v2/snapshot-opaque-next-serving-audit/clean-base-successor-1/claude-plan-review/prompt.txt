@@ -1,0 +1,318 @@
+Independently review a proposed receipt-root opaque-minimum implementation PLAN against the actual frozen repository. This is PLAN review, not code review of an already implemented receipt repair. Do not write or modify any files. Output findings only in stdout. Do not execute commands, tests, builds, imports, package managers, formatters, services, network calls or other reviewers. Read/Glob/Grep only. Provide numbered findings with severity, exact plan/source location, issue, impact and smallest concrete correction. Separate blockers from optional suggestions; if none, say so. Do not infer approval from other reviewers or task chronology.
+
+Working directory: /Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum. Exact clean HEAD08812c6c752c06cd0edf1af2878b2367692e5b32/tree9b6f50b9a6b9eea953a6407599090c259cf97331 is now the frozen Snapshot base. All679 committed/checkout bytes equal the prior dirty planning map. ExactCI39012707852 terminal JSON is success/all27 steps. Proposed receipt scope is SIX files and remains unimplemented. Clean-base rebind is complete; root authoring release and future exact source recheck remain required. No main update is sought and no receipt-runtime/installed result is claimed.
+
+Read actual source around transaction-http.ts receipt branches550 onward; transaction-service.ts run140 onward, receipt helper221, receiptAtMinimum609; transaction-store.ts readReceipt944; transaction-consistency.ts lexical capture/check/waiter. Read actual source test fixtures and all selected callbacks in transaction-service.test.ts, transaction-http.test.ts, and apps/bdptest/src/transactional-minimum-receiving-installed.test.ts. Additional repository reads are permitted to verify relevant facts; do not broaden product scope. The HTTP test dynamically imports emitted runtime, so fresh build before collection is required later.
+
+Immutable context lives beside this prompt in context/: full plan-v2.md, selection-v2.json, bdp.md, design.md, required-contract-matrix.md, rebind.json/plan-v2-binding.json/ci-39012707852.json. The matrix is historical family inventory, not today's coverage count. Normative focus: bdp4997-5005 principal-bound receipt recovery;5841-5857 general minimum law and explicit subsequent receipt GET/HEAD;5876-5883 conditional ordering/HEAD. Reference chooses bounded wait under general remaining-read law, not a fabricated receipt-specific Resource MUST. Retained pages, S1/G2/foreign unknown policy, discovery/profile claims and Types/History/provenance are excluded.
+
+Verify actual feasibility and preservation: root-only lexical selection with strict page fence; run admission before unauthenticated refusal and capture inside async body; malformed rejected promise versus closed synchronous throw; capture before waiter policy/clock; principal/tuple fixed across waits. Owner validates/captures before entry, discloses principal before semantic minimum, explicit own unsupported before readContext, current context/minimum before expireRow/instant/projection. No new root URL classifier, AbortSignal API or cached receipt across retries.
+
+Verify exact real fixtures and counts rather than accepting prose: A8service calls/10owner attempts/4waits/11clocks/2submits, real Unproved/context instrumentation; B2attempts/1wait/3clocks plus actual-owner closed probe; existing failed-retention body4rows (known false/true unchanged labels plus opaque false/true),12attempts/4waits/14clocks/4submits; absence4root+4page/0wait/5clocks/2submits. Source12callbacks/36HTTP/12stores. Existing root-retention HTTP callback has1100ms real isolation and four formerly immediate500s: deterministicbudget2 seam is required under unchanged5s callback, not a widened deadline. Preserve actual closed-store retained-row oracle. NewD10requests must check real503 before conditional/media shortcuts and preserved foreign/receiving/auth fences.
+
+Historical installed22 only changes owned-root assertion; page500 and other controls stay. NewE5 is separate seed+GET/HEAD opaque+foreign/missing with one child/store, actual issued id/tokens and schemas, local predispatch/final5 bound. Installed totals27requests/2sequentialchildren2stores;5srequest/45swork/10scleanup/60scallback/120souter. Check truthful clean-close/PID/store evidence, late rejections and cleanup timeout handling; no removal on unknown/failed closure, no historical lifecycle rewrite. Fresh source/build/archive/consumer identity plus actual lock/inventory gates precede installed proof. Default-dist tests remain supported. Counts are prospective, no functionality percentage or qualification.
+
+FULL PROPOSED PLAN FOLLOWS:
+
+# Receipt-root opaque minima — concrete plan v2
+
+**CLOSED, preparation only.** Root/native review and actual Claude PLAN council precede authoring. No source mutation, execution or review launch is authorized. This incorporates critique `477641ce82f1538a11a70500d81666de85cf22be227d4d998ae40252921a7e6f`. Clean Snapshot successor08812c6c752c06cd0edf1af2878b2367692e5b32, tree9b6f50b9a6b9eea953a6407599090c259cf97331, is now the exact planning/authoring base: all679 source bytes equal the earlier dirty successor1 map, and exactCI39012707852 completed success/all27steps. Root still owns separate authoring release and must recheck these pins at release; do not substitute a branch tip or fetch newer main.
+
+## Behavior and six-file boundary
+
+An actually disclosed, principal-owned receipt ROOT with matching current epoch/view and lexical opaque minimum enters the existing finite waiter and ends503 catch-up-timeout if eligibility remains unproved. Spec5841–5851 permits this reference choice under the general remaining-read law; the narrower Resource MUST is not represented as a receipt-specific MUST. Spec5853–5857 explicitly includes subsequent receipt GET/HEAD,4997–5005 protects principal-bound recovery,5876–5883 requires minimum-before-shortcut and HEAD parity. Receipt nondisclosure derives from principal binding/current behavior, not a claim receipts are enumerated in the5834 Resource list.
+
+Only these files may change:
+
+- packages/server/src/transaction-http.ts
+- packages/server/src/transaction-service.ts
+- packages/server/src/transaction-store.ts
+- packages/server/src/transaction-service.test.ts
+- packages/server/src/transaction-http.test.ts
+- apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+
+No shared consistency helper, store-test fixture, runtime/schema/configuration/discovery/admission changes. Existing Scope/Bead/Link finite Event and fresh Snapshot behavior stays intact. Receipt pages, changefeed/reconnect, retained Snapshot/S1, incident-Link/G2, foreign opaque policies, History/Types/provenance remain excluded.
+
+HTTP retains transport/method/auth and lexical receiving guards. Page branch stays strict, including its unsupported sentinel. Only root branch uses currentReadMinimumHeaders, retaining undefined/has-controls fence. No new root URL classifier: a page-shaped identity passed directly to root lookup remains absent. Conditional/media handling follows the service decision.
+
+Service receiptAtMinimum preserves synchronous run() check/registration, then unauthenticated refusal inside its async body, captured principal, explicit unsupported-sentinel branch, then lexical tuple capture before waiter policy/clock. Admitted malformed tuples reject their promises; closed admission throws synchronously first. Capture once before retries. Do not move capture outside run() or into first attempt by analogy with Events. Explicit unsupported delegates once unchanged. No new AbortSignal API; the finite registered lifetime drains on close.
+
+Owner readReceipt preserves principal/id validation and data-only capture before guarded atomic entry. Within entry: principal disclosure; explicit own unsupported result BEFORE readContext; same-entry context; missing/foreign absence; semantic minimum; expireRow(...instant()); projection. Each retry rediscovers the receipt. Use existing current-minimum check for lexical tuples: matching unknown is Unproved, known comparison remains, foreign unknown remains private unsupported. No early expiry/cached disclosure or receipt-detail change. Direct opaque calls become admissible where strict capture previously threw even for missing/foreign identities; this deliberate direct API change is distinct from existing wire-sentinel nondisclosure.
+
+## Exact selected source work
+
+selection-v2.json pins12 final callback titles, their files/suites, source-derived workloads and prospective counters. New callbacks do not yet exist. Counts are not runtime observations or completion percentages. A/B and the existing receipt-specific tests share established semantics; no duplicate general token/parser suite is added.
+
+### A: captures opaque receipt root minima through real owner retries
+
+Use existing service fixture, real owner, batch/create/requireReceipt and overloaded delegating readReceipt-wrapper pattern from the receipt-absence callback. Record actual delegated returns or thrown TransactionMinimumUnproved/context and rethrow the identical error. This observes real owner Unproved directly; service timeout alone is not that oracle.
+
+One store; actual seed submit creates a. budget3 with now:()=>tick++ and callback-local finite wait. During first wait only, mutate the caller tuple from unknown to eligible pos-2 and submit create(later) with a distinct key. Captured unknown stays unproved, actual contexts pos-1/pos-2/pos-2. No later wait performs a write. Then read with pos-01; known eligible pos-2; explicit unsupported; other principal; nonexistent root; unauthenticated access; malformed authenticated tuple. Exactly8 root-service invocations with3/3/1/1/1/1/0/0 live attempts: **10 root attempts,4 waits,11 minimum-clock calls,2 submits**. Unknown and pos-01 timeout with actual context; sentinel remains unsupported without context; known returns actual receipt/current context; foreign/missing404, anonymous401, malformed rejected before owner. This callback does not itself claim retention preservation.
+
+### B: drains an opaque receipt root wait before closing its owner
+
+One seeded receipt/store. budget2/tick++ and one held wait gate produce exactly2 live owner attempts,1 wait,3 clock calls. Attach settlement observers immediately. Start opaque read, await first real wait, call close(), verify it has not settled; new root call synchronously refuses with no owner attempt/clock. Release gate; read times out and close completes. Probe actual owner readReceipt after close once (separate closed probe, not a live attempt). Always release gate in finally and drain observed outcomes before fixture cleanup. No invented AbortSignal/disconnect claim.
+
+### R: retain one shared failed-retention semantic body
+
+Existing checks minimum before read-triggered expiry but honors independently forgotten receipts (%s) becomes four explicit labeled rows in the same body. Preserve final historical titles (false)/(true), forget flags and pos-1; add (opaque false)/(opaque true) with unknown. Row-label/forget/minimumPosition table is enough; no copied body. Each row uses one real failed submit, foreign principal/foreign epoch lookup, then own root read.3 live attempts and1 wait per row. Minimum-clock calls are4 for no-forget and3 for forget (second own attempt returns404 without another failure-clock sample). Four stores. Existing controlled wait advances real fixture time; only forget rows call owner.maintain(). No-forget times out before read-triggered disposal; independently forgotten receipt returns404. Keep asserted waits and outcomes.
+
+Select preserves current receipt absence context across ordinary and minimum service entrypoints unchanged:1 store,2 submits,4 root+4 page observations,0 waits,5 waiter clock calls. It preserves old contextual absence, anonymous no-entry and strict page controls. Its counters are source-derived here, not newly measured.
+
+### D: serves opaque receipt root minima before HTTP shortcuts with private fences
+
+Existing emitted HTTP fixture,1 store, budget2/tick++/resolved wait. Exactly10 network requests:
+
+|#|Request|Expected|
+|---|---|---|
+|1|real seed batch POST|200 receipt/context|
+|2|own root GET unknown, If-None-Match:*|503 catch-up-timeout|
+|3|own root HEAD unknown, failing If-Match|503 empty|
+|4|own root GET pos-01, Accept:image/png|503, not406|
+|5|own root GET unknown, foreign epoch|existing private500|
+|6|own root HEAD unknown, foreign view|existing private500 empty|
+|7|own root GET partial minimum tuple|400/no context|
+|8|other principal root HEAD unknown|404 current context/empty|
+|9|missing root GET unknown|404 current context|
+|10|anonymous root GET unknown|401/no context|
+
+Use actual seed epoch/view/current position. Check Problem schema/exact code/retry,503 private no-store/Retry-After1 and actual context; no private limit on normative responses. Non-attesting marker remains. Private500 stays bodyless/contextless. Record ordered method/status/redacted route class. Three deterministic waits; HTTP observations do not expose owner attempt counts.
+
+Select four existing HTTP regressions:
+
+- authenticates and hides receipts before minimum-control refusal or conditional shortcuts:7 requests POST1/GET5/HEAD1.
+- keeps receipt minimum enforcement after commands ignore copied controls:6 POST1/GET4/HEAD1.
+- checks a stored failed receipt minimum before read-triggered retention disposal over HTTP:3 POST1/GET2.
+- refuses unsupported root controls after nondisclosure but before read-triggered retention:10 POST2/GET4/HEAD4, unchanged title/loop scope. Add deterministic budget2/tick++/resolved-wait seam, retaining maintenanceIntervalMs60000 and real1100ms sweep-isolation delay. Four own results now503 with actual context/Problem/Retry-After1, foreign four remain404, HEAD empty. Preserve final retainedReceipts() close/read-without-reopen equality [failed,completed]. This is the concrete no-disposal oracle. Four default1s waits plus1100ms would exceed default5s callback; fixture seam is required, no deadline widening. Other three callbacks remain unchanged.
+
+Aggregate: **12 source callbacks/12 stores/36 HTTP requests (POST6/GET21/HEAD9)**. Seven service callbacks derive28 live root+4 page observations,9 controlled waits,33 minimum-clock calls,9 submits, plus1 real closed-owner probe. Do not call those source-derived aggregates new measured evidence or infer owner attempts from wire records.
+
+## Installed historical22 and new E5
+
+Historical rejects malformed read minimum tuples before observation while preserving receipt nondisclosure retains its exact22 requests,1 child/store, seed32 resources, real updateWhere/page, raw receiving matrix, allowlist, report schema and lifecycle. In own-unknown root/page loop only root changes to checked503 catch-up-timeout/after-delay/current context/private no-store/Retry-After1; page remains bodyless500/private minimum-position/no context. Foreign root/page404 and malformed receiving controls unchanged. Do not reroute page, add requests or relabel historical evidence. Existing45s/10s/60s work/cleanup/callback bounds and5s request bound remain.
+
+New E title: observes installed opaque receipt root timeout with principal nondisclosure. Reuse module artifacts/constants/schema validators; executor/lifetime/report remain callback-local. Same descriptor/schema (properties n:number), two random writer/other credentials. Actual seed creates beads/receipt-root with {n:0} under unique key. Validate receipt schema/id/requiredPosition/effectPosition and context. Exactly5 requests:
+
+1. Seed batch POST200.
+2. Own issued root GET unknown plus If-None-Match:* →503.
+3. Own root HEAD unknown plus failing If-Match →503 empty.
+4. Other principal root GET unknown →404 contextual.
+5. Explicit nonexistent root GET unknown →404 contextual.
+
+Minimum tokens and root URL come from actual seed reply. Grant only configured batch, returned root and explicit nonexistent root. Increment local dispatch counter BEFORE transport, enforce maximum5 and exact final5. Assert wire method/path/headers and response schema/context/cache/body semantics in callback; exact503 Retry-After1, optional validators absent, no private-limit marker. Keep non-attesting marker. Default1s bounded waits mean two actual timeout requests, not an asserted internal attempt count.
+
+One child/store;5s request,45s work,10s combined transport+child cleanup,60s callback,120s outer supervisor. Bound response bytes as the existing executor does. Observe all rejection/late-cleanup outcomes and aggregate failures. Abort/destroy/drain owned requests; require timely child close, actual exit0/null signal before clean flag and deletion. Preserve directory on failed/unknown/pre-ready ownership; record actual PID/exit/signal/directory state. Cleanup deadline is failure even if child later exits. Do not rewrite historical22 cleanup as unrelated scope. New report claimEligible:false with actual installed binding and source/payload attribution; credentials/raw bodies stay unlogged.
+
+Installed total **27 requests in2 callbacks/2 sequential children/2 stores** (22+5), immediate audit per callback. All selected stores14. Default local dist stays supported; installed evidence requires fresh external packed consumer, not fake override/old build.
+
+## Gates and preservation
+
+The native critique's five points are incorporated: finite existing retention budget, exact service and owner precedence, delegated real-owner observation, closed-store retention proof, and separate bounded history/new evidence. No new product decision or cancellation API is needed. Historical title containing unsupported is preserved as an evidence identifier; its assertions/documentation must clearly distinguish preserved sentinel/page fences from superseding owned lexical-root behavior.
+
+Before authoring recheck the bound clean08812c6c successor and exactCI record; the clean-base rebind found zero intervening source-byte differences. Any later differences require a fresh audit/rebind. Freeze six-file source/diff/selection, obtain native and actual Claude CODE review. Future validation uses fresh measured tools/static checks, fresh exact build/bind BEFORE collecting HTTP suite (dynamic emitted import), exact12 source callbacks, fresh archives/external consumer, root acceptance of actual lock/inventory, historical22/audit then E5/audit.120s supervised stages, no retries, actual source/build/consumer/process/store checks. No full-suite local rerun merely for bookkeeping. Commit only after accepted local/runtime/installed outcomes, then exact-head CI; ordinary working-branch integration, no main/release/profile advertisement. Current Snapshot source remains untouched throughout this planning task.
+
+
+EXACT PROPOSED SELECTION:
+{
+  "state": "prospective source authoring plan; no executable selection/result yet",
+  "source": [
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "captures opaque receipt root minima through real owner retries",
+      "new": true,
+      "label": "A",
+      "stores": 1,
+      "rootAttempts": 10,
+      "pageAttempts": 0,
+      "waits": 4,
+      "clockCalls": 11,
+      "mutations": 2,
+      "separatePostCloseOwnerProbes": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "drains an opaque receipt root wait before closing its owner",
+      "new": true,
+      "label": "B",
+      "stores": 1,
+      "rootAttempts": 2,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "separatePostCloseOwnerProbes": 1
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+      "new": false,
+      "label": "R-false",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "mutations": 1,
+      "forget": false,
+      "minimumPosition": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+      "new": false,
+      "label": "R-true",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "forget": true,
+      "minimumPosition": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque false)",
+      "new": true,
+      "label": "R-opaque false",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "mutations": 1,
+      "forget": false,
+      "minimumPosition": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque true)",
+      "new": true,
+      "label": "R-opaque true",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "forget": true,
+      "minimumPosition": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "preserves current receipt absence context across ordinary and minimum service entrypoints",
+      "new": false,
+      "stores": 1,
+      "rootAttempts": 4,
+      "pageAttempts": 4,
+      "waits": 0,
+      "clockCalls": 5,
+      "mutations": 2
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 5,
+        "HEAD": 1
+      },
+      "httpRequests": 7,
+      "suite": "source-private actual Transactional HTTP"
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "keeps receipt minimum enforcement after commands ignore copied controls",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 4,
+        "HEAD": 1
+      },
+      "httpRequests": 6
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 2,
+        "HEAD": 0
+      },
+      "httpRequests": 3
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 2,
+        "GET": 4,
+        "HEAD": 4
+      },
+      "httpRequests": 10
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "new": true,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 6,
+        "HEAD": 3
+      },
+      "httpRequests": 10
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "new": false,
+      "httpRequests": 22,
+      "children": 1,
+      "stores": 1
+    },
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed opaque receipt root timeout with principal nondisclosure",
+      "new": true,
+      "label": "E",
+      "httpRequests": 5,
+      "children": 1,
+      "stores": 1
+    }
+  ],
+  "totals": {
+    "sourceCallbacks": 12,
+    "sourceStores": 12,
+    "sourceNetworkRequests": 36,
+    "sourceNetworkMethods": {
+      "POST": 6,
+      "GET": 21,
+      "HEAD": 9
+    },
+    "sourceServiceLiveRootAttempts": 28,
+    "sourceServiceLivePageAttempts": 4,
+    "separatePostCloseOwnerProbes": 1,
+    "sourceServiceWaits": 9,
+    "sourceServiceClockCalls": 33,
+    "sourceServiceMutations": 9,
+    "installedCallbacks": 2,
+    "installedRequests": 27,
+    "installedChildrenSequential": 2,
+    "installedStores": 2,
+    "allSelectedStores": 14
+  }
+}
