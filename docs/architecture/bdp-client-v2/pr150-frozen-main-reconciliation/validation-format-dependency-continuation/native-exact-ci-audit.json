@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-17T12:23:38.596597+00:00",
+  "verdict": "PASS exact candidate push CI plus same-tree synthetic PR CI",
+  "pr": {
+    "baseRefName": "main",
+    "baseRefOid": "8d6671ed19b0c0406428ccc2d2161768d01e8b9b",
+    "headRefName": "codex/vickie-pr150-main-reconciliation",
+    "headRefOid": "d7197e97a29bff8f075028419afad05388e2e655",
+    "isDraft": false,
+    "number": 159,
+    "state": "OPEN",
+    "url": "https://github.com/gastownhall/bdp/pull/159"
+  },
+  "localCleanHeadTreeParents": "d7197e97a29bff8f075028419afad05388e2e655 630a94d0ca1545f898cb8a8b614d4b7d2dd6d454 d4f3f4be88c7837b71d6646518ca3589d464ba3d 8d6671ed19b0c0406428ccc2d2161768d01e8b9b",
+  "sourceFilesVerified": 701,
+  "syntheticMerge": {
+    "parents": [
+      "8d6671ed19b0c0406428ccc2d2161768d01e8b9b",
+      "d7197e97a29bff8f075028419afad05388e2e655"
+    ],
+    "sha": "835e75b78c83eee252cb513d142cc51e0efd5261",
+    "tree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454"
+  },
+  "runs": [
+    {
+      "run": "39030688462",
+      "event": "push",
+      "url": "https://github.com/gastownhall/bdp/actions/runs/39030688462",
+      "metadataHead": "d7197e97a29bff8f075028419afad05388e2e655",
+      "actualCheckout": "d7197e97a29bff8f075028419afad05388e2e655",
+      "job": 117390356808,
+      "successfulSteps": 27,
+      "passedTests": 9375,
+      "skippedTests": 1,
+      "passedFiles": 187,
+      "preflightPassed": 7,
+      "requiredCliMatrix": "passed",
+      "allFiveAffectedCallbacks": "passed",
+      "recordSha256": "3bde805cf6cc6e4eda51bc71513639281ccfcc2a11ec5f9b66e60cc6a6cd8a93",
+      "formattedLog": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/ci-39030688462.log",
+        "bytes": 1844450,
+        "sha256": "a8f43753a9b6138ccddd6bb20b8ec7eb01ae279ef4b7eee9c3bb2b492293e602",
+        "scope": "PARTIAL formatted pnpm-test log; lacks final full-suite summary; preserved"
+      },
+      "rawJobLog": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/ci-39030688462-job.log",
+        "bytes": 3565380,
+        "sha256": "261275630e50057b161700190659a08e72b395097cde12ed38ed4e6d04f50a0c"
+      },
+      "packedSmokePayload": "39e78bd02dfb98de71e03e71faf2af37b56ff3d724f4d2ea930bf3cecbaf2bd9",
+      "workspaceTestPayload": "73455528487c841c80c4bc0243e49d8284b2441807b027fc03633d5bdfa5d11f",
+      "minimumCurrentObservation": "GitHub masking leaves invalid JSON; callback pass verified, no repaired parse claimed"
+    },
+    {
+      "run": "39030713743",
+      "event": "pull_request",
+      "url": "https://github.com/gastownhall/bdp/actions/runs/39030713743",
+      "metadataHead": "d7197e97a29bff8f075028419afad05388e2e655",
+      "actualCheckout": "835e75b78c83eee252cb513d142cc51e0efd5261",
+      "job": 117390430291,
+      "successfulSteps": 27,
+      "passedTests": 9375,
+      "skippedTests": 1,
+      "passedFiles": 187,
+      "preflightPassed": 7,
+      "requiredCliMatrix": "passed",
+      "allFiveAffectedCallbacks": "passed",
+      "recordSha256": "122d0158ebadbcd59e072dfbc5ddbd2928602cd6aed0a3c9e6e19fd588668085",
+      "formattedLog": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/ci-39030713743.log",
+        "bytes": 1847715,
+        "sha256": "6b0be2d83231d49e745fc0c70bcbbfb3354b26f98a82a4b427480978a003f1de",
+        "scope": "PARTIAL formatted pnpm-test log; lacks final full-suite summary; preserved"
+      },
+      "rawJobLog": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/ci-39030713743-job.log",
+        "bytes": 3567600,
+        "sha256": "862d51dc21fb8606af7523ca6d8d338def952278340206b3f64eeb16b7a5e377"
+      },
+      "packedSmokePayload": "39e78bd02dfb98de71e03e71faf2af37b56ff3d724f4d2ea930bf3cecbaf2bd9",
+      "workspaceTestPayload": "73455528487c841c80c4bc0243e49d8284b2441807b027fc03633d5bdfa5d11f",
+      "minimumCurrentObservation": "GitHub masking leaves invalid JSON; callback pass verified, no repaired parse claimed"
+    }
+  ],
+  "historicalReadEvidence": {
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "definitions": 47,
+    "reachable": 46,
+    "rows": 89
+  },
+  "limits": [
+    "No remote PID absence claim.",
+    "Remote self-reported cleanup does not replace local independent cleanup audit.",
+    "Masked minimum-current JSON not repaired.",
+    "Types example95cases belong to prior local validation, not these CI steps.",
+    "No whole profile/public qualification, release or main merge."
+  ]
+}

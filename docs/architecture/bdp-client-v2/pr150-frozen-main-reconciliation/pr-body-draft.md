@@ -9,7 +9,7 @@ Validation:
 - Static checks, clean build, required CLI read matrix and full suite passed: 9,375 tests, one optional skip, 187 files. Existing lint warnings remain.
 - Preflight, package smoke and historical Read evidence verification passed. Type/schema examples passed 95 positive/negative cases with the explicit isolated date-time checker dependency.
 - Fresh package archives and an external consumer were verified against source/build bytes and the exact dependency closure. Five installed callbacks passed: Scope/Bead/Link SSE and sparse streaming; restart/cursor precedence; deep mutation/receipt/Event/Snapshot behavior; missing-first and bounded minimum reads; retained/fresh deep sequence behavior.
-- Exact-candidate CI is pending. Local evidence explicitly reuses 11 successful stages on unchanged source/build/tools and records 14 fresh continuation stages.
+- Exact-candidate [push CI39030688462](https://github.com/gastownhall/bdp/actions/runs/39030688462) passed all workflow steps, including full tests, package smoke and Read evidence. The [PR CI39030713743](https://github.com/gastownhall/bdp/actions/runs/39030713743) also passed on GitHub merge-ref `835e75b7`, whose tree is identical to the candidate; it is separate merge-ref coverage. Local evidence explicitly reuses 11 successful stages on unchanged source/build/tools and records 14 fresh continuation stages.
 
 Two earlier local attempts remain preserved: required CLI initialization failed when a temporary directory inherited an ancestor database path, and the Type example check failed with an absent optional Python date-time checker. Owned `/private/tmp` fixtures and a separately pinned Python environment corrected those prerequisites; neither failure is relabeled.
 

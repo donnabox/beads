@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T11:59:33Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T12:24:57Z. **ACTIVE — separate alias opaque-minimum implementation. Bounded reconciliation PR159 is ready and validated; main landing remains held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T11:59:33Z. **ACTIVE — bounded PR150 reconciliation now; 
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Draft PR159 published; monitor exact resulting CI | Candidate d719 and base8d verified; main landing held |
-| Conditional reviewer | Python prerequisite and checkpoint copy preparation complete | Provision/probe accepted; no product edits |
-| Event reviewer | Continuation mechanics and semantic audit guidance complete | 11 reused stages plus14 fresh; no fabricated pass records |
-| Native reviewer | Final local audit PASS | 25stages,701source,477build,871consumer/17links,322archive members and47PIDs verified |
+| Root | PR159 ready/CI verified; resume separate alias scope | No main landing; frozen checkpoint unchanged |
+| Conditional reviewer | Actual Claude alias CODE review running | PID85077/session54254,1800s bound; exact679source/fourfiledraft |
+| Event reviewer | Closed alias validation preparation |20source selectors, historical36/new6 installed callbacks; no runtime release |
+| Native reviewer | PR159 exactCI audit complete | Pushd719 and syntheticPR835e identicaltree; allstepsPASS |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -381,6 +381,11 @@ Root performed the authorized ordinary merge in the isolated branch: only docs/s
 
 
 [Draft PR159](https://github.com/gastownhall/bdp/pull/159) is published and attached on exactd719 with frozenbase8d. [Native final local audit](pr150-frozen-main-reconciliation/validation-format-dependency-continuation/native-final-validation.md) passed; independently recomputed packed payload39e78bd0,322members/eight-distribution graph, all47inspected PIDs absent. [Publication](pr150-frozen-main-reconciliation/validation-format-dependency-continuation/publication.json) verifiesremote/PRhead and cleanworktree. PushCI39030688462 and PRCI39030713743 are pending, notgreen. Keepdraft until exactCI passes; no mainlanding. Separatealias work remainsfrozenuntil thisbounded checkpoint isreviewable andvalidated.
+
+
+**Bounded reconciliation delivered for review, main held.** [PR159](https://github.com/gastownhall/bdp/pull/159) is ready on unchanged d719/tree630a, base8d. [Exact pushCI39030688462](https://github.com/gastownhall/bdp/actions/runs/39030688462) passed all27steps; [PRCI39030713743](https://github.com/gastownhall/bdp/actions/runs/39030713743) passed on GitHub synthetic835e with identicaltree. [Independent raw CI audit](pr150-frozen-main-reconciliation/validation-format-dependency-continuation/native-exact-ci-audit.md) verifies both9375pass/1skip/187files,7preflight,requiredCLI,package smoke and historical evidence47/46/89. Formatted log truncation and GitHub-masked report limitations are explicit; no remote PIDabsence claim. [Trish ready handoff](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6233831609) gives exact execution attribution; Donna retains mainlandingdecision. Automation now preserves this completed checkpoint and continues separatealias work.
+
+**Separate alias review resumed.** Native CODE review is accepted on frozen fourfiledraft/sourcebinding8b077746/patchf538ccdb, base9d2cd441. Actual Claude CODE review started12:23:42Z, PID85077/session54254,1800sbound, defaultmodel/read-only, no retry. Preparationindex80cf595d/bindingca36284a; noresult yet. Event worker prepares closed validation from20sourcecases plus separately supervised historical36/new6installed callbacks. These remain prospective, not runtimepasses. No product change or validationexecution since frozen draft.
 
 ## Current priority: BDP profile structure and implementation
 

@@ -1,0 +1,33 @@
+Review the actual frozen four-file alias opaque-minimum CODE implementation at /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum, base 9d2cd441eac2be1d2b6487ab5648035e3219cc27. This is an independent complete code review, not a plan-only review or a request to endorse author prose. Do not write or modify any files. Output findings only in stdout. Do not execute commands, imports, tests, builds, formatters, services or installs. Use only Read/Glob/Grep. No retry, no model override, no Gemini.
+
+Read the complete diff and all changed regions/current source, then relevant unchanged helpers as needed. The exact full diff is /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/draft.patch. Four changed paths:
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-read.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-read.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/apps/bdptest/src/transactional-alias-installed.test.ts
+
+Absolute immutable context paths (not relative to cwd):
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/draft.patch
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/plan-v3.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/plan-root-dispositions.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/selection.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/workload.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/observation-contracts.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/preservation.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/lifecycle-and-limitations.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/report.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/source-binding.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/bdp.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-code-review/context/design.md
+
+Accepted production scope is only the private alias kind/tag, missing-first bypass, and successful waitable predicate in transaction-read.ts. The exported classifier must stay unchanged. Stable live matched epoch/view opaque minima remain Unproved until the existing finite timeout; no fabricated recognized position or successful opaque redirect. Every retry must reenter the real owner and current authorization/mapping/context, allowing current absence to win. Tuple capture/receiving/policy/clock/abort/admission order, same-entry nondisclosure, resource position vs alias writes, error propagation and incident-Link exclusion must remain sound. Foreign opaque and retained S1/G2, Types, public discovery/admission, newer main and PR159 reconciliation are excluded. This worktree deliberately retains its pinned monolithic spec; do not import later editorial structure.
+
+Normative references in immutable bdp.md: locator/resource254–269, alias307/authorization1424–1441, lexical/support5820–5832, absent/deleted/hidden alias target5834–5839, remaining-read finite choice5841–5849, excluded retained/Snapshot/incident5850–5851. Do not generalize Resource MUST to alias behavior or treat private500 as conformance. The design context is a historical immutable planning snapshot, not a claim of current workstream state.
+
+Review actual typing/overloads/exactOptionalPropertyTypes, correct fixtures, real-owner instrumentation and observed contexts, hidden/deleted/dangling handling, malformed/known/foreign controls, deferred abort/drain sequencing and failure cleanup. Review all amended HTTP oracles and the entire appended installed callback, not just eight production lines. Ensure HEAD length/body and schema/header assertions are meaningful, original36-request callback is preserved, unique report labels don't collide, request accounting is real, positive redirect control is genuine, no credentials/full unsafe headers are emitted, and one executor uses manual routing with strict pre-dispatch bounds.
+
+Inspect relevant unchanged service/waiter/authority/HTTP and installed launcher/raw executor/helper code through the repository. Installed cleanup must fit existing45swork/5srequest/10stotalcleanup/60scallback, record actual exit and close truthfully, observe pending/late rejections, preserve directory on unclean/unknown/late ownership and delete only after timely clean closure/drain. Promise settlement is not a socket-close census; inspect the explicit limitation instead of demanding an invented observation. Historical callback keeps90swork/120scallback and two children; new callback has six HTTP exchanges/one child.
+
+Prospective validation selection is20 source cases plus two separately supervised installed callbacks (historical36 +new6). Source46 network +3 in-process; combined88 network/22 stores/3 installed children. These are source-derived bounds, NOT observed successful tests or coverage percentages. Static checks/runtime have not run; identify concrete defects including type/formatter issues if visible, but do not execute them. The three additional unchanged legacy regressions are separately selected and attributed. Review root-disposed plan nuances; native reviewer findings are deliberately not supplied as authority.
+
+Return numbered findings with severity, actual file/line, defect, impact and smallest fix; distinguish blockers from optional improvements, unsupported hypotheses and inherited limitations. If no blockers, state that clearly. Preserve limitations about unread context or unverified execution. Do not claim all context was read merely because its paths are listed. No artifact pointer in place of a stdout review.
