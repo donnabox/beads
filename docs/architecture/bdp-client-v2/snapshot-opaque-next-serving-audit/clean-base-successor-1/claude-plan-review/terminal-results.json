@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1064282,
+    "stop_reason": "end_turn",
+    "session_id": "e1b78040-b35e-48e6-a8f6-8083f61127a8",
+    "total_cost_usd": 7.120152500000001,
+    "usage": {
+      "input_tokens": 120,
+      "cache_creation_input_tokens": 201094,
+      "cache_read_input_tokens": 6177001,
+      "output_tokens": 80505,
+      "output_tokens_details": {
+        "thinking_tokens": 63948
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 201094,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 11802,
+          "cache_read_input_tokens": 205551,
+          "cache_creation_input_tokens": 289,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 289
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 7407,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.007487000000000001,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 120,
+        "outputTokens": 80505,
+        "cacheReadInputTokens": 6177001,
+        "cacheCreationInputTokens": 201094,
+        "webSearchRequests": 0,
+        "costUSD": 7.112665500000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 63948,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 67,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Scope and method\n\nRead-only review of the proposed plan v2 + selection-v2 against the frozen worktree at `/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum` (HEAD `08812c6`, clean per session git status). I read: `transaction-http.ts` (full route + handle), `read-http.ts`, `read-http-routing.ts`, `transaction-service.ts` (run/receipt helper/readAtMinimum/snapshot/events/receiptPage/receiptAtMinimum/receipt/close), `transaction-consistency.ts` (full), `transaction-store.ts` (`observeReceipt`/`disclosedReceipt`/`readReceipt`/`observeSnapshot`/`readEvents`/`readReceiptPage`), the three selected service callbacks and all neighbouring minimum fixtures in `transaction-service.test.ts`, every minimum-bearing receipt site in `transaction-http.test.ts`, the whole installed callback, `scripts/transaction-installed-observation.mjs`, `apps/bdptest/test-support/transactional-execution-binding.ts`, `vitest.config.ts`, `transaction-runtime*.ts` budget defaults, and `docs/specs/bdp.md` 4985\u20135011 / 5820\u20135895. I also searched the whole repo for out-of-boundary dependents on receipt-root minimum behavior.\n\n**Disclosure:** the stated `context/` directory (plan-v2.md, selection-v2.json, rebind.json, plan-v2-binding.json, ci-39012707852.json, design.md, required-contract-matrix.md) is not present at or beside the working directory; `Glob` found no such path. I therefore reviewed the plan and selection **as reproduced in the prompt** against actual source. The 679-byte equality, tree `9b6f50b9\u2026`, and CI `39012707852` success/27-steps are **not verifiable with read/glob/grep only** and are treated as unchecked inputs, not as established facts. `bdp.md` is in-repo (`docs/specs/bdp.md`) and was read directly. No approval is inferred from any other reviewer or from task chronology.\n\n---\n\n## What the plan gets right (verified against source, not prose)\n\nThese are stated because they bound the findings below, not as endorsement of the whole plan.\n\n- **Six-file boundary is actually sufficient.** No new imports are needed: `transaction-store.ts:44,46` already imports `checkCurrentReadMinimum`/`snapshotCurrentReadMinimum`; `transaction-service.ts:9` already imports `snapshotCurrentReadMinimum`; `transaction-http.ts:17` already imports `currentReadMinimumHeaders`. `readReceiptPage` is a **separate** function (`transaction-store.ts:2234\u20132257`) that keeps `snapshotTransactionMinimum`, so \"page stays strict\" needs no store edit.\n- **Every precedence claim matches real source.** `transaction-store.ts:956\u2013974` is exactly: principal/id validation + data-only capture before `enter`/`atomic`; `disclosedReceipt` (principal disclosure) \u2192 own `\"unsupported\"` sentinel **before** `readContext()` \u2192 same-entry context \u2192 `!stored` absence \u2192 minimum check \u2192 `expireRow(stored, instant())` \u2192 `observeReceipt`. `transaction-service.ts:616\u2013632` is exactly: synchronous `run()`\u2192`check()` \u2192 401 inside the async body \u2192 captured `principal` \u2192 `\"unsupported\"` branch \u2192 tuple capture \u2192 `waitForTransactionMinimum`. `transaction-http.ts:403` (401) precedes `:404\u2013405` (400 malformed) precedes the receipt route at `:550`.\n- **Malformed-vs-closed distinction is real.** Capture at `transaction-service.ts:630` is inside the async body \u21d2 rejected promise; `run()`\u2192`check()` at `:141` is synchronous \u21d2 closed store throws synchronously. The warning \"do not move capture into the first attempt by analogy with Events\" is grounded: `events()` at `:496\u2013527` does capture inside `attempt()`, which would consume one extra `now()` sample on malformed input.\n- **Conditional/media expectations are correct.** `applyReadHttpSemantics` (`read-http.ts:10\u201339`) only rewrites `200`+`application/json` or `204`, so a 503 problem cannot become 304/412/406; `:42\u201345` strips the HEAD body while setting content-length. `jsonResponse` supplies `private, no-store` and `problem()` sets `retry-after: 1` for `after-delay`.\n- **All counters I could derive are exact.** Absence callback (`transaction-service.test.ts:2253\u20132389`): 4 root, 4 page, 0 waits, **5** clock calls (3 loop pages + 1 final page + 1 `ahead` root; `\"unsupported\"` root bypasses the waiter), 2 submits \u2014 matches selection. Existing R rows (`:894\u2013932`): one combined foreign-principal+foreign-epoch call (1 attempt, 1 clock) + own read (budget 2/`tick++`), giving 3/1/4 (no-forget) and 3/1/3 (forget) \u2014 the plan's parenthetical \"second own attempt returns 404 without another failure-clock sample\" is literally right. A (budget 3, `tick++`): 3/3/1/1/1/1/0/0 \u21d2 10 attempts, 4 waits, 11 clocks, 2 submits \u2014 self-consistent with `waitForTransactionMinimum` (`clocks = 1 + failures`, `waits = failures \u2212 1` on timeout). B: 2/1/3 \u2713. D: rows 2/3/4 are the only waiting rows \u21d2 exactly 3 waits \u2713. HTTP request/method totals (7/6/3/10/10 = 36; POST 6/GET 21/HEAD 9) \u2713. Installed 22 \u2713 (`:209`, `:534`).\n- **The budget-2 seam really is required, not a convenience.** `vitest.config.ts` sets no `testTimeout` \u21d2 5 000 ms default; `transaction-http.test.ts:2175` passes only `maintenanceIntervalMs`, so the four own requests would each burn the default 1 000 ms budget on top of the real `1100 ms` sleep at `:2183`. The precedent seam already exists verbatim at `:1543`.\n- **Retention oracle survives.** The minimum check at `transaction-store.ts:970\u2013971` precedes `expireRow` at `:972`, so the new 503 path performs no read-triggered disposal; `retainedReceipts()` (`:102\u2013113`) closes and reads SQLite without reopening and orders by key \u21d2 `[failed, completed]` holds.\n- **Installed numbers fit the existing bounds.** `minimumReadBudgetMs: 1000` (`transaction-runtime-configuration.ts:112`, threaded at `transaction-runtime.ts:341`) \u21d2 each installed timeout costs ~1 s against the 5 s per-request `AbortSignal.timeout` (`:251`) and 45 s work deadline (`:136`). `launchInstalledTransaction.close()` already enforces `code === 0 && signal === null`, so E's stricter \"exit 0 / null signal before clean flag and deletion\" is achievable.\n- **Blast radius claim checks out.** I searched every in-repo site that sends a minimum tuple to a receipt root. The only existing callbacks whose observable behavior changes are the two the plan selected (`transaction-http.test.ts:2174` and `transactional-minimum-receiving-installed.test.ts:494\u2013505`). `transaction-http.test.ts:2221` is a `/pages/` target; `:1739`, `:1968`, `:2167`, `:1557` use recognized positions; `:3130` is an alias; `:4532\u20134533` sends a partial tuple (400); `:4819` and `:5612` are Resource/collection and Snapshot. No direct `owner.readReceipt(\u2026, lexicalTuple)` exists outside the selected service test, and no test asserts `\"unsupported minimum tuple\"` on a receipt path. `fixtures/transactional/*.json`, `packages/protocol/src/transactional-http-contracts.test.ts` and `packages/conformance/src/*` are declarative data and never construct this server.\n- **Spec citations are accurate and honestly framed.** 5834\u20135839 enumerates Beads/Links/properties/alias/initial `view=links` only \u2014 receipts are genuinely absent, as the plan concedes. The narrow MUST starts at 5844 and is scoped to \"an existing authorized current Bead or Link Resource or properties view\"; 5841\u20135843 is the general remaining-read law that enumerates catch-up-timeout; 5850\u20135851 limits the MUST's reach without excluding receipts. 5853\u20135857 does explicitly retain minimum controls on \"subsequent Mutation Receipt GET or HEAD\". 5876\u20135878 requires minimum before conditional shortcut; 5880\u20135882 extends HEAD rules to \"receipt/page URLs\". The plan's \"reference choice, not a fabricated receipt-specific Resource MUST\" is a correct reading.\n\n---\n\n## Blockers (must be fixed in the plan before authoring)\n\n**1. Severity: High \u2014 `checkCurrentReadMinimum`'s third argument is load-bearing and the plan never states it.**\n*Plan location:* \"Use existing current-minimum check for lexical tuples: matching unknown is Unproved\u2026 foreign unknown remains private unsupported.\" *Source location:* `packages/server/src/transaction-store.ts:970\u2013971`; helper `transaction-consistency.ts:115\u2013132`.\n*Issue:* `checkCurrentReadMinimum(minimum, context, waitable)` branches entirely on `waitable`: `false` \u21d2 `TransactionMinimumUnsupported` (private 500) for **every** unknown position, `true` \u21d2 `TransactionMinimumUnproved`. The plan names neither the call site nor the literal, and the adjacent sentence about \"private unsupported\" invites the wrong value. The existing precedents are conditional (`transaction-store.ts:1588`, `:1705` pass `true` only under a classifier; `transaction-read.ts:218` passes `false`), so \"existing check\" alone does not determine it.\n*Impact:* An author following the plan literally could emit `false`, which still satisfies the plan's \"own unsupported\" language while contradicting D rows 2\u20134, A, both R-opaque rows and E \u2014 i.e. the entire deliverable inverts with one boolean.\n*Smallest correction:* State the two store edits exactly: at `:959\u2013962` replace `snapshotTransactionMinimum(minimum)` with `snapshotCurrentReadMinimum(minimum)`; at `:970\u2013971` replace `checkTransactionMinimum(condition, context)` with `checkCurrentReadMinimum(condition, context, true)`, with the one-line justification that `true` is unconditional here because `receiptAtMinimum` is the only minimum-bearing caller and it always wraps a finite waiter.\n\n**2. Severity: High \u2014 the HTTP root and page branches currently share one computed `minimum` constant; the plan's \"only root uses `currentReadMinimumHeaders`\" does not say it must be split.**\n*Plan location:* \"Only root branch uses currentReadMinimumHeaders, retaining undefined/has-controls fence. Page branch stays strict, including its unsupported sentinel.\" *Source location:* `packages/server/src/transaction-http.ts:551\u2013553` (single `const minimum`), consumed by the page branch at `:559` and the root branch at `:575`.\n*Issue:* The one-line edit a reader would make (`transactionMinimumHeaders` \u2192 `currentReadMinimumHeaders` at `:552`) relaxes **both** branches. A lexical tuple would then reach `service.receiptPage` \u2192 `snapshotTransactionMinimum` (`transaction-service.ts:586`) \u2192 `TypeError` \u2192 rejected \u2192 the generic `else response = empty(500)` at `transaction-http.ts:664`, i.e. a 500 **without** `x-bdp-development-limit`.\n*Impact:* Silently destroys the page unsupported sentinel and breaks the installed historical page assertion the plan promises to keep (`transactional-minimum-receiving-installed.test.ts:503`, `expect(headers[\"x-bdp-development-limit\"]).toBe(\"minimum-position\")`) \u2014 a failure in the one file the plan says only changes its owned-root assertion.\n*Smallest correction:* Add one sentence: the shared `const minimum` at `transaction-http.ts:551\u2013553` must be split into a per-branch computation \u2014 page keeps `transactionMinimumHeaders(...) ?? \"unsupported\"`, root alone uses `currentReadMinimumHeaders(...)`.\n\n**3. Severity: Medium-High \u2014 the R row table as specified cannot preserve the two historical titles.**\n*Plan location:* \"Preserve final historical titles (false)/(true)\u2026 Row-label/forget/minimumPosition table is enough.\" *Selection location:* `R-false` / `R-true` entries with `\"new\": false`. *Source location:* `packages/server/src/transaction-service.test.ts:894\u2013896` \u2014 `it.each([false, true])(\"\u2026 receipts (%s)\", async (forget) => \u2026)`.\n*Issue:* The current titles are produced by `%s` interpolating a bare boolean. A three-field row table whose rows are objects renders the object, not `false`/`true`, so both \"unchanged\" evidence identifiers change.\n*Impact:* The selection's `\"new\": false` claim for the two historical rows becomes false, which is exactly the kind of relabeling the plan forbids elsewhere (\"Do not\u2026 relabel historical evidence\").\n*Smallest correction:* Specify a **label-first tuple** table (`[[\"false\", false, \"pos-1\"], [\"true\", true, \"pos-1\"], [\"opaque false\", false, \"unknown\"], [\"opaque true\", true, \"unknown\"]]`) keeping the `%s` format string, or `$label` object interpolation \u2014 either renders the first two titles byte-identically.\n\n**4. Severity: Medium \u2014 \"foreign\" is overloaded across the plan in a way that contradicts the plan's own precedence list.**\n*Plan locations:* store paragraph \"foreign unknown remains private unsupported\" vs the same paragraph's ordering \"missing/foreign absence; semantic minimum\", vs R's \"foreign principal/foreign epoch lookup\" (asserted 404) and A's \"foreign/missing404\".\n*Source location:* `transaction-store.ts:969` (`if (!stored) return {receipt: undefined, context}`) precedes `:970\u2013971`.\n*Issue:* A foreign-**principal** read with an unknown tuple returns 404-with-context because absence precedes the check; only a foreign **epoch/view** with an unknown position reaches `checkCurrentReadMinimum` and yields the private 500. The single word \"foreign\" is used for both, in adjacent sentences that demand opposite assertions.\n*Impact:* The R-opaque rows and D rows 5/6 are written from the same paragraph; a reader applying the \"unsupported\" reading to the R foreign row (or the \"404\" reading to D 5/6) authors assertions that fail.\n*Smallest correction:* Disambiguate once: \"foreign **principal** (and missing) identities return 404 with current context before any minimum comparison; only a foreign **epoch or view** paired with an unrecognized position yields the private unsupported 500.\"\n\n---\n\n## Optional suggestions (non-blocking)\n\n**5. Severity: Low \u2014 D rows 7 and 10 are route-independent fences, not receipt-root observations.**\n`transaction-http.ts:403` (401) and `:404\u2013405` (400 malformed, no context) fire before the receipt route at `:550`, so both rows pass identically today and for any target. Correction: label them in the D table as preserved shared receiving/auth fences so the 10-request total is not read as 10 receipt-branch observations.\n\n**6. Severity: Low \u2014 D row 3 / E row 3 would be stronger as content-length parity rather than \"503 empty\".**\n`read-http.ts:42\u201345` sets HEAD `content-length` from the serialized problem body while dropping it, which is exactly the oracle the installed callback already uses (`transactional-minimum-receiving-installed.test.ts:433\u2013436`, `malformedLength`). Correction: assert HEAD 503 `content-length` equals the paired GET 503 `content-length` with a zero-octet body.\n\n**7. Severity: Low \u2014 the receipt minimum wait is the only minimum-bearing path that ignores `request.signal`; say so where the plan declines to add one.**\n`transaction-service.ts:631` calls `waitForTransactionMinimum(attempt, minimumReads)` with no signal, and `transaction-http.ts:575` passes none, whereas `snapshot`/`events`/`changes`/`readAtMinimum` all forward one (`:291, :402, :462, :486, :530`). The plan's \"No new AbortSignal API; the finite registered lifetime drains on close\" is a defensible minimal choice, but as written it reads as an oversight. Correction: add the explicit note that this asymmetry is pre-existing and deliberately retained, so B's \"no invented AbortSignal/disconnect claim\" is understood as scope, not as a gap to be closed for symmetry.\n\n**8. Severity: Low \u2014 D rows 5/6 encode a declared gap as an expectation; tie them to the stated exclusion.**\nUnder the general law the plan relies on (5841\u20135843), a foreign view/epoch enumerates 409 foreign-view / 410 cursor-expired; the reference instead emits the private 500 because `checkCurrentReadMinimum` classifies the unknown position first. The plan already excludes \"foreign opaque policies\", so this is consistent \u2014 but the new callback will be the written record. Correction: one sentence in the D description marking rows 5/6 as a preserved, excluded-scope private gap rather than a conformance position.\n\n**9. Severity: Low \u2014 B should state that the post-close probe calls the raw owner, not the counting delegate.**\n`separatePostCloseOwnerProbes: 1` only reconciles with `rootAttempts: 2` if the probe bypasses the wrapper, as the absence callback's shape permits (`transaction-service.test.ts:2278\u20132286` wraps only the object handed to `createTransactionService`). Correction: \"probe `f.owner.readReceipt` directly (uncounted), expecting the closed-store throw\".\n\n**10. Severity: Low \u2014 the \"120 s outer supervisor\" bound has no in-repo enforcement point.**\n`vitest.config.ts` sets no `testTimeout`/`hookTimeout`/`teardownTimeout`, and the installed file encodes only 5 s/45 s/10 s/60 s. Correction: name the stage that enforces 120 s (runner/CI), or drop it from the plan's bound list so it is not read as a code-level guarantee.\n\n**11. Severity: Low \u2014 cite 5850\u20135851 explicitly in the behavior section.**\nThat sentence (\"This rule does not establish precedence for retained continuations or Snapshots, nor extend unrecognized-position waiting to successful incident-Link lists\") is the actual textual basis for treating the 5844 MUST as non-extending, and its silence about receipts is why the choice is permitted rather than mandated. Correction: add the line range beside the existing 5841\u20135851 citation.\n\n**12. Severity: Informational \u2014 unverified inputs.**\n`context/` was not readable; the 679-byte equality, tree `9b6f50b9a6b9eea953a6407599090c259cf97331`, and CI `39012707852` could not be checked with read-only tools. The plan's own gate already requires a release-time recheck of those pins, which is the correct place for them \u2014 no change requested, but this review's \"frozen base\" verification rests on the clean worktree source I read, not on those artifacts.\n\n---\n\n## Bottom line\n\nFour blockers (1\u20134), all plan-text precision defects rather than design errors: a missing `waitable` literal and capture-function name, an unflagged shared `const minimum` that would break the page fence the plan promises to keep, an `it.each` title mechanism that cannot preserve the two historical identifiers the selection marks unchanged, and an overloaded use of \"foreign\" whose two readings demand contradictory assertions. Eight optional suggestions.\n\nSubstantively, the plan is feasible on this exact base: the six-file boundary needs no new imports or helper changes, the stated precedence matches `transaction-store.ts:956\u2013974` / `transaction-service.ts:616\u2013632` / `transaction-http.ts:403\u2013586` line for line, every counter I could derive independently (absence 4/4/0/5/2; R 3/1/4 and 3/1/3; A 10/4/11/2; B 2/1/3; D 3 waits; 36 HTTP with POST 6/GET 21/HEAD 9; installed 22) reproduces, the budget-2 seam is genuinely forced by the 5 s vitest default plus the real 1100 ms isolation, the retention oracle survives because the minimum check precedes `expireRow`, and no test outside the six files depends on the behavior being changed. No source files were created or modified; nothing was executed.",
+    "ttft_ms": 2598,
+    "type": "result",
+    "duration_ms": 1122785,
+    "uuid": "504d2df0-d7ea-46c6-8fd9-c06d103224ad",
+    "ttft_stream_ms": 1130,
+    "time_to_request_ms": 11,
+    "first_content_frame_ms": 1131,
+    "queued_turn_count": 0
+  }
+]

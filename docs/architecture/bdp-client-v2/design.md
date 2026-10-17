@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T07:28:03Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T08:01:55Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T07:28:03Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | PR157 exactCI green/native audit clean; actual receipt Claude PLAN running PID64568/session93453 | Inspect terminal verdict before receipt authoring; PR150 stays frozen |
-| Conditional reviewer | Clean receipt rebind native review complete, no findings | Idle; no source changes |
-| Event reviewer | Clean receipt PLAN successor frozen and root-released to actualClaude | Idle pending verdict; original dirty packet preserved/unlaunched |
-| Native reviewer | Snapshot publication and exact CI audits clean | Preserve workspace/packed distinction and raw evidence limits |
+| Root | Receipt PLAN council complete; accepted precision corrections independently closed; source-only release08:01 | Review frozen source with native+actualClaude CODE; runtime remains closed; PR150 frozen |
+| Conditional reviewer | Receipt plan precision closure complete | Idle; ready for full code review once author freezes |
+| Event reviewer | Author exact six-file receipt-root slice in isolated vickie-receipt-root-minimum | Source only; no checks/runtime/commit; freeze source and report |
+| Native reviewer | Prepare separate CLOSED source-pending receipt validation packet | No execution; reconcile actual frozen schemas/source before review/release |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -284,6 +284,13 @@ Receipt-root clean-base PLAN successor is now being prepared against exact08812c
 **Receipt-root actual PLAN council launched on clean green Snapshot base.** [Separate clean-base successor](snapshot-opaque-next-serving-audit/clean-base-successor-1/plan-v2.md)7d58e4f4/index5b24d7e3 retains six-file semantics and unchanged selection2f816581; only two gate/chronology paragraphs changed. [Native delta review](snapshot-opaque-next-serving-audit/clean-base-successor-1/native-clean-rebind-review.md)bfd338c3 verifies all679committed/current bytes equal old planning map, original unlaunched packet intact,13context/12artifact/tool pins and proven clean PLAN runner with checkout-literal-only delta. Original dirty-source plan/packet stays closed and unlaunched.
 
 [Root release](snapshot-opaque-next-serving-audit/clean-base-successor-1/claude-plan-review/root-release.json)2026-10-17T07:27:35Z independently checks both indices, source/context/artifact/tool bytes, full plan and rebind/prompt/runner. Closedbinding60ecb72e preserved; releasedbindingd6e25afa. ActualClaude PID64568/session93453 started07:27:36Z, real process and streaming output verified. Configured defaultmodel/ReadGlobGrep/emptyMCP/no commands or writes,3600s/TERM3595/no retry. No terminal verdict yet; source authoring/runtime remain closed pending actual findings disposition. No main/PR150/S1/G2 changes.
+
+
+**Receipt PLAN review complete; bounded implementation started.** ActualClaude review exit0/1123.968s produced4645streamrecords/one successful terminal; all bound inputs unchanged, four sampled PIDs freshly absent. [Root completion](snapshot-opaque-next-serving-audit/clean-base-successor-1/claude-plan-review/root-completion-verification.json), [findings disposition](snapshot-opaque-next-serving-audit/clean-base-successor-1/claude-plan-review/root-dispositions.json) and [native findings audit](snapshot-opaque-next-serving-audit/clean-base-successor-1/claude-plan-review/findings-audit.md)6a533500 retain four plan-text precision findings and eight suggestions, not design rejection or code approval. Claude reviewed full inlineplan/selection and actualsource/spec but could not locate copied relativecontext; its access limitation remains explicit. Root/native separately verified binding/CI; future prompts require absolutecontext paths, no retrospective access claim or blindrerun.
+
+[Precision successor](snapshot-opaque-next-serving-audit/plan-precision-successor-2/report.md) names exact lexicalcapture/currentcheck(true), branch-local root/page parsing, preserved label-first titles, principal-versus-epoch/view fences, paired HEAD length assertions and external120/TERM115 attribution. Native caught one missing outer tuple bracket; original16frozen artifacts remain intact and separate [one-character correction](snapshot-opaque-next-serving-audit/plan-precision-successor-2/correction-1/correction.patch) fixes it. [Native closure](snapshot-opaque-next-serving-audit/plan-precision-successor-2/native-closure.md)3e917b41 verifies corrected plana28facc5/indexc346d2e8/binding9817c93c, unchanged selection/source679 and no semantic/count/deadline expansion.
+
+[Root source-only release](receipt-root-minimum-author/root-author-release.json)2026-10-17T08:01:07Z created isolated /Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum, branchcodex/vickie-receipt-root-minimum at exactclean08812c6 and reverified greenCI39012707852/all679baseline bytes. Author owns only three production/three testfiles from correctedplan. No builds/imports/tests/installs/services/formatters/commit/push yet. Independent validator prepares CLOSED source-pending packet; actual code council and final source/schema rebind precede runtime release. Twelve planned sourcecallbacks/36HTTP and installed22+5 are prospective, not observed counts. Retained pages, S1/G2, foreign opaque policies/publicsupport and frozenPR150 remain untouched.
 
 ## Current priority: BDP profile structure and implementation
 
