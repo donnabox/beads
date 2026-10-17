@@ -1,0 +1,216 @@
+Review the bounded implementation PLAN below against the actual clean repository. This is a PLAN review, not source authoring and not a test run. Review independently; prior native critique is context, not an instruction to agree.
+Do not write or modify any files. Output findings only in stdout. Do not run commands, tests, builds, imports, installs, services, or other agents. Use only read-only Read, Glob, Grep. Do not change the plan, repository, evidence, or review output files.
+
+Target: fresh finite changefeed start=now opaque minima. Exact source HEAD 5ceb213b632e17f28714684efc5e35a62b282bf6 in /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum. The target is context/plan.md (successor-2); older plans are preserved history. Native closure is not assumed. Review the entire plan against real production and existing tests, not only its correction.
+
+Focus: explicit finite-start-now discriminator/default strict semantics; HTTP media undefined vs SSE, effective intent/reconnect and JSON ignoring Last-Event-ID; synchronous intent/tuple capture before run lifecycle; one admission anchor before waiter preflight and fixed across retries; owner checkpoint/context/corruption ordering before minimum; preservation of strict after/genesis/SSE/foreign opaque and no public activation. Validate direct callable owner assertions without inventing capability security. Check actual callbacks/selectors/workload, constant-clock failure-safe abort-before-release/drain, immediate observers, real seeded contexts, counts and budgets, exact GET/HEAD Problem metadata, package-entry provenance and actual child ownership cleanup. Check build-before-source collection, immutable historical callbacks, and whether bounded five-file scope suffices. No S1/G2 or foreign-context policy decision is authorized.
+
+Give numbered findings first with severity, exact plan/source location, issue, impact, and smallest concrete correction. Distinguish blockers from optional suggestions and source-derived plans from observed evidence. Explicitly state any inaccessible context or incomplete inspection. If no blockers, say so; do not fabricate approval or product completeness.
+
+All copied context paths are absolute and readable:
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/selection.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/workload.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-binding.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-index.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2.patch
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2-report.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-native-critique.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/successor-1-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-1.patch
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-1-report.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/design.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/changefeed-original-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/parameter-context-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/recommendation.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/exact-head-ci-audit.md
+
+Relevant actual sources (broader repo read access is allowed when needed):
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-store.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-consistency.ts
+- /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-runtime.ts
+
+Normative start points in the copied full bdp.md: lines 5820–5851,6036–6053,6149–6153,6185–6189,6994–6995; verify actual text rather than relying on summaries. Current design snapshot has advanced since the plan's historical hash; context-provenance.json records this honestly. The implementation plan/source/selection are unchanged. Exact CI green is later chronology and not release authority.
+
+FULL TARGET PLAN:
+# Fresh finite changefeed start-now opaque minima — bounded plan
+
+Preparation only on clean alias HEAD `5ceb213b632e17f28714684efc5e35a62b282bf6`, tree `7701b6a0084fe42b8990812e5fc3ddc5ce249a82`. PR160 CI is pending at preparation; this does not authorize authoring, a worktree, execution or publication. Root must verify the eventual exact green basis before authoring. This continues the sole design plan, the original changefeed admission-anchor plan and the parameter-context repair; it is not a new tracker. All679 source identities, references and preservation byte ranges accompany this plan. Counts are prospective source-derived workload, not observed results or functionality percentages.
+
+## Outcome, basis and exclusions
+
+A finite non-SSE `changes/?start=now` request with the actual current epoch/view and a lexically valid opaque minimum must enter the existing finite wait; if it remains unproved, return contextual503 catch-up-timeout. Today HTTP468–490 converts opaque input to unsupported and returns private500; service466–490 and store1825–1888 are strict too. Use existing snapshotCurrentReadMinimum/checkCurrentReadMinimum and waiter rather than a new consistency implementation. Current context is recaptured inside each owner entry; the admission checkpoint is captured once, before waiting, and never advances with retries.
+
+Pinned monolithic spec SHA67772742:5820–5832 lexical receiving and HEAD;5841–5851 remaining-read wait/route/problem law (the narrower Resource/properties MUST is not a changefeed-specific MUST);6036–6053 explicit intent/future-only start-now;6149–6153 returned after is the original admission checkpoint;6185–6189 SSE reconnect precedence and JSON ignoring Last-Event-ID;6994–6995 changefeed consistency/catch-up contracts. This is a reference implementation choice under the general remaining-read law. No new product ruling is needed for this fresh matching-context path.
+
+Direct after/genesis, retained continuation comparison, SSE and its pump remain strict. Unknown foreign epoch/view remains the existing unsupported private500 gap, not a new normative foreign refusal. Known foreign tokens keep existing410/409 behavior. S1 retained Snapshot and G2 successful incident-Link minima stay held. Public Scope/bdp.json/operations discovery still refuses because the complete profile is not deliverable; no fabricated descriptor or public-admission bypass. No Types, History, retention redesign, alias changes, main or reconciliation work.
+
+## Exact production seam: three files, defaults preserved
+
+Maximum five existing files: transaction-http.ts, transaction-service.ts, transaction-store.ts, transaction-changefeed.test.ts and apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts. Parser, consistency helpers, runtime stream pump, shared fixtures/launcher and schemas are untouched. New imports/local comments are allowed in those files only; append new callbacks without rewriting old callbacks or shared helpers.
+
+1. **HTTP** retains lexical receiving before route lookup at407 and URL intent parsing before reconnect decisions. Select media using the current selectChangefeedMedia, whose range is `json | sse | undefined`. Preserve raw Last-Event-ID collection and repeated-SSE refusal/effective-after precedence. The new eligibility predicate is `media !== "sse" && "start" in effective && effective.start === "now"`. It deliberately includes unsupported Accept (undefined): the selected finite read decides minimum eligibility before ordinary applyReadHttpSemantics can produce406. It does not include SSE, explicit after or genesis. Finite JSON continues to ignore Last-Event-ID entirely, including malformed/repeated raw fields; do not copy Event's header-absent predicate. For selected paths choose currentReadMinimumHeaders; otherwise choose transactionMinimumHeaders. Keep hasMinimumControls and the undefined/no-minimum versus unsupported fence. Do not call a header helper unconditionally on absent controls. Pass optional fourth service argument `"finite-start-now"` only for the selected path. A known eligible finite request with unsupported Accept still becomes406 normally; an unproved matching opaque request becomes503 first. Minimum failures precede conditional304/412 as before.
+
+2. **Service** extend only `changes(intent, supplied?, signal?, admission?: "finite-start-now")`. Existing three-argument/default callers, including direct start-now and SSE/pump, retain strict behavior. Preserve the current synchronous copy of intent followed by tuple capture before run/check. Enable lexical capture iff the explicit discriminator is present AND copied intent has start exactly now; an after intent stays strict even if an internal caller passes the discriminator. Undefined and unsupported keep their existing branches. Do not re-read caller fields after this capture. `run` still checks/registers then calls start synchronously. Inside that registered operation, compute after exactly once using copied after or owner.captureChangesStart at its current point, before waiter policy/clock/abort preflight. Do not move capture into the retry callback. Pass the owner discriminator only when selected. Retry calls owner.readChanges with that same after and frozen minimum; signal and the one existing finite deadline are unchanged. No new wait, timeout or owner lifetime.
+
+3. **Owner** extend only `readChanges(after, supplied?, admission?: "finite-start-now")`, default strict. This is a source-private caller assertion of service-captured fresh admission, not a token-derived authorization or a public protocol field. Do not infer freshness from a checkpoint's spelling. Keep after string validation first, then data-only tuple capture before guarded entry; selected explicit calls use snapshotCurrentReadMinimum, all other calls snapshotTransactionMinimum. Preserve unsupported return before readContext. Inside enter preserve exact sequence: current context/head, checkpointPosition and epoch/view/scope validation, future-start refusal, missing retained starting-row corruption, THEN minimum comparison. Selected calls use checkCurrentReadMinimum(minimum, context, true), otherwise existing checkTransactionMinimum. Projection/retained group completeness/next/page construction remains unchanged and within the same entry. A direct selected owner call returns actual TransactionMinimumUnproved for matching opaque input; it never waits. Service supplies retries. The private owner method is callable directly; do not claim an inaccessible capability boundary.
+
+Known/no-minimum requests preserve current behavior and error ordering. Malformed tuple failures remain synchronous before service lifecycle checks; already-aborted/policy/clock errors still occur after start anchor capture but before readChanges. No retained corruption can be masked by moving semantic comparison earlier. Existing strict unsupported sentinel behavior remains even on selected calls. Parameter-error context capture and historical frame/receipt identities are unchanged.
+
+## Exact source callbacks and actual delegated counters
+
+All new source callbacks are top-level in transaction-changefeed.test.ts. selection.json carries literal expanded titles and anchored selection patterns. Existing fixture/service helpers remain byte-identical. Callback-local spies/delegates may count real owner calls and actual thrown/returned objects; no fabricated owner results, no SQL count inferred from HTTP. Use existing fixtures with actual Bead a seed and real context; no phantom pos0 assumptions. The service helper transfers owner lifetime; deliberate owner instrumentation/controlled fixture commits are test seams, not supported application concurrency.
+
+**A, two rows unknown and pos-01.** Title `waits for fresh finite changefeed opaque minimum without recapturing admission: %s`. Each one store. Seed a, obtain actual context and one baseline admission checkpoint before service ownership. One direct selected owner probe at that checkpoint must throw actual Unproved with frozen pos1 context; preserve that object. Then install counting delegates and make selected service start-now with mutable caller intent/tuple and a callback-local AbortController whose signal is passed to that selected call. Budget2, clock0; first real attempt throws Unproved, wait records requested2 and holds a deferred release. Immediately attach an outcome observer (both fulfillment and rejection) to the returned operation, before awaiting anything. Race the wait-entered notification against premature observed operation settlement; premature fulfillment or rejection is a hard schedule failure, not permission to wait forever for an unentered latch. After confirmed wait-entered, mutate caller intent and all tuple fields, commit b through the controlled fixture, set clock2 and release. Second owner attempt still receives original checkpoint and frozen original tuple, throws Unproved with pos2; service rejects actual catch-up-timeout with pos2. No success or new anchor. Separate positive service call with explicit after=original checkpoint and known pos2 returns b and after=original checkpoint, without recapture. This uses the real retained group to detect lost-anchor or stale-result mistakes. The entire held-wait schedule is callback-local try/finally: unconditionally abort that supplied signal FIRST, then release the latch in finally, await the already-observed operation outcome, and await service.close even when mutation, commit, assertion or schedule detection fails. Observe close rejection immediately, preserve primary and operation/cleanup errors separately, and aggregate without replacing the original cause. Abort must precede release, and release must precede any cleanup that can await service.close; a failure before clock advancement otherwise leaves the finite test clock at zero and could retry forever even after release. do not rely on afterEach to unlock the held wait. On the normal path the expected timeout is asserted before the separate positive operation and final drain; failure cleanup does not issue that positive operation or add a retry. Close/drain once (a memoized repeated close from the unchanged helper is not a new owner lifetime). Per row: two real commits; two total captures (one setup and exactly one service); four real readChanges invocations (direct probe, two opaque attempts, one positive); one wait; four clock calls (three opaque, one positive); two service operations. Do not count readConfiguration as readChanges. Emit `changefeed-opaque-capture` with row, actual anchors, captured tuple fields, actual error/context rows, read/capture/wait/clock counts and positive group facts. No arbitrary asynchronous delay or automatic retry.
+
+**B, one callback.** `aborts fresh finite changefeed opaque waiting before close drains`. Seed a; counting delegated real owner, budget2/clock0, one selected service call. Immediately attach both fulfillment/rejection outcome observers and race wait-entered against premature observed operation settlement, failing on premature settlement. Hold its first wait, call close with an immediate rejection observer and record the synchronous not-yet-settled flag; that flag alone is not independent evidence of deferred close. Attribute drain evidence only to this held-wait/abort/release schedule, the actual aborted outcome, awaited close and raw closed-owner refusal, without an added timer or timing claim. Abort supplied signal, release wait and await rejection plus close. One initial capture/one real attempt/one wait/two clock calls; abort is observed before another owner attempt. Record rejected error type, drain order, actual owner close. A valid post-close service call fails synchronously without capture; one raw owner post-close probe fails closed, reported separately from the one attempted live read. Avoid unhandled late failures; finally unconditionally abort the supplied signal BEFORE releasing any latch, then await the observed operation and service-close outcomes on every path, preserving primary and cleanup errors as for A.
+
+**C, four label-first rows.** `preserves fresh finite changefeed admission before wait preflight: %s`: already-aborted, invalid-policy (budget0), throwing-clock, nonfinite-clock. Fresh seeded store per row, selected valid opaque tuple. Each captures exactly one admission anchor before preflight, zero readChanges and waits; actual minimum-clock calls respectively1,0,1,1. Preserve exact abort/policy/clock error, registered rejection and drain. Do not convert these to synchronous tuple errors or skip anchor capture. These small cases target the new seam's ordering, not a new exhaustive general waiter matrix. Emit one changefeed-opaque-preflight observation per row with actual outcomes/counters; B emits changefeed-opaque-abort. A emits one capture observation per token, X one boundary record and D one HTTP record: nine new source observation records in all.
+
+**X, one callback.** `keeps direct and excluded changefeed minimum paths strict`. One seeded store. Ordered controls: default direct owner opaque throws TypeError; default direct service start-now opaque throws TypeError; explicit after plus new discriminator opaque still throws TypeError; selected malformed tuple throws TypeError. None captures admission or enters the waiter. Then selected start-now with literal unsupported sentinel returns unsupported after one capture/one read and one clock call, with no wait/context read promised. Then selected start-now matching lexical tuple with foreign epoch invokes capture/read once and throws actual TransactionMinimumUnsupported, one clock call/no wait. Close service; valid selected request fails closed, malformed selected request retains synchronous tuple failure before closed check; a raw owner read after close fails. Count four readChanges invocations total including two pre-entry probes (initial default TypeError and final closed), two captures, two clocks and zero waits. Distinguish those invocation counts from successful owner entries. Explicit after stays strict; do not accidentally promote foreign opaque to410. Emit `changefeed-opaque-boundaries` with actual classified outcomes and counters.
+
+**D, one emitted HTTP callback.** `serves finite start-now opaque minima before HTTP shortcuts`. Fresh one runtime/store/listener, real seed; same callback-local capped fetch/recording approach as existing parameter-context callback, not changes to shared httpFixture. budget2, deterministic clock incremented by wait; no production overrides beyond the existing minimumReads seam. Exactly ten dispatches, table below. Full result/Problem assertions remain in callback; report `changefeed-opaque-http` with ordered method/URL/status/context/content-type/content-length/retry/development/ETag/body octets and bounded fingerprints, actual dispatch/completion counts, runtime closure and directory evidence. No claim that HTTP reveals number of owner attempts. Use one total45s work, request5s, response32768/header16384/request body65536/target8192 caps,60s callback and cleanup10s; preserve original test deadlines on old callbacks.
+
+|#|Request|Controls / expected result|
+|---|---|---|
+|1|POST operations/batch|create actual a;200 completed mutationReceipt, required/effect pos1, actual epoch/view|
+|2|GET changes/?start=now|known pos1;200 valid finite page, groups[],next null,after real non-genesis current checkpoint, observed pos1; malformed Last-Event-ID ignored|
+|3|HEAD same|same known tuple;200,zero body, exact GET2 representation Content-Length/context|
+|4|GET same|matching unknown, If-None-Match:*;503 catch-up-timeout, never304; Last-Event-ID ignored|
+|5|HEAD same|same unknown tuple/conditional;503,zero body, GET4 representation length/context|
+|6|GET same|matching pos-01, Accept:text/plain and If-Match:"missing";503 before406/412, not lexical400|
+|7|HEAD same|same pos-01 unsupported Accept;503,zero body, GET6 representation length/context|
+|8|GET changes/?after=genesis|matching unknown;unchanged private500 minimum-position, no stream|
+|9|GET changes/?start=now|matching unknown, Accept:text/event-stream, Last-Event-ID:genesis;unchanged private500 minimum-position, SSE reconnect path stays excluded|
+|10|GET same|incomplete minimum tuple plus unsupported Accept/conditional;400 malformed-request/no observation context, never406/304|
+
+All timeout GETs validate transactionalProblem code/status/retry after-delay, actual full context pos1, Content-Type application/problem+json, private,no-store, literal Retry-After 1 and no ETag/development-limit. Timeout HEADs preserve matching GET metadata and zero bytes. No response data is treated as discovery. Tuple on requests2–9 comes from validated actual seed receipt; eligible page independently confirms context/checkpoint. Record actual lexical tokens. New JSON header test proves malformed scalar ignored; repeated raw header semantics remain source-preserved and covered by unchanged parsing, not falsely claimed as an extra raw network observation. New D has four opaque waits, with short deterministic seam; no wall-clock minimum timing assertion. Known unsupported-Accept success remains code-preserved and existing shared semantic coverage; it is not an eleventh dispatch.
+
+## Reused regressions and bounded aggregate
+
+Select exactly eight unchanged source callbacks (literal names in JSON): genesis/empty resume; bounded checkpoint/context fences; missing retained cursor corruption; same-entry body/context; known start-now anchor-through-wait/drain; actual finite GET/HEAD/navigation/conditions/restart; known minimum-before-conditionals; contextual parameter refusals. These cover the old successful anchor and corruption/retained paths without re-instrumenting them. Source HTTP totals are old finite15 + known minimum7 + parameter-context12 + new D10 =44. Their fetch/cleanup instrumentation remains historical; do not claim new per-request caps on old callbacks. Old eight callbacks own eight directories, with two extra owner/runtime openings due to the corruption and HTTP restart regressions. New nine callbacks own nine directories. Source total17 callbacks/17 stores/19 owner lifetimes, four listener fixtures (five listener lifetimes with restart),44 HTTP. No selected pure parser rows are hidden in this count.
+
+The new A–C/X subset has eight callbacks/eight stores, ten commits, eleven live/setup captures, fourteen readChanges invocations including three post-close/pre-entry probes, three waits and fifteen minimum-clock calls. These are planning arithmetic for the exact schedules, not replacement assertions or counts for the old source tests. Individual row counts above are authoritative; reconcile actual authored selection before any execution. D adds its own one actual seed and HTTP owner work, which is not inferred into those delegated counters.
+
+## Installed evidence: new four, historical ten, separately supervised
+
+Append ONLY `observes genuine installed finite start-now opaque minimum refusal` to the existing installed refusal-context file. Preserve its current imports/setup/helpers and historical callback bytes; necessary import additions are permitted but the original callback byte range is pinned. Reuse real descriptor/schema artifacts, validators, configured entry/default fallback, installed binding and launcher. No callback-local fake discovery or overrides masquerading as a packed consumer. Fresh external package/consumer binding is independent of the default development fallback.
+
+Exactly four raw requests, one child/store: seedPOST200; known current start-now GET200; matching unknown GET503; paired HEAD503. Validate actual mutationReceipt first; derive epoch/view/known required position from it, check finite page scope/current context/non-genesis checkpoint/groups[]/next null. Unknown GET/HEAD carry If-None-Match:* and ignored malformed Last-Event-ID;503 must precede304 and preserve Problem/HEAD length/context; both timeout responses explicitly assert Content-Type application/problem+json and literal Retry-After 1, not just parity between two possibly absent headers. No second page, polling, schema fetch, or receipt fetch. Unique observation `private-installed-changefeed-opaque-minimum`, exact pre-dispatch maximum4 and final4 actual responses. One callback-local raw executor with exactly POST batch and GET/HEAD start-now grants;5s exchange/32768response/16384headers/65536body/8192URL, no redirects. Record pending executor promises honestly; they are not socket-close event measurements. The raw executor's socket destroy contract is source-derived. Inspect ready.scope/claimEligible=false/history=false and external provenance, not a public qualification.
+
+Preserve historical ten-request callback separately, unchanged title `observes genuine installed current context on changefeed parameter refusals`, existing observation label and lifecycle. Run the two installed callbacks sequentially with immediate separate audits; historical ten then new four, two children/two directories, no reopen. Overall selected execution:19 callbacks,58 HTTP (44 source+14 installed),19 directories,21 owner lifetimes,2 installed children. No extra control cohort or full local suite is proposed.
+
+New installed lifecycle:45s work,60s callback,5s request, one10s total cleanup deadline,120s outer stage (TERM115/KILL120) under later root-released runner. Start/close helper retains its existing internal limits; no widening or rewrite. Attach rejection observers immediately to launcher and close promises. On failure abort work, settle pending exchanges and close child within the single cleanup envelope. Record actual child exit AND close/drain, PID, exit/signal and whether ownership returned. Remove directory only after verified clean closure; pre-ready/unknown ownership or outer cleanup expiry preserves it and marks failure. Outer expiry may SIGKILL the owned child; do not await an unbounded second helper drain, and observe late close/launcher rejection without claiming a survivor died or store vanished. Aggregate primary/cleanup failures. Preserve this honest distinction for historical callback: it retains its prior helper/cleanup implementation and is independently audited, not relabeled as having the new envelope.
+
+## Review and execution gates
+
+No commands in this packet are execution authority. Native plan critique then actual Claude plan review and root dispositions precede source authoring on a root-approved green basis. Freeze exact five-file patch/all-source hashes, rendered selection and callback measurements before CODE council. Validate static checks, fresh build+artifact binding BEFORE collecting this source module (dynamic ../dist/transaction-runtime.js import), then exact17 selected source callbacks and their observations. Fresh package archives/external consumer, actual lock acceptance, eight-package inventory/payload/entry source checks precede the separate historical10/new4 installed callbacks. Use the established bounded runner/package tools, fresh /private/tmp ownership, no retries and stop-first-failure. Preserve failure evidence; source corrections require a separate successor. Existing required boundaries/preflight/evidence checks and exact-head CI remain root workflow gates, not fabricated outcomes here. Commit/publication only after actual validation/council completion; no main merge or release claim.
+
+EXACT SELECTION:
+{
+  "sourceFile": "packages/server/src/transaction-changefeed.test.ts",
+  "existingTitles": [
+    "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page",
+    "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+    "does not classify a missing previously committed cursor row as never issued or skip its gap",
+    "captures feed body and serving context inside one fenced owner entry",
+    "keeps start=now's original admission anchor through a minimum wait and drains on close",
+    "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart",
+    "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+    "preserves current context on owner-observed changefeed parameter refusals over HTTP"
+  ],
+  "newTitles": [
+    "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown",
+    "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01",
+    "aborts fresh finite changefeed opaque waiting before close drains",
+    "preserves fresh finite changefeed admission before wait preflight: already-aborted",
+    "preserves fresh finite changefeed admission before wait preflight: invalid-policy",
+    "preserves fresh finite changefeed admission before wait preflight: throwing-clock",
+    "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock",
+    "keeps direct and excluded changefeed minimum paths strict",
+    "serves finite start-now opaque minima before HTTP shortcuts"
+  ],
+  "sourceCount": 17,
+  "sourcePattern": "^(keeps\\ genesis\\ checkpoint\\ distinct\\ from\\ zero\\ position\\ and\\ resumes\\ after\\ an\\ empty\\ caught\\-up\\ page|uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|does\\ not\\ classify\\ a\\ missing\\ previously\\ committed\\ cursor\\ row\\ as\\ never\\ issued\\ or\\ skip\\ its\\ gap|captures\\ feed\\ body\\ and\\ serving\\ context\\ inside\\ one\\ fenced\\ owner\\ entry|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|serves\\ actual\\ HTTP\\ finite\\ GET/HEAD,\\ absolute\\ navigation,\\ native\\ conditions\\ and\\ restart|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ unknown|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ pos\\-01|aborts\\ fresh\\ finite\\ changefeed\\ opaque\\ waiting\\ before\\ close\\ drains|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ already\\-aborted|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ invalid\\-policy|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ throwing\\-clock|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ nonfinite\\-clock|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts)$",
+  "installedFile": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+  "historicalTitle": "observes genuine installed current context on changefeed parameter refusals",
+  "newTitle": "observes genuine installed finite start-now opaque minimum refusal",
+  "installedSeparatePatterns": [
+    "^observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals$",
+    "^observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal$"
+  ],
+  "titlesAreTopLevel": true,
+  "executed": false
+}
+
+PROSPECTIVE WORKLOAD:
+{
+  "status": "prospective only; no execution",
+  "sourceCallbacks": 17,
+  "newSourceCallbacks": 9,
+  "existingSourceCallbacks": 8,
+  "sourceHttp": {
+    "existingFinite": 15,
+    "existingKnownMinimum": 7,
+    "existingParameterContext": 12,
+    "newOpaque": 10,
+    "total": 44
+  },
+  "installedCallbacks": 2,
+  "installedHttp": [
+    10,
+    4
+  ],
+  "installedChildren": 2,
+  "totalHttp": 58,
+  "sourceDirectories": 17,
+  "installedDirectories": 2,
+  "totalDirectories": 19,
+  "sourceOwnerLifetimes": 19,
+  "installedOwnerLifetimes": 2,
+  "totalOwnerLifetimes": 21,
+  "newSourceDelegatedSubset": {
+    "callbacks": 8,
+    "stores": 8,
+    "note": "Individual A/B/C/X plan schedules govern; exclude HTTP-inferred owner work",
+    "commits": 10,
+    "captures": 11,
+    "readChangesInvocations": 14,
+    "waits": 3,
+    "minimumClockCalls": 15
+  },
+  "newSourceHttpStatuses": [
+    200,
+    200,
+    200,
+    503,
+    503,
+    503,
+    503,
+    500,
+    500,
+    400
+  ],
+  "newInstalledStatuses": [
+    200,
+    200,
+    503,
+    503
+  ],
+  "newDeadlines": {
+    "requestSeconds": 5,
+    "workSeconds": 45,
+    "totalCleanupSeconds": 10,
+    "callbackSeconds": 60,
+    "outerStageSeconds": 120,
+    "termSeconds": 115
+  },
+  "executionAuthorized": false,
+  "newSourceObservationCount": 9
+}

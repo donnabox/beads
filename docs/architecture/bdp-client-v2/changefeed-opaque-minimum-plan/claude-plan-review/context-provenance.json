@@ -1,0 +1,90 @@
+{
+  "preparedAt": "2026-10-17T13:43:41.649501+00:00",
+  "target": "successor-2 only; predecessors and critique are history",
+  "sourceHead": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "planHash": "246747d9e028bc17640dd71641b130d57f23602bd16038d77525417d62c0127c",
+  "sourceCount": 679,
+  "designReference": {
+    "originalLivePath": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+    "planHistoricalHash": "dc936f5842be58812d2ee629f1790f32257b751d04b826ffc0d42134015df4fd",
+    "copiedCurrentHash": "65dd0f65be115e7f0a1de1cd8c0c2505526c1e91d19d943f9bbf8599e9ac8a34",
+    "historicalMatch": false,
+    "disposition": "Sole live plan checkpoint advanced after plan preparation. This review binds the current immutable copy; no old design bytes claimed, no plan/source/workload changes."
+  },
+  "ciChronology": "Plan preserves pending-at-preparation text; subsequent exact-head CI succeeded, attached immutable audit. Not a product-authoring release.",
+  "nativeClosure": "Root will inspect separately when available; no pending closure assumed as approval.",
+  "copiedContextProvenance": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/plan.md",
+      "sha256": "246747d9e028bc17640dd71641b130d57f23602bd16038d77525417d62c0127c"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/selection.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/selection.json",
+      "sha256": "6a04227516db1753f5ec3f8fb1d59ce8e5e0294c0b12340778c23bca6b2fc687"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/workload.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/workload.json",
+      "sha256": "f36a0fe9561b78301abbc4f31a045e94f7ec9a2f71d44847c1ba731ca07e496a"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-binding.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/binding.json",
+      "sha256": "2a1701374dd501fc514442f3f4edc32d5ff573f29bf9952aff7edebbf1ca1d1a"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-index.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/preparation-index.json",
+      "sha256": "5058cf2fe3b1aa7199059903810f29fbe79b7c9afb745e27e3b4ddb2ea5ce32a"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2.patch": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/plan.patch",
+      "sha256": "a04c9b9a069b1c684d7717c95d36ba25acc82ebe4dc2016a1a82368564358ab4"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2-report.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-2/report.md",
+      "sha256": "5cb6fe612a6a4a3630870948c934748373c93ebf691a02a316d08c090e8a3d93"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/plan.md",
+      "sha256": "c38a5d4da53e0b52e90781ac47d7270ee46fdaf203ad6186d670ba8c9d826708"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-native-critique.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/native-plan-review.md",
+      "sha256": "d71599542124ddcf32eb39d191500243d19d5c1ac2ddfbc169f590a46b4f745c"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/successor-1-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-1/plan.md",
+      "sha256": "ea240566049fa90edc8ededed271d1729d74bb91b76c4cc53647e6e58bc3a32d"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-1.patch": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-1/plan.patch",
+      "sha256": "87a81829d8d9d52fce35de9a2c87c86052d9dc7e6bc41b2c8ae05b6162983f37"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-1-report.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-1/report.md",
+      "sha256": "5d86da4ab2e55496ba7537c9c6f9a0f1e64d299c9dd8b2e36e1ba8b5dd6fbfd7"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md": {
+      "source": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/design.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "sha256": "65dd0f65be115e7f0a1de1cd8c0c2505526c1e91d19d943f9bbf8599e9ac8a34"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/changefeed-original-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-plan.md",
+      "sha256": "e4216faf486cc896633414aa9c7030d423373537bb384503da202f49c11b3928"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/parameter-context-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-plan-successor/plan.md",
+      "sha256": "0c5a6af5911460a07a024eeb6bb9bd29ea23a8d000318156edf8c83c8b64bb90"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/recommendation.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-next-serving-audit/report.md",
+      "sha256": "bb48ce415886c413414c7af4ad8d004a29c884c390a5df4c84445b1650d98b05"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/exact-head-ci-audit.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/ci/native-exact-ci-audit.md",
+      "sha256": "6019f7b7daa8fe5ee8e4eaa98b5e84c13245996a34de0bf4882214bf7c30fb9e"
+    }
+  }
+}
