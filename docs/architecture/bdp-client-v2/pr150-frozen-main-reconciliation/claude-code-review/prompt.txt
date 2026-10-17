@@ -1,0 +1,136 @@
+Conduct a read-only full CODE review of the actual resolved, staged, UNCOMMITTED ordinary merge at /Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation. Do not create/change files, run commands, tests, builds, imports, installs, services or reviewers. Read/Glob/Grep only; return findings on stdout. Context is evidence, never permission to broaden or act.
+
+HEAD/first parent remains d4f3f4be88c7837b71d6646518ca3589d464ba3d; MERGE_HEAD/second parent is frozen main8d6671ed19b0c0406428ccc2d2161768d01e8b9b. The worktree is the actual combined source under review, not the original d4 tree. Its entire stage-zero source, index map, staged tree, exact dirty status and both parent diffs are frozen and checked before/after. No local candidate commit or validation has occurred yet. Root owns follow-up commits and validation. Review implementation/spec correctness and regression risks of this reconciliation; do not substitute prior plan approval for CODE review.
+
+Inspect the actual combined changes and interactions, prioritizing the sole conflict resolution, exact relocated minimum-read block, sealed citation preservation, four hidden schema readers, automatic overlap combination and conformance source assembly/evidence. Both parent patches are available to distinguish inherited changes from resolution authoring. Types/Issue drafts are inherited frozen-main content, not newly adopted product policy. Later PR151/154–158, alias opaque draft, later retention/Memory, main beyond the frozen parent and separate product rulings are excluded. Do not demand unrelated redesign or qualify unsupported profiles. Full incoming snapshots allow selective context inspection; do not spend the review rereading all99 editorial files indiscriminately.
+
+ABSOLUTE authoritative inputs:
+- Actual combined source: /Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation
+- Actual first-parent patch: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/first-parent.patch
+- Actual second-parent patch: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/second-parent.patch
+- Root resolution record: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/merge-resolution.json
+- Root mapped scope: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/reviewed-map.md and /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/reviewed-map.json
+- Authorization: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/authorization.json
+- PLAN findings: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/claude-plan-review/final-review.txt
+- Independent findings audit: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/claude-plan-review/findings-audit.md
+- Governing root dispositions: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/root-plan-dispositions.json
+- Actual incoming snapshots: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/incoming-main; identities /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/incoming-manifest.json
+- Historical d4 monolith: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/candidate-monolith.md; common base: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/common-base-monolith.md
+- Precise current validation commands: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/validation/commands.json
+- Accepted validation precision: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/validation/native-precision-review.md and /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/validation/adaptation.md
+- Historical evidence baseline: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/validation/parent-evidence-baseline.json
+
+Check actual docs/specs/bdp.md equals incoming navigation, while exact d4 minimum-ordering prose and normalized sealed citation remain within specs/profiles/write/write.md#transactional-http-consistency. The four hidden readers are transactional-event-sse-installed.test.ts, transactional-fresh-depth-installed.test.ts, transactional-minimum-current-resource-installed.test.ts and transactional-sequence-depth-installed.test.ts under apps/bdptest/src. The eight automatic overlaps must retain candidate semantics plus incoming layout changes. Verify source assembled spec handling, stable schema IDs/package copies, preserved manifest-v1/coverage-v1 additions and no resealing/relabeling of historical evidence. Distinguish workspace schema reads from external packed child code; minimum-current-resource uses transaction-installed.js via existing private wrapper, other four selected callbacks use transaction-installed-process.js. First SSE callback is a legacy fence. Candidate raw evidence exit0 is required; exit2 stops as NO_CLAIM regression, not acceptance.
+
+Historical citation correction: the parent evidence.verified record is log line11324, not the earlier11321 typo. The underlying event/source return0 evidence is unchanged. Generic CI accepting0/2 alone does not establish raw0; preserved baseline distinguishes actual event plus source semantics from separately attributed older local raw0. No retrospective or candidate execution claims.
+
+Report concrete findings with severity, exact actual source/plan path and line, failure mechanism and smallest repair. Separate blocking bugs from optional improvements. Explicitly state evidence you could not inspect. No model assumptions or invented test outcomes. Tests and exact candidate CI remain future verification, not this read-only review's accomplishment.
+
+ACCEPTED RECONCILIATION PLAN (complete):
+# Frozen PR150/main reconciliation — closed preparation
+
+This plan implements the verified human authorization in authorization.json only after root/native/Claude plan review. No merge, worktree creation, dependency installation, product command, test or reviewer was executed for this preparation. Existing receipt/alias worktrees remain untouched. Git object reads used the receipt-root checkout solely as an object database.
+
+## Exact inputs and ancestry
+
+- Frozen main: `8d6671ed19b0c0406428ccc2d2161768d01e8b9b`.
+- Frozen PR150: `d4f3f4be88c7837b71d6646518ca3589d464ba3d`.
+- Independently verified sole merge base: `9df574a9ac980272fa31be9f443a771233b69c6a`.
+- Proposed separate branch: `codex/vickie-pr150-main-reconciliation`, already starting at frozen d4; ordinary merge of exact8d produces first parentd4/second parent8d. No newer main, rebasing, cherry-picking later work or force push. After resolving and reviewing the combined merge/code, a local candidate commit is needed for truthful clean-source package/source identities before validation; push/publication remains gated. A changed resolution produces a new candidate and invalidates its earlier validation.
+
+PR151/154–158, alias opaque work, retentionca303411, amendments152/153 and later Memory work are excluded. Do not land main, close/clean up old PRs, change downstream pins, invoke Janet CLI, shared databases/staging/playgrounds, or alter Trish's source. Main8d's existing Types/Issue draft publication is inherited verbatim, not new adoption.
+
+## Independently verified semantic map
+
+Candidate changed35 files from the common base; frozen main changed99. Nine paths changed on both sides: old monolith and eight tests listed below. This is an overlap set, not a simulated merge/conflict result; no merge-tree or checkout mutation was used.
+
+The complete candidate monolith diff has only the minimum-read block: replace “existing semantic consistency decisions remain” with “semantic handling follows the rules below”, introduce uniform missing/deleted/hidden Resource/properties/alias-target/initial-incident-anchor404 before semantic waiting, and require bounded503 for existing authorized current Resource/properties unrecognized positions with actual epoch/view. Preserve ordinary validation/lexical refusal first, current observation context/no disclosure, and the explicit retained continuation/Snapshot/successful-incident exclusions.
+
+Move that exact candidate block to `specs/profiles/write/write.md#transactional-http-consistency` at main's3817–3835 section. Do not add it to Core or restore the monolith. Retain frozen main `docs/specs/bdp.md` byte-for-byte as nonnormative navigation. Candidate monolith blob `e097e46c3602a9cc802fb2fb609201b896e2cb9f`, SHA256 `67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8`.
+
+I independently normalized common-base text from PartI against Core's PartI body plus Write/conformance after their protocol-text markers: equal374148-character normalized body, SHA256 `5df585eade1e8be6482ee445ad3b24d93aa680da54a4b6e4e009241c4f503290`. Normalization replaces Markdown link destinations, removes relocation anchor tags, canonicalizes the schema filesystem path, and collapses whitespace. This verifies prose equality only; links/anchors are separately checked. The changed editorial prefaces are excluded. All148 legacy anchor mappings stay intact. Unexpected additional normative/Type/Memory/identity/minimum changes stop resolution and return to root/Trish; do not infer S1/G2 decisions.
+
+## Reconciliation inventory
+
+Migrate now: eight overlapping tests, whose main-side diffs are independently confirmed as schema-path relocation plus formatter wrapping only. Preserve all d4 behavioral bodies and use `specs/profiles/core/bdp-v0.schema.json`:
+
+- `apps/bdptest/src/transactional-collection-minimum-installed.test.ts`
+- `apps/bdptest/src/transactional-depth-key-order-installed.test.ts`
+- `apps/bdptest/src/transactional-matrix.test.ts`
+- `packages/conformance/src/transactional-cumulative.test.ts`
+- `packages/server/src/transaction-http.test.ts`
+- `packages/server/src/transaction-sequence.test.ts`
+- `packages/server/src/transaction-set.test.ts`
+- `packages/server/src/transaction-snapshot.test.ts`
+
+Migrate now despite possible clean Git merge: four candidate-only direct filesystem readers still load the removed root schema:
+
+- `apps/bdptest/src/transactional-event-sse-installed.test.ts`
+- `apps/bdptest/src/transactional-fresh-depth-installed.test.ts`
+- `apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts`
+- `apps/bdptest/src/transactional-sequence-depth-installed.test.ts`
+
+Their frozen d4 lines are531/71/87/79 respectively. Change only the filesystem source path (and necessary formatter layout), preserve callback bodies, title/selection, wire counts, deadlines, schemas, event/restart and owner cleanup semantics. These four are required even if Git reports no conflict.
+
+Preserve for compatibility/evidence: main's `packages/conformance/test-support/spec-source.ts` assembles Core/Write/conformance in memory for old citation identity; its repository-boundary checks and physical `spec-layout.test.ts` remain. Old `docs/specs/bdp.md` catalog citations, sealed evidence/goldens, stable schema `$id`, package `./schemas/bdp-v0.schema.json` export, package-local read-values schema references, and the spec-layout assertion that old root schema does not exist are intentional. `packages/protocol/src/index.ts` stale comment remains hash-bound; do not churn it for prose modernization. The protocol transactional-http-contracts historical read uses the inherited helper, not the navigation page as normative text.
+
+Schema identity verified: d4 root schema,8d relocated schema and8d package schema all have blob `a106b40871ed67e712f334575d025f4cdbefb28d`; no content/$id/package schema change. Preserve candidate manifest-v1/coverage-v1 scenario additions byte-for-byte, including claimEligible:false/status:bounded-observation/transportAdmission:private-exact-available. Preserve sealed catalog/development evidence and protocol index identities relative to base. No generation/resealing of historical evidence.
+
+Final-tree sweep: `rg -n 'schemas/bdp-v0.schema.json|docs/specs/bdp.md' packages apps scripts specs docs` and inspect each match by role. Classify live root readers as migrate-now, intentional citation/package paths as preserve, historical docs as follow-up, unrelated draft references as excluded. Do not bulk replace. Confirm all main-only relocation/helper changes survive, all d4 behavior survives, and only the mapped normative block plus12test path resolutions supplement their union. If another live broken reader or semantic conflict is found, report it before expanding scope. Later Memory index/check_memory_examples work is excluded; inherited frozen8d Memory row remains.
+
+## Workflow and source freeze
+
+Main workflow lacks the Vickie push branch; d4 adds only `codex/vickie-*` to push branches. Preserve that existing d4 workflow change and all other workflow bytes. Branch above therefore has an exact-head push validation route; PRs targeting main also trigger. Never interpret absent checks as green. No generic branch-policy redesign. Record actual two parents/tree/full tracked map, diff against each parent, explicit resolution diff, conflict ledger and schema/spec/catalog hashes. Full independent native and actual Claude code review must review the combined result, not just conflict markers; source stays frozen during review/validation.
+
+## Concrete validation and tool gates
+
+`validation-plan.json` is the machine-readable closed workload, not an executable release. The exact ordered matrix after setup is: pnpm install --frozen-lockfile; format:check; lint; check:boundaries; typecheck; build; full pnpm test with required isolated bd; e2e:ready:preflight; smoke; evidence:verify. Add Type example checker and physical link/index audit. The existing full suite already contains spec-layout, profile-contract-plan, profile-catalog-boundaries, schema-bundle, cumulative and installed cases; inspect terminal JSON proving they and all four hidden consumers actually ran. Build must precede HTTP/installed module collection because children load dist.
+
+Required Node24.16.0/pnpm11.20.0 base executable hashes are recorded from actual local bytes. Dependency versions come from the unchanged lock, not arbitrary globally installed tools. Go must be1.26.2; current host command resolves1.26.3 and is NOT accepted. Root now owns independently authorized isolated official darwin-arm64 Go1.26.2 provisioning under tools/go (session93618); do not duplicate or impose a candidate-source gate on that bootstrap. Require its completed identity.json before validation. The dedicated exact Go toolchain and `tools/bin/bd` remain beneath this task's log directory. Build module `github.com/steveyegge/beads/cmd/bd@v1.0.5`, pin compiler/source/build info/hash, verify exact text `bd version 1.0.5 (dev)` and strict JSON {build:dev,schema_version:1,version:1.0.5}. Always pass that absolute bd path with BDP_REQUIRE_BD_MATRIX=1; never discover/invoke PATH bd or use Janet's binary/database. Go distribution digest and bd hash remain unset in this plan until root supplies actual verified identity; record full official digest, compiler/module build info and strict identities, never fill them from expectations. Root uses GOTOOLCHAIN=local, GOMAXPROCS=4, GOFLAGS=-p=4 and isolated gopath/gomodcache/gocache; existing ICU78 is read-only. Linux CI requires libicu-dev; local platform CGO/ICU prerequisites must be separately bound. The Type checker needs a verified isolated Python/jsonschema/referencing environment, not an unreviewed global pip update.
+
+Observed d4 CI38981157039 exact-head success: test step873seconds (14m33), entire job1097seconds (18m17). Local cumulative fulltest gets a prospective1800s cap/TERM1795, raw logs plus structured report and30s progress/process snapshots; retain all individual test/request/application deadlines. Small static stages120s, fresh build180s, dependency bootstrap300s, root-owned isolated tool bootstrap1800s; package phases/callbacks120s each. No automatic retries or timeout widening. Existing CI20minute job cap stays unchanged; margin is narrow, and timeout is failure/inconclusive requiring diagnosis, not permission to change it. No fabricated functionality percentages. Preserve stdout/stderr/real exit and elapsed times, identify child ownership, diagnose120s output silence with process state, terminate only owned groups on bounds and retain failed stores/evidence.
+
+## Fresh cumulative and package evidence
+
+A combined tree is a new target. Parent CI/local reports are baselines only. Fresh full-suite cumulative assertions must retain d4's manifest241actions, installed234HTTP witness and coverage partiality; diagnostics are not completion percentages. The234 here is the actual exchange sum assertion at frozen d4 apps/bdptest/src/transactional-matrix.test.ts:627, followed by the unchanged63000ms elapsed assertion and120000ms callback; it is distinct from any234 unplanned-requirement inventory in cumulative tests. Fresh installed source/build identity and actual child lifecycle are required. Fresh pnpm smoke already packs and installs the workspace, checks the package surfaces/private exports, and exercises installed lifecycle/reference behavior. Fresh full pnpm test executes the actual234 private cumulative witness and cumulative source assertions. Do not redundantly rerun234 over a new external consumer solely for bookkeeping, and do not relabel workspace234 as packed evidence. Supplement only the four repaired consumer files' five existing callbacks on measured fresh protocol/server tarballs in an isolated consumer, because those files explicitly support entry/source overrides and their actual schema/package boundary is the affected surface. Bind the entry per callback: minimum-current-resource uses consumer `@bdp/server/dist/transaction-installed.js` through its existing private wrapper; both Event callbacks, fresh-depth and sequence-depth use `transaction-installed-process.js`. Never apply one process entry globally to all five. The corrected JSON records all five exact selectors and their distinct entry/source environments. Reuse the proven pack/install/provenance supervisors with actual lock/graph/entry/payload/source identities and no workspace fallback; do not create a new evidence framework. Keep original internal deadlines and120s per-callback wrappers. Exact consumer hashes remain unset until measured. Preserve callback identities and immediately audit actual results/owned cleanup. These partial checks do not qualify the whole Transactional profile.
+
+Evidence exit0 passes its existing predicate; exit2 means no claim/fail-closed admission and is acceptable only with that limitation stated; exit1/3 fails. Capture the raw code rather than hide it in a shell success chain. No evidence:generate, historical digest updates, release, Preview2, discovery fabrication or public-admission bypass is authorized. Type examples are shape/link checks only, never runtime Types qualification. Unsupported profiles stay unadvertised.
+
+## Stop and delivery
+
+Stop on unanticipated semantic conflict, source drift, unexpected input ancestry, tool mismatch, failed/timeout stage, missing required matrix execution, broken consumer provenance or uncleared owned child/store. Report exact evidence before proposing any successor; no blind retries. Successful delivery requires reviewed combined code, fresh local and package checks, and actual exact-head green CI on the integration branch. Root prepares the separate integration PR and reports URL/SHA/parents/tree/resolutions/results/limits through the authorized bus/#59. No main landing, PR cleanup or downstream pin update follows implicitly.
+
+
+GOVERNING ROOT PLAN DISPOSITIONS (complete):
+{
+  "at": "2026-10-17T10:40:17.271434+00:00",
+  "decision": "Release mapped ordinary merge and resolution only; CODE review and validation remain required before publication",
+  "parents": [
+    "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+    "8d6671ed19b0c0406428ccc2d2161768d01e8b9b"
+  ],
+  "findings": {
+    "1": "pnpm forwarding defect unproven; native pinned parser counterevidence accepted. Explicit exec equivalent adopted; no extra separator.",
+    "2": "Already bound external outputs/consumer and clean source gate.",
+    "3": "Require exact normalized sealed citation in transactional-http-consistency section after resolution.",
+    "4": "Workspace schema plus external private child package evidence only; first SSE callback legacy fence.",
+    "5": "Actual isolated venv bound; Homebrew only base.",
+    "6": "Require raw0 matching parent event+source semantics;2 stops as NO_CLAIM regression.",
+    "7": "Local caps prospective unchanged; historical CI timing separate.",
+    "8": "99 rename-aware entries,100 delete/add paths."
+  },
+  "limitations": [
+    "One Claude Grep regex tool error; review continued.",
+    "Review covers plan; combined result not yet authored or reviewed."
+  ],
+  "pins": {
+    "reconciliation-plan.md": "95d484356506bc126bee947391a624c8c5e393fd1c9b470406d27c24d79074ce",
+    "claude-plan-review/final-review.txt": "596577bc490d5072ac6f52f4847d50d54f0b6bd464548b78568e3a0508466430",
+    "claude-plan-review/findings-audit.md": "260e65c2fbb81368dc9ffa71f0bea47a695cf7806d146c451a37179290a93bfb",
+    "claude-plan-review/exit.json": "791edd2a1ee93d4a130edeb6067500326053e902ef8f0327334b019a92f559df",
+    "validation/preparation-index.json": "be10d7342a150dda502bba130eb7e999fb82f6c2850657e4f8c1770adb535c4f"
+  }
+}
+
+
+ACTUAL ROOT SOURCE FREEZE: /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/claude-code-review/context/source-freeze.json. Staged tree 630a94d0ca1545f898cb8a8b614d4b7d2dd6d454,701 tracked files. Root reports exact nonoverlap parent union and twelve test-reader transforms. Its first whitespace-only comparison rejected a formatting trailing comma; the subsequent explicit JSON.parse three-line/trailing-comma transform passed. Treat this as recorded audit history, not a source defect or executed formatter. Independently inspect the source/diffs rather than assuming root assertions are a verdict.

@@ -1,0 +1,126 @@
+--- prior-preparation/commands.json
++++ commands.json
+@@ -136,7 +136,10 @@
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "test",
++        "exec",
++        "vitest",
++        "run",
++        "--reporter=verbose",
+         "--reporter=json",
+         "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/full-test.json"
+       ],
+@@ -194,11 +197,11 @@
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+       "acceptedRawExitCodes": [
+-        0,
+-        2
++        0
+       ],
+       "environment": {},
+-      "exit2Meaning": "NO_CLAIM; not evidence pass or public qualification"
++      "exit2Meaning": "NO_CLAIM regression from expected parent exit0: stop and investigate; generic CI allowance does not accept it here",
++      "expectedParentExit": 0
+     },
+     "type-examples": {
+       "argv": [
+@@ -357,8 +360,7 @@
+         "^installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-1.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-1.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -391,8 +393,7 @@
+         "^installed Event cursors survive restart with Last-Event-ID precedence and source binding$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-2.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-2.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -425,8 +426,7 @@
+         "^serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-3.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-3.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -459,8 +459,7 @@
+         "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-4.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-4.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -493,8 +492,7 @@
+         "^observes retained sequence member conflict and fresh deep execution over packed bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-5.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-5.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+--- prior-preparation/gate.py
++++ gate.py
+@@ -87,6 +87,11 @@
+   require('full-test' in g['rootResultsAccepted'],'Root full-suite result audit pending')
+   for n in order[:order.index(name)]:
+    if n.startswith('packed-affected-'):require(n in g['rootResultsAccepted'],'Prior packed result audit pending')
++ if name=='evidence-verify':
++  baseline=read(P/'parent-evidence-baseline.json')
++  require(g['expectedParentEvidenceExit']==baseline['rootExpectedExit']==0,'Root expected evidence baseline not accepted')
++  for key in ['ciRecord','ciLog','earlierLocalRawExit']:
++   item=baseline[key];require(sha(Path(item['path']).read_bytes())==item['sha256'],'Evidence baseline changed')
+  if name=='verify-installed-consumer':require(g['consumerLockSha256'] is not None,'Root consumer lock acceptance pending')
+  import copy
+  spec=copy.deepcopy(cfg['commands'][name])
+--- prior-preparation/execution-gate.json
++++ execution-gate.json
+@@ -11,5 +11,6 @@
+   "installedProvenance": null,
+   "consumerInventory": null,
+   "preparationIndexSha256": null,
+-  "note": "Root binds actual reviewed clean two-parent candidate and measured dependency tools; no invented commit/build/archive/consumer hashes. Only root can release stages."
++  "note": "Root binds actual reviewed clean two-parent candidate and measured dependency tools; no invented commit/build/archive/consumer hashes. Only root can release stages.",
++  "expectedParentEvidenceExit": 0
+ }
+--- prior-preparation/adaptation.md
++++ adaptation.md
+@@ -8,7 +8,7 @@
+ 
+ packages.py retains the prior archive/member/source/dependency graph/payload checks; adaptation records clean candidate provenance and both installed entries. Minimum-current-resource uses transaction-installed.js; other four callbacks use transaction-installed-process.js. consumer-install cwd is explicitly run/consumer. Root approves its actual lock before verification and measured proof/inventory before callbacks. No duplicate packed234 run.
+ 
+-Full test uses the existing verbose script plus JSON reporter, required isolated bd matrix environment and1800s cap declared before execution; individual tests and CI20minute cap unchanged. Root audits actual full JSON, all five affected callbacks, cumulative234 raw private observation and failures/skips; inventory234 is not functionality or an HTTP count. Existing spec-layout tests automate148anchors and real links across8documents; final link audit cites those named passing cases plus old-path classification, no duplicate checker. Raw evidence exit2 remains NO_CLAIM and never becomes success of an evidence claim.
++Full test directly expands the existing script as pnpm exec vitest run with verbose and JSON reporters, required isolated bd matrix environment and1800s cap declared before execution; individual tests and CI20minute cap unchanged. Root audits actual full JSON, all five affected callbacks, cumulative234 raw private observation and failures/skips; inventory234 is not functionality or an HTTP count. Existing spec-layout tests automate148anchors and real links across8documents; final link audit cites those named passing cases plus old-path classification, no duplicate checker. Raw evidence exit2 remains NO_CLAIM but now fails this reconciliation gate: the verified d4 baseline and root expectation are exit0. Any0-to2 change stops for investigation.
+ 
+ Root must audit each packed result (exact selected callback, raw observation/wire/context/entry/payload/store/process cleanup) before the next callback release. This packet deliberately does not invent a new result schema or duplicate historical workload. No qualification, deployment, release or main landing permission is granted.
+ 
+@@ -17,3 +17,11 @@
+ Executable selector correction: canonical validation-plan.json prospective patterns accidentally double-escaped spaces/hyphens. commands.json uses exact anchored literal titles, containing no regex metacharacters requiring escaping. Original plan stays immutable. Each packed JSON must contain exactly its one expected passed fullName; full-suite JSON must report success, zero failures and nonempty passed rows. Root inspects all required cases/skips/raw records before releasing preflight. This is a mechanical command correction, not a test or workload change. Runtime JSON claims remain scoped; process exit acceptance alone is not publication acceptance.
+ 
+ selector-check.json records data-only regex compilation and exactly one intended literal top-level callback match for each of the five actual source files at d4; no Vitest invocation occurred. Final candidate must preserve these selected names. Source binding schema is {worktree, branch, head, tree, trackedSourceFiles}; workspaceTools is a measured {tools:{absolutePath:{realpath,sha256}}} document created only after dependency installation. Root release points to their actual paths/hashes.
++
++Actual Claude PLAN precision correction (original packet preserved in prior-preparation): full-test now uses node + pinned pnpm exec vitest run --reporter=verbose --reporter=json --outputFile.json=absolute, exactly expanding the checked-in test script and avoiding script-forwarding ambiguity. No blind -- insertion. All five packed JSON output flags use equals form; unchanged selectors/counts. The historical parent baseline is pinned in parent-evidence-baseline.json, with wrapper/raw-exit inference limitations stated.
++
++The affected tests still read schema bytes from the reconciled workspace; only their private child server is supplied by the packed consumer. This is workspace-schema plus packed-child evidence, not proof that the relocated schema path exists in the package. The first legacy SSE callback preserves a selected behavior fence but does not execute the repaired schema reader inside the second callback. Installed modules are passed by absolute filesystem path; they remain intentionally unexported package subpaths. Never add exports to make these private tests resolve.
++
++All supervisor caps remain the original prospective caps. d4 CI measured fulltest873s, preflight2s and smoke9s on Linux; these are historical measurements, not a macOS guarantee. Timeout is budget-limited/inconclusive pending diagnosis, not by itself a demonstrated product failure, and authorizes no widening or automatic retry. The absolute output/consumer paths and isolated Python environment were already resolved and are unchanged. Root separately handles the retained catalog quotation invariant during merge.
++
++Native counterevidence to Claude finding1: pinned pnpm11.20 dist/pnpm.mjs:296048 declares escapeArgs [create, exec, test], passed to nopt at295794. Thus generic reporter-forwarding failure is not established for this pinned test command. Direct exec remains root-selected explicit script expansion; do not describe the predecessor command as a demonstrated failure. No -- separator was inserted.

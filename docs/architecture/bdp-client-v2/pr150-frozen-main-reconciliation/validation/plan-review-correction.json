@@ -1,0 +1,41 @@
+{
+  "priorIndexSha256": "c6bb2316ff65c7877769c4c23db7f04a310bb385e2226675c184c30492d8361c",
+  "preservedFiles": {
+    "selector-check.json": "3a14a832b85598be1555653ce11e1eedbe04cf843f4166c3771a04867eb9a98e",
+    "run.py": "9fb246dc66c9db93e47d36cda23992b2659b891b8dabfa0841c346abe16baf39",
+    "native-validation-preparation-review.md": "c8ef30d7357bc6dd946754db2e4759958c21499b073a572b11e5a6983b78bed4",
+    "tools.json": "397d1c474630825ca6617c71698c557514f234e1e53e314fc066557b5447d2a0",
+    "reuse.diff": "75c77da6dbcf90564fcf863725cc9967659ca24345b5186b3592adb3c7b2c00e",
+    "packages.py": "acd964f09009efba3a06b51663a21f210e9cfa5f8a7a72234f1fa336188c0830",
+    "adaptation.md": "94aea1e11e181c4b40bcb9ecdc8d5966ccfa845cf57987ab47981a0ca202042c",
+    "commands.json": "5063c328d6673fee5f11b42ba8d611d9bc2183ee952e78cbeca226aa6a865906",
+    "preparation-index.json": "c6bb2316ff65c7877769c4c23db7f04a310bb385e2226675c184c30492d8361c",
+    "gate.py": "53f9bf4e283c48d2d2a2865d8ec927b47f545974de947eb92cd16bd6f6b094bf",
+    "bind-build.py": "004f6dfa1eacf3078edb30673a94a9e2caa2e4d5fec98e94fbcf4ce40b8367c4",
+    "execution-gate.json": "9b36b09d5d9c881bf838503c538a0bca5f7d59a5f466ccf7f154019a06f1ce5e"
+  },
+  "changedExistingFiles": [
+    "commands.json",
+    "gate.py",
+    "execution-gate.json",
+    "adaptation.md"
+  ],
+  "addedFiles": [
+    "parent-evidence-baseline.json",
+    "plan-review-correction.patch",
+    "plan-review-correction.json"
+  ],
+  "runtimeExecution": false,
+  "sourceChanges": false,
+  "stageCount": 25,
+  "timeoutsChanged": false,
+  "pnpmCounterevidence": {
+    "path": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/dist/pnpm.mjs",
+    "sha256": "d8cac00e9c4f7f02f80dd173cfe9bf70c3a90830f4979842ea5b4753641186f7",
+    "lines": [
+      295794,
+      296048
+    ],
+    "conclusion": "Generic forwarding blocker not established; explicit exec is accepted precision, not a runtime repair."
+  }
+}

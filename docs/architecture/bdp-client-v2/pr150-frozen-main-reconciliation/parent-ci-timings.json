@@ -1,0 +1,33 @@
+{
+  "job": 117242075409,
+  "run": 38981157039,
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "steps": [
+    {
+      "name": "Run pnpm install --frozen-lockfile",
+      "seconds": 2.0,
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm test",
+      "seconds": 873.0,
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm e2e:ready:preflight",
+      "seconds": 2.0,
+      "conclusion": "success"
+    },
+    {
+      "name": "Run pnpm smoke",
+      "seconds": 9.0,
+      "conclusion": "success"
+    },
+    {
+      "name": "Read-cohort evidence gate",
+      "seconds": 0.0,
+      "conclusion": "success"
+    }
+  ],
+  "rawLogSha256": "20438c3ba79f29141e31d7bced2e69683fd6f2c44198145a248bd06962ca30ff"
+}
