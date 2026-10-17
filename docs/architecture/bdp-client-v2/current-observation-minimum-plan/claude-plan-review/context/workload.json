@@ -1,0 +1,56 @@
+{
+  "prospective": true,
+  "newSource": {
+    "callbacks": 9,
+    "stores": 9,
+    "ownerOpens": 10,
+    "listeners": 1,
+    "http": 37,
+    "methods": {
+      "POST": 3,
+      "GET": 21,
+      "HEAD": 13
+    },
+    "serviceOperations": 47,
+    "directOwnerPageOperations": 8,
+    "targetAttempts": 65,
+    "separateLiveProbes": 6,
+    "separatePostCloseProbes": 5,
+    "waits": 17,
+    "minimumClockCalls": 74,
+    "setupMutations": 12,
+    "countScope": "Direct counters refer only to A-D, not E wire owner activity or clocks. Source E creates one listener. D uses one store/two opens/two offline inspections."
+  },
+  "newWireMatrix": {
+    "http": 37,
+    "statuses": {
+      "200": 7,
+      "503": 10,
+      "410": 8,
+      "409": 8,
+      "404": 2,
+      "400": 1,
+      "401": 1
+    }
+  },
+  "installed": {
+    "cohorts": [
+      22,
+      37
+    ],
+    "http": 59,
+    "stores": 2,
+    "children": 2
+  },
+  "newSourcePlusSelectedInstalledHttp": 96,
+  "legacySource": "Separately selected finite families/titles; record fresh per-callback quantities, do not infer from historical aggregates. No combined legacy HTTP total asserted.",
+  "budgets": {
+    "sourceCallbackSeconds": 5,
+    "sourceSupervisorSeconds": 120,
+    "installedWorkSeconds": 45,
+    "installedRequestSeconds": 5,
+    "installedCleanupSeconds": 10,
+    "installedCallbackSeconds": 60,
+    "installedSupervisorSeconds": 120
+  }
+}

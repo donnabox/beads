@@ -1,0 +1,20 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/run.py
+@@ -5,7 +5,7 @@
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+ def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+-assert b["sourceBindingFinalized"] is True, "Closed: actual author source has not been frozen"
++assert b["sourceBindingFinalized"] is True, "Closed: final reviewed plan and actual source context have not been frozen"
+ outputs=["source-before.json","source-after.json","process.json","stream.jsonl","progress.jsonl","stderr.txt","exit.json","final-review.txt","terminal-results.json"]
+ assert not any((p/name).exists() for name in outputs), "Preserve prior attempt; no retry"
+ def git(*args):return subprocess.check_output(["git",*args],cwd=w)
+@@ -20,7 +20,7 @@
+ def snap():return {"files":{f:sha((w/f).read_bytes()) for f in b["files"]},"context":{f:sha(Path(f).read_bytes()) for f in b["context"]},"artifacts":{f:sha(Path(f).read_bytes()) for f in b["artifacts"]},"head":git("rev-parse","HEAD").decode().strip(),"mergeState":merge_snapshot(),"promptSha256":sha((p/"prompt.txt").read_bytes()),"runnerSha256":sha((p/"run.py").read_bytes()),"status":git("status","--porcelain=v1","--untracked-files=all").decode(),"bindingSha256":sha((p/"binding.json").read_bytes())}
+ before=snap()
+ for key in ["files","context","artifacts","head","mergeState","promptSha256","runnerSha256"]: assert before[key]==b[key], key
+-assert before["status"]==b["expectedGitStatus"], "Exact frozen seven-file dirty status required"
++assert before["status"]==b["expectedGitStatus"], "Exact frozen reviewed source status required"
+ parser=runpy.run_path(str(p/"parse-stream.py"))
+ args=json.loads((p/"arguments.json").read_text())
+ guard();os.umask(0o077);(p/"source-before.json").write_text(json.dumps(before,indent=2))
