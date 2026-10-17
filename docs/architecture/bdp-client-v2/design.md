@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T11:10:09Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T11:12:56Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T11:10:09Z. **ACTIVE — bounded PR150 reconciliation now; 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | Resolve validation temporary-root isolation | Preserve failed run; candidate d719 unchanged; no main landing |
-| Conditional reviewer | Failed full-suite audit complete | Original9374pass/1fail/1skip preserved |
-| Event reviewer | Prepare isolated temporary-root validation successor | Closed gate; no execution or source edits |
-| Native reviewer | Separate alias CODE review complete | Await bounded validation successor review |
+| Conditional reviewer | Actual Claude review of temp-root correction running | One bounded1800s review; product gates closed |
+| Event reviewer | Closed validation successor and draft PR text complete | No execution, source edits or publication |
+| Native reviewer | Validation successor native review complete | No actionable preparation blocker; execution stays gated |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -366,6 +366,9 @@ Root performed the authorized ordinary merge in the isolated branch: only docs/s
 
 
 **Full-suite failure preserved; isolation cause reproduced.** Candidate d719 remains clean and unchanged. The original required suite ended raw1:9374passed,1failed,1skipped; [independent audit](pr150-frozen-main-reconciliation/full-suite-failure-audit.md) preserves exact output and passed affected callbacks without calling the suite green. The CLI init probe reproduced exit1 because its task temporary workspace under /Users/dbox discovered ancestor .beads/proxieddb metadata; the identical command with workspace/TMPDIR under /private/tmp exited0. [Root diagnosis](pr150-frozen-main-reconciliation/bd-init-diagnosis/root-diagnosis.json) binds both records and verifies the successful probe PID/group absent. The abort preceded requested initialization; no shared database operation was issued. A separate, closed validation successor is being prepared with task-owned /private/tmp runtime roots and unchanged source/tests/deadlines. Original failed evidence stays immutable; later package stages remain blocked. No product source fix, PR publication or landing yet.
+
+
+**Temporary-root successor reviewed natively; actual Claude active.** [Closed successor plan](pr150-frozen-main-reconciliation/validation-private-tmp-successor/plan.md) index6dbd50ad preserves25fresh stages, required CLI/full suite, deadlines and provenance gates; only runtime temp roots and output namespaces change. [Native review](pr150-frozen-main-reconciliation/validation-private-tmp-successor/native-preparation-review.md)56d7975d and root acceptance are complete. Actual Claude read-only review is running with1800s bound, pinned701source/36contexts and default model; no verdict yet. Product execution gate remains closed. [Trish notice](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6233207480) reports the failure and independent correction. Original raw failed log is exactly recoverable from its [gzip/base64 transport](pr150-frozen-main-reconciliation/bd-init-diagnosis/raw-log-transport.json); Git-normalized readable copy is explicitly distinct. Original PR150d4 and separate PR1589d2 remain open/exact-CI green. Draft PR text is preparatory only; no candidate push or PR.
 
 ## Current priority: BDP profile structure and implementation
 
