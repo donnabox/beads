@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T05:02:27Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T05:12:34Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T05:02:27Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Link plan council complete; isolated source authoring released | Review frozen draft before code council/validation; no frozen PR150 change |
-| Conditional author | Author exact Link six-file draft on isolated5bcd worktree | Freeze source/prefix/default/count evidence; no execution/commit/push |
-| Event reviewer | Native plan and actual Claude outcome audit complete | All12 dispositions accepted; code review follows frozen draft |
-| Native reviewer | Prepare CLOSED Link validation chain from successful Bead chain | 2fresh bootstrap+23 stages; no source binding or execution before draft/release |
+| Root | Frozen Link draft inspected; actual Claude CODE review active | Review final validation packet before static release; no frozen PR150 change |
+| Conditional author | Link draft and CODE review packet frozen; idle | No source mutation while review runs |
+| Event reviewer | Native Link CODE review complete; review validation preparation | Bind final packet and source before recommending execution |
+| Native reviewer | Finalize CLOSED Link validation packet against frozen actual draft | Fresh2+23 stages; no execution before root release |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -208,6 +208,11 @@ Conditional author now audits the next concrete serving/discovery/consistency ga
 **Link plan council complete; bounded source authoring active.** Actual [Claude PLAN review](bead-event-next-serving-audit/claude-plan-review/final-review.txt) completed exit0/1212.268s with4803records/one successful terminal, unchanged inputs and no cleanup/survivors. Root independently verified rawstreamc7306429/finalbb4468ff and sampledPIDs78879/84424 absent; [native outcome audit](bead-event-next-serving-audit/claude-plan-review/native-outcome-audit.md)f502e80c corroborates. No blockers. [Twelve dispositions](bead-event-next-serving-audit/claude-plan-review/root-dispositions.json) specify constant-clock four-row F, explicit narrowing, honest wait/exclusion claims, exact37245-byte installed prefix and audit-only4000ms elapsed stop under unchanged implicit5000ms callbacks. No plan scope/workload/semantic expansion.
 
 Root created isolated branchcodex/vickie-link-event-minimum at verifiedclean5bcd, remoteoriginGitHub, all679bytes identical; [source release](link-event-minimum-author/root-author-release.json) authorizes exactly six-file draft only. Conditional author is implementing; no test/build/install/import/service/commit/push released. Native reviewer prepares CLOSED fresh-bootstrap+23-stage harness without prematurely binding mutable source. PR155 exact5bcd remains green; PR150d4 frozen; no main/release/publicclaim or externaldecision needed.
+
+
+**Link source draft frozen; CODE council active.** [Author report](link-event-minimum-author/report.md) binds exact six-file draft14f6ceef/fullpatch7c8d17d9, all679files with673unchanged and first37245installedbytes preserved. Root read full diff and independently verified all679/index/fullpatch/prefix. [Native code review](link-event-minimum-author/native-code-review.md)596813e8 found no concrete blocker; exact historical inversions, production precedence, fixtures/counts/lifecycle agree. No static/runtime results claimed. One text-only reporting extractor newline failure was preserved and corrected without source repair or product retry.
+
+Root released actual [Claude CODE review](link-event-minimum-code-review/root-release.json) at05:12:05Z, releasedbinding191434ba; proven CODE runner extended only with actual worktree, pinned guard and exactdirty/binding checks. All679 bytes pinned, defaultmodel/Read-Glob-Grep/3600sTERM3595/no retry. It is running, not a verdict. Validation worker finalizes fresh2+23-stage closed packet against actual draft; independent reviewer inspects before root static release. No tests/build/import/install/service/commit/push yet; PR150d4 remains frozen and PR1555bcd green.
 
 ## Current priority: BDP profile structure and implementation
 
