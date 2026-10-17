@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T14:16:44Z. **ACTIVE — separate alias PR160 ready and exact-CI green; next finite-changefeed opaque-minimum plan in review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T14:28:35Z. **ACTIVE — separate alias PR160 ready and exact-CI green; next finite-changefeed opaque-minimum plan in review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T14:16:44Z. **ACTIVE — separate alias PR160 ready and exa
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Accepted completed PLAN council and successor3; code authoring released | Exact-green5ceb basis; frozen PR159/150 untouched |
-| Conditional reviewer | Closed validation plan accepted; CODE mechanics prepared | Await frozen author packet before review binding/launch |
-| Event reviewer | Six-file changefeed opaque-minimum source draft | Isolated codex/vickie-changefeed-opaque-minimum; no runtime/commit/push |
-| Native reviewer | Successor3 plan closure complete | Await frozen draft for CODE review |
+| Root | Frozen changefeed draft verified; native CODE accepted | Actual Claude CODE running; runtime still held |
+| Conditional reviewer | Actual Claude CODE review | PID19404/session29184,14:27:47Z,1800s single attempt |
+| Event reviewer | Closed executable validation adaptation | Source immutable; nine new+one historical source observation |
+| Native reviewer | Native CODE complete; validation preparation closure next | No runtime until root release |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -420,6 +420,11 @@ Alias executable helper preparation is frozen and root accepted: [native closure
 
 
 [Closed changefeed validation plan](changefeed-opaque-minimum-validation/plan.md)1054e764/index77e7fe30 is root accepted as preparation only:21stages with genuinely fresh bootstrap, build before17sourcecases, fresh archives/external consumer and separate historical10/new4installed audits. Actual source/report/package/consumer hashes remain unresolved until author freeze; no runtime release. Reusable actualClaude CODE mechanics are prepared separately, with prompt/bindings/launch still closed. Source author remains the sole writer on six approved files; preliminary production delta matches the reviewed private seam, not a final code approval.
+
+
+**Changefeed source frozen; CODE council active.** [Author report](changefeed-opaque-minimum-author/report.md) binds exactly six files/fullpatchb28eb22d/sourcebindingeafb75e3/indexdbdcdffc,679tracked/673outside unchanged. Historical callbacks/helpers and full installed/document prefixes preserved. Root rehashed the complete packet, actual dirty status and full diff. [Native CODE review](changefeed-opaque-minimum-author/native-code-review.md)d474bbd9 found no actionable correctness/lifecycle blocker, with explicit unexecuted limits. [Actual Claude CODE release](changefeed-opaque-minimum-code-review/root-launch-release.json) independently verifies indexe5f4de59,679source/17copiedcontexts and exact packet. One default/read-only1800s attempt started14:27:47Z PID19404/session29184; no result yet. No product source mutation during review.
+
+Event adapts established validation helpers with execution closed. Derived source audit requires nine NEW observations plus the existing parameter-context record (ten total), not a new callback or workload.17source/44HTTP and separatehistorical10/new4installed remain prospective. Fresh bootstrap and emitted build precede source collection; new consumer provenance remains separate. Static/runtime/formatter checks have not run. Frozen PR159/150 and readyPR160 remain unchanged.
 
 ## Current priority: BDP profile structure and implementation
 
