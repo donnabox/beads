@@ -1,0 +1,56 @@
+{
+  "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run",
+  "stages": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/source-binding.json",
+    "sha256": "7293a3da8a59f2dd86bda8985d5504786f4fb564037855d93676d1cde89ad09a"
+  },
+  "successorSourceBinding": null,
+  "originalHead": "b76c3b7df77ea9b33611bc9027db651833e20abb",
+  "originalTree": "4d9f8ac00702d32a45c3eb38cf50fac55ac96f2d",
+  "originalSourceIdentity": "6d547d6c57fcc0f1017770cc97c2b0b977b859162aeb78538c61289be312fb7c",
+  "successorSourceIdentity": null,
+  "allowedSourceChanges": null,
+  "dependencyInputs": {
+    ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+    ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
+    ".nvmrc": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+    "apps/bdp/package.json": "862dbaed2f8efb3cc039de70e2b6f928cea32a3dff24226242d6102a13ac3421",
+    "apps/bdpbd/package.json": "406919d9f53f4b102b0448472e5195ffb0f8ac332995d529084fe9905ff6849a",
+    "apps/bdptest/package.json": "38b8b72d245af1d147bc0e7ec90abc42c3f513468397d9886444c8ab46cfdb4a",
+    "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+    "packages/adapter-bd/package.json": "678e848888f078cdf2c3b2c26058ca973bf4739be13d1c3077c4d63e54c9cac3",
+    "packages/adapter-in-memory/package.json": "ef062f61923313e35d2165d72363310c22fadfb9081c0111805501918c68c93c",
+    "packages/bd-domain/package.json": "a72b9fcbe511216e1503e4748bed79a136f4c2d8728413c6e292646e0e3f8429",
+    "packages/client/package.json": "0891e97c217e6ecf514326746d06431f38838ffd5f0a6b91ede38493219b0128",
+    "packages/config/package.json": "983ca52c4463429c9c5dfe37ac1e7205f51b12d455d7057c45b987a638466c05",
+    "packages/conformance/package.json": "418d4d50ea4fbed59dbc2df3dc1298d30b56760428e47a5be1ae39a46960abc8",
+    "packages/protocol/package.json": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2",
+    "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+    "pnpm-workspace.yaml": "08d75840c97ab0e72d1d9b5b84a17e47a2e06cb159a5fbec5ee0a6a56682dad7"
+  },
+  "tools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "c59801cdde0c1e16242840e1c2a9aa29040d44e3dbc07c55d63c3b183b6b75f8"
+  },
+  "records": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/workspace-install.started.json": "3257934cb67e2ef13539064ad36f9374e5078f4e16be80a587bedb2d8cf3f733",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/workspace-install.exit.json": "bd232d1467fe659f1857cb44f91eaf608e1191f5651698530eae4d439d8dbf54",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/workspace-install.log": "1a579e3771868420bb3eb10221fb9c354db058f4cf8ba2dd89122107308ceb79",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/workspace-install.processes.jsonl": "351f56ccb1bf7c97855fcbee504eccd9f84b0d8b66a8c6c5b03bae119ec4997c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/bind-workspace-tools.started.json": "9fc5b223769f14eab272163c373c5f395997fe8cba75da5d0e5767e6ebf1cf2f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/bind-workspace-tools.exit.json": "6a09435b5be2ba196fbb41ea9d0912196466659238965afe18f16c5ca119cd18",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/bind-workspace-tools.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/bind-workspace-tools.processes.jsonl": "33362debba407e4bebfe27f30c5d18442d14f550c95807f9e00b49826efb4bae"
+  },
+  "rootBootstrapDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/root-disposition-bootstrap.json",
+    "sha256": "79f75f5d09a3510f3eada405613b812701e9fcd7f399253f878172f72e4f64e5"
+  },
+  "mappingFinalized": false,
+  "limits": "Successful install and tool capture happened on original source identity only. New corrected source is PENDING. Require identical dependency inputs/tool identities and exact allowed source delta before reuse; no reinstall and no inherited static/runtime result."
+}

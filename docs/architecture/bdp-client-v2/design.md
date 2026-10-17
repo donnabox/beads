@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T02:15:12Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T02:17:29Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -79,8 +79,8 @@ Checkpoint 2026-10-17T02:15:12Z. **ACTIVE — Transactional first; ordinary Upda
 |---|---|---|
 | Root | PR151 parser correction published b76c3b7; exact CI38986478153 passed | PR150 remains frozen; no merge before exact CI/scope/tree verification and integration authorization |
 | Conditional author | Formatter-only successor-2 frozen; native closure clean | Exact eight regions/three tests; no further edits |
-| Event reviewer | Finalize CLOSED validation source/selection/bootstrap reuse mapping | Final source successor-2; no execution until root release |
-| Native reviewer | Claude findings and formatter delta closure complete | No semantic blocker; fresh validation required |
+| Event reviewer | Audit successor static results and propose narrow cleanup lint correction | Typecheck/format passed; lint failed noUnsafeFinally; no runtime release |
+| Native reviewer | Review bounded cleanup lint correction plan | Preserve error aggregation, clean-close removal gate and deadlines |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -151,6 +151,8 @@ Concrete [validation preparation](finite-event-minimum-validation/implementation
 **02:10Z council and correction closure.** Actual [Claude full code review](finite-event-minimum-code-review-successor-1/final-review.txt) completed exit0/1404.132s with unchanged source/packet, one terminal result, no parse errors or sampled survivors. Root independently verified source/context/artifact hashes and streamf76096cd; [root dispositions](finite-event-minimum-code-review-successor-1/root-dispositions.json) and [native findings audit](finite-event-minimum-code-review-successor-1/findings-audit.md) accept mechanical formatting blockers and explicitly defer optional duplicate oracles/counters under the existing controls. No semantic production blocker found. External audit checks ordered method/status/count; canonical routes are enforced by pinned callback/allowlist/URL assertions, not by that auditor alone.
 
 [Formatter successor-2](finite-event-minimum-author/successor-2/report.md), binding5a6a21e0/fullpatchc41151ea/delta7f53df54, applies exactly eight logged replacements in three test files without invoking a formatter. All production/historical bytes and selection remain unchanged. Root read the entire delta and verified679live hashes/fullpatch; [native closure](finite-event-minimum-author/successor-2/native-closure.md) independently proves exact forward/reverse reconstruction and unchanged workload. Original failed format/typecheck/review evidence remains attributed to prior source. [Validation reuse structure](finite-event-minimum-validation/successor-1/native-preparation-review.md) is clean; Event reviewer is finalizing its closed mapping to successor-2. Runtime remains unexecuted; no full profile claim or change to frozen PR150/green separate PR151.
+
+**Fresh successor static outcome.** Finalized validation source4def9fb9/index753e13b7/bootstrap-reuse d478a23a passed root and [native final binding inspection](finite-event-minimum-validation/successor-1/final-binding-review.md). Root explicitly accepted unchanged17dependency/11tool original bootstrap reuse and released static3 only. New source identity83037cbf: typecheck PASS4.998s, format PASS4.073s, lint FAIL raw1/4.124s. Sole lint error is noUnsafeFinally at installed E592: explicit throw inside nested catch-controlled cleanup. Summary retains19warnings/1info with one diagnostic omitted by display cap; no zero-warning claim. Exact [lint log](finite-event-minimum-validation/successor-1/run/lint.log) preserved d33d74a8; all source unchanged, no forced cleanup/sampled survivors/stores. Build/runtime remain unrun. Event reviewer is preparing narrow equivalent direct error collection with clean-close/removal in the else branch, retaining nested catch/timers/deadlines/aggregate; native review assigned, source edits not yet released. No retries or suppressed lint.
 
 ## Current priority: BDP profile structure and implementation
 
