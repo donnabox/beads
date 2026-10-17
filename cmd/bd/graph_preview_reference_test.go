@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	graph "github.com/steveyegge/beads/graphops"
+)
 
 func TestGraphPreviewParseReference(t *testing.T) {
 	for _, tc := range []struct {
@@ -56,5 +60,20 @@ func TestGraphPreviewLinkReferenceFlagsAreSeparateFromWriteGuard(t *testing.T) {
 		if linkCreateCmd.Flags().Lookup(name) == nil {
 			t.Errorf("link create lacks --%s", name)
 		}
+	}
+}
+
+func TestGraphPreviewCanonicalLocalIDCanContainAt(t *testing.T) {
+	// The current identity law intentionally permits raw @. A future decision
+	// to reserve it for revision syntax changes the local ID grammar; it is not
+	// an already-established invariant of Preview 2 or BDP v0.
+	if got := graph.CanonicalSegment("a@b"); got != "a@b" {
+		t.Fatalf("CanonicalSegment(a@b) = %q", got)
+	}
+	if err := graph.ValidateBeadPath("beads/a@b"); err != nil {
+		t.Fatalf("current canonical Bead ID refuses @: %v", err)
+	}
+	if err := graph.ValidateLinkPath("links/a@b"); err != nil {
+		t.Fatalf("current canonical Link ID refuses @: %v", err)
 	}
 }
