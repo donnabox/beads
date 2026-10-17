@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T08:01:55Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T08:17:33Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T08:01:55Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Receipt PLAN council complete; accepted precision corrections independently closed; source-only release08:01 | Review frozen source with native+actualClaude CODE; runtime remains closed; PR150 frozen |
-| Conditional reviewer | Receipt plan precision closure complete | Idle; ready for full code review once author freezes |
-| Event reviewer | Author exact six-file receipt-root slice in isolated vickie-receipt-root-minimum | Source only; no checks/runtime/commit; freeze source and report |
-| Native reviewer | Prepare separate CLOSED source-pending receipt validation packet | No execution; reconcile actual frozen schemas/source before review/release |
+| Root | Six-file receipt draft frozen and fully read; native CODE clean; all679source/20artifact pins verified | Inspect/release actualClaude CODE packet; runtime closed; PR150 frozen |
+| Conditional reviewer | Native full receipt CODE complete, no blocker | Independently review CLOSED Claude CODE packet, then validation preparation |
+| Event reviewer | Preparing CLOSED actualClaude CODE packet against frozen receipt draft | Explicit absolute context paths; no launch/source changes |
+| Native reviewer | Finalize receipt validation against frozen actual source/report schemas | Preserve initial pending packet; all execution gates closed |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -291,6 +291,11 @@ Receipt-root clean-base PLAN successor is now being prepared against exact08812c
 [Precision successor](snapshot-opaque-next-serving-audit/plan-precision-successor-2/report.md) names exact lexicalcapture/currentcheck(true), branch-local root/page parsing, preserved label-first titles, principal-versus-epoch/view fences, paired HEAD length assertions and external120/TERM115 attribution. Native caught one missing outer tuple bracket; original16frozen artifacts remain intact and separate [one-character correction](snapshot-opaque-next-serving-audit/plan-precision-successor-2/correction-1/correction.patch) fixes it. [Native closure](snapshot-opaque-next-serving-audit/plan-precision-successor-2/native-closure.md)3e917b41 verifies corrected plana28facc5/indexc346d2e8/binding9817c93c, unchanged selection/source679 and no semantic/count/deadline expansion.
 
 [Root source-only release](receipt-root-minimum-author/root-author-release.json)2026-10-17T08:01:07Z created isolated /Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum, branchcodex/vickie-receipt-root-minimum at exactclean08812c6 and reverified greenCI39012707852/all679baseline bytes. Author owns only three production/three testfiles from correctedplan. No builds/imports/tests/installs/services/formatters/commit/push yet. Independent validator prepares CLOSED source-pending packet; actual code council and final source/schema rebind precede runtime release. Twelve planned sourcecallbacks/36HTTP and installed22+5 are prospective, not observed counts. Retained pages, S1/G2, foreign opaque policies/publicsupport and frozenPR150 remain untouched.
+
+
+**Receipt-root source draft frozen for full CODE council.** [Author report](receipt-root-minimum-author/report.md) and [exact six-file patch](receipt-root-minimum-author/full.patch)8e95fe59 bind three production and three test files at base08812c6. Sourcebindingc1c6bd6b and authorindexc3ec3a9f cover all679tracked inputs;673 outside files unchanged. [Native full code review](receipt-root-minimum-author/native-code-review.md)33eda490 finds no blocking defect, and [root source review](receipt-root-minimum-author/root-source-review.json) independently verifies full patch, all20indexed artifacts, source679, HEAD and dirty scope. No static, formatter, build, source test or installed result yet. Prospective source12callbacks/36HTTP and installed22+5 remain proposed workloads, not observations.
+
+ActualClaude CODE packet preparation is closed pending independent review and root release, with absolute copied-context paths correcting the prior PLAN access limitation. Separate validation finalization preserves original pending preparation and reconciles actual A/B/D records and rich installedE response/cleanup fields; historical aggregates remain source-derived. PR150d4 and PR157088 exact heads/checks freshly unchanged/green; no bus messages since saved cursor. No main integration, S1/G2 resolution or support-claim change.
 
 ## Current priority: BDP profile structure and implementation
 
