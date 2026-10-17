@@ -1,0 +1,48 @@
+{
+  "sourceLog": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/format-check.log",
+  "sourceLogSha256": "09a4531ec83f8b2de1428405a8530c0eeca8bcc2f20f8f6e6a38ffd6b2ad6ff4",
+  "regions": [
+    {
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "before": "            cleanupTimer = setTimeout(() => {\n              deadlineExceeded = true;\n              reject(deadlineReason);\n            }, Math.max(0, expiresAt - Date.now()));\n",
+      "after": "            cleanupTimer = setTimeout(\n              () => {\n                deadlineExceeded = true;\n                reject(deadlineReason);\n              },\n              Math.max(0, expiresAt - Date.now()),\n            );\n"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "before": "    console.log(JSON.stringify({ observation: \"finite-event-minimum-owner\", reads, seedMutations: 1 }));\n",
+      "after": "    console.log(\n      JSON.stringify({ observation: \"finite-event-minimum-owner\", reads, seedMutations: 1 }),\n    );\n"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "before": "        for (const name of [\"etag\", \"last-modified\"]) expect(response.headers.has(name)).toBe(false);\n",
+      "after": "        for (const name of [\"etag\", \"last-modified\"])\n          expect(response.headers.has(name)).toBe(false);\n"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "before": "            if (status === 200) expect(validPage(value), JSON.stringify(validPage.errors)).toBe(true);\n",
+      "after": "            if (status === 200)\n              expect(validPage(value), JSON.stringify(validPage.errors)).toBe(true);\n"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "before": "              expect(validMinimumProblem(value), JSON.stringify(validMinimumProblem.errors)).toBe(true);\n",
+      "after": "              expect(validMinimumProblem(value), JSON.stringify(validMinimumProblem.errors)).toBe(\n                true,\n              );\n"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "before": "  if (failures.length > 1) throw new AggregateError(failures, \"finite Event HTTP observation failed\");\n",
+      "after": "  if (failures.length > 1)\n    throw new AggregateError(failures, \"finite Event HTTP observation failed\");\n"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "before": "    const cancelled = f.observe(\n      f.events(`${scope}events/`, undefined, minimum, controller.signal),\n    );\n",
+      "after": "    const cancelled = f.observe(f.events(`${scope}events/`, undefined, minimum, controller.signal));\n"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "before": "] as const)(\"preserves initial Scope Event preflight before malformed capture: %s\", async (label) => {\n  const f = fixture();\n  let reads = 0;\n  const clockError = new Error(\"finite Event initial clock sentinel\");\n  const now = vi.fn(() => {\n    if (label === \"throwing-clock\") throw clockError;\n    return label === \"nonfinite-clock\" ? Number.NaN : 0;\n  });\n  const wait = vi.fn(async () => {});\n  const service = createTransactionService(\n    {\n      ...f.owner,\n      readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {\n        reads++;\n        return f.owner.readEvents(...args);\n      },\n    },\n    {\n      ownerLifetime: \"service\",\n      read: f.read,\n      minimumReads: { budgetMs: label === \"invalid-policy\" ? 0 : 10, now, wait },\n    },\n  );\n  cleanup.push(() => service.close());\n  const pending = service.events(\n    `${scope}events/`,\n    undefined,\n    {\n      scopeEpoch: \"bad space\",\n      authorizationView: \"development-all-visible\",\n      minimumPosition: \"opaque\",\n    },\n    label === \"already-aborted\" ? AbortSignal.abort() : undefined,\n  );\n  expect(pending).toBeInstanceOf(Promise);\n  const error = await pending.then(\n    () => undefined,\n    (cause: unknown) => cause,\n  );\n  if (label === \"already-aborted\") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);\n  else if (label === \"throwing-clock\") expect(error).toBe(clockError);\n  else {\n    expect(error).toBeInstanceOf(TypeError);\n    expect(error).toMatchObject({\n      message:\n        label === \"invalid-policy\"\n          ? \"finite minimum-read wait policy required\"\n          : label === \"nonfinite-clock\"\n            ? \"invalid minimum-read clock\"\n            : \"unsupported minimum tuple\",\n    });\n  }\n  expect(now).toHaveBeenCalledTimes(label === \"invalid-policy\" ? 0 : 1);\n  expect(reads).toBe(0);\n  expect(wait).not.toHaveBeenCalled();\n  console.log(\n    JSON.stringify({\n      observation: \"finite-event-minimum-preflight\",\n      label,\n      serviceCalls: 1,\n      clockCalls: now.mock.calls.length,\n      ownerReads: reads,\n      waits: wait.mock.calls.length,\n    }),\n  );\n});\n",
+      "after": "] as const)(\n  \"preserves initial Scope Event preflight before malformed capture: %s\",\n  async (label) => {\n    const f = fixture();\n    let reads = 0;\n    const clockError = new Error(\"finite Event initial clock sentinel\");\n    const now = vi.fn(() => {\n      if (label === \"throwing-clock\") throw clockError;\n      return label === \"nonfinite-clock\" ? Number.NaN : 0;\n    });\n    const wait = vi.fn(async () => {});\n    const service = createTransactionService(\n      {\n        ...f.owner,\n        readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {\n          reads++;\n          return f.owner.readEvents(...args);\n        },\n      },\n      {\n        ownerLifetime: \"service\",\n        read: f.read,\n        minimumReads: { budgetMs: label === \"invalid-policy\" ? 0 : 10, now, wait },\n      },\n    );\n    cleanup.push(() => service.close());\n    const pending = service.events(\n      `${scope}events/`,\n      undefined,\n      {\n        scopeEpoch: \"bad space\",\n        authorizationView: \"development-all-visible\",\n        minimumPosition: \"opaque\",\n      },\n      label === \"already-aborted\" ? AbortSignal.abort() : undefined,\n    );\n    expect(pending).toBeInstanceOf(Promise);\n    const error = await pending.then(\n      () => undefined,\n      (cause: unknown) => cause,\n    );\n    if (label === \"already-aborted\") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);\n    else if (label === \"throwing-clock\") expect(error).toBe(clockError);\n    else {\n      expect(error).toBeInstanceOf(TypeError);\n      expect(error).toMatchObject({\n        message:\n          label === \"invalid-policy\"\n            ? \"finite minimum-read wait policy required\"\n            : label === \"nonfinite-clock\"\n              ? \"invalid minimum-read clock\"\n              : \"unsupported minimum tuple\",\n      });\n    }\n    expect(now).toHaveBeenCalledTimes(label === \"invalid-policy\" ? 0 : 1);\n    expect(reads).toBe(0);\n    expect(wait).not.toHaveBeenCalled();\n    console.log(\n      JSON.stringify({\n        observation: \"finite-event-minimum-preflight\",\n        label,\n        serviceCalls: 1,\n        clockCalls: now.mock.calls.length,\n        ownerReads: reads,\n        waits: wait.mock.calls.length,\n      }),\n    );\n  },\n);\n"
+    }
+  ],
+  "regionCount": 8,
+  "method": "exact logged text replacements; no formatter execution"
+}

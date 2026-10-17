@@ -1,7 +1,7 @@
 {
   "executed": false,
   "authorSelection": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-author/successor-1/selection.json",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-author/successor-2/selection.json",
     "sha256": "2465fcdc4c318d43a792f603be827b4ac7f01e4087ab4fd4342a2bd7768cba9b"
   },
   "sourceCallbacks": [
@@ -141,8 +141,11 @@
     1,
     1
   ],
-  "actualSourceInspection": "Five table rows; fixture and one events invocation inside each row; error assertions and 0 read/wait assertions; unchanged A-E prefix and all remaining four dirty files verified.",
-  "state": "PENDING final source; original counts retained as predecessor context only",
-  "finalized": false,
-  "finalSourceBinding": null
+  "actualSourceInspection": "All eight logged formatting regions reverse to the predecessor three files; other676 tracked files unchanged;13 exact source names and2 installed names/workload unchanged.",
+  "state": "Frozen author successor2; not executed",
+  "finalized": true,
+  "finalSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "4def9fb98f465144795f47363178d5a892b5d2de0494b6c9941d3153026ad701"
+  }
 }

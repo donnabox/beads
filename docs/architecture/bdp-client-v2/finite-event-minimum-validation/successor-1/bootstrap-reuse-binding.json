@@ -8,12 +8,19 @@
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/source-binding.json",
     "sha256": "7293a3da8a59f2dd86bda8985d5504786f4fb564037855d93676d1cde89ad09a"
   },
-  "successorSourceBinding": null,
+  "successorSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "4def9fb98f465144795f47363178d5a892b5d2de0494b6c9941d3153026ad701"
+  },
   "originalHead": "b76c3b7df77ea9b33611bc9027db651833e20abb",
   "originalTree": "4d9f8ac00702d32a45c3eb38cf50fac55ac96f2d",
   "originalSourceIdentity": "6d547d6c57fcc0f1017770cc97c2b0b977b859162aeb78538c61289be312fb7c",
-  "successorSourceIdentity": null,
-  "allowedSourceChanges": null,
+  "successorSourceIdentity": "83037cbf38d884ba1133a3e633869e6fd3cbd6fa179ba9d435555b232571229e",
+  "allowedSourceChanges": [
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
   "dependencyInputs": {
     ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
     ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
@@ -51,6 +58,6 @@
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/root-disposition-bootstrap.json",
     "sha256": "79f75f5d09a3510f3eada405613b812701e9fcd7f399253f878172f72e4f64e5"
   },
-  "mappingFinalized": false,
-  "limits": "Successful install and tool capture happened on original source identity only. New corrected source is PENDING. Require identical dependency inputs/tool identities and exact allowed source delta before reuse; no reinstall and no inherited static/runtime result."
+  "mappingFinalized": true,
+  "limits": "Original successful offline install/tool capture retains original source identity6d547d6c. New identity is independently mapped through exact three test formatting changes only. Seventeen dependency inputs and eleven current tools unchanged. Reuse is prerequisite only; no original typecheck/format result relabeled."
 }

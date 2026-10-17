@@ -1,0 +1,218 @@
+--- successor-1/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
++++ successor-2/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
+@@ -578,10 +578,13 @@
+         await Promise.race([
+           closing,
+           new Promise<never>((_, reject) => {
+-            cleanupTimer = setTimeout(() => {
+-              deadlineExceeded = true;
+-              reject(deadlineReason);
+-            }, Math.max(0, expiresAt - Date.now()));
++            cleanupTimer = setTimeout(
++              () => {
++                deadlineExceeded = true;
++                reject(deadlineReason);
++              },
++              Math.max(0, expiresAt - Date.now()),
++            );
+           }),
+         ]);
+         if (Date.now() >= expiresAt) deadlineExceeded = true;
+--- successor-1/packages/server/src/transaction-events.test.ts
++++ successor-2/packages/server/src/transaction-events.test.ts
+@@ -1385,7 +1385,9 @@
+     expect(() => read(`${scope}beads/a?view=events`, undefined, minimum)).toThrow(TypeError);
+     expect(groupReads).toBe(0);
+     expect(reads).toBe(8);
+-    console.log(JSON.stringify({ observation: "finite-event-minimum-owner", reads, seedMutations: 1 }));
++    console.log(
++      JSON.stringify({ observation: "finite-event-minimum-owner", reads, seedMutations: 1 }),
++    );
+   } finally {
+     spy.mockRestore();
+   }
+@@ -1465,7 +1467,8 @@
+         const response = await exchange(suffix, method, headers);
+         const text = await response.text();
+         expect(response.status, `${method} ${suffix}`).toBe(status);
+-        for (const name of ["etag", "last-modified"]) expect(response.headers.has(name)).toBe(false);
++        for (const name of ["etag", "last-modified"])
++          expect(response.headers.has(name)).toBe(false);
+         if (status === 500) {
+           // Explicit preserved private gap, not a normative Problem response.
+           expect(text).toBe("");
+@@ -1474,9 +1477,12 @@
+           expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+           if (method === "GET") {
+             const value: unknown = JSON.parse(text);
+-            if (status === 200) expect(validPage(value), JSON.stringify(validPage.errors)).toBe(true);
++            if (status === 200)
++              expect(validPage(value), JSON.stringify(validPage.errors)).toBe(true);
+             else {
+-              expect(validMinimumProblem(value), JSON.stringify(validMinimumProblem.errors)).toBe(true);
++              expect(validMinimumProblem(value), JSON.stringify(validMinimumProblem.errors)).toBe(
++                true,
++              );
+               expect(value).toMatchObject({ status, code });
+               if (status === 503)
+                 expect(value).toEqual({
+@@ -1548,5 +1554,6 @@
+     );
+   }
+   if (failures.length === 1) throw failures[0];
+-  if (failures.length > 1) throw new AggregateError(failures, "finite Event HTTP observation failed");
+-});
++  if (failures.length > 1)
++    throw new AggregateError(failures, "finite Event HTTP observation failed");
++});
+--- successor-1/packages/server/src/transaction-service.test.ts
++++ successor-2/packages/server/src/transaction-service.test.ts
+@@ -2637,9 +2637,7 @@
+     };
+     f.watchScans();
+     const controller = new AbortController();
+-    const cancelled = f.observe(
+-      f.events(`${scope}events/`, undefined, minimum, controller.signal),
+-    );
++    const cancelled = f.observe(f.events(`${scope}events/`, undefined, minimum, controller.signal));
+     await f.entered(0, cancelled);
+     controller.abort();
+     // Abort is observed only after our deferred wait is released.
+@@ -2696,69 +2694,72 @@
+   "throwing-clock",
+   "nonfinite-clock",
+   "malformed-after-valid-preflight",
+-] as const)("preserves initial Scope Event preflight before malformed capture: %s", async (label) => {
+-  const f = fixture();
+-  let reads = 0;
+-  const clockError = new Error("finite Event initial clock sentinel");
+-  const now = vi.fn(() => {
+-    if (label === "throwing-clock") throw clockError;
+-    return label === "nonfinite-clock" ? Number.NaN : 0;
+-  });
+-  const wait = vi.fn(async () => {});
+-  const service = createTransactionService(
+-    {
+-      ...f.owner,
+-      readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {
+-        reads++;
+-        return f.owner.readEvents(...args);
++] as const)(
++  "preserves initial Scope Event preflight before malformed capture: %s",
++  async (label) => {
++    const f = fixture();
++    let reads = 0;
++    const clockError = new Error("finite Event initial clock sentinel");
++    const now = vi.fn(() => {
++      if (label === "throwing-clock") throw clockError;
++      return label === "nonfinite-clock" ? Number.NaN : 0;
++    });
++    const wait = vi.fn(async () => {});
++    const service = createTransactionService(
++      {
++        ...f.owner,
++        readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {
++          reads++;
++          return f.owner.readEvents(...args);
++        },
+       },
+-    },
+-    {
+-      ownerLifetime: "service",
+-      read: f.read,
+-      minimumReads: { budgetMs: label === "invalid-policy" ? 0 : 10, now, wait },
+-    },
+-  );
+-  cleanup.push(() => service.close());
+-  const pending = service.events(
+-    `${scope}events/`,
+-    undefined,
+-    {
+-      scopeEpoch: "bad space",
+-      authorizationView: "development-all-visible",
+-      minimumPosition: "opaque",
+-    },
+-    label === "already-aborted" ? AbortSignal.abort() : undefined,
+-  );
+-  expect(pending).toBeInstanceOf(Promise);
+-  const error = await pending.then(
+-    () => undefined,
+-    (cause: unknown) => cause,
+-  );
+-  if (label === "already-aborted") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
+-  else if (label === "throwing-clock") expect(error).toBe(clockError);
+-  else {
+-    expect(error).toBeInstanceOf(TypeError);
+-    expect(error).toMatchObject({
+-      message:
+-        label === "invalid-policy"
+-          ? "finite minimum-read wait policy required"
+-          : label === "nonfinite-clock"
+-            ? "invalid minimum-read clock"
+-            : "unsupported minimum tuple",
+-    });
+-  }
+-  expect(now).toHaveBeenCalledTimes(label === "invalid-policy" ? 0 : 1);
+-  expect(reads).toBe(0);
+-  expect(wait).not.toHaveBeenCalled();
+-  console.log(
+-    JSON.stringify({
+-      observation: "finite-event-minimum-preflight",
+-      label,
+-      serviceCalls: 1,
+-      clockCalls: now.mock.calls.length,
+-      ownerReads: reads,
+-      waits: wait.mock.calls.length,
+-    }),
+-  );
+-});
++      {
++        ownerLifetime: "service",
++        read: f.read,
++        minimumReads: { budgetMs: label === "invalid-policy" ? 0 : 10, now, wait },
++      },
++    );
++    cleanup.push(() => service.close());
++    const pending = service.events(
++      `${scope}events/`,
++      undefined,
++      {
++        scopeEpoch: "bad space",
++        authorizationView: "development-all-visible",
++        minimumPosition: "opaque",
++      },
++      label === "already-aborted" ? AbortSignal.abort() : undefined,
++    );
++    expect(pending).toBeInstanceOf(Promise);
++    const error = await pending.then(
++      () => undefined,
++      (cause: unknown) => cause,
++    );
++    if (label === "already-aborted") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
++    else if (label === "throwing-clock") expect(error).toBe(clockError);
++    else {
++      expect(error).toBeInstanceOf(TypeError);
++      expect(error).toMatchObject({
++        message:
++          label === "invalid-policy"
++            ? "finite minimum-read wait policy required"
++            : label === "nonfinite-clock"
++              ? "invalid minimum-read clock"
++              : "unsupported minimum tuple",
++      });
++    }
++    expect(now).toHaveBeenCalledTimes(label === "invalid-policy" ? 0 : 1);
++    expect(reads).toBe(0);
++    expect(wait).not.toHaveBeenCalled();
++    console.log(
++      JSON.stringify({
++        observation: "finite-event-minimum-preflight",
++        label,
++        serviceCalls: 1,
++        clockCalls: now.mock.calls.length,
++        ownerReads: reads,
++        waits: wait.mock.calls.length,
++      }),
++    );
++  },
++);

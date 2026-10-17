@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T02:01:08Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T02:15:12Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T02:01:08Z. **ACTIVE — Transactional first; ordinary Upda
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | PR151 parser correction published b76c3b7; exact CI38986478153 passed | PR150 remains frozen; no merge before exact CI/scope/tree verification and integration authorization |
-| Conditional author | Corrected successor frozen; native closure clean | No source edits while actual Claude code review runs |
-| Event reviewer | CLOSED validation successor prepared; idle | Pending final source/selection and explicit bootstrap reuse acceptance; no execution |
-| Native reviewer | Formatter plan clean; review CLOSED validation successor structure | Source frozen pending actual Claude; no authoring/runtime release |
+| Conditional author | Formatter-only successor-2 frozen; native closure clean | Exact eight regions/three tests; no further edits |
+| Event reviewer | Finalize CLOSED validation source/selection/bootstrap reuse mapping | Final source successor-2; no execution until root release |
+| Native reviewer | Claude findings and formatter delta closure complete | No semantic blocker; fresh validation required |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -147,6 +147,10 @@ Concrete [validation preparation](finite-event-minimum-validation/implementation
 **01:50Z continuation.** Independent [static-prefix audit](finite-event-minimum-validation/implementation/static-prefix-audit.md) verifies all679 source hashes,11 actual tool identities and all50 sampled PIDs absent. [Formatter-only proposal](finite-event-minimum-validation/implementation/formatting-successor-plan.md) scopes eight layout regions in three newly added test portions; no production or historical callback changes. Native plan review and CLOSED fresh validation successor preparation are assigned; successful bootstrap reuse must be explicitly mapped to corrected source, never relabeled. Actual Claude code review is active at583s with streamed tool activity/no tool errors; it has not produced a verdict. PR150/151 unchanged and green; no new bus instruction.
 
 **02:00Z continuation.** [Native formatter-plan review](finite-event-minimum-validation/implementation/native-format-plan-review.md) accepted exact eight formatting regions with unchanged tokens/literals/ordering and historical prefixes. The [CLOSED validation successor](finite-event-minimum-validation/successor-1/report.md) is prepared with19stages and explicit original bootstrap reuse; new source/selection mapping remains pending and every execution gate is closed. Root inspected the complete adaptation and independently verified15 indexed files, unchanged runner/audit/package helper/base tools and all679 frozen source hashes. Native structural review is underway. Actual Claude code review remains active at1190s with fresh streamed thinking; no terminal result. No source edits, retries or runtime execution. Both PR heads and successful CI remain unchanged; bus has no new incoming instruction.
+
+**02:10Z council and correction closure.** Actual [Claude full code review](finite-event-minimum-code-review-successor-1/final-review.txt) completed exit0/1404.132s with unchanged source/packet, one terminal result, no parse errors or sampled survivors. Root independently verified source/context/artifact hashes and streamf76096cd; [root dispositions](finite-event-minimum-code-review-successor-1/root-dispositions.json) and [native findings audit](finite-event-minimum-code-review-successor-1/findings-audit.md) accept mechanical formatting blockers and explicitly defer optional duplicate oracles/counters under the existing controls. No semantic production blocker found. External audit checks ordered method/status/count; canonical routes are enforced by pinned callback/allowlist/URL assertions, not by that auditor alone.
+
+[Formatter successor-2](finite-event-minimum-author/successor-2/report.md), binding5a6a21e0/fullpatchc41151ea/delta7f53df54, applies exactly eight logged replacements in three test files without invoking a formatter. All production/historical bytes and selection remain unchanged. Root read the entire delta and verified679live hashes/fullpatch; [native closure](finite-event-minimum-author/successor-2/native-closure.md) independently proves exact forward/reverse reconstruction and unchanged workload. Original failed format/typecheck/review evidence remains attributed to prior source. [Validation reuse structure](finite-event-minimum-validation/successor-1/native-preparation-review.md) is clean; Event reviewer is finalizing its closed mapping to successor-2. Runtime remains unexecuted; no full profile claim or change to frozen PR150/green separate PR151.
 
 ## Current priority: BDP profile structure and implementation
 
