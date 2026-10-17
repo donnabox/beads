@@ -10,8 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
-	"github.com/steveyegge/beads/internal/types"
-	"github.com/steveyegge/beads/internal/utils"
+	"github.com/steveyegge/beads/internal/workapi"
 )
 
 const graphIssueBlockedOutputLimit = 16 << 20
@@ -42,7 +41,10 @@ func runGraphPreviewBlocked(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewBlockedInput(cmd, args); err != nil {
 		return err
 	}
-	filter := graphPreviewBlockedFilterFromFlags(cmd)
+	// Graph preview rejects --parent at input admission. The shared request
+	// still carries the label flags, which workapi converts for this native
+	// graph-store read without constructing a storage filter in the CLI.
+	filter := workapi.BuildGraphBlockedFilter(blockedRequestFromFlags(cmd))
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		issues, err := s.BlockedIssuesFiltered(ctx, filter)
 		if err != nil {
@@ -51,18 +53,6 @@ func runGraphPreviewBlocked(cmd *cobra.Command, args []string) error {
 		output, err := renderGraphIssueBlocked(issues, jsonOutput, quietFlag)
 		return nil, output, err
 	}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
-}
-
-// graphPreviewBlockedFilterFromFlags retains the graph store's label filter
-// contract while ordinary blocked listings use the newer BlockedLister role.
-// Graph preview rejects --parent before this conversion.
-func graphPreviewBlockedFilterFromFlags(cmd *cobra.Command) types.WorkFilter {
-	request := blockedRequestFromFlags(cmd)
-	return types.WorkFilter{
-		Labels:        utils.NormalizeLabels(request.Labels),
-		LabelsAny:     utils.NormalizeLabels(request.LabelsAny),
-		ExcludeLabels: utils.NormalizeLabels(request.ExcludeLabels),
-	}
 }
 
 func renderGraphIssueBlocked(issues []graphstore.BlockedIssue, structured, quiet bool) (string, error) {

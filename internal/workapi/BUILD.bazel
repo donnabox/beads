@@ -4,6 +4,7 @@ go_library(
     name = "workapi",
     srcs = [
         "bootstrap.go",
+        "blocked.go",
         "count.go",
         "delete.go",
         "detail.go",
