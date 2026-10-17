@@ -75,7 +75,9 @@ go_library(
 go_test(
     name = "graphstore_test",
     size = "large",
-    timeout = "long",
+    # Eight full embedded shards can exceed Bazel's 15-minute "long" limit
+    # under CI contention; the required gate still runs every shard.
+    timeout = "eternal",
     srcs = [
         "bead_list_store_test.go",
         "bead_list_test.go",

@@ -32,6 +32,9 @@ load("@rules_go//go:def.bzl", "go_test")
 # plus the one Go file whose dolt image pin they compare.
 go_test(
     name = "scripts_test",
+    # The dispatcher policy test compiles a race-enabled Go fixture on the
+    # Bazel worker; keep the whole target bounded beyond that cold compile.
+    timeout = "long",
     srcs = [
         "bazel_autofix_push_test.go",
         "bazel_cache_mode_test.go",

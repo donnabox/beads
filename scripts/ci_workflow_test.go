@@ -6015,7 +6015,9 @@ class DispatchControls(unittest.TestCase):
             (root / "go.mod").write_text("module example.invalid/dispatch-framing\ngo 1.26\n")
             (root / "framing_test.go").write_text('package framing\nimport ("fmt"; "os"; "testing")\nfunc TestFragment(t *testing.T) { fmt.Fprint(os.Stderr, "before-child"); t.Run("child", func(t *testing.T) { fmt.Print("child-tail") }); fmt.Fprint(os.Stderr, "parent-tail") }\n')
             runner = m.Runner(root, root)
-            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 30)
+            # A cold race-enabled Go toolchain can compile this tiny fixture
+            # slowly when the Bazel worker is also running the full suite.
+            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
             census = m.verify_events(events, ["example.invalid/dispatch-framing"], ["TestFragment"])
             self.assertEqual(census["tests"], 2)
             self.assertEqual(census["skipped"], [])
@@ -6083,7 +6085,7 @@ func TestMacOSGoTestDispatcherControls(t *testing.T) {
 		t.Skip("macOS dispatcher owns POSIX process groups")
 	}
 	python := requireHostTool(t, "python3")
-	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "-c", macOSDispatcherControls,
 		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"))
