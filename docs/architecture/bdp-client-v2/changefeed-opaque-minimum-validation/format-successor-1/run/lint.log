@@ -1,0 +1,50 @@
+packages/server/src/transaction-changefeed.test.ts:236:16 lint/style/noNonNullAssertion ━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    234 │   expect(() => client.apply(seed, true)).toThrow("publication failed");
+    235 │   expect(client.state()).toEqual({ graph: new Map(), checkpoint: "genesis", position: "pos-0" });
+  > 236 │   client.apply(page(f.owner, client.state().checkpoint).groups[0]!);
+        │                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    237 │   const before = client.state();
+    238 │   for (const bad of [
+  
+
+packages/server/src/transaction-http.ts:475:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    473 │       const fields =
+    474 │         lastEventIds ??
+  > 475 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    476 │       if (media === "sse" && fields.length > 1)
+    477 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:478:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    476 │       if (media === "sse" && fields.length > 1)
+    477 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 478 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    479 │       // Only the finite fresh request supplies this private admission provenance.
+    480 │       // Undefined media still checks the minimum before ordinary negotiation.
+  
+
+packages/server/src/transaction-http.ts:544:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    542 │       const fields =
+    543 │         lastEventIds ??
+  > 544 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    545 │       const observed = await service.beginEvents(
+    546 │         eventRequest.source.url,
+  
+
+Checked 5 files in 23ms. No fixes applied.
+Found 4 warnings.

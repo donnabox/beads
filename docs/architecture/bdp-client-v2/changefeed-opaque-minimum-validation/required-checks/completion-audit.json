@@ -1,0 +1,211 @@
+{
+  "completedAt": "2026-10-17T15:18:08.346262+00:00",
+  "status": "all four released required checks passed",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "sourceBindingSha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b",
+  "authorAttribution": "Exact formatter successor dirty bytes; base commit does not contain draft",
+  "sourceFileCount": 679,
+  "buildProofSha256": "a7019ca46d484f5ec3b5df34db0d0d15aec356e0c844feb442c8750d6b09cf5c",
+  "rootReleaseSha256": "a846db19a24b04962cfcf07c0b98e68e4b3bd69d93820442042dc70560794eac",
+  "stages": {
+    "boundaries": {
+      "result": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 3.811554375104606,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          77799
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-changefeed-required-boundaries-wzc22lun",
+        "logSha256": "25f2896a4960c5d83a2204d5d35f52d3e1a6f7e77d5f53a88ddc9d70b9ebe696"
+      },
+      "exitSha256": "ba3796823e0fe6b52c0bb094018823b1ec74769b2c3f74b067ea8cd4b75d0012",
+      "startedSha256": "4766048234bbd3e46a9ef5ac023721fdecafcd609e3c4f7f0a7cdff8fba316f5",
+      "processLogSha256": "de36a2a5c165e1752b604b18c63ff6aef7b3799d0318529df07a030814a4768b"
+    },
+    "preflight": {
+      "result": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 4.328698208089918,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          79198,
+          79201
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-changefeed-required-preflight-7k_rcswl",
+        "logSha256": "e6b3e2535b792a702e99e18d7532c7cf0e629f97dc700241345f12f18c2a3079"
+      },
+      "exitSha256": "f078740545e17cdbe90b6fdd7816cffe22a2c81597e517db66c365194b00fa9b",
+      "startedSha256": "f7a2d55299cf44ec521bd0ffe7ff30974dad41e8ce37c4496f85561a7245ac28",
+      "processLogSha256": "f9dfff25a2c1e691f04371317d6431ceeed45ae099476892cf3012884e066b81"
+    },
+    "package-smoke": {
+      "result": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 8.580568540841341,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          80654,
+          80678,
+          80679,
+          80687,
+          80698,
+          80705,
+          80708,
+          80720,
+          80724,
+          80727,
+          80729,
+          80735,
+          80738,
+          80743,
+          80749,
+          80849,
+          80853,
+          80901,
+          81014,
+          81027,
+          81030,
+          81033,
+          81037,
+          81040,
+          81042
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-changefeed-required-package-smoke-ume6f1cv",
+        "logSha256": "f991803ec08354d69a73e4e737f0f7b2057e583f151b3d33700999f717817e22"
+      },
+      "exitSha256": "9a46ab33eb7450fcc3776d17cf6ce049bc6a91b19b240b97d8df435f2c642f35",
+      "startedSha256": "baf01069e5889d2b359809dcb0d4cd6d8d08f4698c13f00b04d83fc68c84f0f6",
+      "processLogSha256": "e6813a6a36ed767cd242c931361e7c74cf959e0abf49063f99d0caaa31e75333"
+    },
+    "historical-read-evidence": {
+      "result": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 4.400414041243494,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          84602
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-changefeed-required-historical-read-evidence-_fyhlm8e",
+        "logSha256": "18a58981597b6d29981cfc6a9587156d7b37a5fc7ead823c32dc08cf350020b3"
+      },
+      "exitSha256": "0e1ee0ffa366c8e6b1a00f0fc9e457f2b57918a9e80b466507077b903a20ff3c",
+      "startedSha256": "0cca1c71d643ef3139358b61ff52e89cdf80efac7bf87adc3896fcc8a95fdca4",
+      "processLogSha256": "ae6956e34875b75cd7b87f0b6ecffaaa39ba02ccb5ba044a25f7cf828b8c894e"
+    }
+  },
+  "preflightCases": [
+    {
+      "fullName": "E2E child supervision terminates a descendant that inherits the supervised child's stdio",
+      "status": "passed"
+    },
+    {
+      "fullName": "E2E child supervision kills a same-group descendant after its leader exits and it ignores SIGTERM",
+      "status": "passed"
+    },
+    {
+      "fullName": "E2E child supervision reports a process group that survives SIGKILL and abandons its local handles",
+      "status": "passed"
+    },
+    {
+      "fullName": "E2E child supervision observes a failed fire-and-forget termination without rejecting",
+      "status": "passed"
+    },
+    {
+      "fullName": "E2E child supervision waits for the child close event after its process group disappears",
+      "status": "passed"
+    },
+    {
+      "fullName": "E2E child supervision flushes a final unterminated server diagnostic before stop validation",
+      "status": "passed"
+    },
+    {
+      "fullName": "E2E child supervision runs the packaged ready CLI against a test-admitted bdptest service",
+      "status": "passed"
+    }
+  ],
+  "preflightJSONSha256": "689d0603956b47f70f4795a740c426a584f4745697fdbd0d04c40f262978453c",
+  "smokeObservation": {
+    "event": "installed.reference.observed",
+    "claimEligible": false,
+    "configurationIdentity": "46668fb12fee8644c3665d047db981e6b2800b830f20f5953b3f54ad43f52db7",
+    "payloadIdentity": "1a3211afe8e479f5b3adf36331254149eb05ac8becdf34c1ea6d025a76bfe087",
+    "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+    "allNineTargets": true,
+    "stableScope": "https://reference.invalid/acme/"
+  },
+  "historicalEvidenceObservation": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "warnings": [],
+  "sampledPids": [
+    77799,
+    79198,
+    79201,
+    80654,
+    80678,
+    80679,
+    80687,
+    80698,
+    80705,
+    80708,
+    80720,
+    80724,
+    80727,
+    80729,
+    80735,
+    80738,
+    80743,
+    80749,
+    80849,
+    80853,
+    80901,
+    81014,
+    81027,
+    81030,
+    81033,
+    81037,
+    81040,
+    81042,
+    84602
+  ],
+  "remainingProcessesAtAudit": [],
+  "remainingBdpRuntimeDirectoriesAtAudit": [],
+  "cleanupScope": "Owned group and sampled PIDs absent; no bdp-* runtime directories under four owned temporary roots. Temporary root/npm-cache artifacts are retained, not claimed removed.",
+  "claims": "Smoke tarball Read/lifecycle observation is non-claim-eligible and separate from changefeed external-consumer cohorts. Historical Read rows/constant/runHead/evidenceCommit retain original identity; no new profile qualification.",
+  "execution": "Exactly four commands once in order; no retries, source edits, consumer/install pipeline changes or shared CLI/database changes."
+}

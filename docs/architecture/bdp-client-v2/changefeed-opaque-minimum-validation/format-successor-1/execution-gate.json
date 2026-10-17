@@ -20,7 +20,12 @@
     "pack-server",
     "verify-archives",
     "prepare-consumer",
-    "consumer-install"
+    "consumer-install",
+    "verify-installed-consumer",
+    "changefeed-history-external",
+    "review-changefeed-history-external",
+    "changefeed-opaque-external",
+    "review-changefeed-opaque-external"
   ],
   "staticValidationAuthorized": true,
   "nativeCodeReviewDisposed": true,
@@ -42,7 +47,13 @@
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/root-release.json",
     "sha256": "4ad80e464c5a1e7e1f4a530328cf53865c444454b67af3a733f63122f51df8e6"
   },
-  "consumerLockSha256": null,
-  "installedProvenance": null,
-  "consumerInventory": null
+  "consumerLockSha256": "069789be74ba39ddd848acb49935f3738901d5564f9d24cb8ef32656afb83982",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/installed-provenance.json",
+    "sha256": "a1529aaa8489b06c6e146bb204e5c16af20c508a9537a1aea2da94c77724894f"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "87b46520df1f4891429c54d80bf70c07c963a398e63f16835d7854ee3d06736c"
+  }
 }
