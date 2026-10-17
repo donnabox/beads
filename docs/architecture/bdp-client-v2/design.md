@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T13:13:46Z. **ACTIVE — separate alias opaque-minimum implementation. Bounded reconciliation PR159 is ready and validated; main landing remains held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T13:26:08Z. **ACTIVE — separate alias opaque-minimum implementation. Bounded reconciliation PR159 is ready and validated; main landing remains held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T13:13:46Z. **ACTIVE — separate alias opaque-minimum impl
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | PR160 published draft; exact push CI39035528845 pending | PR159 and both frozen parents preserved; no main landing |
-| Conditional reviewer | Actual alias Claude CODE review complete | Exit0/1441.839s; findings dispositioned |
-| Event reviewer | Read-only next-serving audit on5ceb | One concrete independent blocker; no source/runtime work |
-| Native reviewer | Final independent local audit passed | Source/package/consumer/36+6/lifecycle verified |
+| Conditional reviewer | Exact PR160 push CI audit |39035528845 running full suite; raw logs after terminal |
+| Event reviewer | Bounded fresh finite changefeed opaque-minimum plan | Recommendation accepted; no authoring/runtime |
+| Native reviewer | Changefeed plan critique after freeze | Admission anchor/provenance/ordering; no implementation |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -401,6 +401,9 @@ Alias executable helper preparation is frozen and root accepted: [native closure
 
 
 [Trish direct notice](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6234296767) registers separate PR160 and pendingCI; no decision or integration requested. Event worker is performing one bounded read-only next-serving audit on5ceb while CI provisions its isolated CLI. No product writer active. Automation now reflects PR160 pendingCI and correct exactpush-versus-syntheticPR attribution for frozenPR159.
+
+
+**Next serving candidate identified; plan preparation only.** [Read-only source diagnosis](alias-next-serving-audit/report.md)bb48ce41 on exact5ceb identifies the already-deferred finite JSON changes/start=now matching-context opaque minimum: strict HTTP/service/store handling currently produces private500. Candidate repair must preserve exactly-once admission checkpoint and captured tuple across bounded retries while recapturing current owner context, with explicit fresh-intent provenance. Direct-after/retained/SSE/foreign opaque and S1/G2 stay excluded; finiteJSON ignores Last-Event-ID. Root independently inspected call chain and accepted bounded plan preparation, not implementation. Event prepares five-file maximum plan; native critique follows, then actualClaude. PR160CI still running fullsuite; no new source writer.
 
 ## Current priority: BDP profile structure and implementation
 

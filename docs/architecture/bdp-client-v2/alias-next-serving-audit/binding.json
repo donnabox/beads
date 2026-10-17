@@ -1,0 +1,43 @@
+{
+  "kind": "Read-only recommendation on exact committed alias source; no new tracker or execution authority",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "tree": "7701b6a0084fe42b8990812e5fc3ddc5ce249a82",
+  "branch": "codex/vickie-alias-opaque-minimum",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+  "clean": true,
+  "trackedFileCount": 679,
+  "allTrackedSha256MapDigest": "6627203817e3405ec0841394910ffe331fe28a809cc30e0152001afd57c9d678",
+  "matchesTestedAliasSuccessorBytes": true,
+  "sourceFiles": {
+    "packages/server/src/transaction-http.ts": "87e48769553e459adbd888684e35067297340c5f7d92ddc1ccef79ab69e5eed7",
+    "packages/server/src/transaction-service.ts": "6c36b00389cd88f62cbfb7bf9282a8f8ca0df8cdfb0b950a9e001043bf49090c",
+    "packages/server/src/transaction-store.ts": "6ec84765634200adfca2dff6fdcc3049664c1116d840de60654ba1c4d4f66ff2",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/src/transaction-changefeed.test.ts": "ae4b6a0d4ae6e4e74e032074c850e5ced2de14d565078c2de88e2e62fa5e9c81",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+    "apps/bdptest/src/transactional-sse-installed.test.ts": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19",
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8"
+  },
+  "referenceFilesAtRead": {
+    "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md": "bc41cff978e02fc47d0ee3b8522fe7095f6b2d449edd4f0e4f1d8cb57d98e543",
+    "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/profile-completion-required-contract-matrix.md": "36adee4631362abdc34074617deb1429fcb0de9465b1be73f4193b07c7a8e0aa",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/plan.md": "96327248607a2e042e8575f873c652ea9f3c9be248ef58864066588788f97201",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-plan.md": "e4216faf486cc896633414aa9c7030d423373537bb384503da202f49c11b3928",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-plan-successor/plan.md": "0c5a6af5911460a07a024eeb6bb9bd29ea23a8d000318156edf8c83c8b64bb90"
+  },
+  "remoteLaunchAtRead": {
+    "repository": "donnabox/agent-coordination",
+    "path": "launch/vickie.md",
+    "gitBlob": "4651305932721865eaf5d50eae74195e22e02816",
+    "sha256": "3d1260348eeb075033dd3b1ea2a4bea4104ed9d048eb076b40332ae81c855524",
+    "session": "2026-10-08T20:26:35Z-81e5",
+    "ledgerObserved": "Root PR160 exact CI pending; alias writers complete, native local audit passed. No independent next source writer assigned."
+  },
+  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "runtimeExecuted": false,
+  "repositoryMutated": false,
+  "nextStep": "Native/root critique then exact bounded plan/council; no authoring authorized",
+  "reportSha256": "bb48ce415886c413414c7af4ad8d004a29c884c390a5df4c84445b1650d98b05"
+}
