@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-17T08:46:14.717345+00:00",
+  "verifiedExit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 1245.5657655410469,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      3071,
+      91639
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 5083,
+    "streamBytes": 3035790,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 1245.0865639159456,
+    "streamSha256": "e4aa29e0ebbfbd629149c48223f0d1a28b289c89ed8d1e73f3593d41a20f4c59",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalReviewSha256": "e149e4679ef6cc6090752a4eb208ea3a469a65a03cc90cb963983a1e6afeced1",
+  "independentPinsVerified": true,
+  "sampledPidsFreshlyAbsent": [
+    3071,
+    91639
+  ],
+  "actualSuccessfulContextPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/author-report.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/bdp.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/corrected-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/native-code-review.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/plan-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/preservation.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/required-contract-matrix.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/source-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/context/workload.json"
+  ],
+  "actualFailedContextPaths": [],
+  "limitations": "Claude paged/grepped large maps, did not independently hash679source or verifyCI; root/runner/native pins separate. Static typecheck passed and formatter failed independently while CODE remained immutable. Review prose A attempt arithmetic and optional cleanup finding3 require disposition, not blind adoption."
+}
