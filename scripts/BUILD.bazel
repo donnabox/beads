@@ -73,8 +73,8 @@ go_test(
         "worker_env_autosync_test.go",
     ],  # keep
     data = [
-        "//:repo_other_files",
         "//:engdocs/LINTING.md",
+        "//:repo_other_files",
         "//internal/testutil:testdoltcommon.go",
         "@go_sdk//:bin/go",
         "@go_sdk//:files",
@@ -155,9 +155,9 @@ go_test(
     ],
     data = [
         ":repo_other_files",
-        "//:.github/workflows/conformance.yml",
         "//:.buildflags",
         "//:.githooks/pre-push",
+        "//:.github/workflows/conformance.yml",
         "//:.test-skip",
         "//internal/httpclient:repo_other_files",
         "//test/conformance:repo_go_test_srcs",
@@ -391,7 +391,10 @@ exports_files(
         "generate-cli-docs.sh",
         "test.sh",
     ],
-    visibility = ["//:__pkg__", "//test/docsync:__pkg__"],
+    visibility = [
+        "//:__pkg__",
+        "//test/docsync:__pkg__",
+    ],
 )
 
 # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
