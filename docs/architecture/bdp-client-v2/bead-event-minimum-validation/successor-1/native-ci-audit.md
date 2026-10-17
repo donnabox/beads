@@ -1,0 +1,19 @@
+# Independent native exact-head CI audit — PR155
+
+No discrepancy or blocker found in the bounded audit. Current GitHub PR155 is OPEN, head `5bcd277b2a61461211ffc0c2d2f8fd701ef0a385`, branch codex/vickie-bead-event-minimum, targeting codex/vickie-finite-event-minimum. Run 39001388411 / verify job 117304871357 completed successfully at 2026-10-17T04:18:42Z with all 27 steps successful. The raw checkout log records that same head.
+
+Local clean HEAD matches that commit, tree `64fa36f4196da7e9eb48a9d248725d5f38c46282`, with sole parent `f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0`. Exactly six reviewed files changed. All 679 committed source blobs independently hash to the already-tested dirty successor inventory, closing the dirty-base-to-commit mapping without adding main ancestry or changing reviewed bytes.
+
+The raw log is 3,596,575 bytes, SHA256 `4fdf9ea6ef2e0a1b796ee1a085fafbc4d8749f22a5fb3bd516fa50d42a4ee73c`, independently checked against the saved metadata. Full tests report 9,387 passed, 186 passed files and one skipped test; readiness preflight separately reports seven passed. These are test-run counts, not completion percentages or profile qualification.
+
+All 25 selected source callbacks and the three installed-process callback names appear exactly once with a passed test marker. The 20 source JSON observations parse and preserve the audited semantics: A12, capture/cancel wait/probe ordering, all seven new preflight outcomes, prior Scope controls and D's exact 37-response fence. D reports 727 ms, no product children, no failures and absent directory. Dynamic continuation values are not relabeled as literal expected cursors.
+
+The Scope and Bead process reports parse completely. They report three and four exchanges respectively, outcome passed, closed=true, exit 0, null signal, no deadline/failure, absent store and claimEligible=false. Bead order is seed POST 200, real setup GET 200, GET 503, HEAD 503. These full-suite callbacks use the workspace dist entry `/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js`, clean current commit attribution and workspace payload `d884e323316ea6a6ca1baf42de7ba50a6438c49059eaea6eb0e08f8e5ae79579`. They are not relabeled as the separately packed consumer.
+
+The historical missing-Event callback also passes. Its emitted JSON at raw line 4982 is damaged by GitHub masking inside the WWW-Authenticate string, so this audit does not claim whole-record JSON validation or reconstruct the obscured value. Visible lifecycle fields report closed, startup completed, child 21191, exit 0, null signal, directory absent and zero failures. The separately preserved local external audit supplies the fully parsed historical 11-request evidence. No remote process census or independent remote filesystem inspection was performed; CI cleanup claims are limited to emitted evidence and passing assertions.
+
+The separate packed smoke step succeeds and emits installed.reference.observed with allNineTargets=true, claimEligible=false and payload `cc1ccb4180a3090a80f4925bcc28aac1273b5bde1a4111de8b29f31aea537aad`, exactly matching the independently reconstructed local external consumer payload. That digest equality does not equate the workspace callback payload or attest deployment identity.
+
+The Read-cohort gate succeeds and explicitly verifies the historical read-v1 artifact: evidence commit dbaf63a24219e1ea3f80394746853598b0d4464a, historical run head e5f7d0c43c151426350ceededdc77fe7e372db9b, schema projection bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc, 89 rows. This remains historical Read evidence, not new write-profile qualification.
+
+No tests, product helpers, build, formatter, installs, source edits or merge were executed by this reviewer. PR150 and main were untouched. Root owns any subsequent integration decision.

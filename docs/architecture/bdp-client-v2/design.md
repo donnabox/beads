@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T04:08:37Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T04:22:11Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T04:08:37Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Bead static prefix inspected; formatting-only failure preserved | Bootstrap and typecheck pass; all remaining validation closed, frozen PR150 unchanged |
-| Conditional author / actual Claude | Source frozen; code-review packet launched by root | Claude PID98412 started03:28:45Z; frozen source unchanged; static prefix separately root-released, runtime closed |
-| Event reviewer | Final CLOSED validation prepared | Actual source and observation schemas bound;2bootstrap+21stages, all gates false |
-| Native reviewer | Code review clean; validation helper review active | Source679/preservation verified; no static/runtime execution yet |
+| Root | PR155 exact-head CI verified green; next Link plan preparation | No main merge or frozen PR150 change; review exact next plan before source release |
+| Conditional author | Freeze concrete Link Event plan and CLOSED Claude plan packet | Isolated Link-enabled fixtures, exact workloads and preserved controls; no source authoring or execution |
+| Event reviewer | Link recommendation reviewed; fixture prerequisites identified | Review final Link plan when frozen; no S1/G2 inference |
+| Native reviewer | PR155 final local and exact-head CI audits clean | New plan/code review assignments remain bounded and separately released |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -195,6 +195,11 @@ Root released only the approved two-test formatting replacements. [Frozen succes
 [Final successor validation](bead-event-minimum-validation/successor-1/root-final-validation.json) passed all21 fresh stages. Exact25source callbacks/20observations; newD37HTTP in686ms. All3 external callback/audit pairs passed with4+3+11actualHTTP,3normalchild exits/storesremoved,387sampledPIDs absent. [Native final audit](bead-event-minimum-validation/successor-1/native-final-installed-audit.md)466553ab independently verifies679source/476buildentries/321archive members/870consumerfiles17links/8versions, actualconsumerlocked327ba0 and recursivepayloadcc1ccb4180a3090a80f4925bcc28aac1273b5bde1a4111de8b29f31aea537aad. Root accepted measured lock/provenance before external children and read all final evidence before commit. Original failedformat and dirtyf620evidence remain unchanged; no qualification or measured128total claim.
 
 Conditional author now audits the next concrete serving/discovery/consistency gap read-only on current5bcd, preserving S1/G2 and all external-workstream boundaries. Root monitors exactPR155CI; no source authoring/integration of the next slice released yet.
+
+
+**PR155 exact-head CI verified green.** [CI39001388411](https://github.com/gastownhall/bdp/actions/runs/39001388411) completed04:18:42Z on unchanged5bcd277/tree64fa36f4: all27steps,9387tests/186files passed plus1skip,7preflight,package smoke and historicalReadgate. [Raw log binding](bead-event-minimum-validation/successor-1/exact-head-ci.json)3596575bytes/SHA4fdf9ea6 and [independent audit](bead-event-minimum-validation/successor-1/native-ci-audit.md)bc22a21e verify exactsource/all28selected callbacks,20sourceobservations,D37in727ms. Packed smoke payloadcc1ccb41 matches localconsumer; workspacecallback payloadd884e323 remains distinct. Masked historicalWWWAuthenticateJSON is not claimed fully parsed; no remotePIDcensus. PR body updated; no merge, frozenPR150 unchanged.
+
+**Next concrete serving candidate: initial finite Link Event opaque minimum.** [Read-only recommendation](bead-event-next-serving-audit/plan.md)82f782b5 and [native review](bead-event-next-serving-audit/native-recommendation-review.md)054edc37 identify seededLinkGET/HEADprivate500 and threeexistingselectionseams. Root inspected actualcode/spec and accepts bounded plan preparation, not authoring. General remaining-read choices support existingreferencewaiting; no Event-specificMUST invented. Service and installed defaults are Bead-only: finalplan must add isolatedLink-enabled config/artifacts, preservingolddefaults/prefix. OlddirectunseededLinkTypeError becomescontextualmissing; oldseededHTTPpair500→503 stays37calls with10timeouts/12private500s and160msextrawait, unchanged5sbound. Author freezes exactnewworkloads and CLOSEDClaudeplanpacket; S1/G2,unknown-plus-foreign,after/SSE/discovery stay separate.
 
 ## Current priority: BDP profile structure and implementation
 
