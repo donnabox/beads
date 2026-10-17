@@ -87,7 +87,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 			if shorthand.Link.ID != scope+"links/shorthand-floating" || shorthand.Link.Source != scope+"beads/source" || shorthand.Link.Target != scope+"beads/target" {
 				t.Fatalf("shorthand floating Link changed endpoint identity: %+v", shorthand.Link)
 			}
-			call("link", "source@unpinned", "target@unpinned", "--type", "blocks", "--source-revision", "unpinned")
+			call("link", "source@unpinned", "target", "--type", "blocks", "--target-revision", "unpinned")
 			bare := call("link", "show", "links/bare")
 			refuse("invalid_selector", "link", "update", "links/bare@stale", "--properties", `{"note":"wrong target"}`)
 			refuse("invalid_selector", "link", "delete", "links/bare@stale", "--force")
