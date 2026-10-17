@@ -1,0 +1,444 @@
+{
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "event-minimum-external",
+    "review-event-minimum-external",
+    "event-missing-context-external",
+    "review-event-missing-context-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits|serves\\ only\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight|pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors|checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization|cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close|serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "gates initial Scope Event unknown minima before retained scans",
+        "captures an initial Scope Event opaque tuple across one bounded wait",
+        "cancels and drains initial Scope Event opaque waits",
+        "serves only initial finite Scope Event opaque minima through bounded waiting",
+        "preserves initial Scope Event preflight before malformed capture: already-aborted",
+        "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+        "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+        "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+        "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+        "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+        "checks minimum position before any retained group scan or body materialization",
+        "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+        "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 13,
+        "newSourceCallbacks": 9,
+        "existingSourceCallbacks": 4,
+        "stores": 13,
+        "inProcessListeners": 2,
+        "productChildren": 0,
+        "httpExchanges": 91,
+        "newHttpExchanges": 32,
+        "existingHttpExchanges": 59,
+        "newOwnerDirectReads": 8,
+        "newWaitServiceCalls": 6,
+        "newWaitDelegatedReads": 9,
+        "newWaits": 5,
+        "newWithReadProbes": 5,
+        "newPostCloseDirectRefusal": 1,
+        "additionalPreflightCallbacks": 5,
+        "additionalPreflightStores": 5,
+        "additionalPreflightServiceCalls": 5,
+        "additionalPreflightInitialClockCalls": 4,
+        "additionalPreflightOwnerReads": 0,
+        "additionalPreflightWaits": 0,
+        "additionalPreflightHttp": 0,
+        "existingOwnerDirectReads": 19,
+        "existingServiceCalls": 4,
+        "existingPostCloseDirectRefusal": 1,
+        "existingServiceRetryAttempts": null,
+        "countAttribution": "Frozen-source prospective workload; exact runtime callback names and new instrumented reports separately checked. Existing retry counts depend on real clock."
+      }
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "event-minimum-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/event-minimum-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed initial finite Scope Event opaque minimum timeout"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "stores": 1,
+        "productChildren": 1,
+        "maximumConcurrentChildren": 1,
+        "httpExchanges": 3,
+        "requestTimeoutMs": 5000,
+        "ownedDeadlineMs": 45000,
+        "callbackBoundMs": 60000
+      },
+      "expectedObservation": "private-installed-finite-event-minimum",
+      "expectedExchanges": 3
+    },
+    "review-event-minimum-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py",
+        "minimum"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "event-missing-context-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/event-missing-context-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "stores": 1,
+        "productChildren": 1,
+        "maximumConcurrentChildren": 1,
+        "httpExchanges": 11,
+        "requestTimeoutMs": 5000,
+        "ownedDeadlineMs": 45000,
+        "callbackBoundMs": 60000
+      },
+      "expectedObservation": "private-installed-event-missing-context",
+      "expectedExchanges": 11
+    },
+    "review-event-missing-context-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py",
+        "missing"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "rootCheckpoints": {
+    "afterWorkspaceTools": "Root pins real captured tools from actual offline frozen-lock install before static checks.",
+    "beforeRuntime": "Actual native plus Claude code dispositions, exact frozen successor source and new precedence callback/workload required; original source selection is not inherited implicitly.",
+    "afterConsumerInstall": "Root pins newly generated consumer lock before verification.",
+    "afterConsumerVerification": "Root pins installed provenance and entire consumer inventory before either external callback."
+  },
+  "configurationFinalized": true,
+  "sourceSelectionState": "Bound to frozen successor-1;13 source callbacks, separately named installed3 and11. No execution authorization."
+}
