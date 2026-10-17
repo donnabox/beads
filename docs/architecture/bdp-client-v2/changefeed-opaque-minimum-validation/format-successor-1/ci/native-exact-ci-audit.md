@@ -1,0 +1,17 @@
+# Native exact push CI audit
+
+Accepted: push run39044573943/job117430643863 completed success on exactbbfa5b2cac0e381b497384e3a8e29cd937ea2738. All27 reported steps succeeded, including formatting, lint, boundaries, typecheck, build, full tests, preflight, smoke and historical evidence. No discrepancy requiring a rerun or source correction found. PR161 remains OPEN/draft; no PR change performed.
+
+Raw checkout log explicitly records git log -1 --format=%H as bbfa5b2, not a synthetic PR merge. Current clean local commit is that head/tree da812ea5a1da8f8fb5be9fd2856d312c316236a3 with sole parent5ceb213b632e17f28714684efc5e35a62b282bf6. PR API confirms the same head and codex/vickie-alias-opaque-minimum base5ceb. All679 committed source bytes equal the locally validated formatter successor; six-file scope preserved, no newer-main adoption.
+
+Complete raw job log is3692063 bytes, SHA256 e650818ae33e0d63d19f3cdd45dec30c344c736d953f3058c96c1dd1c34b527a, preserved as job.log and losslessly as deterministic gzip/base64 job.log.gz.b64. Decompression equivalence verified. run.json and pr.json retain metadata.
+
+Full-suite terminal summary:186 files passed;9436 tests passed/1 skipped (9437 total). Separate preflight:7 passed/1 file. These counts are suite diagnostics, not functional completion percentages. All17 selected changefeed titles occur in the complete log; nine new source observation records parse successfully with passed outcomes. Actual A/B/C/X counters/context/anchor/lifecycle records remain visible. D's10 responses are200/200/200/503/503/503/503/500/500/400. The CI full suite is broader than the local17-case selection.
+
+The new installed report parses intact: actual four responses200/200/503/503, declared bbfa5b2, workspaceDirty=false and entry /home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js. It reports exit+close0/no signal for child22920, no deadline, pending0/settled4, clean closure and removed directory. These are CI-reported observations, not an independent remote process census. The historical installed10 line contains masking that breaks JSON parsing; intact fragments show passed, attempted10/exchanges10, closed=true, childExitCode0 and directoryAbsent=true, but the full original record cannot be reconstructed and is not promoted to parsed evidence.
+
+Attribution distinction: CI callback uses workspace dist payload8545c877bd5c032ae6a0c24f9d4d4bb7f7aacb97de41811b97e30c4399ac11ab. It is not the prior local external consumer run. CI packed smoke separately reports payload1a3211afe8e479f5b3adf36331254149eb05ac8becdf34c1ea6d025a76bfe087, matching the independently verified local external consumer, with claimEligible=false/allNineTargets=true. Different workspace-versus-packed dependency closure identities are preserved, not relabeled.
+
+Historical Read verifier remains47definitions/46reachable/89rows and emits evidence.verified under constant674982be2123b9b7aae630bf79c3f774122900cd, runHeade5f7d0c43c151426350ceededdc77fe7e372db9b, evidenceCommitdbaf63a24219e1ea3f80394746853598b0d4464a. No historical evidence, public write-profile admission or release promotion is inferred from this run.
+
+Only session-guarded raw-log/metadata capture and read-only audits occurred. No tests rerun, source mutation, ready-state change, merge or remote PID absence claim. Masked/unreconstructable log portions remain diagnostic only; local external validation supplies its separate complete evidence chain.
