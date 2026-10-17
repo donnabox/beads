@@ -1,0 +1,46 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/gate.py
+@@ -1,13 +1,13 @@
+-"""Current-observation minimum closed gates; no product imports. Root owns releases and measured pins."""
++"""Event admission/replay closed gates; no product imports. Root owns releases and measured pins."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum')
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
+-MODE=os.environ.get('CURRENT_OBSERVATION_VALIDATION_PHASE','final')
++MODE=os.environ.get('EVENT_REPLAY_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-INTEGRATION='d9c3eb9e61b1982b9bd56aa77e4cdc114384e886'
++INTEGRATION='9f89271e2563a105410789ca8ca1e77dfb4d0b9f'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -77,13 +77,13 @@
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+- require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Current-observation minimum source/selection not finalized')
+- require(read(P/'audit-expectations.json').get('finalized') is True,'Actual Current-observation minimum observation contracts not finalized')
++ require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Event admission/replay source/selection not finalized')
++ require(read(P/'audit-expectations.json').get('finalized') is True,'Actual Event admission/replay observation contracts not finalized')
+  require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Root release absent')
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+   record=E/(name+'.started.json')
+-  require(os.environ.get('CURRENT_OBSERVATION_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('CURRENT_OBSERVATION_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(os.environ.get('EVENT_REPLAY_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('EVENT_REPLAY_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+@@ -109,7 +109,7 @@
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+- if name in ['receiving-history-external', 'review-receiving-history-external', 'current-observation-external', 'review-current-observation-external']:
++ if name in ['historical-event-restart-external', 'review-historical-event-restart-external', 'current-event-admission-replay-external', 'review-current-event-admission-replay-external']:
+   proof=verify_consumer(g)
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec

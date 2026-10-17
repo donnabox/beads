@@ -1,0 +1,468 @@
+apps/bdptest/src/transactional-event-sse-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1800 1800 │     const hasSourceOverride = sourceOverride !== undefined;
+    1801 1801 │     if (hasEntryOverride !== hasSourceOverride)
+    1802      │ - ····throw·new·Error(
+    1803      │ - ······"Event·replay·minimum·overrides·must·include·both·installed·entry·and·source",
+    1804      │ - ····);
+         1802 │ + ····throw·new·Error("Event·replay·minimum·overrides·must·include·both·installed·entry·and·source");
+    1805 1803 │     expect(source).toMatch(/^[0-9a-f]{40}$/);
+    1806 1804 │     const attribution = hasEntryOverride ? "external-installed-candidate" : "development-local";
+    ········· │ 
+    1845 1843 │       directory,
+    1846 1844 │       create: true,
+    1847      │ - ····artifacts:·{·descriptors:·artifacts.descriptors.map((value)·=>·({·...value·})),·schemas:·artifacts.schemas.map((value)·=>·({·...value·}))·},
+         1845 │ + ····artifacts:·{
+         1846 │ + ······descriptors:·artifacts.descriptors.map((value)·=>·({·...value·})),
+         1847 │ + ······schemas:·artifacts.schemas.map((value)·=>·({·...value·})),
+         1848 │ + ····},
+    1848 1849 │       credentials: [{ token, principal: "writer", canMutate: true }],
+    1849 1850 │     };
+    ········· │ 
+    1852 1853 │       JSON.stringify({
+    1853 1854 │         operations: [
+    1854      │ - ········...["a",·"b"].map((id)·=>·({·operation:·"createBead",·id:·`beads/${id}`,·type,·properties:·{·n:·0·}·})),
+    1855      │ - ········{·operation:·"createLink",·id:·"links/l",·type:·`${scope}types/link`,·source:·"beads/a",·target:·"beads/b",·properties:·{·n:·0·}·},
+         1855 │ + ········...["a",·"b"].map((id)·=>·({
+         1856 │ + ··········operation:·"createBead",
+         1857 │ + ··········id:·`beads/${id}`,
+         1858 │ + ··········type,
+         1859 │ + ··········properties:·{·n:·0·},
+         1860 │ + ········})),
+         1861 │ + ········{
+         1862 │ + ··········operation:·"createLink",
+         1863 │ + ··········id:·"links/l",
+         1864 │ + ··········type:·`${scope}types/link`,
+         1865 │ + ··········source:·"beads/a",
+         1866 │ + ··········target:·"beads/b",
+         1867 │ + ··········properties:·{·n:·0·},
+         1868 │ + ········},
+    1856 1869 │         ],
+    1857 1870 │       }),
+    ········· │ 
+    2015 2028 │       ajv.addSchema(bundle);
+    2016 2029 │       const validators = Object.fromEntries(
+    2017      │ - ······["mutationReceipt",·"currentBeadRecord",·"currentLinkRecord",·"eventPage",·"event",·"transactionalProblem"].map(
+    2018      │ - ········(name)·=>·[name,·ajv.compile({·$ref:·`${bundle.$id}#/$defs/${name}`·})]·as·const,
+    2019      │ - ······),
+         2030 │ + ······[
+         2031 │ + ········"mutationReceipt",
+         2032 │ + ········"currentBeadRecord",
+         2033 │ + ········"currentLinkRecord",
+         2034 │ + ········"eventPage",
+         2035 │ + ········"event",
+         2036 │ + ········"transactionalProblem",
+         2037 │ + ······].map((name)·=>·[name,·ajv.compile({·$ref:·`${bundle.$id}#/$defs/${name}`·})]·as·const),
+    2020 2038 │       );
+    2021 2039 │       function validate(name: string, value: unknown) {
+    ········· │ 
+    2249 2267 │         const resource = object(result.resource);
+    2250 2268 │         validate(index === 2 ? "currentLinkRecord" : "currentBeadRecord", resource);
+    2251      │ - ······expect(resource.id).toBe(`${scope}${index·===·2·?·"links/l"·:·index·===·0·?·"beads/a"·:·"beads/b"}`);
+         2269 │ + ······expect(resource.id).toBe(
+         2270 │ + ········`${scope}${index·===·2·?·"links/l"·:·index·===·0·?·"beads/a"·:·"beads/b"}`,
+         2271 │ + ······);
+    2252 2272 │         expect(resource.type).toBe(index === 2 ? `${scope}types/link` : type);
+    2253 2273 │         expect(resource.revision).toEqual(expect.any(String));
+    ········· │ 
+    2255 2275 │       phase = "finite baselines";
+    2256 2276 │       const histories: Record<string, Record<string, unknown>[]> = {};
+    2257      │ - ····for·(const·[kind,·target,·count]·of·[["scope",·"events/",·5],·["bead",·"beads/a?view=events",·2],·["link",·"links/l?view=events",·1]]·as·const)·{
+         2277 │ + ····for·(const·[kind,·target,·count]·of·[
+         2278 │ + ······["scope",·"events/",·5],
+         2279 │ + ······["bead",·"beads/a?view=events",·2],
+         2280 │ + ······["link",·"links/l?view=events",·1],
+         2281 │ + ····]·as·const)·{
+    2258 2282 │         const response = await finite("GET", target, 200, [["Accept", "application/json"]]);
+    2259 2283 │         expect(response.headers["content-type"]).toBe("application/json");
+    ········· │ 
+    2265 2289 │         for (const event of observed) {
+    2266 2290 │           validate("event", event);
+    2267      │ - ········expect(event).toMatchObject({·source:·`${scope}${target}`,·transaction:·value.transaction·});
+         2291 │ + ········expect(event).toMatchObject({
+         2292 │ + ··········source:·`${scope}${target}`,
+         2293 │ + ··········transaction:·value.transaction,
+         2294 │ + ········});
+    2268 2295 │           expect(event.id).toEqual(expect.any(String));
+    2269 2296 │         }
+    ········· │ 
+    2279 2306 │       async function refusedRaw(target: string, headers: [string, string][]) {
+    2280 2307 │         beginRequest(session, "GET", target);
+    2281      │ - ······const·recorder·=·recordRawSse({·dial:·handle!.ready.listenUrl·as·string,·host:·"reference.invalid",·target:·`/acme/${target}`,·headers:·[["Authorization",·`Bearer·${token}`],·...headers],·signal:·controller.signal,·timeoutMs:·5000·});
+         2308 │ + ······const·recorder·=·recordRawSse({
+         2309 │ + ········dial:·handle!.ready.listenUrl·as·string,
+         2310 │ + ········host:·"reference.invalid",
+         2311 │ + ········target:·`/acme/${target}`,
+         2312 │ + ········headers:·[["Authorization",·`Bearer·${token}`],·...headers],
+         2313 │ + ········signal:·controller.signal,
+         2314 │ + ········timeoutMs:·5000,
+         2315 │ + ······});
+    2282 2316 │         stream = { recorder, drained: false };
+    2283 2317 │         const owned = stream;
+    2284      │ - ······const·drained·=·track(recorder.closed.then(()·=>·{·owned.drained·=·true;·}));
+         2318 │ + ······const·drained·=·track(
+         2319 │ + ········recorder.closed.then(()·=>·{
+         2320 │ + ··········owned.drained·=·true;
+         2321 │ + ········}),
+         2322 │ + ······);
+    2285 2323 │         const ready = track(recorder.ready);
+    2286 2324 │         await bounded(ready, workEnd, "refusal ready");
+    ········· │ 
+    2288 2326 │         expect(recorder.status).toBe(503);
+    2289 2327 │         context(recorder.headers);
+    2290      │ - ······expect(recorder.headers).toMatchObject({·"content-type":·"application/problem+json",·"retry-after":·"1",·"cache-control":·"private,·no-store",·"x-bdp-development":·"non-attesting"·});
+         2328 │ + ······expect(recorder.headers).toMatchObject({
+         2329 │ + ········"content-type":·"application/problem+json",
+         2330 │ + ········"retry-after":·"1",
+         2331 │ + ········"cache-control":·"private,·no-store",
+         2332 │ + ········"x-bdp-development":·"non-attesting",
+         2333 │ + ······});
+    2291 2334 │         expect(recorder.headers["content-length"]).toBe(String(Buffer.byteLength(recorder.body)));
+    2292 2335 │         expect(recorder.headers["etag"]).toBeUndefined();
+    ········· │ 
+    2295 2338 │         const problem: unknown = JSON.parse(recorder.body);
+    2296 2339 │         validate("transactionalProblem", problem);
+    2297      │ - ······expect(problem).toEqual({·type:·"https://github.com/gastownhall/bdp/problems/unavailable",·status:·503,·code:·"catch-up-timeout",·retry:·"after-delay"·});
+    2298      │ - ······responses.push({·ordinal:·requests.length,·session:·session.ordinal,·method:·"GET",·target,·status:·recorder.status,·bodyOctets:·Buffer.byteLength(recorder.body),·bodySha256:·hash(recorder.body),·wireSha256:·hash(recorder.wireBytes),·headers:·{·...recorder.headers·},·completeObservedFrames:·idFrames(recorder),·drained:·owned.drained·});
+         2340 │ + ······expect(problem).toEqual({
+         2341 │ + ········type:·"https://github.com/gastownhall/bdp/problems/unavailable",
+         2342 │ + ········status:·503,
+         2343 │ + ········code:·"catch-up-timeout",
+         2344 │ + ········retry:·"after-delay",
+         2345 │ + ······});
+         2346 │ + ······responses.push({
+         2347 │ + ········ordinal:·requests.length,
+         2348 │ + ········session:·session.ordinal,
+         2349 │ + ········method:·"GET",
+         2350 │ + ········target,
+         2351 │ + ········status:·recorder.status,
+         2352 │ + ········bodyOctets:·Buffer.byteLength(recorder.body),
+         2353 │ + ········bodySha256:·hash(recorder.body),
+         2354 │ + ········wireSha256:·hash(recorder.wireBytes),
+         2355 │ + ········headers:·{·...recorder.headers·},
+         2356 │ + ········completeObservedFrames:·idFrames(recorder),
+         2357 │ + ········drained:·owned.drained,
+         2358 │ + ······});
+    2299 2359 │       }
+    2300 2360 │       phase = "opaque current admissions";
+    2301 2361 │       await refusedRaw("beads/a?view=events", minimum("unknown"));
+    2302 2362 │       await refusedRaw("links/l?view=events", minimum("unknown"));
+    2303      │ - ····await·refusedRaw(`events/?after=${encodeURIComponent(histories.scope![0]!.id·as·string)}`,·minimum("unknown",·"application/json"));
+    2304      │ - ····await·refusedRaw("links/l?view=events",·[...minimum("unknown"),·["Last-Event-ID",·histories.link![0]!.id·as·string]]);
+    2305      │ - ····await·refusedRaw("beads/a?view=events",·[...minimum("unknown",·"application/json"),·["Last-Event-ID",·""],·["Last-Event-ID",·"malformed"]]);
+         2363 │ + ····await·refusedRaw(
+         2364 │ + ······`events/?after=${encodeURIComponent(histories.scope![0]!.id·as·string)}`,
+         2365 │ + ······minimum("unknown",·"application/json"),
+         2366 │ + ····);
+         2367 │ + ····await·refusedRaw("links/l?view=events",·[
+         2368 │ + ······...minimum("unknown"),
+         2369 │ + ······["Last-Event-ID",·histories.link![0]!.id·as·string],
+         2370 │ + ····]);
+         2371 │ + ····await·refusedRaw("beads/a?view=events",·[
+  20 more lines truncated
+  
+
+packages/server/src/transaction-event-sse.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1873 1873 │   });
+    1874 1874 │   
+    1875      │ - 
+    1876 1875 │   // Current Event admission witnesses use the src owner/service/error graph.
+    1877 1876 │   const replaySources = {
+    ········· │ 
+    1898 1897 │     async (sourceKind) => {
+    1899 1898 │       const { DatabaseSync } = await import("node:sqlite");
+    1900      │ - ····const·{·TransactionMinimumFailure,·TransactionMinimumUnproved·}·=·await·import("./transaction-consistency.js");
+    1901      │ - ····const·{·TransactionEventParameterError,·renderTransactionEvent·}·=·await·import("./transaction-events.js");
+         1899 │ + ····const·{·TransactionMinimumFailure,·TransactionMinimumUnproved·}·=·await·import(
+         1900 │ + ······"./transaction-consistency.js"
+         1901 │ + ····);
+         1902 │ + ····const·{·TransactionEventParameterError,·renderTransactionEvent·}·=·await·import(
+         1903 │ + ······"./transaction-events.js"
+         1904 │ + ····);
+    1902 1905 │       const f = ownerFixture();
+    1903 1906 │       f.run([create("a"), create("b"), link()]);
+    1904 1907 │       const source = replaySources[sourceKind];
+    1905 1908 │       let calls = 0;
+    1906      │ - ····const·baselineRead·=·(target:·string)·=>·{·calls++;·return·f.owner.readEvents(target);·};
+         1909 │ + ····const·baselineRead·=·(target:·string)·=>·{
+         1910 │ + ······calls++;
+         1911 │ + ······return·f.owner.readEvents(target);
+         1912 │ + ····};
+    1907 1913 │       const first = baselineRead(source);
+    1908 1914 │       const other = baselineRead(sourceKind === "scope" ? replaySources.bead : replaySources.scope);
+    ········· │ 
+    1910 1916 │       expect(first.page.events).toHaveLength(1);
+    1911 1917 │       expect(other.page.events).toHaveLength(1);
+    1912      │ - ····const·after·=·first.page.events[0]!.id,·wrong·=·other.page.events[0]!.id;
+         1918 │ + ····const·after·=·first.page.events[0]!.id,
+         1919 │ + ······wrong·=·other.page.events[0]!.id;
+    1913 1920 │       const context = first.context;
+    1914      │ - ····const·opaque·=·{·scopeEpoch:·context.scopeEpoch,·authorizationView:·context.authorizationView,·minimumPosition:·"unknown"·};
+         1921 │ + ····const·opaque·=·{
+         1922 │ + ······scopeEpoch:·context.scopeEpoch,
+         1923 │ + ······authorizationView:·context.authorizationView,
+         1924 │ + ······minimumPosition:·"unknown",
+         1925 │ + ····};
+    1915 1926 │       const known = { ...opaque, minimumPosition: context.scopePosition };
+    1916      │ - ····const·stale·=·renderTransactionEvent({·...context,·scopeEpoch:·"foreign-epoch"·},·source,·"pos-1",·first.page.events[0]!).id;
+         1927 │ + ····const·stale·=·renderTransactionEvent(
+         1928 │ + ······{·...context,·scopeEpoch:·"foreign-epoch"·},
+         1929 │ + ······source,
+         1930 │ + ······"pos-1",
+         1931 │ + ······first.page.events[0]!,
+         1932 │ + ····).id;
+    1917 1933 │       const rows = [
+    1918 1934 │         { label: "initial-opaque", minimum: opaque, after: undefined, expected: "unproved" },
+    1919 1935 │         { label: "issued-opaque", minimum: opaque, after, expected: "unproved" },
+    1920 1936 │         { label: "stale-opaque", minimum: opaque, after: stale, expected: "unproved" },
+    1921      │ - ······{·label:·"both-foreign",·minimum:·{·...opaque,·scopeEpoch:·"foreign-epoch",·authorizationView:·"foreign-view"·},·after:·stale,·expected:·"cursor-expired"·},
+    1922      │ - ······{·label:·"foreign-view",·minimum:·{·...opaque,·authorizationView:·"foreign-view"·},·after,·expected:·"foreign-view"·},
+         1937 │ + ······{
+         1938 │ + ········label:·"both-foreign",
+         1939 │ + ········minimum:·{·...opaque,·scopeEpoch:·"foreign-epoch",·authorizationView:·"foreign-view"·},
+         1940 │ + ········after:·stale,
+         1941 │ + ········expected:·"cursor-expired",
+         1942 │ + ······},
+         1943 │ + ······{
+         1944 │ + ········label:·"foreign-view",
+         1945 │ + ········minimum:·{·...opaque,·authorizationView:·"foreign-view"·},
+         1946 │ + ········after,
+         1947 │ + ········expected:·"foreign-view",
+         1948 │ + ······},
+    1923 1949 │         { label: "issued-known", minimum: known, after, expected: "success" },
+    1924 1950 │         { label: "wrong-source", minimum: known, after: wrong, expected: "parameter" },
+    1925 1951 │         { label: "strict-after", minimum: opaque, after, expected: "strict" },
+    1926      │ - ······{·label:·"malformed",·minimum:·{·...opaque,·minimumPosition:·""·},·after,·expected:·"malformed"·},
+         1952 │ + ······{
+         1953 │ + ········label:·"malformed",
+         1954 │ + ········minimum:·{·...opaque,·minimumPosition:·""·},
+         1955 │ + ········after,
+         1956 │ + ········expected:·"malformed",
+         1957 │ + ······},
+    1927 1958 │         { label: "missing", minimum: opaque, after: "invalid", expected: "missing" },
+    1928 1959 │       ];
+    ········· │ 
+    1930 1961 │       const records: unknown[] = [];
+    1931 1962 │       const original = DatabaseSync.prototype.prepare;
+    1932      │ - ····const·observer·=·vi.spyOn(DatabaseSync.prototype,·"prepare").mockImplementation(function·(this:·InstanceType<typeof·DatabaseSync>,·sql)·{
+         1963 │ + ····const·observer·=·vi.spyOn(DatabaseSync.prototype,·"prepare").mockImplementation(function·(
+         1964 │ + ······this:·InstanceType<typeof·DatabaseSync>,
+         1965 │ + ······sql,
+         1966 │ + ····)·{
+    1933 1967 │         if (/FROM groups/.test(sql)) preparations++;
+    1934 1968 │         return original.call(this, sql);
+    1935 1969 │       });
+    1936 1970 │       try {
+    1937      │ - ······for·(const·row·of·rows)·for·(const·method·of·["finite",·"sse"]·as·const)·{
+    1938      │ - ········preparations·=·0;
+    1939      │ - ········const·intent·=·row.label·===·"strict-after"·?·undefined·:·"current-event";
+    1940      │ - ········const·target·=·row.label·===·"missing"·?·`${scope}${sourceKind·===·"link"·?·"links"·:·"beads"}/missing?view=events`·:·source;
+    1941      │ - ········let·value:·unknown,·error:·unknown;
+    1942      │ - ········try·{
+    1943      │ - ··········calls++;
+    1944      │ - ··········value·=·method·===·"finite"
+    1945      │ - ············?·f.owner.readEvents(target,·row.after,·row.minimum,·intent)
+    1946      │ - ············:·f.owner.beginEventScan(target,·row.after,·row.minimum,·false,·intent);
+    1947      │ - ········}·catch·(caught)·{·error·=·caught;·}
+    1948      │ - ········const·observedContext·=·error·instanceof·TransactionMinimumFailure·||·error·instanceof·TransactionMinimumUnproved·||·error·instanceof·TransactionEventParameterError
+    1949      │ - ··········?·error.context·:·value·&&·typeof·value·===·"object"·&&·"context"·in·value·?·value.context·:·undefined;
+    1950      │ - ········records.push({·label:·row.label,·method,·source:·target,·intent:·intent·??·null,·after:·row.after·??·null,·minimum:·structuredClone(row.minimum),·outcome:·error·instanceof·Error·?·error.constructor.name·:·row.expected,·reason:·error·instanceof·TransactionMinimumFailure·?·error.reason·:·null,·context:·observedContext,·groupPrepareCalls:·preparations·});
+    1951      │ - ········if·(row.expected·===·"unproved")·expect(error).toBeInstanceOf(TransactionMinimumUnproved);
+    1952      │ - ········else·if·(row.expected·===·"cursor-expired"·||·row.expected·===·"foreign-view")·{
+    1953      │ - ··········expect(error).toBeInstanceOf(TransactionMinimumFailure);
+    1954      │ - ··········expect(error).toMatchObject({·reason:·row.expected,·context·});
+    1955      │ - ········}·else·if·(row.expected·===·"parameter")·expect(error).toBeInstanceOf(TransactionEventParameterError);
+    1956      │ - ········else·if·(row.expected·===·"strict"·||·row.expected·===·"malformed")·{
+    1957      │ - ··········expect(error).toBeInstanceOf(TypeError);
+    1958      │ - ··········if·(row.expected·===·"strict")·expect(error).toMatchObject({·message:·"unsupported·minimum·tuple"·});
+    1959      │ - ········}·else·{
+    1960      │ - ··········expect(error).toBeUndefined();
+    1961      │ - ··········expect(value).toMatchObject({·kind:·row.expected·===·"missing"·?·"missing"·:·method·===·"finite"·?·"page"·:·"packet",·context·});
+    1962      │ - ········}
+    1963      │ - ········if·(!["strict",·"malformed"].includes(row.expected))·expect(observedContext).toEqual(context);
+    1964      │ - ········if·(row.expected·===·"success")·expect(preparations).toBeGreaterThan(0);
+    1965      │ - ········else·expect(preparations).toBe(0);
+    1966      │ - ······}
+         1971 │ + ······for·(const·row·of·rows)
+         1972 │ + ········for·(const·method·of·["finite",·"sse"]·as·const)·{
+         1973 │ + ··········preparations·=·0;
+         1974 │ + ··········const·intent·=·row.label·===·"strict-after"·?·undefined·:·"current-event";
+         1975 │ + ··········const·target·=
+         1976 │ + ············row.label·===·"missing"
+         1977 │ + ··············?·`${scope}${sourceKind·===·"link"·?·"links"·:·"beads"}/missing?view=events`
+         1978 │ + ··············:·source;
+         1979 │ + ··········let·value:·unknown,·error:·unknown;
+         1980 │ + ··········try·{
+         1981 │ + ············calls++;
+         1982 │ + ············value·=
+         1983 │ + ··············method·===·"finite"
+         1984 │ + ················?·f.owner.readEvents(target,·row.after,·row.minimum,·intent)
+         1985 │ + ················:·f.owner.beginEventScan(target,·row.after,·row.minimum,·false,·intent);
+         1986 │ + ··········}·catch·(caught)·{
+         1987 │ + ············error·=·caught;
+         1988 │ + ··········}
+         1989 │ + ··········const·observedContext·=
+         1990 │ + ············error·instanceof·TransactionMinimumFailure·||
+         1991 │ + ············error·instanceof·TransactionMinimumUnproved·||
+         1992 │ + ············error·instanceof·TransactionEventParameterError
+         1993 │ + ··············?·error.context
+         1994 │ + ··············:·value·&&·typeof·value·===·"object"·&&·"context"·in·value
+         1995 │ + ················?·value.context
+         1996 │ + ················:·undefined;
+         1997 │ + ··········records.push({
+         1998 │ + ············label:·row.label,
+         1999 │ + ············method,
+         2000 │ + ············source:·target,
+         2001 │ + ············intent:·intent·??·null,
+         2002 │ + ············after:·row.after·??·null,
+         2003 │ + ············minimum:·structuredClone(row.minimum),
+  830 more lines truncated
+  
+
+packages/server/src/transaction-events.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1853 1853 │       // Current Event minima also wait across stream, continuation and media selection.
+    1854 1854 │       await pair("links/l?view=events", opaque, 503, "catch-up-timeout", true);
+    1855      │ - ····await·pair("beads/a?view=events",·{·...opaque,·accept:·"text/event-stream"·},·503,·"catch-up-timeout",·true);
+    1856      │ - ····await·pair(`beads/a?view=events&after=${encodeURIComponent(after)}`,·opaque,·503,·"catch-up-timeout",·true);
+    1857      │ - ····await·pair("beads/a?view=events",·{·...opaque,·"last-event-id":·after·},·503,·"catch-up-timeout",·true);
+    1858      │ - ····await·pair("beads/a?view=events",·{·...opaque,·accept:·"image/png"·},·503,·"catch-up-timeout",·true);
+         1855 │ + ····await·pair(
+         1856 │ + ······"beads/a?view=events",
+         1857 │ + ······{·...opaque,·accept:·"text/event-stream"·},
+         1858 │ + ······503,
+         1859 │ + ······"catch-up-timeout",
+         1860 │ + ······true,
+         1861 │ + ····);
+         1862 │ + ····await·pair(
+         1863 │ + ······`beads/a?view=events&after=${encodeURIComponent(after)}`,
+         1864 │ + ······opaque,
+         1865 │ + ······503,
+         1866 │ + ······"catch-up-timeout",
+         1867 │ + ······true,
+         1868 │ + ····);
+         1869 │ + ····await·pair(
+         1870 │ + ······"beads/a?view=events",
+         1871 │ + ······{·...opaque,·"last-event-id":·after·},
+         1872 │ + ······503,
+         1873 │ + ······"catch-up-timeout",
+         1874 │ + ······true,
+         1875 │ + ····);
+         1876 │ + ····await·pair(
+         1877 │ + ······"beads/a?view=events",
+         1878 │ + ······{·...opaque,·accept:·"image/png"·},
+         1879 │ + ······503,
+         1880 │ + ······"catch-up-timeout",
+         1881 │ + ······true,
+         1882 │ + ····);
+    1859 1883 │       await pair(
+    1860 1884 │         "beads/a?view=events",
+    ········· │ 
+    2203 2227 │       );
+    2204 2228 │       // Current Event minima precede stream, continuation, reconnect and media selection.
+    2205      │ - ····await·pair("links/l?view=events",·{·...opaque,·accept:·"text/event-stream"·},·503,·"catch-up-timeout",·true);
+    2206      │ - ····await·pair(`links/l?view=events&after=${encodeURIComponent(after)}`,·opaque,·503,·"catch-up-timeout",·true);
+    2207      │ - ····await·pair("links/l?view=events",·{·...opaque,·"last-event-id":·after·},·503,·"catch-up-timeout",·true);
+    2208      │ - ····await·pair("links/l?view=events",·{·...opaque,·accept:·"image/png"·},·503,·"catch-up-timeout",·true);
+         2229 │ + ····await·pair(
+         2230 │ + ······"links/l?view=events",
+         2231 │ + ······{·...opaque,·accept:·"text/event-stream"·},
+         2232 │ + ······503,
+         2233 │ + ······"catch-up-timeout",
+         2234 │ + ······true,
+         2235 │ + ····);
+         2236 │ + ····await·pair(
+         2237 │ + ······`links/l?view=events&after=${encodeURIComponent(after)}`,
+         2238 │ + ······opaque,
+         2239 │ + ······503,
+         2240 │ + ······"catch-up-timeout",
+         2241 │ + ······true,
+         2242 │ + ····);
+         2243 │ + ····await·pair(
+         2244 │ + ······"links/l?view=events",
+         2245 │ + ······{·...opaque,·"last-event-id":·after·},
+         2246 │ + ······503,
+         2247 │ + ······"catch-up-timeout",
+         2248 │ + ······true,
+         2249 │ + ····);
+         2250 │ + ····await·pair(
+         2251 │ + ······"links/l?view=events",
+         2252 │ + ······{·...opaque,·accept:·"image/png"·},
+         2253 │ + ······503,
+         2254 │ + ······"catch-up-timeout",
+         2255 │ + ······true,
+         2256 │ + ····);
+    2209 2257 │       await pair(
+    2210 2258 │         "links/l?view=events",
+  
+
+packages/server/src/transaction-service.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    510 510 │                   const parsed = transactionEventRequest(new URL(source), scope);
+    511 511 │                   currentEvent =
+    512     │ - ··················parsed·!==·undefined·&&·parsed.after·===·undefined·&&·parsed.source.url·===·source;
+        512 │ + ··················parsed·!==·undefined·&&
+        513 │ + ··················parsed.after·===·undefined·&&
+        514 │ + ··················parsed.source.url·===·source;
+    513 515 │                 } catch (error) {
+    514     │ - ················if·(!(error·instanceof·TypeError)·&&·!(error·instanceof·TransactionEventParameterError))
+        516 │ + ················if·(
+        517 │ + ··················!(error·instanceof·TypeError)·&&
+        518 │ + ··················!(error·instanceof·TransactionEventParameterError)
+        519 │ + ················)
+    515 520 │                     throw error;
+    516 521 │                 }
+    ······· │ 
+    520 525 │                 captured = true;
+    521 526 │               }
+    522     │ - ············return·owner.readEvents(source,·after,·minimum,·currentEvent·?·"current-event"·:·undefined);
+        527 │ + ············return·owner.readEvents(
+        528 │ + ··············source,
+        529 │ + ··············after,
+        530 │ + ··············minimum,
+        531 │ + ··············currentEvent·?·"current-event"·:·undefined,
+        532 │ + ············);
+    523 533 │             },
+    524 534 │             minimumReads,
+    ······· │ 
+    565 575 │                 minimum,
+    566 576 │                 invalidReconnect,
+    567     │ - ··············currentEvent·?·"current-event"·:·initialScopeSseMinimum·?·"initial-scope-sse"·:·undefined,
+        577 │ + ··············currentEvent
+        578 │ + ················?·"current-event"
+        579 │ + ················:·initialScopeSseMinimum
+        580 │ + ··················?·"initial-scope-sse"
+        581 │ + ··················:·undefined,
+    568 582 │               ),
+    569 583 │             minimumReads,
+  
+
+packages/server/src/transaction-store.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1803 1803 │           const context = readContext();
+    1804 1804 │           if (minimum !== undefined) {
+    1805      │ - ··········if·(initialScopeSseMinimum·||·currentEventMinimum)·checkCurrentReadMinimum(minimum,·context,·true);
+         1805 │ + ··········if·(initialScopeSseMinimum·||·currentEventMinimum)
+         1806 │ + ············checkCurrentReadMinimum(minimum,·context,·true);
+    1806 1807 │             else checkTransactionMinimum(minimum, context);
+    1807 1808 │           }
+  
+
+Checked 6 files in 13ms. No fixes applied.
+Found 5 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
