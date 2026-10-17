@@ -1,0 +1,177 @@
+{
+  "state": "prospective plan only; no execution",
+  "existingSource": [
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "gates initial Scope Event unknown minima before retained scans",
+      "anchoredNamePattern": "^gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures an initial Scope Event opaque tuple across one bounded wait",
+      "anchoredNamePattern": "^captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains initial Scope Event opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "anchoredNamePattern": "^serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: already-aborted",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+      "anchoredNamePattern": "^pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "checks minimum position before any retained group scan or body materialization",
+      "anchoredNamePattern": "^checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+      "anchoredNamePattern": "^cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits",
+      "anchoredNamePattern": "^serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "isolates unresolved metadata-only incident membership while Scope/Link sources remain available",
+      "anchoredNamePattern": "^isolates\\ unresolved\\ metadata\\-only\\ incident\\ membership\\ while\\ Scope/Link\\ sources\\ remain\\ available$"
+    }
+  ],
+  "newSource": [
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "gates initial Bead Event unknown minima before retained scans",
+      "anchoredNamePattern": "^gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures an initial Bead Event opaque tuple across one bounded wait",
+      "anchoredNamePattern": "^captures\\ an\\ initial\\ Bead\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains initial Bead Event opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ initial\\ Bead\\ Event\\ opaque\\ waits$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "anchoredNamePattern": "^serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: already-aborted",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: invalid-policy",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ invalid\\-policy$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: throwing-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ throwing\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: nonfinite-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ nonfinite\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: malformed-after-valid-preflight",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: noncanonical-query",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Bead Event classification and preflight: relative-source",
+      "anchoredNamePattern": "^preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source$"
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD",
+      "http": 11,
+      "anchoredNamePattern": "^observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD$"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes installed initial finite Scope Event opaque minimum timeout",
+      "http": 3,
+      "anchoredNamePattern": "^observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout$"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes installed initial finite Bead Event opaque minimum timeout",
+      "http": 4,
+      "anchoredNamePattern": "^observes\\ installed\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minimum\\ timeout$"
+    }
+  ],
+  "totals": {
+    "sourceCallbacks": 25,
+    "installedCallbacks": 3,
+    "stores": 28,
+    "inProcessListeners": 3,
+    "sequentialInstalledChildren": 3,
+    "emittedHttp": 128,
+    "installedHttp": 18,
+    "allHttp": 146
+  },
+  "bounds": {
+    "sourceCallbackMs": 5000,
+    "installedCallbackMs": 60000,
+    "newHttpMinimumBudgetMs": 80,
+    "installedOwnedMs": 45000,
+    "installedRequestMs": 5000,
+    "outerStageMs": 120000
+  },
+  "oldScopeHttpSentinelChange": {
+    "oldName": "serves only initial finite Scope Event opaque minima through bounded waiting",
+    "newName": "serves initial finite Scope Event opaque minima through bounded waiting",
+    "httpUnchanged": 32,
+    "minimumWaitRequestsBefore": 6,
+    "minimumWaitRequestsAfter": 8
+  }
+}
