@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-17T21:22:41.716285+00:00",
+  "scope": "One explicit E Type inventory expectation reorder only",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "file": "packages/server/src/transaction-http.test.ts",
+  "predecessorBindingSha256": "b79e0ab9b750bfa0784effecabdc56e9a7bb19c484aaaa0293f0a1c736c2f264",
+  "nativePlanSha256": "c1ff1a6cad99b3b943952815be8a0e21f3f756e03b1f16b6126e5efd9200ffc9",
+  "correction": "Restore Relation,Task explicit object order; preserve exact equality and fields, no sort/set weakening, no production/traffic/installed/schema changes. HTTP index.ts sorts via inCanonicalUriOrder; prior F2 was mistaken.",
+  "requiredEvidence": "Exact delta/inverse, all679 map and678 unchanged, preserve all prior failures and mistaken review. Native closure before validation.",
+  "sourceAuthoringReleased": true,
+  "validationPreparation": "Separate CLOSED oracle-successor-1 and required-checks-oracle-successor-1, original bootstrap2 only reused; all19 later+4 checks fresh",
+  "runtimeReleased": false,
+  "commitPushReleased": false
+}

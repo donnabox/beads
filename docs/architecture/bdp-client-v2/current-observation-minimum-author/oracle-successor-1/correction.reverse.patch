@@ -1,0 +1,12 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -6337,8 +6337,8 @@
+       if (label === "type") expect(value).toMatchObject({ id: beadType, describes: "bead" });
+       else if (label === "types") {
+         expect(value.items).toEqual([
++          { id: beadType, name: "Task", describes: "bead" },
+           { id: linkType, name: "Relation", describes: "link" },
+-          { id: beadType, name: "Task", describes: "bead" },
+         ]);
+         expect(value.next).toBeNull();
+       } else if (label === "incident") {
