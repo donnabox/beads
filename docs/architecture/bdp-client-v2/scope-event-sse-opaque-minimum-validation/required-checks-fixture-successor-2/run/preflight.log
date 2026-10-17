@@ -1,0 +1,17 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum
+
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 60ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 143ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 2ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 0ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 2ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 93ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 286ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  11:05:50
+   Duration  878ms (transform 144ms, setup 25ms, import 186ms, tests 586ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-fixture-successor-2/run/preflight.results.json
