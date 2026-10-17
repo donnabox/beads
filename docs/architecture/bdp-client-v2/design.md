@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T03:40:33Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T03:47:32Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -180,6 +180,9 @@ Author [successor-3](finite-event-minimum-author/successor-3/report.md), binding
 
 
 **Bead static prefix executed; bounded formatting repair pending.** [Native helper review](bead-event-minimum-validation/native-preparation-review.md)4faaca31 is clean. Root inspected actual supervisor/gates/audit and bootstrap/static commands, independently rehashed72 implementation files/16 references/679 sources, and released only fresh offline frozen-lock scripts-disabled bootstrap plus static prefix. Install passed4.781s; measured tool capture passed8.809s; TypeScript passed5.230s. Actual tools are Biome2.5.7/Vitest4.1.10/TypeScript7.0.2, bound to fresh install evidence. [Format check](bead-event-minimum-validation/run/format-check.exit.json) failed raw1 in4.527s with exactly two formatting diagnostics: AggregateError line wrapping in transaction-events.test.ts and test.each callback wrapping/indentation in transaction-service.test.ts. No fixes applied; all679 source bytes unchanged, no cleanup or sampled survivors. Failure/log retained; no automatic retry. All execution gates closed on failure; lint/build/source/runtime/installed stages unrun. Native reviewer is preparing a bounded two-file mechanical successor plan while actual Claude CODE review continues on the unchanged frozen draft. No product commit/push, checkpoint replacement, new capability claim or user decision required.
+
+
+**Formatting successor scope accepted; execution remains closed.** [Bounded plan](bead-event-minimum-author/format-successor-plan/plan.md)d35a2be1/proposeddiffd874cb26 fixes only the two diagnosed test formatting locations; root read full diff and rehashed proposal/original attempt evidence. Native independent census found all47 sampled bootstrap/static PIDs absent. Source authoring awaits actual Claude terminal disposition; PID98412 remains live with streaming progress at18minutes, no verdict or retry. Event reviewer is preparing a CLOSED successor validation packet with explicit original bootstrap/tool attribution and two-test source mapping; fresh static/runtime evidence required. Original adaptations.json describes historical skeleton state, superseded by final bindings; retained unchanged. PR150 d4f3f4be,PR151 b76c3b7d andPR154 f6204255 remain exact-head green/open drafts; bus has no new messages since03:40:39Z.
 
 ## Current priority: BDP profile structure and implementation
 
