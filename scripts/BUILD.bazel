@@ -74,6 +74,7 @@ go_test(
     ],  # keep
     data = [
         "//:repo_other_files",
+        "//:engdocs/LINTING.md",
         "//internal/testutil:testdoltcommon.go",
         "@go_sdk//:bin/go",
         "@go_sdk//:files",
@@ -154,6 +155,7 @@ go_test(
     ],
     data = [
         ":repo_other_files",
+        "//:.github/workflows/conformance.yml",
         "//:.buildflags",
         "//:.githooks/pre-push",
         "//:.test-skip",

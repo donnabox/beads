@@ -1855,7 +1855,7 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 			}
 			return nil
 		}
-		if d.Type()&os.ModeSymlink != 0 || (d.Name() != "BUILD.bazel" && d.Name() != "BUILD") {
+		if !isFileOrFileLink(path, d) || (d.Name() != "BUILD.bazel" && d.Name() != "BUILD") {
 			return nil
 		}
 		data, err := os.ReadFile(path)
@@ -1915,7 +1915,7 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 			return nil
 		}
 		isBzl := strings.HasSuffix(d.Name(), ".bzl")
-		if d.Type()&os.ModeSymlink != 0 || (d.Name() != "BUILD.bazel" && d.Name() != "BUILD" && !isBzl) {
+		if !isFileOrFileLink(path, d) || (d.Name() != "BUILD.bazel" && d.Name() != "BUILD" && !isBzl) {
 			return nil
 		}
 		data, err := os.ReadFile(path)

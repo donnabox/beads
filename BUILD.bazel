@@ -160,6 +160,15 @@ filegroup(
     visibility = ["//scripts:__pkg__"],
 )
 
+# Narrow runfiles for the scripts policy assertions that read these sources.
+exports_files(
+    [
+        ".github/workflows/conformance.yml",
+        "engdocs/LINTING.md",
+    ],
+    visibility = ["//scripts:__pkg__"],
+)
+
 # PR Risk's manifest-sharded tiers' shard scripts and their committed
 # manifests (embedded-Dolt cmd and storage, proxied-server cmd, server-Dolt
 # storage). The variants (//cmd/bd:bd_embedded_test and
