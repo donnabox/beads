@@ -1,0 +1,31 @@
+{
+  "state": "CLOSED; no Claude launch; root inspection/release required",
+  "head": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "sourceCount": 679,
+  "nativePrecision": "strict-first fallback plus actual fixture limits reconciled; plan-v2 unchanged",
+  "files": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/arguments.json": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/binding-closed.json": "bf0cd0b8b740cdeaba1c1b98723ac8c25a04ce98f466cfc1cd79d2e044ac7e3e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/binding.json": "bf0cd0b8b740cdeaba1c1b98723ac8c25a04ce98f466cfc1cd79d2e044ac7e3e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/design.md": "0edb14e458634ba9bd7d42b6eb44cc3528cfd4fd8a84426a9098535ae90beb78",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/plan-v2-binding.json": "3fe818ae62ac85acf76240f69cdaecad4a82ad6987cd3c3aef58c63bfc712c40",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/plan-v2.md": "78e8fd03e892a87c76adb19f7f6f6a0026fdb05fd31a2d789bb532feb6faf44b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/precision-disposition-v2.json": "80c17536c6b8e49da9b02e4892d2c771e2945679f9733766a27b6290cde0a360",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/preservation-v2.json": "9445e653bdcab136cdb0a63983ecfc87644e9ddbca2fc46de4d40a4195b60369",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/selection-v2.json": "5901111b6e122a5312c1ac0e6b0778ccb4f1d29a88292209ab388c0238c0fd49",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/parse-stream.py": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/preparation.md": "796473592ccc5a5526ba4461b71be1210d63f4e48420305093ebadc2c3cd2112",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/prompt.txt": "f696f328db9041a44ff1e53342d839f78b24c6c47bc6e824d5b6c587d868f190",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/run.py": "d4f010ddb82c4632edbd6b6143c5a4894a04707742bf9af2fbff84a861a9dc3a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/runner-adaptation.patch": "b23dcc017d23894884e5358e2e005a86771eaa56f04547c232c4209f6922234a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/tool-identities.json": "13d66f119412cffe6f4400cd8518ea67e7d5d7883ddb5869eda494aaf2ccd969"
+  },
+  "launchCommand": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/run.py",
+  "runnerAdaptations": [
+    "only one worktree string changed from proven clean Link PLAN predecessor",
+    "clean status remains required; not the dirty CODE runner",
+    "arguments/parser unchanged; default model, no Gemini",
+    "all679 current inputs/head and immutable design/context pinned",
+    "same3600s/TERM3595, stream/process/source/packet checks and zero retries"
+  ]
+}

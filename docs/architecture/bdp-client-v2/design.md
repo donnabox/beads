@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T05:41:42Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T05:54:06Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,9 +77,9 @@ Checkpoint 2026-10-17T05:41:42Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Link PR156 published separately; exact CI39007135471 running | No integration until exact-head green; frozen PR150 unchanged |
-| Conditional author | Read-only next fresh Snapshot recommendation complete | No source authoring; recommendation awaits independent plan review |
-| Event reviewer | Review next fresh Snapshot recommendation against committed Link0f215c0 | S1 retained minima and G2 remain separate; no execution |
+| Root | Link PR156 exact CI running; actual Claude Snapshot PLAN review active | No authoring before council disposition; frozen PR150 unchanged |
+| Conditional author | Fresh Snapshot plan-v2 and closed packet complete; idle | No authoring until actual council findings disposition |
+| Event reviewer | Native Snapshot plan-v2 critique complete, no substantive correction | S1 retained minima and G2 remain separate; idle |
 | Native reviewer | Final Link installed audit complete, no blockers | All25 stages, four closed children and470PIDs checked; idle |
 
 
@@ -227,6 +227,11 @@ Root released actual [Claude CODE review](link-event-minimum-code-review/root-re
 [Root final validation](link-event-minimum-validation/root-final-validation.json) and [independent final installed audit](link-event-minimum-validation/native-final-installed-audit.md)278cb5da verify all25fresh stages (2bootstrap+23validation) accepted/raw0,33source callbacks/28raw records; LinkD35=676ms and amendedBeadD37=901ms under4000auditmargin. Four separate installed cohorts observe Link4/Bead4/Scope3/historical11 exchanges through fresh packed consumer, children56730/60330/63971/67844 exited0/closed/storesabsent; all470sampledPIDs absent. Source679/build476/archive321/consumer870files17links unchanged. Payload81e1ee6779a2e0db7fece6427ab0fa10538c14a0c24902789b6572ad33550344, lockb654ef7659d2807c1630c12ede740e6f51bb0b8e4b2b5c02b17b16f7654ebc39 independently accepted before children. Local evidence remains dirty5bcd plus exact binding, mapped byte-for-byte to clean0f215c0 without relabeling. Historical59 source-derived exchanges are not a newly measured aggregate. All observations claimEligible:false; lint35warnings/1info retained.
 
 [Next read-only recommendation](link-event-next-serving-audit/plan.md) identifies concrete fresh Snapshot matched-context opaque-minimum refusal (existing installed exchange19=500). Native recommendation review is pending; no authoring or execution released. Proposed general-law bounded wait preserves current Snapshot capture/preflight order and retained Snapshot S1, foreign-context and G2 boundaries; no current-main dependency.
+
+
+**Fresh Snapshot plan-v2 in actual council review.** [Plan-v2](link-event-next-serving-audit/plan-v2.md)78e8fd03 and [selection](link-event-next-serving-audit/selection-v2.json)5901111b bind clean0f215/current679source plus immutable sole-plan context. Exact seven-file proposal retains service synchronous capture/kind/lifecycle ordering via strict-first lexical fallback, owner context→instant→minimum before maintenance, and one terminal HTTP service call. Existing installed31-exchange callback supersedes only unknown exchange19; proposed new seeded3-exchange GET/HEAD witness remains separate. Prospective22source callbacks/45network+15handler calls and installed31+3/three sequential children/two stores are workload, not observed completion. Existing5s request/45s owned/60s callback bounds remain.
+
+[Native final critique](link-event-next-serving-audit/native-plan-v2-review.md)c31e871d found no substantive correction after source/count/error-order review. Root read full plan/prompt/runner and independently rehashed679source/12context/eightartifact/15index pins, exact clean0f215. [One actual Claude PLAN review release](link-event-next-serving-audit/claude-plan-review/root-release.json) launched2026-10-17T05:53:34Z, PID76938/session51206; defaultmodel, Read/Glob/Grep,3600s/TERM3595/no retry. Closedbindingbf0cd0b8 preserved; releasedbindingb527fc25. Runner differs from proven LinkPLAN only in worktree path. Actual stream/process progress verified; no verdict yet. No Snapshot source authoring/runtime/commit/merge released. PR156 CI39007135471 currently executing fulltests; PR150d4 exactCI remains green and frozen. No new bus messages since05:41:48Z.
 
 ## Current priority: BDP profile structure and implementation
 
