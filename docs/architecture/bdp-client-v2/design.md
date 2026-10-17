@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T03:19:16Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T03:29:45Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T03:19:16Z. **ACTIVE — Transactional first; ordinary Upda
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | PR154 exact CI38995336477 green at f6204255 | Full27 steps passed; separate subsequent candidate, frozen PR150 unchanged |
-| Conditional author | Authoring accepted Bead Event plan-v3 in isolated vickie-bead-event-minimum | Six files only; freeze source packet, no execution/commit/push |
-| Event reviewer | Preparing CLOSED Bead Event validation skeleton | 21 final stages plus2 bootstrap; exact source binding pending author freeze |
-| Native reviewer | PR154 CI audit and plan-v3 closure complete; idle | All findings dispositioned; future code review awaits frozen source |
+| Conditional author / actual Claude | Source frozen; code-review packet launched by root | Claude PID98412 started03:28:45Z; no source edits or execution until dispositions |
+| Event reviewer | Final CLOSED validation prepared | Actual source and observation schemas bound;2bootstrap+21stages, all gates false |
+| Native reviewer | Code review clean; validation helper review active | Source679/preservation verified; no static/runtime execution yet |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -173,6 +173,10 @@ Author [successor-3](finite-event-minimum-author/successor-3/report.md), binding
 [Plan-v3](finite-event-next-serving-audit/plan-v3.md)57bf4272/selectionc08e9a2a and [native closure](finite-event-next-serving-audit/native-plan-v3-closure.md)96b817e5 preserve six-file scope,25source+3installed callbacks and128+18 prospective HTTP; A adds final hidden-source read (12total) plus separate policy replacement. Root created clean isolated codex/vickie-bead-event-minimum at /Users/dbox/repos/wt/vickie/vickie-bead-event-minimum from exact green f620, checked all679bytes/GitHub origin, and [released source-only authoring](finite-event-next-serving-audit/root-authoring-release.json). No tests/build/install/commit/push or code-review execution released. Validation skeleton has21 final stages (three sequential installed callback/audit pairs) plus2 explicit fresh-checkout bootstrap stages, all existing bounds retained; source binding remains closed.
 
 [Independent PR154 CI audit](finite-event-minimum-validation/successor-2/native-ci-audit.md)780c1af9 verifies all27steps, actual new callbacks,9375passed/1skip,7preflight, package payload and historical Readgate. It explicitly distinguishes workspace-dist CI from local external-consumer evidence; GitHub masking prevents fully parsing the historical WWW-Authenticate record, so no whole-record parse or remote PID-census claim. No blocking discrepancy; frozen PR150 and separate PR151/154 remain unchanged.
+
+**Bead Event code frozen and council running.** [Author report](bead-event-minimum-author/report.md), binding65cc7b8f/fullpatch33c7e004, contains exactly six files (886insertions/21deletions) on isolated dirty f620;673other files,25284-byte historical installed prefix and existing callbacks preserved except accepted sentinel/comment/title changes. Root read the complete diff and rehashed679live inputs. [Native code review](bead-event-minimum-author/native-code-review.md)7b829ddc found no actionable blocker; no execution inferred. [Actual Claude CODE packet](bead-event-minimum-code-review/plan.md), prompt e767fefb/runnerceeca94f, launched root-released read-only PID98412 at2026-10-17T03:28:45Z, same3600s/TERM3595/no retry/model override. Stream progress visible; verdict pending. One mistyped author Python path failed before launch with no mutation, recorded as authoring invocation failure, not test evidence.
+
+[Final CLOSED validation adaptation](bead-event-minimum-validation/finalized-plan.md), implementation03874b77/source7c120a0e/audit8a94cbbb, binds actual25source callbacks and20observation records plus3 separate installed4/3/11 callback/audit pairs. Source D37 ordered observations and elapsed remain measured separately from historical59 code-derived traffic; no measured128total claim. Two fresh bootstrap stages plus21validation stages; every execution/council gate false. Native helper review underway. No bootstrap, test, build, formatter, runtime, commit or push of product source yet. Frozen PR150 and green PR151/154 untouched.
 
 ## Current priority: BDP profile structure and implementation
 

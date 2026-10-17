@@ -1,0 +1,27 @@
+{
+  "state": "frozen source-only; independent review and execution pending",
+  "artifacts": {
+    "before.json": "5f2ee91fc661514dbfad75e85b3228d8b514f7ef1af648e0cf0dbb5f0052ad45",
+    "after.json": "8c562babc8a7b39c2855e729dbcc010aed26747082876c2d17a32270f2362737",
+    "full.patch": "33c7e00400c1923c4a16dadc03040cf5ae3f773c926a86396defd305d45c4ece",
+    "selection.json": "c08e9a2a088de70cc2f2f4462dab8d9771c00a87f2c4cfc58d1e6adbe37b2ae3",
+    "preservation.json": "ec3fca9baa43914af6a8adc020f2a956974808325588c2e18b6eb37967b9c1de",
+    "workload.json": "d0151639ecade45eff55a1f7e156cef4871513fad182de5398fc9557394683f1",
+    "report.md": "84575a73dc4a4f4bc76628dbc831067b1d1347c55d030345fce97bba5e902658",
+    "source-binding.json": "65cc7b8f38c03d43eabb8c76d3087a8c74b30ca37f8037989c90454acd7778a5"
+  },
+  "sourceSnapshots": {
+    "before/packages/server/src/transaction-http.ts": "8b6e0be9f9df4c718a9e26d5dc321d7517780edef53b9580dae314328d6a3eca",
+    "before/packages/server/src/transaction-service.ts": "a3b0984a61603300024e22afc1d6826b89296bfc27d13465c1e1ede0b1791b8c",
+    "before/packages/server/src/transaction-store.ts": "dd5de25d1f73faa8c14c08d94d91a4b160a4abee991f4934495260ead93a9ab0",
+    "before/packages/server/src/transaction-events.test.ts": "bf3695d643637c8536b49f58f8a9beab742bb43bbd24d9d6a6a9e0d53e70d16e",
+    "before/packages/server/src/transaction-service.test.ts": "b0f559c076ed9faa3b627b4d14dcdeea95d19113248e983a2789cf24a10bcb75",
+    "before/apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "a1c5ac2a91a3e127d00132580f7a898e52ef100135a0cdf8770b0f03718cf848",
+    "after/packages/server/src/transaction-http.ts": "37b8ed7a63c25d310159edba83d7ecc6f0292724831c2b59643e7a3788835589",
+    "after/packages/server/src/transaction-service.ts": "cede2090af8b4cb4470334ff27e6f5038ab4cb186972ed2bd03a300ae19a6ba6",
+    "after/packages/server/src/transaction-store.ts": "3e7b9b4609602ff5c207e697bdf0d70a5c4f6e94515130b926e83eb6a8c093b7",
+    "after/packages/server/src/transaction-events.test.ts": "d6dd08a07355bca304c50909bce61b1744ae22cec8b1bba56c2638442439f36f",
+    "after/packages/server/src/transaction-service.test.ts": "1296229ecaad736390882d64b120b433fc8d84d40f022f46803a8574c99ac828",
+    "after/apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "e4510bf2dfdaacac981bf9583a2f6be4c536de5ceca5309c754f93fd56b6f652"
+  }
+}
