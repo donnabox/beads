@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 )
 
@@ -56,9 +57,14 @@ func TestGraphPreviewReferenceRefusals(t *testing.T) {
 }
 
 func TestGraphPreviewLinkReferenceFlagsAreSeparateFromWriteGuard(t *testing.T) {
-	for _, name := range []string{"source-revision", "target-revision", "if-source-revision"} {
-		if linkCreateCmd.Flags().Lookup(name) == nil {
-			t.Errorf("link create lacks --%s", name)
+	for _, command := range []struct {
+		name string
+		cmd  *cobra.Command
+	}{{"link", linkCmd}, {"link create", linkCreateCmd}} {
+		for _, name := range []string{"source-revision", "target-revision", "if-source-revision"} {
+			if command.cmd.Flags().Lookup(name) == nil {
+				t.Errorf("%s lacks --%s", command.name, name)
+			}
 		}
 	}
 }

@@ -52,6 +52,20 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					}
 				})
 			}
+			for _, args := range [][]string{
+				{"link", "source@current", "target", "--type", "types/preview-related"},
+				{"link", "source", "target@observed", "--type", "types/preview-related"},
+				{"link", "source", "target", "--type", "types/preview-related", "--source-revision", "current"},
+				{"link", "source", "target", "--type", "blocks", "--target-revision", "observed"},
+			} {
+				refuse("capability_unavailable", args...)
+				if got := call("show", "beads/source"); got != sourceBefore {
+					t.Fatal("refused shorthand Link creation changed the source")
+				}
+				if got := call("link", "list", "--source", "beads/source"); got != linksBefore {
+					t.Fatal("refused shorthand Link creation changed Links")
+				}
+			}
 			for _, tc := range []struct {
 				name, source, target, id string
 				flags                    []string
@@ -69,6 +83,11 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					}
 				})
 			}
+			shorthand := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source@unpinned", "target", "--type", "types/preview-related", "--id", "links/shorthand-floating", "--target-revision", "unpinned"))
+			if shorthand.Link.ID != scope+"links/shorthand-floating" || shorthand.Link.Source != scope+"beads/source" || shorthand.Link.Target != scope+"beads/target" {
+				t.Fatalf("shorthand floating Link changed endpoint identity: %+v", shorthand.Link)
+			}
+			call("link", "source@unpinned", "target@unpinned", "--type", "blocks", "--source-revision", "unpinned")
 			bare := call("link", "show", "links/bare")
 			refuse("invalid_selector", "link", "update", "links/bare@stale", "--properties", `{"note":"wrong target"}`)
 			refuse("invalid_selector", "link", "delete", "links/bare@stale", "--force")
