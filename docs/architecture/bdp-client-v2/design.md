@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T06:45:22Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T06:57:01Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T06:45:22Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Snapshot bootstrap/static prefix green; actual full Claude CODE review running PID98177/session84812 | Inspect actual verdict before build/runtime release; PR150 stays frozen |
-| Conditional author | Independent final validation preparation review complete | Ready for released static prefix; no remaining preparation blocker |
-| Event reviewer | Native successor closure complete; next serving-gap read-only audit | Recommend next concrete blocker without source edits or S1/G2 assumptions |
-| Native reviewer | Independent audit of actual five-stage static prefix | Verify source/tool/exit/log/process chain; no rerun |
+| Root | Snapshot static prefix independently audited; actual full Claude CODE review running PID98177/session84812 | Inspect actual verdict before build/runtime release; PR150 stays frozen |
+| Conditional reviewer | Receipt-root recommendation critique complete | Review detailed plan after author freeze; no source changes |
+| Event reviewer | Prepare detailed receipt-root plan-v2 incorporating native critique | Recommendation only; actual council and clean-base rebind required before authoring |
+| Native reviewer | Snapshot five-stage static audit complete; idle | Ready for actual code findings audit when review completes |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -260,6 +260,11 @@ PR150d4 and PR1560f215 exact remote heads and CI success freshly reverified. Inc
 **Snapshot native closure and fresh static prefix passed.** [Native successor closure](snapshot-opaque-minimum-author/successor-1/native-closure.md)88ef90ee independently reconstructs all original seven files, verifies all679 bytes, N1/N2 closure and full code-review safeguards/release chronology. [Final validation preparation review](snapshot-opaque-minimum-validation/native-final-preparation-review.md)b0739d0e verified135indexedfiles/72references/679source/17dependencyinputs/3tools and actual Snapshot schemas. Packet index7fbd1eba/sourcead2b24e1/identity70caea36; root separately rehashed all configuration/source/tool pins and read actual stage gates/supervisor before release.
 
 [Actual static prefix](snapshot-opaque-minimum-validation/root-static-prefix.json) records fresh offline scripts-disabled frozen-lock install4.046s, measuredtools7.694s, typecheck4.977s, format4.132s and lint3.654s, all raw0/accepted. Source679 unchanged; sampled PIDs absent, no forced cleanup or runtime directories. Tools471c6887 binds11actual workspace tools. Lint reported61warnings/7infos with48diagnostics not displayed; no zero-warning or baseline-equivalence claim. Independent actual-prefix audit continues. ActualClaudeCODE PID98177 continues streaming with no terminal verdict; build/runtime remain closed. No new bus messages after06:39:56.
+
+
+**Snapshot static evidence independently closed; code review remains live.** [Native actual prefix audit](snapshot-opaque-minimum-validation/native-static-prefix-audit.md)3b2643fc confirms all five stage outcomes/commands/logs,135packetfiles/72refs/679source/11tools and all45sampledPIDs absent. Actual warning inventory remains61warnings/7infos with48notdisplayed; no baseline equivalence. Runtime still requires the unfinished fullClaudeCODE verdict; real PID98177 and advancing streamed records verified at more than16minutes, no timeout/retry/approval inferred. PR150d4 and PR1560f215 remote heads and successful checks freshly reverified; no bus messages after06:45:27.
+
+[Next bounded recommendation](snapshot-opaque-next-serving-audit/plan.md)525a3fb0 identifies actual owned receipt-root opaque-minimum private500, preserving page behavior, principal nondisclosure and minimum-before-retention. [Independent recommendation critique](snapshot-opaque-next-serving-audit/native-recommendation-review.md)477641ce supports the root-only scope and requires an explicit deterministic waiter seam because four newly waiting requests plus an existing1.1s delay would exceed the unchanged5s callback. Detailed plan preparation incorporates exact capture/lifecycle/retention evidence and bounded source/installed counts; no source edits, execution, new signal API, S1/G2 ruling or discovery advertisement. Current Snapshot validation takes priority.
 
 ## Current priority: BDP profile structure and implementation
 
