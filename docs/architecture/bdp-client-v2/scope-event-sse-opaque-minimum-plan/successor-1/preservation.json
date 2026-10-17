@@ -1,0 +1,24 @@
+{
+  "prefixes": {
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "bytes": 35759,
+      "sha256": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+      "requirement": "original complete bytes remain exact prefix; append only"
+    },
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "bytes": 40642,
+      "sha256": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+      "requirement": "original complete bytes remain exact prefix; append only"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "bytes": 138654,
+      "sha256": "c12343963d0f3b3500f67c66fe55279111b3441f2ee33d2ee25ba4842c4522e6",
+      "requirement": "original complete bytes remain exact prefix; append only"
+    }
+  },
+  "productionChangedOnly": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ]
+}

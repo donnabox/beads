@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T15:50:33Z. **ACTIVE — separate changefeed PR161 ready and exact-CI green; next Scope Event SSE plan in native review. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T16:00:03Z. **ACTIVE — separate changefeed PR161 ready and exact-CI green; next Scope Event SSE actual Claude PLAN review running. Bounded reconciliation PR159 remains ready and frozen; main landing held.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). PR159 commitd7197e97 has ordered parents PR150d4 and frozenmain8d; tree630a94d0. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -78,8 +78,8 @@ Checkpoint 2026-10-17T15:50:33Z. **ACTIVE — separate changefeed PR161 ready an
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | PR161 ready on exact-green bbfa5b2 | Native raw-log audit accepted; frozen PR159/150 preserved |
-| Conditional reviewer | Native Scope Event SSE PLAN findings N1–N3 | Final report then successor closure; no product/runtime changes |
-| Event reviewer | Scope SSE plan successor1 for N1–N3 | Actual Claude mechanics prepared; launch closed pending native/root closure |
+| Conditional reviewer | Actual Claude PLAN process/terminal audit | One1800s attempt; no retry/source changes |
+| Event reviewer | Scope SSE successor1/final external packet complete | Idle; no product authoring/runtime |
 | Native reviewer | Exact PR161 terminal raw-log audit accepted | Idle; no source/runtime changes |
 
 
@@ -452,6 +452,9 @@ Fresh dependency install4.688s/tool binding8.288s/typecheck5.420s passed. Actual
 
 
 **Scope SSE plan corrections before authoring.** Native review identified N1: runtime finite Event pages use receiptMaximumItems2, so the three-Event baseline needs exactly two requests; corrected prospective D30/source75/combined86 HTTP, with200x5. N2: existing f.stream hides its AbortController and recorder exposes no signal; use a callback-local positive recorder/controller for actual nonaborted proof while preserving helpers. N3: group SQL preparation observer begins after owner call1, so that row is explicitly unobserved; later counts are preparations, not execution/allocation census. Root independently confirmed N1/N2 in source and accepted all three bounded corrections. Event owns immutable successor1, native closure follows. Closed actual Claude mechanics8b71f8d8 reuse the prior supervisor with only checkout/head literals changed; no final prompt or plan binding/launch yet. No product writer or runtime released.
+
+
+**Scope SSE native closure accepted; actual Claude PLAN launched.** [Successor1 plan](scope-event-sse-opaque-minimum-plan/successor-1/plan.md)bf2f84fe/indexa09a6c75 and [native closure](scope-event-sse-opaque-minimum-plan/successor-1/native-closure.md)184762b8 close N1–N3. Root rehashed original15/successor8 entries and all679source. [Native dispositions](scope-event-sse-opaque-minimum-plan/root-native-dispositions.json) accept exactly those changes. Final [external packet](scope-event-sse-opaque-minimum-plan/claude-plan-review/preparation-index.json)db14dafa has36files/18immutablecontexts, full plan/selection/workload inline and actual source/tools verified. Originaldesign d83d6bd0 and later c114a25b snapshots are separately attributed in context provenance; no unchanged-live-plan claim. [Root release](scope-event-sse-opaque-minimum-plan/claude-plan-review/root-launch-release.json) preserves prepared closedbindinge64d03af then releases only its launch gate. One1800s default/read-only attempt started2026-10-17T15:59:18Z PID11704/session25210; actual initial progress observed, no result yet. Conditional audits actual terminal/source/process record before dispositions. No product writer/runtime/commit/push released. PR161 remainsready/exactgreen; PR159/150 unchanged.
 
 ## Current priority: BDP profile structure and implementation
 
