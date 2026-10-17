@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T09:46:40Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T09:57:46Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,9 +77,9 @@ Checkpoint 2026-10-17T09:46:40Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Actual alias PLAN complete; findings read and dispositioned | Inspect bounded plan correction before source release |
-| Conditional reviewer | Independently audit completed alias PLAN findings/access/source continuity | Review correction after freeze |
-| Event reviewer | Prepare separate plan precision successor for alias review findings | Freeze corrected plan/selection/workload; no source edits |
+| Root | Alias plan corrections closed; isolated authoring released | Review frozen draft before CODE council and runtime release |
+| Conditional reviewer | Actual PLAN findings and precision successor independently closed | Idle; review source when frozen |
+| Event reviewer | Author four-file alias opaque-minimum slice on isolated9d2 base | Freeze patch/source/preservation/selection; no runtime or publication |
 | Native reviewer | Independent PR158 exact CI audit accepted | Idle; full raw-job and masked historical-record limits retained |
 
 
@@ -336,6 +336,11 @@ Next alias detailedplan remains closed on dirty planning basis pending PR158 exa
 
 
 **Actual alias PLAN review completed; bounded corrections precede authoring.** [Terminal](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/exit.json) reports exit0/922.639s, one success result,4132records/2,408,411bytes, stream63b7a665, unchanged inputs, no parse/cleanup failure or surviving sampled process. [Root completion check](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/root-completion-verification.json)9edcf730 verifies terminal/rawstream and all679current source bytes; actual26Read/32Grep/1Glob calls,17unique Read paths, only2copied contexts read, no tool errors. The review's24context count is incorrect (25supplied), and existence is not content access. [Full findings](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/final-review.txt)b61aceac and [root dispositions](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/root-dispositions.json)3e65dc0f accept a unique installed observation label and three additional unchanged regression callbacks, plus narrow wording/line/lifecycle precisions. The prior17case workload remains historically attributed; the successor must explicitly account additional3stores/18HTTP exchanges rather than reuse totals. New B/C would also detect a missing404bypass, so finding2's CI-only-detection assertion is overstated. Cleanup remains10s total with explicit unknown/preserved-directory/late-closure observation; no widened budget or normative decision. Separate plan precision successor is being prepared and independently reviewed; original plan/index/review stay intact. No alias source authoring/runtime released. PR158 remains exactgreen; no new bus requests.
+
+
+**Alias plan corrections closed; source authoring started.** [Native findings audit](receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/findings-audit.md)a0ef9bea and [native precision closure](receipt-root-next-serving-audit/plan-precision-successor-2/native-precision-review.md)14199cd7 confirm all12 dispositions. [Final plan](receipt-root-next-serving-audit/plan-precision-successor-2/plan-v3.md)2455988b/[selection](receipt-root-next-serving-audit/plan-precision-successor-2/selection-v3.json)ba6d72a3/indexec64c3fe retain the four-file production/test scope and deadlines. Root rehashed17frozen artifacts/all679source; the findings audit really is included in that index at a0ef, correcting a stale handoff statement without artifact changes. Prospective20source/46sourceHTTP/88combinedHTTP/22stores includes the three unchanged legacy callbacks; no runtime or completeness claim. Unique new installed label and10s unknown/late cleanup wording close the review findings.
+
+[Root authoring release](alias-opaque-minimum-author/root-author-release.json) at09:57:06Z binds isolated `/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum`, branch `codex/vickie-alias-opaque-minimum`, clean9d2/tree62628a/all679. Event worker owns only transaction-read.ts, its tests, transaction-http.test.ts and transactional-alias-installed.test.ts. Preserve existing classifier, ten selected legacy callbacks and historical36-request installed cohort. No tests/build/install/formatter/services/commit/push released; frozen draft then CODE review and staged validation remain next. PR150d4 and PR1589d2 remain unchanged and green; S1/G2, public activation and main integration holds unchanged. Prior checkpoint09:46 immediate launch readback differed transiently; a separate read confirmed exact submitted bytes/e9d2fd51 and unchanged session without a repeated write.
 
 ## Current priority: BDP profile structure and implementation
 
