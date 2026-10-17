@@ -1,0 +1,703 @@
+{
+  "sourceIdentity": "9ec1d3433641f3ff643b9297a77220a2bbe3b95d862300c76b64e3e34d322af3",
+  "sourceBindingSha256": "97629a7fac3bc7b2e122b3446b1151497e60e8585e3ba8ebb9fa8c6d6503a2c9",
+  "qualification": false,
+  "selectedCallbacks": [
+    "gates initial Scope Event unknown minima before retained scans",
+    "captures an initial Scope Event opaque tuple across one bounded wait",
+    "cancels and drains initial Scope Event opaque waits",
+    "serves initial finite Scope Event opaque minima through bounded waiting",
+    "preserves initial Scope Event preflight before malformed capture: already-aborted",
+    "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+    "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+    "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+    "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+    "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+    "checks minimum position before any retained group scan or body materialization",
+    "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+    "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits",
+    "isolates unresolved metadata-only incident membership while Scope/Link sources remain available",
+    "gates initial Bead Event unknown minima before retained scans",
+    "captures an initial Bead Event opaque tuple across one bounded wait",
+    "cancels and drains initial Bead Event opaque waits",
+    "serves initial finite Bead Event opaque minima with retained identity and route fences",
+    "preserves initial Bead Event classification and preflight: already-aborted",
+    "preserves initial Bead Event classification and preflight: invalid-policy",
+    "preserves initial Bead Event classification and preflight: throwing-clock",
+    "preserves initial Bead Event classification and preflight: nonfinite-clock",
+    "preserves initial Bead Event classification and preflight: malformed-after-valid-preflight",
+    "preserves initial Bead Event classification and preflight: noncanonical-query",
+    "preserves initial Bead Event classification and preflight: relative-source",
+    "gates initial Link Event unknown minima before retained scans",
+    "captures an initial Link Event opaque tuple across one bounded wait",
+    "cancels and drains initial Link Event opaque waits",
+    "serves initial finite Link Event opaque minima with retained identity and route fences",
+    "preserves initial Link Event classification and preflight: already-aborted",
+    "preserves initial Link Event classification and preflight: malformed-after-valid-preflight",
+    "preserves initial Link Event classification and preflight: noncanonical-query",
+    "preserves initial Link Event classification and preflight: relative-source"
+  ],
+  "resultsSha256": "5f1e47010d098bc9d2669aa882eee83792211692f25da433026857b006dc8394",
+  "logSha256": "9cfec1e80747dc3e2632d1995a80da714aac548cb167c8630facbd01bf54a953",
+  "actualInstrumentedObservations": [
+    {
+      "observation": "finite-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "observation": "finite-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "already-aborted",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "invalid-policy",
+      "serviceCalls": 1,
+      "clockCalls": 0,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "throwing-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "nonfinite-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "malformed-after-valid-preflight",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ],
+      "seedMutations": 1
+    },
+    {
+      "observation": "bead-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1,
+      "seedMutations": 1
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "already-aborted",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "invalid-policy",
+      "serviceCalls": 1,
+      "clockCalls": 0,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "throwing-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "nonfinite-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "malformed-after-valid-preflight",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "noncanonical-query",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 1,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "relative-source",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 1,
+      "waits": 0
+    },
+    {
+      "observation": "link-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ],
+      "seedMutations": 1
+    },
+    {
+      "observation": "link-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1,
+      "seedMutations": 1
+    },
+    {
+      "observation": "link-event-minimum-preflight",
+      "label": "already-aborted",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "link-event-minimum-preflight",
+      "label": "malformed-after-valid-preflight",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "link-event-minimum-preflight",
+      "label": "noncanonical-query",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 1,
+      "waits": 0
+    },
+    {
+      "observation": "link-event-minimum-preflight",
+      "label": "relative-source",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 1,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-owner",
+      "reads": 8,
+      "seedMutations": 1
+    },
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "bead-event-minimum-owner",
+      "reads": 12,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    {
+      "observation": "bead-event-minimum-http",
+      "calls": 37,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events&after=ev_r58HQIztwaG89Hayp7ou9piolLhVtsfD1EQoImpem7Y_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ZlXdrPe-wBM8V56cGijFFYVqR_tNFIKLlLrlkd9fwN0_pos-1_0",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events&after=ev_r58HQIztwaG89Hayp7ou9piolLhVtsfD1EQoImpem7Y_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ZlXdrPe-wBM8V56cGijFFYVqR_tNFIKLlLrlkd9fwN0_pos-1_0",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/gone?view=events",
+          "status": 503
+        }
+      ],
+      "elapsedMs": 901,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "link-event-minimum-owner",
+      "reads": 11,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    {
+      "observation": "link-event-minimum-http",
+      "calls": 35,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events&after=ev_4f6yJowDPSp9cuSjhB1jVuVTjdI28U3MIfbSTX9Ky4I_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ylOTgJfJ6NLdqGYzFz6yxWI03ihAmTWnI7ackR8mTPU_pos-1_2",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events&after=ev_4f6yJowDPSp9cuSjhB1jVuVTjdI28U3MIfbSTX9Ky4I_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ylOTgJfJ6NLdqGYzFz6yxWI03ihAmTWnI7ackR8mTPU_pos-1_2",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "links/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/gone?view=events",
+          "status": 503
+        }
+      ],
+      "elapsedMs": 676,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    }
+  ],
+  "attribution": "Selected source owner/service and fresh emitted HTTP callbacks; actual names verified individually",
+  "plannedWorkload": {
+    "callbacks": 33,
+    "existingCallbacks": 25,
+    "newCallbacks": 8,
+    "stores": 33,
+    "inProcessListeners": 4,
+    "productChildren": 0,
+    "httpExchanges": 163,
+    "existingHttpExchanges": 128,
+    "newHttpExchanges": 35,
+    "historicalSourceDerivedHttp": 59,
+    "newLinkOwnerReads": 11,
+    "newLinkNonReadPolicyReplacements": 1,
+    "newLinkDirectMutationTransactions": 2,
+    "newLinkServiceSeedSubmissions": 2,
+    "newLinkServiceEventsCalls": 6,
+    "newLinkWaitDelegatedReads": 9,
+    "newLinkWaitsAndProbes": 5,
+    "newLinkPostCloseDirectRefusal": 1,
+    "newLinkPreflightCallbacks": 4,
+    "newLinkPreflightInitialClocks": 4,
+    "newLinkPreflightDelegatedReads": 2,
+    "newLinkPreflightWaits": 0,
+    "sourceObservationRecords": 28,
+    "linkAndAmendedBeadAuditElapsedExclusiveMs": 4000,
+    "implicitSourceCallbackMs": 5000,
+    "existingRetryAttempts": null,
+    "attribution": "Authored frozen Link draft plus preserved/amended25 callbacks; counts are prospective, not execution results or whole-profile support."
+  },
+  "limits": "Instrumented records are separately observed if executed; historical59 HTTP remains source-derived, not a measured163 total; counts are not qualification; preserve service precedence controls as separate service calls and owner attempts. Assertions of passing pinned callbacks supply semantic evidence."
+}

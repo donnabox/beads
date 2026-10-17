@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T05:22:05Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T05:41:42Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T05:22:05Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Fresh Link bootstrap/static prefix passed; actual Claude CODE active | No runtime until council disposition; frozen PR150 unchanged |
-| Conditional author | Link draft and CODE review packet frozen; idle | No source mutation while review runs |
-| Event reviewer | Final validation packet accepted; audit actual static prefix | Independent logs/tools/PID/source checks; no execution |
-| Native reviewer | Final source-bound validation packet complete; idle | Runtime gates remain closed pending actual council |
+| Root | Link PR156 published separately; exact CI39007135471 running | No integration until exact-head green; frozen PR150 unchanged |
+| Conditional author | Read-only next fresh Snapshot recommendation complete | No source authoring; recommendation awaits independent plan review |
+| Event reviewer | Review next fresh Snapshot recommendation against committed Link0f215c0 | S1 retained minima and G2 remain separate; no execution |
+| Native reviewer | Final Link installed audit complete, no blockers | All25 stages, four closed children and470PIDs checked; idle |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -218,6 +218,15 @@ Root released actual [Claude CODE review](link-event-minimum-code-review/root-re
 **Link fresh bootstrap and static prefix passed.** [Final native preparation review](link-event-minimum-validation/native-preparation-review.md)b4f64c23 verifies90indexedfiles/all679source, exact fresh2+23chain and immediate installed audits. Ten inherited helpercwd literals were corrected before execution with priorpacket preserved; helper bytes unchanged. Root independently rehashedindex/reference/source, finalized configuration only, preserved closed originals and reindexed3826b2fa. Normalized source97629a7f/identity9ec1d343 remain frozen.
 
 [Actual static prefix](link-event-minimum-validation/root-static-prefix.json): offline scripts-disabled frozen-lockinstall4.571s, measuredtools8.513s, typecheck5.290s, format4.431s, lint4.263s allraw0/accepted, unchangedsource, no cleanup/survivors. Tools74532319 binds11actual executables/modules (Biome2.5.7/Vitest4.1.10/TypeScript7.0.2) to fresh install. Lint reports35warnings+1info; no zero-warning claim. Root independently checked all5terminal/logrecords and sampledPIDs absent. ActualClaudeCODE PID7283 continues streaming; no verdict/runtime/build/test/commit/push released. Independent staticprefixaudit proceeds.
+
+
+**Initial finite Link Event successor published separately.** [PR156](https://github.com/gastownhall/bdp/pull/156) is draft at **0f215c05678f507dd8a39ee08e288f0901710135**, tree **03371e5c2e1ea756e1501e0e26cccb7aa2f5d04e**, sole parent PR155/5bcd. [Commit audit](link-event-minimum-validation/root-commit-verification.json) rehashes all679tested bytes into the clean ordinary commit; exact six-file scope923insertions/12deletions and remote branch/PR verified. Frozen PR150d4 unchanged. Exact [CI39007135471](https://github.com/gastownhall/bdp/actions/runs/39007135471) running; not yet green. This is subsequent implementation outside the nominated checkpoint, with no main/shared-design merge, release or profile advertisement.
+
+[Actual Claude CODE review](link-event-minimum-code-review/final-review.txt) completed raw0/1073.794s with4381records, stream399f146e/finalaf18ca16 and unchanged pins/no survivors. [Native findings audit](link-event-minimum-code-review/findings-audit.md)42fdbb3e and [root dispositions](link-event-minimum-code-review/root-dispositions.json) close six optional suggestions without source changes; unsafe unconditional removal after failed close rejected, repeated coverage/cosmetic changes deferred, raw header limits stated honestly. Native code review596813e8 remains valid.
+
+[Root final validation](link-event-minimum-validation/root-final-validation.json) and [independent final installed audit](link-event-minimum-validation/native-final-installed-audit.md)278cb5da verify all25fresh stages (2bootstrap+23validation) accepted/raw0,33source callbacks/28raw records; LinkD35=676ms and amendedBeadD37=901ms under4000auditmargin. Four separate installed cohorts observe Link4/Bead4/Scope3/historical11 exchanges through fresh packed consumer, children56730/60330/63971/67844 exited0/closed/storesabsent; all470sampledPIDs absent. Source679/build476/archive321/consumer870files17links unchanged. Payload81e1ee6779a2e0db7fece6427ab0fa10538c14a0c24902789b6572ad33550344, lockb654ef7659d2807c1630c12ede740e6f51bb0b8e4b2b5c02b17b16f7654ebc39 independently accepted before children. Local evidence remains dirty5bcd plus exact binding, mapped byte-for-byte to clean0f215c0 without relabeling. Historical59 source-derived exchanges are not a newly measured aggregate. All observations claimEligible:false; lint35warnings/1info retained.
+
+[Next read-only recommendation](link-event-next-serving-audit/plan.md) identifies concrete fresh Snapshot matched-context opaque-minimum refusal (existing installed exchange19=500). Native recommendation review is pending; no authoring or execution released. Proposed general-law bounded wait preserves current Snapshot capture/preflight order and retained Snapshot S1, foreign-context and G2 boundaries; no current-main dependency.
 
 ## Current priority: BDP profile structure and implementation
 
