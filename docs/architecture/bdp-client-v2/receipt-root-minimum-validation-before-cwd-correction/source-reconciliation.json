@@ -1,0 +1,46 @@
+{
+  "state": "Frozen actual six-file source reconciled; preparation only",
+  "sourceBindingSha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477",
+  "authorBindingSha256": "c1c6bd6b77701c5528643066caabe2781c2b2affa7e6db02ff058bfcb4fef3ec",
+  "authorIndexSha256": "c3ec3a9f668ee2ef1781bf5daac5a2c6c196e694bcdb08a1289fc3cf4a81e969",
+  "fullPatchSha256": "8e95fe590a8a93dafb15771cf698fea360d94864e1113ac5bf5f98106b3cc224",
+  "trackedFilesVerified": 679,
+  "ownedFiles": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "outsideScopeUnchanged": 673,
+  "dependencyInputsVerified": 17,
+  "baseToolsRehashed": 3,
+  "sourceCallbacks": 12,
+  "actualNewReportSchemas": [
+    "receipt-root-minimum-capture",
+    "receipt-root-minimum-drain",
+    "receipt-root-minimum-http"
+  ],
+  "actualReportCount": 3,
+  "sourceAggregateCounts": "Source-derived prospective inventory; not additional measured report fields",
+  "installedReports": [
+    {
+      "observation": "private-installed-minimum-receiving",
+      "requests": 22,
+      "children": 1,
+      "stores": 1
+    },
+    {
+      "observation": "private-installed-receipt-root-minimum",
+      "requests": 5,
+      "children": 1,
+      "stores": 1
+    }
+  ],
+  "schemaLimits": "Receipt report outcome/completedResponses/safe headers/fingerprints; no Snapshot ok or elapsed fields. Exact semantic bodies asserted in pinned passing callbacks. Historical cleanup attribution unchanged. No child source attestation.",
+  "initialPreparationIndexSha256": "95cee2fac8d2f97067e66d084fbdc638848767f77ff5e6ac3876d1815092e507",
+  "initialPreparationPreserved": true,
+  "executionPerformed": false,
+  "allRootGatesClosed": true
+}

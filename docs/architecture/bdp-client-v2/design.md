@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T08:17:33Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T08:31:33Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T08:17:33Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Six-file receipt draft frozen and fully read; native CODE clean; all679source/20artifact pins verified | Inspect/release actualClaude CODE packet; runtime closed; PR150 frozen |
-| Conditional reviewer | Native full receipt CODE complete, no blocker | Independently review CLOSED Claude CODE packet, then validation preparation |
-| Event reviewer | Preparing CLOSED actualClaude CODE packet against frozen receipt draft | Explicit absolute context paths; no launch/source changes |
-| Native reviewer | Finalize receipt validation against frozen actual source/report schemas | Preserve initial pending packet; all execution gates closed |
+| Root | ActualClaude full receipt CODE running PID91639/session38478; static prefix stopped at formatting | Preserve frozen source until verdict; then disposition layout-only successor; runtime closed |
+| Conditional reviewer | Receipt validation N1 cwd closure complete; reviewing next alias recommendation | Recommendation critique only; no authoring/execution |
+| Event reviewer | Receipt CODE packet delivered; next live-alias recommendation frozen | Idle; no source edits |
+| Native reviewer | Audit actual static prefix and prepare bounded format-only successor plan | No source edits while CODE review runs; preserve failed-format evidence |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -296,6 +296,15 @@ Receipt-root clean-base PLAN successor is now being prepared against exact08812c
 **Receipt-root source draft frozen for full CODE council.** [Author report](receipt-root-minimum-author/report.md) and [exact six-file patch](receipt-root-minimum-author/full.patch)8e95fe59 bind three production and three test files at base08812c6. Sourcebindingc1c6bd6b and authorindexc3ec3a9f cover all679tracked inputs;673 outside files unchanged. [Native full code review](receipt-root-minimum-author/native-code-review.md)33eda490 finds no blocking defect, and [root source review](receipt-root-minimum-author/root-source-review.json) independently verifies full patch, all20indexed artifacts, source679, HEAD and dirty scope. No static, formatter, build, source test or installed result yet. Prospective source12callbacks/36HTTP and installed22+5 remain proposed workloads, not observations.
 
 ActualClaude CODE packet preparation is closed pending independent review and root release, with absolute copied-context paths correcting the prior PLAN access limitation. Separate validation finalization preserves original pending preparation and reconciles actual A/B/D records and rich installedE response/cleanup fields; historical aggregates remain source-derived. PR150d4 and PR157088 exact heads/checks freshly unchanged/green; no bus messages since saved cursor. No main integration, S1/G2 resolution or support-claim change.
+
+
+**Receipt full actual CODE review is running.** [Root release](receipt-root-minimum-code-review/root-release.json) binds closedindex89899eef/closedbinding8ed9ba33/releasedbinding54436604 and [native preparation](receipt-root-minimum-code-review/native-preparation-review.md)5fe17579. Started08:24:00Z, PID91639/session38478, defaultmodel/read-only tools3600s/TERM3595/no retry. Actual stream verifies successful reads of absolute correctedplan/binding/source/workload/preservation context paths; no context-access failure observed so far. No terminal verdict or source approval yet.
+
+Receipt validation preparation found and corrected one command-directory defect before execution: consumer-install selected packet cwd rather than generated run/consumer. [Failed-readiness review](receipt-root-minimum-validation/native-final-preparation-review.md)88f05a27 remains preserved with all125 predecessor files; [one-value correction](receipt-root-minimum-validation-cwd-correction/correction.patch)223e84eb and [native closure](receipt-root-minimum-validation-cwd-correction/native-closure.md)316002fb verify exact cwd fix, unchanged helpers/source/counts/bounds, activeindex007a9123. Original source-pending packet also remains intact.
+
+[Root static prefix](receipt-root-minimum-validation/root-static-prefix.json): fresh offlineinstall0/4.083s, measuredtools0/7.598s and typecheck0/4.956s passed on exact draft. Formatcheck exited1/4.280s for four layout sites in two testfiles; no fixes applied, source unchanged, no cleanup failures/survivors. Lint/build/source/installed were not run and execution gate is now closed. Layout-only successor planning proceeds while actual full CODE review retains its immutable inputs; no blind retry or product failure claim.
+
+[Next recommendation](receipt-root-next-serving-audit/plan.md)96327248 identifies a concrete live-alias opaque-minimum private500; alias-specific condition may reuse existing waiter without broadening incident-Link behavior. Recommendation-only against dirty receipt source, independent critique pending; no source authoring or qualification. Receipt completion takes priority. PR150d4 remains frozen and exactgreen; PR157088 unchanged/green.
 
 ## Current priority: BDP profile structure and implementation
 

@@ -1,0 +1,65 @@
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+     970  970 │           }),
+     971  971 │         ]);
+     972      │ - ······if·(child·&&·!cleanupExceeded·&&·child.child.exitCode·===·0·&&·child.child.signalCode·===·null)
+          972 │ + ······if·(
+          973 │ + ········child·&&
+          974 │ + ········!cleanupExceeded·&&
+          975 │ + ········child.child.exitCode·===·0·&&
+          976 │ + ········child.child.signalCode·===·null
+          977 │ + ······)
+     973  978 │           closed = true;
+     974  979 │         else if (launchAttempted)
+  
+
+packages/server/src/transaction-service.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    3600 3600 │     ] as const) {
+    3601 3601 │       expect(
+    3602      │ - ······await·service.receiptAtMinimum(
+    3603      │ - ········{·kind:·"authenticated",·principal·},
+    3604      │ - ········id,
+    3605      │ - ········{·...supplied,·minimumPosition:·"unknown"·},
+    3606      │ - ······),
+         3602 │ + ······await·service.receiptAtMinimum({·kind:·"authenticated",·principal·},·id,·{
+         3603 │ + ········...supplied,
+         3604 │ + ········minimumPosition:·"unknown",
+         3605 │ + ······}),
+    3607 3606 │       ).toStrictEqual({ kind: "refused", status: 404, code: "resource-not-found", context: current });
+    3608 3607 │     }
+    ········· │ 
+    3617 3616 │     await expect(malformed).rejects.toThrow("unsupported minimum tuple");
+    3618 3617 │     expect({ roots, waits, tick }).toStrictEqual(before);
+    3619      │ - ··expect({·roots,·waits,·tick,·submits·}).toStrictEqual({·roots:·10,·waits:·4,·tick:·11,·submits:·2·});
+         3618 │ + ··expect({·roots,·waits,·tick,·submits·}).toStrictEqual({
+         3619 │ + ····roots:·10,
+         3620 │ + ····waits:·4,
+         3621 │ + ····tick:·11,
+         3622 │ + ····submits:·2,
+         3623 │ + ··});
+    3620 3624 │     expect(observations.map((value) => value.kind)).toStrictEqual([
+    3621 3625 │       "unproved",
+    ········· │ 
+    3727 3731 │       expect({ roots, tick }).toStrictEqual(before);
+    3728 3732 │       release.resolve();
+    3729      │ - ····await·expect(read).rejects.toMatchObject({·reason:·"catch-up-timeout",·context:·first.context·});
+         3733 │ + ····await·expect(read).rejects.toMatchObject({
+         3734 │ + ······reason:·"catch-up-timeout",
+         3735 │ + ······context:·first.context,
+         3736 │ + ····});
+    3730 3737 │       await closing;
+    3731 3738 │       expect(closed).toBe(true);
+  
+
+Checked 6 files in 26ms. No fixes applied.
+Found 2 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-17T08:31:27.823793+00:00",
+  "state": "Stopped after formatter failure; no source edits; lint/build/source/installed not run",
+  "records": {
+    "workspace-install": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "bc513ee5ce385ee501df49f6fb068646e1180d5a54cd2d679e4483a17f46c46d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.083407083060592,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        94465
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "1c01d7e9417ddcf1dddecc7c3b9fc67c790926f36436136feed9030c380aca1c"
+    },
+    "bind-workspace-tools": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "bc513ee5ce385ee501df49f6fb068646e1180d5a54cd2d679e4483a17f46c46d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 7.597574458923191,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        95870,
+        95883,
+        95901,
+        95921,
+        95961,
+        95981,
+        96001,
+        96020,
+        96041,
+        96062,
+        96081,
+        96100,
+        96119,
+        96138,
+        96176,
+        96197,
+        96215,
+        96236,
+        96274,
+        96294,
+        96314,
+        96334,
+        96353,
+        96373,
+        96391,
+        96413,
+        96431,
+        96453,
+        96473,
+        96493,
+        96513,
+        96531,
+        96549,
+        96569,
+        96588,
+        96596,
+        96598
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "bc513ee5ce385ee501df49f6fb068646e1180d5a54cd2d679e4483a17f46c46d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.955670875031501,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        98352,
+        98376
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exit": 1,
+      "accepted": false,
+      "sourceIdentity": "bc513ee5ce385ee501df49f6fb068646e1180d5a54cd2d679e4483a17f46c46d",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.280306332744658,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        99802,
+        99804
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "26d19938157c3b1fd73dad45e8381320bf8d3c4d7abc4b682a80a653d8def39e"
+    }
+  },
+  "disposition": "Exactly two test files/four layout-only sites reported by formatter. Preserve full actual CODE review on frozen source until its verdict, then reviewed format-only successor. This is not a product runtime failure.",
+  "sourceBindingSha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477",
+  "runtimeReleased": false
+}

@@ -1,0 +1,33 @@
+{
+  "state": "CLOSED; no authoring or review launch",
+  "originalPins": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/plan-v2.md": "ce6af37743d6a0666588c45ba5481444b9da04a95118f892cbb44c6820c32123",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/selection-v2.json": "2f8165811cf7274583f1b4220e27e36495c79c9011dc84e48be0649b7b8ad420",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/plan-v2-binding.json": "d50ad78b2be5cd6f5ace75b2c25cc1ee0a288d1940259bcb4bfe68f951f80d9d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/native-plan-v2-review.md": "8fe1cf41ca9885f0aee68c99f850cbb9f5f67cbed858efb72c4768201bf1f186",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/claude-plan-review/binding.json": "7012abfd8428b293815e3dfa861b6d71b7d82d1c51db0f4555fc3dda0a9029c3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/claude-plan-review/preparation-index.json": "592cebff1a103cd9f5713ab7fe39fdeff9fb98b81053c38cb630ed4467fbcb13"
+  },
+  "originalPacketUnlaunched": true,
+  "oldHead": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "oldStatus": " M apps/bdptest/src/transactional-snapshot-installed.test.ts\n M packages/server/src/transaction-http.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-service.test.ts\n M packages/server/src/transaction-service.ts\n M packages/server/src/transaction-snapshot.test.ts\n M packages/server/src/transaction-store.ts\n",
+  "newHead": "08812c6c752c06cd0edf1af2878b2367692e5b32",
+  "newTree": "9b6f50b9a6b9eea953a6407599090c259cf97331",
+  "newParent": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "newStatus": "",
+  "sourceFilesCompared": 679,
+  "committedBlobsCompared": 679,
+  "sourceByteDifferences": [],
+  "comparison": "Independent git cat-file --batch hashes of all679 committed blobs equal predecessor map and checkout files; exact clean status verified.",
+  "selectionUnchanged": true,
+  "semanticDelta": "None. Two prose paragraphs record completed clean-green rebind and retain future pin checks/root release. Six-file scope, callbacks/counts/lifetime/retention/HTTP semantics unchanged.",
+  "ci": {
+    "runId": 39012707852,
+    "head": "08812c6c752c06cd0edf1af2878b2367692e5b32",
+    "conclusion": "success",
+    "all27Steps": "success",
+    "recordSha256": "091b2b4bf6bd5c463653b1a1e42e9ba8f45461ddaf46562e4744e79d6ffb28fc",
+    "url": "https://github.com/gastownhall/bdp/actions/runs/39012707852",
+    "limitation": "Inspected terminal JSON record; no independent raw-log runtime or remote PID claims."
+  }
+}
