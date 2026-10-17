@@ -1,0 +1,277 @@
+--- precedent/run.py
++++ collection/run.py
+@@ -1,7 +1,7 @@
+-"""Single bounded stage. Usage: run.py final STAGE; original dependency bootstrap is reused. Closed without root gate."""
++"""Single bounded stage. Usage: run.py final STAGE; existing AW tools are independently pinned. Closed without root gate."""
+ import os,sys
+ if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+-os.environ['EVENT_VALIDATION_PHASE']=sys.argv[1]
++os.environ['COLLECTION_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+@@ -12,10 +12,10 @@
+ env=os.environ.copy()
+ for k in list(env):
+  if k.startswith('BDP_') or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+-env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','EVENT_VALIDATION_PHASE':MODE})
++env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','COLLECTION_VALIDATION_PHASE':MODE})
+ env.update(spec.get('environment',{}));tmp=E/(name+'.tmp');tmp.mkdir();env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+ write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{})})
+-env['EVENT_VALIDATION_STAGE']=name;env['EVENT_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
++env['COLLECTION_VALIDATION_STAGE']=name;env['COLLECTION_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+  return [r.split(None,3) for r in subprocess.check_output(['ps','-axo','pid=,ppid=,pgid=,comm='],text=True,timeout=2).splitlines() if len(r.split(None,3))==4]
+@@ -62,8 +62,8 @@
+  except BaseException as e:errors.append('process verification:'+type(e).__name__)
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+-  if MODE=='final' and name not in ['typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
+-  if name in ['restart-external','review-restart-external']:verify_consumer(g)
++  if MODE=='final' and name not in ['typecheck','format-check','lint','focused-source','review-focused-source','fresh-build','bind-fresh-build']:verify_build(g)
++  if name in ['collection-external','review-collection-external']:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+  except BaseException as e:errors.append('temp verification:'+type(e).__name__)
+--- precedent/gate.py
++++ collection/gate.py
+@@ -1,15 +1,12 @@
+-"""Event-only closed gates; no product imports. Root owns releases and measured pins."""
++"""Initial collection closed gates; no product imports. Root owns releases and measured pins."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-PLAN=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation')
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-event-restart-witness')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving')
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
+-MODE=os.environ.get('EVENT_VALIDATION_PHASE','final')
++MODE=os.environ.get('COLLECTION_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-FILE='apps/bdptest/src/transactional-event-sse-installed.test.ts'
+-WITNESS='b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496'
+ INTEGRATION='2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -22,13 +19,14 @@
+ def document(record):
+  p=Path(record['path']);require(p.is_absolute() and p.is_file() and not p.is_symlink() and sha(p.read_bytes())==record['sha256'],'Document absent/changed '+str(p));return read(p)
+ def source_check(b):
+- require(b['worktree']==str(W) and b['witnessFile']==FILE and b['witnessSha256']==WITNESS and b['dirtyPaths']==[FILE],'Wrong source binding')
++ require(b['worktree']==str(W) and b['head']==INTEGRATION,'Wrong source binding')
+  require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Git identity changed')
+  actual={p:sha((W/p).read_bytes()) for p in git('ls-files').decode().splitlines()}
+- require(actual==b['trackedSourceFiles'] and actual[FILE]==WITNESS,'Source files changed')
+- require(git('diff','--name-only','HEAD').decode().splitlines()==[FILE] and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')
++ require(actual==b['trackedSourceFiles'],'Source files changed')
++ require(sorted(git('diff','--name-only','HEAD').decode().splitlines())==b['dirtyPaths']==sorted(b['ownedFiles']) and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')
++ require(all(actual[p]==v['afterSha256'] and sha(git('show','HEAD:'+p))==v['beforeSha256'] for p,v in b['ownedFiles'].items()),'Owned source binding differs')
+  require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Source patch changed')
+- require(all(sha(git('show','HEAD:'+f))==v for f,v in actual.items() if f!=FILE),'Other tracked source differs from HEAD')
++ require(all(sha(git('show','HEAD:'+f))==v for f,v in actual.items() if f not in b['ownedFiles']),'Other tracked source differs from HEAD')
+  return sha(json.dumps(actual,sort_keys=True).encode())
+ def tools_check(t):
+  for name,binding in t.items():
+@@ -70,7 +68,7 @@
+ def verify_consumer(g):
+  proof=document(g['installedProvenance']);expected=document(g['consumerInventory'])
+  require(expected==consumer_inventory(),'Consumer changed')
+- require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'],'Consumer source differs')
++ require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'] and proof['sourceIdentity']==g['_sourceIdentity'] and proof['sourceBindingSha256']==g['sourceBinding']['sha256'],'Consumer source differs')
+  require(sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==proof['consumerLockSha256'],'Consumer lock changed')
+  tar=read(E/'tar-source-provenance.json');require(sha((E/'tar-source-provenance.json').read_bytes())==proof['tarProvenanceSha256'],'Tar provenance changed')
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+@@ -83,39 +81,24 @@
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+   record=E/(name+'.started.json')
+-  require(os.environ.get('EVENT_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('EVENT_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(os.environ.get('COLLECTION_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('COLLECTION_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+- require(read(idx)['initialPreparationIndexSha256']==sha((PLAN/'preparation-hashes.json').read_bytes()),'Initial index changed')
+- initial=read(PLAN/'preparation-hashes.json')
+- for f,h in initial['files'].items():require(sha((PLAN/f).read_bytes())==h,'Initial plan changed '+f)
+- for f,h in read(PLAN/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)
++ for f,h in read(P/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)
+  b=document(g['sourceBinding']);sid=source_check(b);g={**g,'finalHead':b['head'],'finalTree':b['tree'],'sourceLockSha256':b['trackedSourceFiles']['pnpm-lock.yaml'],'_sourceIdentity':sid,'_sourceBinding':b}
+  disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')
+  cfg=read(P/'commands.json');order=cfg[MODE+'Order'];approved=g['approvedStages']
+  require(approved==order[:len(approved)] and name in approved,'Stage not released')
+  spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec['automaticRetries']==0,'Limits changed')
+- base=read(PLAN/'source-binding.json')['tools'];tools_check(base)
+- if MODE=='final':
+-  require(g['ordinaryIntegrationAccepted'] is True,'Ordinary integration absent')
+-  require(g['actualClaudeSupplementDisposed'] is True or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Actual Claude supplement pending; only explicit static prefix may run')
+-  git('merge-base','--is-ancestor',INTEGRATION,b['head'])
+-  require(b['head']!='ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87','Final integration missing')
+-  reuse=read(P/'bootstrap-binding.json')
+-  for path,digest in reuse['files'].items():require(sha(Path(path).read_bytes())==digest,'Original bootstrap record changed')
+-  require(g['workspaceTools']==reuse['tools'],'Use the original bound bootstrap tool record')
+-  tb=document(g['workspaceTools']);tools_check(tb['tools'])
+-  require(tb['sourceHeadAtBootstrap']==reuse['originalHead'] and tb['sourceLockSha256']==g['sourceLockSha256']==reuse['sourceLockSha256'],'Bootstrap chronology/lock differs')
+-  for k in ['workspace-install','bind-workspace-tools']:
+-   directory=Path(reuse['directory']);rec=read(directory/f'{k}.exit.json');start=read(directory/f'{k}.started.json')
+-   require(rec['accepted'] and rec['exit']==0 and rec['sourceUnchanged'] and not rec['forcedCleanup'] and not rec['errors'] and not rec['remainingProcesses'] and not rec['runtimeDirectoriesStillPresent'],'Original bootstrap failed')
+-   require(rec['sourceIdentity']==start['sourceIdentity']==reuse['originalSourceIdentity'] and start['head']==reuse['originalHead'],'Bootstrap source attribution changed')
+-   require(sha((directory/f'{k}.log').read_bytes())==rec['logSha256'],'Bootstrap log changed')
++ tools=document(g['workspaceTools']);tools_check(tools['tools'])
++ require(tools['sourceLockSha256']==g['sourceLockSha256'],'Tool source lock differs')
++ require(g['actualClaudeReviewDisposed'] is True or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Actual Claude review pending; only explicit static prefix may run')
++ require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+- if name in ['restart-external','review-restart-external']:
++ if name in ['collection-external','review-collection-external']:
+   proof=verify_consumer(g)
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec
+--- precedent/packages.py
++++ collection/packages.py
+@@ -1,5 +1,5 @@
+ """Read-only provenance modes plus external consumer preparation; never imports product.
+-Modes tar, consumer, installed. All require the Event final integrated source gate; copied narrowly from pinned packages.py.
++Modes tar, consumer, installed. All require the initial collection dirty-source gate; copied narrowly from pinned packages.py.
+ """
+ from pathlib import Path
+ import json,tarfile,re,copy
+@@ -45,13 +45,13 @@
+    required.update(p.relative_to(root).as_posix() for p in (root/sub).rglob('*') if p.is_file())
+   assert set(files)==required,(name,set(files)^required)
+   packages[name]={'archive':str(archive),'archiveSha256':sha(archive.read_bytes()),'files':files}
+- write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'witnessSha256':g['_sourceBinding']['witnessSha256'],'witnessDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Supervisor-verified runtime HEAD plus frozen dirty witness/build/archive binding; not child-attested source.'})
++ write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Base HEAD/tree plus independently verified four-file dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.'})
+ elif mode=='consumer':
+  basis=json.loads((E/'tar-source-provenance.json').read_text());assert basis['head']==g['finalHead']
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'event-restart-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'initial-collection-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':
+@@ -111,6 +111,6 @@
+   for dep in sorted(m.get('dependencies',{})):bind(resolve_dep(manifest,dep).parent,identity+'>'+dep,[*ancestors,root])
+  bind((C/'node_modules/@bdp/server').resolve(strict=True),'@bdp/server',[])
+  entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
+- write('installed-provenance.json',{'status':'VERIFIED_BEFORE_CHILD','tarProvenanceSha256':sha((E/'tar-source-provenance.json').read_bytes()),'sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
++ write('installed-provenance.json',{'status':'VERIFIED_BEFORE_CHILD','tarProvenanceSha256':sha((E/'tar-source-provenance.json').read_bytes()),'sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
+  write('installed-consumer-inventory.json',consumer_inventory())
+ else:raise ValueError(mode)
+--- precedent/audit.py
++++ collection/audit.py
+@@ -1,72 +1,47 @@
+-"""Standard-library artifact/result checkpoints; never imports product."""
++"""Standard-library collection validation auditor; no product imports."""
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+-import sys,re,urllib.parse
+-mode=sys.argv[1];names={'tools':'bind-workspace-tools','build':'bind-fresh-build','historical':'review-historical','default':'review-restart-default','external':'review-restart-external'}
+-g,_=load_gate(names[mode],child=True)
+-if mode=='tools':
+- initial=read(PLAN/'source-binding.json');tools=dict(initial['tools'])
+- paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json']]
+- paths += [W/'node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome',W/'node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc']
+- for path in map(str,paths):
+-  p=Path(path);tools[path]={'realpath':str(p.resolve(strict=True)),'sha256':sha(p.read_bytes())}
+- versions={'@biomejs/biome':'2.5.7','vitest':'4.1.10','typescript':'7.0.2'}
+- for name,version in versions.items():require(read(W/'node_modules'/name/'package.json')['version']==version,'Tool version differs')
+- write('workspace-tools.json',{'tools':tools,'versions':versions,'sourceLockSha256':g['sourceLockSha256'],'sourceHeadAtBootstrap':g['finalHead']})
+-elif mode=='build':
++import re
++mode=sys.argv[1];stage={'source':'focused-source','external':'collection-external'}.get(mode)
++g,_=load_gate({'build':'bind-fresh-build','source':'review-focused-source','external':'review-collection-external'}[mode],child=True)
++if mode=='build':
+  write('build-artifacts.json',{'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'artifacts':inventory(),**{key:{'path':str(E/('fresh-build.'+suffix)),'sha256':sha((E/('fresh-build.'+suffix)).read_bytes())} for key,suffix in [('start','started.json'),('exit','exit.json'),('log','log')]}})
+ else:
+- stage={'historical':'historical-default','default':'restart-default','external':'restart-external'}[mode]
+  config=read(P/'commands.json')['commands'][stage];result=read(E/(stage+'.results.json'))
+  cases=[x for suite in result['testResults'] for x in suite['assertionResults']]
+  chosen=[x for x in cases if x['fullName'] in config['selectedFullNames']]
+- require(len(chosen)==1 and chosen[0]['status']=='passed' and result.get('success') is True,'Selected callback did not pass')
++ require(len(chosen)==len(config['selectedFullNames']) and sorted(x['fullName'] for x in chosen)==sorted(config['selectedFullNames']) and all(x['status']=='passed' for x in chosen) and result.get('success') is True,'Exact selected callbacks did not pass')
+  require(all(x['status'] in ['pending','skipped','todo'] for x in cases if x not in chosen),'Unexpected callback executed')
+- observations=[]
+- for line in (E/(stage+'.log')).read_text().splitlines():
+-  try:x=json.loads(line.strip())
+-  except json.JSONDecodeError:continue
+-  if isinstance(x,dict) and x.get('observation')==config['expectedObservation']:observations.append(x)
+- require(len(observations)==1,'Missing/duplicate callback observation');o=observations[0]
+- require(o['claimEligible'] is False and o['node']=='v24.16.0','Claim/node differs')
+- b=o['binding'];served=b['served'];require(served['sourceCommit']==g['finalHead'] and served['profile']=='transactional' and served['history'] is False and served['scope']=='https://reference.invalid/acme/' and b['authorityMode']=='canonical','Binding differs')
+- for field in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:
+-  require(isinstance(served[field],str) and re.fullmatch('[0-9a-f]{64}',served[field]),'Binding digest missing '+field)
+- require(re.fullmatch('[0-9a-f]{64}',b['runtimeConfigurationIdentity']),'Runtime binding absent')
+- fixture_path=W/'packages/conformance/test-support/transactional/fixture-v1.json';fixture=read(fixture_path)
+- require(served['fixtureDigest']==sha(fixture_path.read_bytes()) and served['fixtureId']==fixture['id'] and served['capabilities']==sorted(fixture['capabilities']),'Fixture binding differs')
+- expected_entry=(W/'packages/server/dist/transaction-installed-process.js').resolve(strict=True)
+- if mode=='external':
+-  proof=verify_consumer(g);expected_entry=Path(proof['entryRealpath']);require(served['installedPayloadDigest']==proof['payloadIdentity'],'Actual child payload differs from verified consumer')
+- if mode=='external':
+-  earlier=read(E/'restart-default.accepted-observation.json')['observation']
+-  require(served['installedContractsDigest']==earlier['binding']['served']['installedContractsDigest'],'Same frozen schema artifacts produced different contracts')
+- require(Path(o['entry']).resolve(strict=True)==expected_entry and o['entrySha256']==sha(expected_entry.read_bytes()),'Actual entry differs')
+- if mode=='historical':
+-  require(o['source']==g['finalHead'] and o['workspaceDirty'] is True,'Historical source differs')
+-  require(len(o['observations'])==4 and o['idleMilliseconds']>=15000 and o['comments']>=2 and o['liveEventFrames']==1,'Historical observation incomplete')
++ report={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'qualification':False,'selectedCallbacks':config['selectedFullNames'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes())}
++ if mode=='source':
++  report.update({'attribution':'source-private callback checks','limits':'Exact controlled attempts, waits, owner availability, no token allocation, cancellation and HTTP semantics are assertions of the pinned passing callbacks; not fabricated runtime telemetry.'})
+  else:
+-  require(o['outcome']=='passed' and o['failures']==[] and o['pendingOperationsAtReport']==0 and o['directoryRemoved'] is True,'Restart/cleanup failed')
+-  require(o['attribution']==('external-installed-candidate' if mode=='external' else 'development-local'),'Wrong attribution')
+-  require(o['declaredSourceCommit']==g['finalHead'],'Declared source differs')
+-  require(o['witnessSource']=={'fingerprintScope':'witness file bytes and tracked working-tree diff only; excludes untracked inputs and installed payload provenance','head':g['finalHead'],'fileSha256':WITNESS,'diffSha256':sha(git('diff','HEAD')),'dirtyPaths':[FILE]},'Witness identity differs')
+-  require(o['deadlines']=={'work':45000,'cleanup':10000,'callback':60000,'outerSupervisor':120000,'finite':5000,'recorder':5000},'Deadline changed')
+-  require(o['seedBodyBytes']==244 and o['seedBodySha256']=='2ffd2dc1c98cf8ec53338127cfad4edba630ac386b22f6c693b3931626559f03' and o['seedKey']=='event-restart-two-created-v1','Seed differs')
+-  require(o['localSensitivityControls']==['restored-event-ordinal','frame-event-identity'],'Controls absent')
+-  sessions=o['sessions'];require(len(sessions)==2 and [s['create'] for s in sessions]==[True,False],'Wrong sessions')
+-  require(all(isinstance(s['pid'],int) and s['pid']>0 for s in sessions) and sessions[0]['pid']!=sessions[1]['pid'],'PIDs absent/not distinct')
+-  for i,s in enumerate(sessions):require(s['ordinal']==i+1 and s['state']=='owned' and s['closed'] is True and s['stopUnknown'] is False and s['exit']=={'code':0,'signal':None} and s['binding']==b,'Child exit/binding differs')
+-  require([{k:r[k] for k in ['ordinal','session','method']} for r in o['requests']]==[{'ordinal':i+1,'session':1 if i<2 else 2,'method':'POST' if i==0 else 'GET'} for i in range(5)],'Request sequence differs')
+-  responses=o['completedFiniteResponses'];require([r['ordinal'] for r in responses]==[1,2,3,5] and [r['status'] for r in responses]==[200,200,200,400],'Finite response inventory differs')
+-  events=o['events'];require(len(events)==2 and events[0]['id']!=events[1]['id'],'Missing distinct Event IDs')
+-  sse=o['sse'];require(sse['requestOrdinal']==4 and sse['session']==2 and sse['lastEventId']==events[0]['id'] and sse['status']==200 and sse['drained'] is True and 0<=sse['beforeIntentionalCloseMs']<5000,'SSE boundary differs')
+-  require(urllib.parse.parse_qs(urllib.parse.urlsplit(sse['target']).query).get('after')==[events[1]['id']],'Conflicting query missing')
+-  frames=sse['completeObservedFrames'];require(len(frames)==1,'Wrong complete frame count')
+-  frame=frames[0].split('\n');require('id: '+events[1]['id'] in frame and 'event: '+events[1]['type'] in frame,'SSE fields differ')
+-  data=[x[6:] for x in frame if x.startswith('data: ')];require(len(data)==1 and json.loads(data[0])==events[1],'SSE complete Event differs')
+-  context=responses[0]['headers'];require(all(r['headers']['bdp-scope-position']=='pos-1' and all(r['headers'][k]==context[k] for k in ['bdp-scope-epoch','bdp-authorization-view']) for r in responses),'Finite context differs')
+-  require(all(sse['headers'][k]==context[k] for k in ['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']) and sse['headers']['content-type'].split(';')[0]=='text/event-stream' and sse['headers']['cache-control']=='no-store, no-transform','SSE context/media differs')
+-  require(o['streamAtReport']['drained'] is True and o['streamAtReport']['destroyed'] is True and o['streamAtReport']['completeObservedFrames']==frames,'Reported drain differs')
+-  directory=Path(o['directory']);require(directory.is_relative_to(E/(stage+'.tmp')) and not directory.exists(),'Store not removed/owned')
+- write(stage+'.accepted-observation.json',{'observation':o,'attribution':'development-local' if mode!='external' else 'verified-external-candidate','qualification':False,'sourceIdentity':g['_sourceIdentity'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes()),'limits':'Only complete frames observed in bounded window. Complete Resource/Event/schema and synchronous pre-close liveness assertions are established by the pinned callback passing; finite JSON bodies are not fabricated from fingerprints.'})
++  observations=[]
++  for line in (E/(stage+'.log')).read_text().splitlines():
++   try:x=json.loads(line.strip())
++   except json.JSONDecodeError:continue
++   if isinstance(x,dict) and 'observation' in x:observations.append(x)
++  matches=[x for x in observations if x['observation']==config['expectedObservation']];require(len(matches)==1,'Missing/duplicate callback report');o=matches[0]
++  require(o['claimEligible'] is False and o['outcome']=='passed' and o['aborted'] is False and o['closed'] is True and o['workspaceDirty'] is True and o['declaredSourceCommit']==g['finalHead'],'Outcome/source/cleanup differs')
++  require(isinstance(o['childPid'],int) and o['childPid']>0 and o['childExitCode']==0,'Child exit absent')
++  execution=complete(stage,g);require(o['childPid'] in execution['sampledPids'],'Reported child was not observed by supervisor')
++  require(o['exchanges']==42 and len(o['completedResponses'])==42,'Expected 42 exchanges')
++  for response in o['completedResponses']:
++   require(response['method'] in ['GET','HEAD','POST'] and isinstance(response['status'],int) and response['url'].startswith('https://reference.invalid/acme/'),'Malformed response inventory')
++   for field in ['wireSha256','bodySha256']:require(re.fullmatch('[0-9a-f]{64}',response[field]),'Response fingerprint absent')
++  b=o['binding'];served=b['served'];require(served['sourceCommit']==g['finalHead'] and served['profile']=='transactional' and served['history'] is False and served['scope']=='https://reference.invalid/acme/' and b['authorityMode']=='canonical','Binding differs')
++  for field in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:require(re.fullmatch('[0-9a-f]{64}',served[field]),'Binding digest absent')
++  require(re.fullmatch('[0-9a-f]{64}',b['runtimeConfigurationIdentity']),'Runtime configuration binding absent')
++  fixture_path=W/'packages/conformance/test-support/transactional/fixture-v1.json';fixture=read(fixture_path)
++  require(served['fixtureDigest']==sha(fixture_path.read_bytes()) and served['fixtureId']==fixture['id'] and served['capabilities']==sorted(fixture['capabilities']),'Fixture binding differs')
++  proof=verify_consumer(g);entry=Path(proof['entryRealpath'])
++  require(Path(o['entry']).resolve(strict=True)==entry and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Actual child differs from independently verified external payload')
++  expected=[(c,m) for c in ['beads','links'] for m in ['GET','HEAD']]
++  unknown=[x for x in observations if x['observation']=='installed-unknown-collection-minimum-timeout']
++  require([(x['collection'],x['method']) for x in unknown]==expected and all(x['claimEligible'] is False and 1000<=x['elapsedMs']<5000 for x in unknown),'Unknown-minimum timing observations differ')
++  known=[x for x in observations if x['observation']=='installed-minimum-timeout']
++  require([(x['collection'],x['method']) for x in known]==expected,'Historical recognized-minimum observations missing')
++  require(len([x for x in observations if x['observation']=='installed-position-oracle-control'])==2,'Existing position controls missing')
++  report.update({'attribution':'verified external candidate from frozen four-file dirty draft; base HEAD is chronology, not complete source identity','observation':o,'unknownMinimumTimings':unknown,'recognizedMinimumTimings':known,'storeCleanup':'Supervisor observed no surviving bdp-prefixed directory beneath the owned stage TMPDIR; callback reports close after awaited child.close and removal. No store path was emitted by this historical helper.','limits':'Existing helper reports one child PID and normal exit code, not a signal field. Exact 503 Problem, HEAD suppression/content length, context and conditional precedence are assertions of the pinned passing callback. No complete profile or public qualification claim.'})
++ write(stage+'.accepted-observation.json',report)
