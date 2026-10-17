@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T09:02:52Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T09:03:51Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -78,7 +78,7 @@ Checkpoint 2026-10-17T09:02:52Z. **ACTIVE — Transactional first; ordinary Upda
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | PR158 receipt-root correction published9d2cd44; exactCI39019562524 running | Verify terminal exact CI before clean-green next-alias rebind |
-| Conditional reviewer | Independent PR158 publication scope/ancestry/source audit | No main merge, source change or product execution |
+| Conditional reviewer | Independent PR158 publication scope/ancestry/source audit complete | Idle; exact CI still pending |
 | Event reviewer | Alias concrete plan-v2 frozen and native/root accepted | Idle; clean-green receipt rebind and actual council remain required |
 | Native reviewer | Final receipt local/installed audit complete | Idle; all19fresh stages pass, original bootstrap-only reuse distinct |
 
@@ -325,6 +325,9 @@ Receipt validation preparation found and corrected one command-directory defect 
 [Final local validation](receipt-root-minimum-validation-successor-1/root-final-validation.json)390a2aa0 and [independent installed audit](receipt-root-minimum-validation-successor-1/native-final-installed-audit.md)8589afc8 pass all19fresh stages: typecheck/format/lint, fresh build,12sourcecallbacks, package/consumer verification and historical22+new5 installed requests/two clean children. Only original successful install/tool capture reused with explicit unchanged17dependency/11tool/source-transition binding; original format failure remains intact. All476build entries/321archive members/870consumerfiles17links and8manifest graph verify; payload63ddf5df and actual accepted consumerlock5c2b3e74 match both children. Children40922/44593 exit0, two stores absent and all361sampled PIDs absent. Lint58warnings/6infos/44notshown retained. Source arithmetic is not measured profile completeness; both installed claims remain ineligible.
 
 Next alias detailedplan remains closed on dirty planning basis pending PR158 exactgreen and preserved clean-base rebind/actualClaude PLAN. No main/shared-design integration, cleanup, release, downstream pin or S1/G2 decision follows.
+
+
+[Independent publication audit](receipt-root-minimum-validation-successor-1/native-publication-audit.md) confirms all679committed/current bytes equal the tested map, exactsixfilepatch/sole088parent/pinned spec, bothremoteheads and truthful PR158body. Root read and accepts that identity/scope audit; exactCI39019562524 remains in progress. No green inference, merge or support activation.
 
 ## Current priority: BDP profile structure and implementation
 
