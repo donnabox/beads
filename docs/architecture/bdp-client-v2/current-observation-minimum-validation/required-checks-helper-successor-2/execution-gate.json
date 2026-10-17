@@ -1,16 +1,30 @@
 {
-  "released": false,
+  "released": true,
   "session": "2026-10-08T20:26:35Z-81e5",
-  "approvedStages": [],
-  "actualClaudeReviewDisposed": false,
-  "nativeCodeReviewDisposed": false,
-  "freshBuild": null,
+  "approvedStages": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "actualClaudeReviewDisposed": true,
+  "nativeCodeReviewDisposed": true,
+  "freshBuild": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/run/build-artifacts.json",
+    "sha256": "c834a08553a30aad62780fe812e44f9009a8343de3df2660a5506dae884cd0df"
+  },
   "sourceBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-helper-successor-2/source-binding.json",
     "sha256": "f133bf6d5d8f9ebf9fbe21f171d6e77e4d18fc1797a5593090ec40d7601cc406"
   },
-  "baseTools": null,
-  "workspaceTools": null,
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/base-tools.actual.json",
+    "sha256": "65fbc91767b03ba9857508ae8262dc43a8f6f5edaf59160026f71d73d21c0a41"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/workspace-tools.json",
+    "sha256": "99bd7474cf190e4c4a88cf83428817b2748c2d6328d49edfe2ab7bbfd1e62c90"
+  },
   "preparedArtifacts": {
     "base-tools.candidate.json": "8b32c9da9d8e8d4edc8a49e4d8b77449c9ba9720098d7d0661d59cb2bac4fcb1",
     "commands.json": "2358a7fc4e282c142f28aebde93f0ccb8d63800fae1906e50845f73b12958c29",
@@ -23,7 +37,7 @@
     "runner-adaptation.patch": "4ca56cf073e77f773707f0b179ce3ed6406908d81cc694d2941e06249888d43b",
     "source-binding.json": "f133bf6d5d8f9ebf9fbe21f171d6e77e4d18fc1797a5593090ec40d7601cc406"
   },
-  "bootstrapReuseAccepted": false,
+  "bootstrapReuseAccepted": true,
   "bootstrapReuseBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/bootstrap-reuse-binding.json",
     "sha256": "c6b7364a5e2373ff9996822cc60be4f679170326eabcf0f0f71a347ffa4c8538"

@@ -18,7 +18,12 @@
     "pack-server",
     "verify-archives",
     "prepare-consumer",
-    "consumer-install"
+    "consumer-install",
+    "verify-installed-consumer",
+    "receiving-history-external",
+    "review-receiving-history-external",
+    "current-observation-external",
+    "review-current-observation-external"
   ],
   "staticValidationAuthorized": true,
   "nativeCodeReviewDisposed": true,
@@ -40,7 +45,13 @@
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/root-disposition.json",
     "sha256": "777dae2d3fe8e6ccab770e17dfbc8062b8d5bf98da865504509c66dd7548bece"
   },
-  "consumerLockSha256": null,
-  "installedProvenance": null,
-  "consumerInventory": null
+  "consumerLockSha256": "ca5c906438a2a9557b2054c41ba0da605bffe00d1c8669dc5535323e616ba711",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/run/installed-provenance.json",
+    "sha256": "383a4cd14a1bbc5dcecbdf2867d7f9c91929a6c57b3ee7a3bc15747a4eb9936a"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/run/installed-consumer-inventory.json",
+    "sha256": "e6c554f8aba3202d15c21310c140f60315754aa052cc56191cb31f4cf6ce0719"
+  }
 }
