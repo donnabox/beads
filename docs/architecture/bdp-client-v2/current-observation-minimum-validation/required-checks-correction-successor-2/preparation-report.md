@@ -1,0 +1,5 @@
+# CLOSED correction-successor-2 required checks
+
+Rebound to the exact normalized successor2 source and correction-successor-2 validation packet. Completed actual CODE predecessor plus exact F1/F2 source correction/native/root disposition are transitively pinned through the main validation reference set. No prior result is reused. Existing required runner, expectations and historical evidence binding remain byte-identical; gate changes only delegated validation directory; commands change only output paths.
+
+Four ordered fresh stages: boundaries, seven preflight cases, package smoke, historical Read evidence. Same120s/TERM115/zero retries and owned temporary/process cleanup. All gates false, approved stages empty; measured base/workspace tools and actual fresh-build pins remain null. A matching accepted fresh-build and bind-fresh-build are prerequisites. Historical evidence identity remains historical; no profile qualification or runtime pass is claimed. No helper was imported or executed.

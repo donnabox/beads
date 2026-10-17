@@ -1,0 +1,9 @@
+# CLOSED correction-successor-2 validation
+
+This separate packet binds frozen author correction-successor-2 (43a6e9f1, fullpatch b65b1b28). Its two prescribed test fixes have native closure2d0778f6 and root acceptance0d92e5a2. Completed actual Claude CODE reviewed correction-successor-1; the current exact delta closes F1/F2. Original timeout and all predecessor packets remain historical and unchanged. No review is relabeled as inspecting the successor bytes.
+
+Fresh2 bootstrap plus19 stages, with separate required4 checks. No prior dependency/tool/static/build/runtime result is reused. Exact97 source callbacks,9new reports and28 separately attributed legacy reports remain unchanged. Source37HTTP is separate from installed historical22/new37 (59 total); unchanged sibling5 remains fullCI only. Same120s/TERM115/no retry, build before emitted source collection, separate installed callbacks and immediate audits, owned cleanup and source invariance. Consumer install runs in this packet's run/consumer.
+
+All four main helpers, audit expectations, selection/schema/workload, dependencies and candidate tools are byte-identical to predecessor. Only command path rebinding and source/disposition metadata change. The predecessor commands.sourceBindingSha256 was stale metadata; this packet explicitly corrects it to its actual normalized binding. The gate previously used its independently pinned sourceBinding record, not that command metadata.
+
+Execution flags remain false, approved stages empty. Actual tool/build/archive/consumer lock/proof/inventory pins remain null pending measurement and root acceptance. Candidate tool identities are expectations only. No helper import, install, formatter, static check, build, test, service or review launch occurred. Required checks preserve historical Read evidence identity and do not create a full-profile qualification claim.

@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-17T20:59:01.488953+00:00",
+  "scope": "One bounded layout-only formatter invocation on exactly nine reported test files",
+  "predecessorAuthorBindingSha256": "43a6e9f16f79d6625c4c59510ae35a08b4d07a3cb7298cb00f191fe9355eb6cb",
+  "failedFormatLogSha256": "7a508856024472ade1dce58f9b4f932a9a6e1ee2c64b086e1ad24be4721c8259",
+  "actualStaticOutcomeSha256": "bc2610c3fd77cc17c92c46598beac9ecd61c09f9eef5eca7a4decc6079066ed1",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "files": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "formatter": "Use the measured installed Biome 2.5.7 format --write on these exact files only; no check --write, lint fixes, import sorting or repository-wide command",
+  "maxSeconds": 120,
+  "attempts": 1,
+  "mustPreserve": "All originals/failure evidence, full before/after diff and source map; verify syntax/token-equivalence allowing only formatter punctuation/whitespace changes under independent native review; no production/behavior/oracle/workload/title changes",
+  "validationPreparation": "Separate CLOSED format-successor-1 and required-checks-format-successor-1. May explicitly reuse only actual two bootstrap prerequisites via unchanged dependency inputs/tool realpaths/hashes. All19 later stages and4required checks fresh. No prior typecheck pass reuse. Native closure/root release before execution.",
+  "productRuntimeReleased": false,
+  "validationReleased": false,
+  "commitPushReleased": false
+}
