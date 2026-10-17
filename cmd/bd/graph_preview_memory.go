@@ -29,7 +29,11 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	selector, err := graphPreviewWritableIdentity(args[0])
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
