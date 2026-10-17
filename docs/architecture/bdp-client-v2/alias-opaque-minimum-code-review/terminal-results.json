@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1440261,
+    "stop_reason": "end_turn",
+    "session_id": "1a17dfd0-3c24-475b-8dcd-b0a5ae1e2997",
+    "total_cost_usd": 11.472530500000001,
+    "usage": {
+      "input_tokens": 176,
+      "cache_creation_input_tokens": 256744,
+      "cache_read_input_tokens": 12945071,
+      "output_tokens": 97162,
+      "output_tokens_details": {
+        "thinking_tokens": 75315
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 256744,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 8534,
+          "cache_read_input_tokens": 251201,
+          "cache_creation_input_tokens": 10289,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 10289
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2545,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.0026249999999999997,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 176,
+        "outputTokens": 97162,
+        "cacheReadInputTokens": 12945071,
+        "cacheCreationInputTokens": 256744,
+        "webSearchRequests": 0,
+        "costUSD": 11.469905500000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 75315,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 100,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "# Code review \u2014 alias opaque-minimum four-file increment\n\nBase `9d2cd44`, worktree `/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum`. Nothing was written, executed, built, installed or formatted. All conclusions below are from reading the diff, the four changed files in full, and the unchanged collaborators listed at the end.\n\n## Verdict\n\n**No correctness or semantic blockers.** The production delta is exactly the four accepted statements and nothing else; the exported classifier is byte-identical; the historical 36-exchange installed callback is byte-identical apart from the shared `existsSync` import. One **gating defect** exists: the three new/amended test files are not Biome-formatted and will fail `pnpm format:check` in the declared static-check stage. Everything else below is an optional improvement, an accepted limitation, or an unverified-execution caveat.\n\n---\n\n## 1. Production change (`packages/server/src/transaction-read.ts`) \u2014 sound\n\nVerified against the four edit sites and against the real call graph:\n\n- `transaction-read.ts:111` widens only the private `MinimumCondition[\"kind\"]` union. `currentReadMinimumKind` (lines 86\u2013108) is unchanged in signature and body; its return union still excludes `\"alias\"`.\n- `transaction-read.ts:331` is the **only** producer of `kind: \"alias\"`. The other `minimumCondition` call site (line 313) still derives its kind from the exported classifier. `capturedCondition` is consumed only by `checkSourceCondition`.\n- `transaction-read.ts:216` (missing-first bypass): for alias intents, `authority-read.ts:769\u2013787` can only produce `resource-not-found` as a refusal (bad suffix, absent mapping, absent row, or non-visible row). Adding `\"alias\"` therefore preserves the previously identical `\"missing\"` behavior for absent/deleted/dangling/hidden targets, including a *behind* known minimum. This matches bdp.md 5834\u20135839 (uniform 404 with actual current context **before** comparison or waiting).\n- `transaction-read.ts:237` (waitable predicate): only reached when `materialize` returned `{kind:\"target\"}`, so the new waiting applies strictly to a live, visible, authorized alias. `checkCurrentReadMinimum` (`transaction-consistency.ts:115\u2013132`) then yields `Unproved` only when epoch and view match; mismatched epoch/view still yields `Unsupported`. Known positions are unaffected (`checkTransactionMinimum` runs regardless of `waitable`).\n- Retry re-entry is genuine: `transaction-service.ts:413\u2013417` wraps `facet.resolveAlias` in `waitForTransactionMinimum`, and each attempt re-enters `owner.withRead`, recapturing policy, `reader.alias(suffix)`, `graph.point`, and the observation atomically (`authority-read.ts:976\u2013995`, `769\u2013787`). No target or Location is cached across a wait.\n- Normative fit: bdp.md 5841\u20135849 scopes the hard MUST to \"an existing authorized current Bead or Link Resource or properties view\". The alias wait is taken under the general remaining-read sentence (5841\u20135843) as a permitted choice, not as a generalized Resource MUST. Neither the production code nor the tests assert an alias-specific mandate.\n\nI found no existing selected or unselected test that depends on the old alias-plus-opaque `500`: the only other installed alias witness (`transactional-collection-minimum-installed.test.ts:992`) uses known positions throughout, and `transaction-read.test.ts:2897` exercises a *hidden* alias, which still takes the 404 bypass.\n\n---\n\n## 2. Findings\n\n### Finding 1 \u2014 Biome formatting will fail `format:check` (BLOCKER for the static-check gate; mechanical)\n\n**Severity:** low impact, gating.\n**Sites:**\n- `apps/bdptest/src/transactional-alias-installed.test.ts:733` \u2014 the line is **exactly 101 characters** (I verified with a `^.{101}$` match) and is a breakable object literal, so Biome (`lineWidth: 100`, `biome.json:14`) will expand it to a multi-line `toMatchObject({ \u2026 })`.\n- `apps/bdptest/src/transactional-alias-installed.test.ts:725\u2013732` \u2014 the expanded `exchange(\"GET\", \"alias/work\", 503, opaque, undefined, \"transactionalProblem\")` call flattens to exactly 100 characters at indent 4, which *fits* (100-char formatted lines exist in-tree, e.g. `packages/server/src/transaction-events.ts:169`), so Biome will collapse it to one line.\n- `packages/server/src/transaction-http.test.ts:3140\u20133146` \u2014 the inner `f.post(JSON.stringify({ alias: \"alias/work\", target: \"beads/a\" }), \"alias-min-put\", \"putAlias\"),` flattens to exactly 100 characters at indent 4 and will likewise be collapsed.\n\n**Impact:** `pnpm format:check` fails, blocking the plan's \"static checks\" stage before any test collection.\n**Smallest fix:** run `biome format --write` on the three changed test files and commit the result. The two 100-character cases are boundary calls; the 101-character case at line 733 is certain.\n**Caveat:** the formatter was not executed, per instructions; these are static width computations against `biome.json`.\n\n### Finding 2 \u2014 `Object.fromEntries(... .map(...))` silently produces `any`, making two guards vacuous (optional)\n\n**Severity:** low.\n**Sites:** `apps/bdptest/src/transactional-alias-installed.test.ts:678\u2013684` (`current`), `700\u2013704` (`currentHeader`), `652\u2013654`; `packages/server/src/transaction-http.test.ts:3103`, `3119\u20133128`.\n**Defect:** the map callbacks return `[name, value]`, which TypeScript infers as `string[]`, not a tuple. That misses `Object.fromEntries`' first overload and selects `fromEntries(entries: Iterable<readonly any[]>): any`. So `current` is `any`, `ReturnType<typeof context>` (used as the `responses[].context` field type at `transaction-http.test.ts:3103`) is `any`, and `currentHeader`'s `value === undefined` guard is not type-driven. Under `noUncheckedIndexedAccess` (`tsconfig.base.json:16`) this is precisely the check the author intended to get.\n**Impact:** no compile error and no runtime bug \u2014 `current` is provably fully populated by the `if (!value) throw` at line 681 \u2014 but the declared typing discipline is lost at exactly the places the review asked to verify, and `assertContext` compares `any` to `string | undefined`.\n**Smallest fix:** `return [name, value] as const;` in each callback (and in the module-level `context()` helper at `transaction-http.test.ts:181\u2013188` if that file is touched again), which selects the typed overload.\n\n### Finding 3 \u2014 GET/HEAD `content-type` parity is asserted but never anchored (optional)\n\n**Severity:** low.\n**Sites:** `packages/server/src/transaction-http.test.ts:3197` + `3207`; `apps/bdptest/src/transactional-alias-installed.test.ts:747\u2013748`.\n**Defect:** `getType` is captured from the GET and only compared to the HEAD's value; no assertion pins it to `application/problem+json`. If the header were absent on both, `null === null` / `undefined === undefined` passes. By contrast `content-length` *is* anchored (`transaction-http.test.ts:3198`, installed `736`) and `cache-control`/`retry-after` are anchored to literals, so the rest of the metadata parity check is meaningful.\n**Impact:** one oracle in the HEAD-metadata group is vacuous in the failure mode it is meant to catch. The adjacent unselected witness does anchor it (`transactional-collection-minimum-installed.test.ts:1150`).\n**Smallest fix:** add `expect(getType).toBe(\"application/problem+json\");` after line 3197, and `expect(get.response.headers[\"content-type\"]?.split(\";\", 1)[0]).toBe(\"application/problem+json\");` before installed line 747.\n\n### Finding 4 \u2014 the live-alias foreign-opaque `Unsupported` path has no source-level (non-HTTP) oracle (optional)\n\n**Severity:** low.\n**Sites:** `packages/server/src/transaction-read.test.ts:2287\u20132355` (row set B); the only coverage is `packages/server/src/transaction-http.test.ts:3240\u20133258`.\n**Defect:** all four B rows (`absent`, `deleted`, `dangling`, `hidden`) resolve to a *missing* alias, so the foreign-view conditioned read at line 2320 always takes the `resource-not-found` bypass at `transaction-read.ts:216` and never reaches `checkCurrentReadMinimum`. Consequently the claim \"foreign opaque on a live alias stays `Unsupported`/private 500\" rests solely on the four HTTP rows, with no direct assertion that `minimumFor.resolveAlias` on a *visible* target with a foreign epoch/view rejects with `TransactionMinimumUnsupported`.\n**Impact:** correct behavior, thinner than it appears; a regression that made the alias branch waitable on foreign tuples would be caught only through HTTP.\n**Smallest fix:** add two `await expect(service.readAtMinimum(principal, { ...f.minimum(\"unknown\"), scopeEpoch: \"foreign\" }).resolveAlias(url(\"alias/work\"))).rejects.toBeInstanceOf(TransactionMinimumUnsupported)` lines (and the view variant) to the F fence test, which already imports the class.\n\n### Finding 5 \u2014 inherited vacuous close-state assertion (inherited limitation, not introduced)\n\n`packages/server/src/transaction-read.test.ts:2467`: `expect(closed).toBe(false)` runs synchronously after `closing = service.close().then(...)`, so it cannot be false. This is copied verbatim from the retained abort callback (`transaction-read.test.ts:2063`) and the plan explicitly says to preserve that schedule. Flagging only so it is not read as new evidence that close is deferred; the real drain evidence is the `observed` rejection at 2475\u20132482 and the post-close `inspect()` probe at 2489.\n\n### Finding 6 \u2014 outer-deadline cleanup abandons `cleaning`; late events cannot reach the report (accepted limitation)\n\n`apps/bdptest/src/transactional-alias-installed.test.ts:771\u2013813`, `831\u2013852`. On outer expiry the race rejects, `cleanupDeadlineExceeded` is set, SIGKILL is requested, `cleanClose` stays false, the directory is preserved, and `closure` is reported `\"unknown-or-failed\"` \u2014 all as required by disposition 5 and `lifecycle-and-limitations.json`. The `cleaning` promise and the `exit`/`close` listeners may settle after `JSON.stringify` has already run; the report is a snapshot and does not claim later events. `socketCloseCensusAvailable: false` and `transportSettlementContract` are stated explicitly rather than inventing a socket census (`http-executor.ts` supplies none). This is correct as designed; I am recording it as a limitation, not a defect. Two small notes: (a) an outer-deadline rejection is recorded under category `\"cleanup\"` rather than a distinct `\"deadline\"` label \u2014 `cleanupDeadlineExceeded` in `lifecycleAtReport` disambiguates it; (b) a launch failure always preserves the temp directory by design, so repeated launch failures accumulate directories.\n\n### Finding 7 \u2014 `target: undefined` is dropped from the transition record (accepted limitation)\n\n`packages/server/src/transaction-read.test.ts:2378`, `2387`. The second mapping in the C row is `{ target: undefined, context: \u2026 }`; `JSON.stringify` omits the key, so the emitted `alias-minimum-transition` record shows an entry with no `target`. `observation-contracts.json` documents this exact serialization (\"`absentMappingSerialization`\"), and the in-test assertion at 2378 is explicit about `undefined`, so the evidence is intact. Optional: emit `attempts: f.mappings.map((m) => ({ ...m, target: m.target ?? null }))` so the record is self-describing to an auditor.\n\n### Finding 8 \u2014 behavioral/throughput note for the installed run (not a defect)\n\nWith the new waitable predicate, a live alias GET/HEAD carrying an unrecognized minimum now performs roughly `budget / 5 ms` owner entries (\u2248200 at the installed default 1000 ms, `transaction-consistency.ts:144`, `:176`) instead of returning an immediate development gap. The installed callback's two such exchanges (`#4`, `#5`) should therefore each consume about the configured budget, comfortably inside `requestTimeoutMs: 5000` and the 45 s work bound. This is the same cost profile as the already-shipped Resource/collection paths and is consistent with the plan's \"source configuration/workload reasoning, not an observed latency guarantee\". No latency assertion is made anywhere in the new tests, and absence is never inferred from latency.\n\n### Finding 9 \u2014 retained foreign-opaque `500` is now pinned by assertions (inherited nonconformance, explicitly scoped)\n\n`packages/server/src/transaction-http.test.ts:3240\u20133258` adds four rows asserting `500` + `x-bdp-development-limit: minimum-position` for unknown-position-plus-foreign-epoch/view on a live alias. Under bdp.md 5841\u20135843 the normative outcomes for a remaining read are a representation, a wait/route, or `foreign-view`/`cursor-expired`/`catch-up-timeout` \u2014 a `500` development gap is none of these. Disposition 9 and plan-v3 \u00a7Contract explicitly retain this as an unsupported private gap taking no normative ruling, and the in-file comment at line 3240 says so. Recording it so the new assertions are understood as characterization of a known gap, not as a conformance claim; closing the gap later will require editing these rows.\n\n---\n\n## 3. Things I verified as correct (no action)\n\n- **Request accounting is real, not asserted-after-the-fact.** `transaction-http.test.ts:3106\u20133131` increments `attempted` before dispatch, rejects any method/route outside the 7-entry allowlist, and caps at 28; the ordered status sequence I derived (200,200,307\u00d74,503,503,409,409,410,410,503\u00d74,404,404,404,400,404,404,500\u00d74,401,405) matches `observation-contracts.json` exactly. The installed `exchange` (`:608\u2013611`) checks the closed 5-route set and `attempted >= 6` **before** dispatch and increments on attempt.\n- **`waits === 6` is derivable.** With `budgetMs: 2` and `now: () => tick++`, each unproved/behind request costs exactly two attempts and one wait: `pos-2`\u00d72, `unknown`\u00d72, `pos-01`\u00d72 = 6. `pos-01` is lexically valid (`token` regex) but unrecognized by `position()`, so it yields `Unproved`, not `malformed-request`. Foreign-view/epoch rows throw without retry; all `alias/missing` rows and both `alias/work?invalid=1` rows bypass or refuse before the owner.\n- **Source counters are derivable.** I hand-traced A (`[3,5,5,2,5,4]`, mappings `a,a,b,b,b`, positions `1,1,1,2,2`, 4 `Unproved`), B (`[3,3,3,0,2]`, writes 2/3/3/2), C (`[2,2,1,2,3]`), D (`[2,1,1,1,3,2]`) and F (`[2,0,0,2,2]`) against the real waiter, authority and store code; all are consistent.\n- **Real-owner instrumentation is genuine.** `observedAliases` (`transaction-read.test.ts:2118\u20132184`) delegates `withRead` to the live store, wraps only `reader.alias` (one call per entry, no second probe), maps exposed readers back through `originalReaders` for `captureReadAuthorization`, forwards return values and rethrows unchanged, and clears tracking in `finally`. This matches the precedented pattern at `transaction-read.test.ts:2080\u20132098` and is correctly typed via `Parameters<typeof f.store.captureReadAuthorization>[0]` / `ReturnType<Reader[\"alias\"]>`. Counters are reset after construction and policy replacement, before every counted call.\n- **Tuple capture / ordering.** `readAtMinimum` snapshots at facet creation (`transaction-service.ts:385`, `transaction-read.ts:302`), so A's mid-wait `Object.assign(mutable, { scopeEpoch: \"foreign\", \u2026 })` provably cannot change the condition; admission remains synchronous; the pre-aborted handler Request rejects before any `DatabaseSync.prepare`.\n- **Nondisclosure and alias-vs-resource position.** B asserts the conditioned results `toEqual` the ordinary probe (problem *and* observation); A, the HTTP test and installed `#2` each assert the alias write keeps `requiredPosition`/`bdp-scope-position` at `pos-1`, so no alias write manufactures Resource progress.\n- **HEAD semantics.** `read-http.ts:10\u201347` only negotiates `200`+JSON or `204`, so the added `if-match`/`if-none-match`/`accept: text/plain` on the 503/409/410 rows provably cannot become 304/412/406; HEAD retains GET's `content-length` via line 44 and `transaction-runtime.ts:93`.\n- **Credential hygiene.** `safeHeaders` (installed `:533\u2013544`) is an allowlist of response headers only; `exactRequest.headerLines` (which carries `Authorization`) is never serialized; bodies/wire bytes are emitted as SHA-256 only. The one executor rejects reserved and secret-named request headers (`http-executor.ts:675`), with `bdp-authorization-view` explicitly exempted (`:344`) \u2014 so the minimum tuple transmits correctly.\n- **Positive controls are real.** HTTP 307 under a matching *known* minimum, installed `#3` 307, and source A's `f.minimum(\"pos-2\")` \u2192 `{kind:\"target\", target: beads/b}`. No test asserts a 307 for an opaque minimum, and no fabricated recognized position or expiry appears anywhere.\n- **Report labels are unique** across the repo (`private-installed-alias-opaque-minimum` vs. the historical `private-installed-sequence-alias` and the unselected `private-installed-alias-minimum`; six distinct `alias-minimum-*` source labels).\n- **Preservation.** The historical installed callback body (lines 100\u2013485) is untouched; the only edit to that file outside the appended callback is adding `existsSync` to the `node:fs` import. `prepared(onCompletedWrite?)` is backward compatible \u2014 existing callers pass nothing and the optional callback is a no-op.\n- **Type settings.** No `exactOptionalPropertyTypes` violations found; the conditional `bodyBytes` spread, the `processEvents` required-but-`undefined` fields, and the optional-chain narrowing in the clean-exit condition (`installed :797\u2013806`) are all valid. No unused imports or locals introduced; all three newly imported consistency classes and `currentReadMinimumKind` are used.\n\n---\n\n## 4. Limitations of this review\n\n- **Nothing was executed.** No typecheck, lint, format, build, test, service or install was run. Every type, formatter and counter conclusion above is static reasoning over the source; in particular the two 100-character formatter cases in Finding 1 are boundary computations, and all workload numbers remain source-derived prospective bounds, not observed results or coverage.\n- **Context actually read:** `draft.patch`, `plan-v3.md`, `plan-root-dispositions.json`, `selection.json`, `observation-contracts.json`, `preservation.json`, `lifecycle-and-limitations.json`, and `bdp.md` lines 1424\u20131441 and 5818\u20135852. **Not read:** `workload.json`, `report.md`, `source-binding.json`, `design.md`, and the remainder of `bdp.md`. I cannot speak to claims that live only in those files \u2014 notably the aggregate 88/22/3 and 46/3 workload arithmetic, the source-binding/commit-pinning assertions, and the 679/677-file preservation census beyond what `preservation.json` and the diff show for the four owned paths. Normative statements beyond the five cited passages are likewise unverified.\n- Native reviewer findings were deliberately not consulted; nothing above is adopted from them.\n- Excluded by scope and not assessed: foreign-opaque policy beyond Finding 9, retained S1/G2, Types, public discovery/admission, newer main, and PR159 reconciliation. The pinned monolithic spec in this worktree was used as-is.",
+    "ttft_ms": 2046,
+    "type": "result",
+    "duration_ms": 1440316,
+    "uuid": "615a42be-aed2-43ba-9d41-4d433993840d",
+    "ttft_stream_ms": 1729,
+    "time_to_request_ms": 16,
+    "first_content_frame_ms": 1730,
+    "queued_turn_count": 0
+  }
+]
