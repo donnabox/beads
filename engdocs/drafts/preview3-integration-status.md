@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 17, 2026, 11:33 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 17, 2026, 11:48 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The Memory outcomes below are candidates to stage across previews toward V2, not a claim that every one is a Preview 3 cutline or has passed qualification; workstreams enter a preview cutline only by explicit decision.
 
@@ -89,10 +89,10 @@ The source-level Memory report card draft now assesses all 32 requirements and 1
 
 - [x] Freeze Preview 2 source and release tag.
 - [x] Preserve a local merge rehearsal and resolve its recorded conflicts provisionally.
-- [ ] Audit the combined CI/Bazel configuration and conflict resolutions.
+- [x] Audit the combined CI/Bazel configuration and conflict resolutions on the pinned qualified source.
 - [x] Start an isolated successor from final Preview 2 and pinned upstream `773b537`; keep it unpublished until qualified.
-- [ ] Pass complete local build, CLI, storage, and installed embedded/shared-server Dolt qualification on the exact successor.
-- [ ] Open a draft fork PR; pass whole exact-merge hosted gates and independent evidence review.
+- [x] Pass complete local build, CLI, storage, and installed embedded/shared-server Dolt qualification on the exact pinned successor.
+- [x] Open a draft fork PR; pass whole exact-merge hosted gates and independent evidence review on pinned source `b9eebc31` / merge `9b39cae8`.
 - [ ] Obtain Donna's approval to update fork `main` with the qualified merge.
 - [ ] Create the Preview 3 integration branch from the verified fork `main` commit.
 
@@ -114,7 +114,7 @@ The source-level Memory report card draft now assesses all 32 requirements and 1
 
 ## Current focus
 
-The clean source `09e7ce05afd5f4e12cc54bec1a9e93519f048642` combines final Preview 2 `703bb13` and pinned upstream `a3e1b24e`, with the retained CI/Bazel gates reconciled. It passed all 14 serial installed Dolt 2.1.8 embedded and ordinary shared-server phases with zero FAIL/SKIP, all 212 graph-preview CLI tests once, and the complete source-policy scripts suite (2,034 named PASS, zero FAIL, 12 platform/tool-conditional SKIP). Separate [draft source catch-up PR111](https://github.com/donnabox/beads/pull/111) is OPEN on that exact head; its fresh hosted checks are pending. The earlier hosted run on parent `31b6a95d` remains RED and separately preserved. Local Docker/Bazel runtime, whole hosted required gates, actual artifact provenance and independent frozen verification remain outstanding. Live upstream advanced one HTTP-gate commit to `ae693ef7`; assess separately. Fork main and the Preview 3 integration branch remain untouched.
+The latest pinned source [draft PR113](https://github.com/donnabox/beads/pull/113) at `b9eebc31f8e0f21b9a6154652476ed87027e9cad` combines final Preview 2 `703bb13` and upstream `46aa59cc6`. Complete local scripts passed 2,034 named tests with zero FAIL and 12 conditional SKIP; all 14 serial installed Dolt 2.1.8 embedded/ordinary shared-server phases passed with zero FAIL/SKIP and all 212 graph CLI tests once. Actual GitHub merge `9b39cae84d3d6f0e32fda033add5078e8751486b` passed 115 hosted checks with 11 conditional SKIP, including required, Bazel and Docker-backed gates. Frozen merge-built binary, client and Dolt provenance passed independent offline verification (`hosted-pr113-attempt03/PROVENANCE.md` SHA256 `9c59131e2ebccec16656f422a22ec6b899949ea8c8134f8f82f012edb82b3fe2`). The earlier qualified PR111/PR112 remain unchanged, as do preserved RED PR113 attempts. Upstream `4a67d0d0` is two untested commits beyond the pinned source, so this is near-current. Fork main remains `40b32324`; the dedicated Preview 3 integration branch remains local-only pending Donna's approval for publication or fork-main movement. This source qualification does not establish any Memory V2 feature row.
 
 ## 2026-10-16 policy checkpoint
 
@@ -287,3 +287,7 @@ After fresh Janet claim checks, [draft PR113](https://github.com/donnabox/beads/
 After a fresh Janet claim check, the public upstream [Memory implementation status issue #7656](https://github.com/gastownhall/beads/issues/7656) was opened and its exact body read back. It tracks all R1–R31 requirements (including R27a), code flow to upstream, gaps, accountable agents and the existing Iris/Trish implementation plans. It marks no full Memory V2 requirement as complete and preserves the open cutline decisions; the older implementation tracker #6535 remains linked as historical phase context.
 
 PR113's new exact source `b9eebc31` / merge `9b39cae8` completed hosted run `39053451064` successfully. Its PR check rollup is 115 SUCCESS, 11 conditional SKIP, zero failures, including the previously failed Bazel path. This is hosted CI evidence, **not yet the complete independent frozen merge/binary/client/Dolt provenance receipt**. Root is collecting and verifying that evidence next. Live upstream advanced two untested commits past pinned 46aa to `4a67d0d0`; PR113 is near-current, not exact tip. Fork main is still `40b32324`; no integration-branch publication or upstream merge occurred.
+
+## 2026-10-17 PR113 pinned source and actual merge fully qualified
+
+The exact source `b9eebc31f8e0f21b9a6154652476ed87027e9cad` and actual GitHub merge `9b39cae84d3d6f0e32fda033add5078e8751486b` are now qualified at pinned upstream 46aa. Independent offline `hosted-pr113-attempt03/verify_frozen.py` SHA256 `d8422a4fa82bda0723d59c6428782b238d0bf0ba4f34e2465915df1b30bd40f9` passed against frozen PR/run/merge/job snapshots, raw required/Bazel/Docker logs, actual merge-built Linux `bd` SHA256 `d5044434461469ee34c8e6b3ae60331cd24f8904e1542085b3083da0120966f6` with unmodified merge VCS metadata, BDP client `de99030d` and hosted Dolt 2.2.0 Docker digest `sha256:baf9449a54dc6572dc5d688386e6f45ecb9f76e5bc4869be429f450b90ffecb0`. Frozen `hosted-pr113-attempt03/PROVENANCE.md` SHA256 `9c59131e2ebccec16656f422a22ec6b899949ea8c8134f8f82f012edb82b3fe2` records exact jobs, artifacts, hashes and limits. The local installed Dolt 2.1.8 proof is separate. Prior failed PR113 heads 33d and 7ace remain preserved. PR111/PR112 remain qualified fallback drafts. No Memory V2 feature slice has been integrated; upstream `4a67d0d0` remains two untested commits ahead, fork main40b remains unchanged, and Donna's approval still gates dedicated integration-branch publication and fork-main movement. Tracker CI remains red on stale reference-doc review dates pending actual review; no green claim for PR110.
