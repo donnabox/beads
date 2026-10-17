@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T06:39:51Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T06:45:22Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T06:39:51Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Corrected Snapshot source frozen; actual full Claude CODE review running PID98177/session84812 | Inspect actual verdict and finalized validation packet; PR150 stays frozen |
-| Conditional author | Successor-1 complete; idle | Original source/closed packet preserved, exact N1/N2 and formatting only |
-| Event reviewer | Independent successor closure and CODE packet verification | Native full original review found N1/N2; root accepted exact correction, final native closure pending |
-| Native reviewer | Finalize CLOSED fresh Snapshot validation against successor-1 | Reconcile actual schemas; no validation execution released |
+| Root | Snapshot bootstrap/static prefix green; actual full Claude CODE review running PID98177/session84812 | Inspect actual verdict before build/runtime release; PR150 stays frozen |
+| Conditional author | Independent final validation preparation review complete | Ready for released static prefix; no remaining preparation blocker |
+| Event reviewer | Native successor closure complete; next serving-gap read-only audit | Recommend next concrete blocker without source edits or S1/G2 assumptions |
+| Native reviewer | Independent audit of actual five-stage static prefix | Verify source/tool/exit/log/process chain; no rerun |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -255,6 +255,11 @@ Actual Claude Snapshot PLAN PID76938 remains running with continued stream progr
 [Actual full Claude CODE release](snapshot-opaque-minimum-code-review-successor-1/root-release.json) launched2026-10-17T06:39:19Z, PID98177/session84812, releasedbindingdab1a251 (closed99901a09 preserved), preparationindexcace15c3. Root read full prompt/plan/proven runner and rehashed seven files/695context/36artifact pins. Runner/parser/args unchanged; defaultmodel,Read/Glob/Grep,3600s/TERM3595/no retry. Real process and stream progress verified; no verdict yet. Independent native successor closure continues. Fresh Snapshot validation finalization reconciles actual E ok/returned-ownership/no-headers schema, D relative routes and A1/1/2 disposition; all execution gates remain closed. Original pending validation packet preserved.
 
 PR150d4 and PR1560f215 exact remote heads and CI success freshly reverified. Incremental bus read since06:18:56 returned only our own checkpoint; four local inbox entries are older Trish handoffs already superseded by the explicit branch-only hold, no new authorization. No main/shared-design/PR merge, cleanup, release or pin change. S1/G2 remain unresolved affected-claim gates.
+
+
+**Snapshot native closure and fresh static prefix passed.** [Native successor closure](snapshot-opaque-minimum-author/successor-1/native-closure.md)88ef90ee independently reconstructs all original seven files, verifies all679 bytes, N1/N2 closure and full code-review safeguards/release chronology. [Final validation preparation review](snapshot-opaque-minimum-validation/native-final-preparation-review.md)b0739d0e verified135indexedfiles/72references/679source/17dependencyinputs/3tools and actual Snapshot schemas. Packet index7fbd1eba/sourcead2b24e1/identity70caea36; root separately rehashed all configuration/source/tool pins and read actual stage gates/supervisor before release.
+
+[Actual static prefix](snapshot-opaque-minimum-validation/root-static-prefix.json) records fresh offline scripts-disabled frozen-lock install4.046s, measuredtools7.694s, typecheck4.977s, format4.132s and lint3.654s, all raw0/accepted. Source679 unchanged; sampled PIDs absent, no forced cleanup or runtime directories. Tools471c6887 binds11actual workspace tools. Lint reported61warnings/7infos with48diagnostics not displayed; no zero-warning or baseline-equivalence claim. Independent actual-prefix audit continues. ActualClaudeCODE PID98177 continues streaming with no terminal verdict; build/runtime remain closed. No new bus messages after06:39:56.
 
 ## Current priority: BDP profile structure and implementation
 
