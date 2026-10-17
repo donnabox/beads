@@ -1,0 +1,317 @@
+apps/bdptest/src/transactional-event-sse-installed.test.ts:171:50 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    169 │     const frames = (r: ReturnType<typeof recordRawSse>) =>
+    170 │       r.frames.filter((f) => f.startsWith("id: "));
+  > 171 │     const parsed = (frame: string) => JSON.parse(frame.split("\ndata: ")[1]!);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    172 │     const run = (operations: unknown[]) => exchange("operations/batch", { operations });
+    173 │     const create = (id: string) => ({
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:220:43 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    218 │       expect(frames(live).map(parsed)).toEqual(finite.parsed.events);
+    219 │       for (const frame of frames(live))
+  > 220 │         expect(finite.bodyText).toContain(frame.split("\ndata: ")[1]!);
+        │                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    221 │       expect(live.headers).toMatchObject({
+    222 │         "content-type": "text/event-stream",
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:234:19 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    232 │     }
+    233 │     const initial = await exchange("beads/a?view=events");
+  > 234 │     const last = (initial.parsed.events.at(-1)! as { id: string }).id;
+        │                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    235 │     for (let n = 1; n <= 12; n++)
+    236 │       await run([
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:263:19 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    261 │     ]);
+    262 │     await current.until(() => frames(current).length === 1);
+  > 263 │     expect(parsed(frames(current)[0]!).subject).toBe(`${scope}beads/a`);
+        │                   ^^^^^^^^^^^^^^^^^^^
+    264 │     const finiteLive = await exchange(sparseTarget);
+    265 │     expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:266:43 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    264 │     const finiteLive = await exchange(sparseTarget);
+    265 │     expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+  > 266 │     expect(finiteLive.bodyText).toContain(frames(current)[0]!.split("\ndata: ")[1]!);
+        │                                           ^^^^^^^^^^^^^^^^^^^
+    267 │     const elapsedIdle = performance.now() - idleStarted;
+    268 │     expect(elapsedIdle).toBeGreaterThanOrEqual(15000);
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     264  264 │       const finiteLive = await exchange(sparseTarget);
+     265  265 │       expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+     266      │ - ····expect(finiteLive.bodyText).toContain(frames(current)[0]!.split("\ndata:·")[1]!);
+          266 │ + ····expect(finiteLive.bodyText).toContain(frames(current)[0]?.split("\ndata:·")[1]!);
+     267  267 │       const elapsedIdle = performance.now() - idleStarted;
+     268  268 │       expect(elapsedIdle).toBeGreaterThanOrEqual(15000);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:266:43 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    264 │     const finiteLive = await exchange(sparseTarget);
+    265 │     expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+  > 266 │     expect(finiteLive.bodyText).toContain(frames(current)[0]!.split("\ndata: ")[1]!);
+        │                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    267 │     const elapsedIdle = performance.now() - idleStarted;
+    268 │     expect(elapsedIdle).toBeGreaterThanOrEqual(15000);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:495:23 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    493 │     const data = frame.split("\n").filter((line) => line.startsWith("data: "));
+    494 │     expect(data).toHaveLength(1);
+  > 495 │     return JSON.parse(data[0]!.slice(6));
+        │                       ^^^^^^^^
+    496 │   }
+    497 │   function sameFrame(frame: string, expected: Record<string, unknown>) {
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     493  493 │       const data = frame.split("\n").filter((line) => line.startsWith("data: "));
+     494  494 │       expect(data).toHaveLength(1);
+     495      │ - ····return·JSON.parse(data[0]!.slice(6));
+          495 │ + ····return·JSON.parse(data[0]?.slice(6));
+     496  496 │     }
+     497  497 │     function sameFrame(frame: string, expected: Record<string, unknown>) {
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:653:31 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    651 │       beginRequest(session, method, target);
+    652 │       const url = new URL(target, scope).href;
+  > 653 │       const address = new URL(session.handle!.ready.listenUrl as string);
+        │                               ^^^^^^^^^^^^^^^
+    654 │       const execute = createRawHttpExchangeExecutor(
+    655 │         { transport: "plain", host: address.hostname, port: Number(address.port) },
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     651  651 │         beginRequest(session, method, target);
+     652  652 │         const url = new URL(target, scope).href;
+     653      │ - ······const·address·=·new·URL(session.handle!.ready.listenUrl·as·string);
+          653 │ + ······const·address·=·new·URL(session.handle?.ready.listenUrl·as·string);
+     654  654 │         const execute = createRawHttpExchangeExecutor(
+     655  655 │           { transport: "plain", host: address.hostname, port: Number(address.port) },
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:777:18 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    775 │         type: "created",
+    776 │         source: `${scope}events/`,
+  > 777 │         subject: resources[i]!.id,
+        │                  ^^^^^^^^^^^^^
+    778 │         subjectType: type,
+    779 │         transaction: receipt.transaction,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     775  775 │           type: "created",
+     776  776 │           source: `${scope}events/`,
+     777      │ - ········subject:·resources[i]!.id,
+          777 │ + ········subject:·resources[i]?.id,
+     778  778 │           subjectType: type,
+     779  779 │           transaction: receipt.transaction,
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:782:21 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    780 │         time: expect.any(String),
+    781 │         data: {
+  > 782 │           revision: resources[i]!.revision,
+        │                     ^^^^^^^^^^^^^
+    783 │           properties: { n: 0 },
+    784 │           metadata: {},
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     780  780 │           time: expect.any(String),
+     781  781 │           data: {
+     782      │ - ··········revision:·resources[i]!.revision,
+          782 │ + ··········revision:·resources[i]?.revision,
+     783  783 │             properties: { n: 0 },
+     784  784 │             metadata: {},
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:790:16 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    788 │       expect((event.id as string).length).toBeGreaterThan(0);
+    789 │     });
+  > 790 │     const e0 = events[0]!,
+        │                ^^^^^^^^^^
+    791 │       e1 = events[1]!;
+    792 │     expect(e0.id).not.toBe(e1.id);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:791:12 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    789 │     });
+    790 │     const e0 = events[0]!,
+  > 791 │       e1 = events[1]!;
+        │            ^^^^^^^^^^
+    792 │     expect(e0.id).not.toBe(e1.id);
+    793 │     phase = "first clean shutdown";
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:824:13 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    822 │     beginRequest(second, "GET", sseTarget);
+    823 │     const recorder = recordRawSse({
+  > 824 │       dial: second.handle!.ready.listenUrl as string,
+        │             ^^^^^^^^^^^^^^
+    825 │       host: "reference.invalid",
+    826 │       target: `/acme/${sseTarget}`,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     822  822 │       beginRequest(second, "GET", sseTarget);
+     823  823 │       const recorder = recordRawSse({
+     824      │ - ······dial:·second.handle!.ready.listenUrl·as·string,
+          824 │ + ······dial:·second.handle?.ready.listenUrl·as·string,
+     825  825 │         host: "reference.invalid",
+     826  826 │         target: `/acme/${sseTarget}`,
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:849:15 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    847 │       "SSE first Event",
+    848 │     );
+  > 849 │     sameFrame(idFrames(recorder)[0]!, e1);
+        │               ^^^^^^^^^^^^^^^^^^^^^^
+    850 │     expect(controller.signal.aborted).toBe(false);
+    851 │     expect(recorder.destroyed).toBe(false);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:866:28 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    864 │       sameFrame(frame, e1);
+    865 │     });
+  > 866 │     expect(() => sameFrame(observedFrames[0]!, e0)).toThrow();
+        │                            ^^^^^^^^^^^^^^^^^^
+    867 │     localSensitivityControls.push("frame-event-identity");
+    868 │     sseEvidence = {
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:1242:23 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1240 │     const data = frame.split("\n").filter((line) => line.startsWith("data: "));
+    1241 │     expect(data).toHaveLength(1);
+  > 1242 │     return JSON.parse(data[0]!.slice(6));
+         │                       ^^^^^^^^
+    1243 │   }
+    1244 │   function sameFrame(frame: string, expected: Record<string, unknown>) {
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1240 1240 │       const data = frame.split("\n").filter((line) => line.startsWith("data: "));
+    1241 1241 │       expect(data).toHaveLength(1);
+    1242      │ - ····return·JSON.parse(data[0]!.slice(6));
+         1242 │ + ····return·JSON.parse(data[0]?.slice(6));
+    1243 1243 │     }
+    1244 1244 │     function sameFrame(frame: string, expected: Record<string, unknown>) {
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:1511:29 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1509 │     expect(results).toHaveLength(1);
+    1510 │     expect(results[0]).toMatchObject({ operationIndex: 0, outcome: "created" });
+  > 1511 │     const resource = object(results[0]!.resource);
+         │                             ^^^^^^^^^^^
+    1512 │     validate("currentBeadRecord", resource);
+    1513 │     expect(resource).toEqual({
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1509 1509 │       expect(results).toHaveLength(1);
+    1510 1510 │       expect(results[0]).toMatchObject({ operationIndex: 0, outcome: "created" });
+    1511      │ - ····const·resource·=·object(results[0]!.resource);
+         1511 │ + ····const·resource·=·object(results[0]?.resource);
+    1512 1512 │       validate("currentBeadRecord", resource);
+    1513 1513 │       expect(resource).toEqual({
+  
+
+packages/server/src/transaction-http.ts:475:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    473 │       const fields =
+    474 │         lastEventIds ??
+  > 475 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    476 │       if (media === "sse" && fields.length > 1)
+    477 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:478:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    476 │       if (media === "sse" && fields.length > 1)
+    477 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 478 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    479 │       // Only the finite fresh request supplies this private admission provenance.
+    480 │       // Undefined media still checks the minimum before ordinary negotiation.
+  
+
+packages/server/src/transaction-http.ts:527:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    525 │       const fields =
+    526 │         lastEventIds ??
+  > 527 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    528 │       const initialScopeSseMinimum =
+    529 │         media === "sse" &&
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 71.
+Checked 6 files in 35ms. No fixes applied.
+Found 87 warnings.
+Found 4 infos.

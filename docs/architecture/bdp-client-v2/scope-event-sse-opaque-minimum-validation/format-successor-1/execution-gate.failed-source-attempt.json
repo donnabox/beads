@@ -1,0 +1,48 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "2f09ef76eef1edc83a90b199202d554a6709948fa14d876eee155e2f30e527d3",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/source-binding.json",
+    "sha256": "af2702018538f2e9776561b1aa3e2b56c1fde41329ee896645f01136c7a05e43"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/base-tools.json",
+    "sha256": "f93adde88fcfa337e0c0133563cb9c7bbd5ab6478f4eed211486de35cda16cb0"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "91e80ed42b72d4e66f52030caedb2f516e9f1573d0c85813fabd16131a8392f2"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/root-disposition.json",
+    "sha256": "97a6e00faceba1e7413ea05241e315c9fdc7b310394771ce7df74c1d079909d9"
+  },
+  "consumerLockSha256": null,
+  "installedProvenance": null,
+  "consumerInventory": null
+}
