@@ -1,0 +1,44 @@
+[
+  {
+    "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "reason": "Exact formatter correction",
+    "old": "      for (const collection of [\"beads\", \"links\"])\n        // limit=0 is existing parser parity; unsupported/repeated is normative 400.\n        for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n          for (const method of [\"GET\", \"HEAD\"] as const)\n            await refusal(`${collection}/?${query}`, method, opaque);\n",
+    "new": "      // limit=0 is existing parser parity; unsupported/repeated is normative 400.\n      for (const collection of [\"beads\", \"links\"])\n        for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n          for (const method of [\"GET\", \"HEAD\"] as const)\n            await refusal(`${collection}/?${query}`, method, opaque);\n"
+  },
+  {
+    "file": "packages/server/src/transaction-http.test.ts",
+    "reason": "Exact formatter correction",
+    "old": "    for (const collection of [\"beads\", \"links\"])\n      // Unsupported/repeated parameters are normative 400; limit=0 is parser parity.\n      for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n        for (const headers of controls)\n          await f.problemPair(`${collection}/?${query}`, headers);\n",
+    "new": "    // Unsupported/repeated parameters are normative 400; limit=0 is parser parity.\n    for (const collection of [\"beads\", \"links\"])\n      for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n        for (const headers of controls) await f.problemPair(`${collection}/?${query}`, headers);\n"
+  },
+  {
+    "file": "packages/server/src/transaction-http.test.ts",
+    "reason": "Accepted finding 2: exact reference GET sentinel body",
+    "old": "    expect(response.status).toBe(400);\n    expect(checkedProblem(await body(response))).toMatchObject({\n      type: \"https://github.com/gastownhall/bdp/problems/request\",\n      code: \"invalid-parameter\",\n      status: 400,\n      retry: \"never\",\n    });\n    expect(response.headers.has(\"x-bdp-development-limit\")).toBe(false);",
+    "new": "    expect(response.status).toBe(400);\n    // Exact reference response parity; protocol extension members remain permitted.\n    expect(checkedProblem(await body(response))).toEqual({\n      type: \"https://github.com/gastownhall/bdp/problems/request\",\n      code: \"invalid-parameter\",\n      status: 400,\n      retry: \"never\",\n    });\n    expect(response.headers.has(\"x-bdp-development-limit\")).toBe(false);"
+  },
+  {
+    "file": "packages/server/src/transaction-http.test.ts",
+    "reason": "Accepted finding 2: exact reference GET problemPair body",
+    "old": "          if (method === \"GET\") {\n            expect(checkedProblem(record(response.body))).toMatchObject({",
+    "new": "          if (method === \"GET\") {\n            // Exact reference response parity; protocol extension members remain permitted.\n            expect(checkedProblem(record(response.body))).toEqual({"
+  },
+  {
+    "file": "packages/server/src/transaction-http.test.ts",
+    "reason": "Accepted finding 3: reference validator/redirect metadata absence",
+    "old": "          // Reference pre-owner response parity, not a new universal query/auth rule.\n          for (const name of [\n            \"bdp-scope-epoch\",",
+    "new": "          // Reference pre-owner response parity, not a new universal query/auth rule.\n          for (const name of [\n            \"etag\",\n            \"location\",\n            \"link\",\n            \"bdp-scope-epoch\","
+  },
+  {
+    "file": "packages/server/src/transaction-http.test.ts",
+    "reason": "Accepted finding 5: exclusion, not an exercised incident-Link claim",
+    "old": "    // A missing incident-Link anchor instead observes the owner and returns 404.",
+    "new": "    // beads/a?view=links is excluded: it observes the owner, so is not a pre-owner refusal."
+  },
+  {
+    "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "reason": "Accepted findings 2 and 4: exact reference GET body; private cache on both methods",
+    "old": "        const response = await exchange(new URL(suffix, scope).href, method, headers);\n        expect(response.status).toBe(400);\n        if (method === \"GET\")\n          expect(json<Record<string, unknown>>(response, 400)).toMatchObject({",
+    "new": "        const response = await exchange(new URL(suffix, scope).href, method, headers);\n        expect(response.status).toBe(400);\n        expect(response.headers[\"cache-control\"]).toBe(\"private, no-store\");\n        // Exact reference response parity; protocol extension members remain permitted.\n        if (method === \"GET\")\n          expect(json<Record<string, unknown>>(response, 400)).toEqual({"
+  }
+]

@@ -1,0 +1,141 @@
+{
+  "executionReleased": false,
+  "selectionPurpose": "successor-1 prospective exact workload only, no observed pass; predecessor execution evidence remains attributed to predecessor bytes",
+  "sourceCallbacks": [
+    {
+      "name": "rejects collection parser errors before unknown minimum support checks",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 5564,
+      "boundarySha256": "6adac4af648e521b70b6f32a06b3feb2a0351ebfd5bc53873476bb38e3d63528",
+      "evidenceKind": "source-handler",
+      "handlerInvocations": 37,
+      "setupGET": 1,
+      "refusalCalls": 36,
+      "httpExchanges": 0,
+      "stores": 1,
+      "productChildren": 0,
+      "notes": "2 collections x 3 query variants x 3 minimum states x GET/HEAD +1 setup; literal opaque"
+    },
+    {
+      "name": "preserves parser refusal parity on noncollection and excluded query routes",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 5574,
+      "boundarySha256": "431779ffd5dcbd265283d79d7dab1bd05a20be831361fe45c36e9d51bc658eb5",
+      "evidenceKind": "source-handler",
+      "handlerInvocations": 13,
+      "setupGET": 1,
+      "refusalCalls": 12,
+      "httpExchanges": 0,
+      "stores": 1,
+      "productChildren": 0,
+      "notes": "6 query suffixes x GET/HEAD +1 setup"
+    },
+    {
+      "name": "preserves receiving and HTTP error precedence for parser refusals",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 5588,
+      "boundarySha256": "4047dae5064d40602c6e1218bea46f0335f83da38a2c267d138dcfcd32a5d10d",
+      "evidenceKind": "source-handler",
+      "handlerInvocations": 17,
+      "setupGET": 1,
+      "refusalCalls": 16,
+      "httpExchanges": 0,
+      "stores": 1,
+      "productChildren": 0,
+      "notes": "5 problem overlays x GET/HEAD + types/,types/task,beads/a/ x GET/HEAD +1 setup"
+    }
+  ],
+  "existingRegressionCallbacks": [
+    {
+      "name": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 4819,
+      "boundarySha256": "79298c0203817a4217fefc9282f2d02d917c87b42e72ba6f3d1ca60fce5a10bb",
+      "evidenceKind": "emitted-runtime-fixture",
+      "httpExchanges": 18,
+      "stores": 1,
+      "productChildren": 0,
+      "listeners": 1,
+      "notes": "1 seed POST+2 point/properties+4 collection+2 numeric-token+2 residual 500+2 parser 400+2 materialized refusal+3 hidden reads. Includes 2 changed parser sentinels; count unchanged;8 fake-clock waits. One policy replacement is an in-process admin call, not HTTP."
+    },
+    {
+      "name": "preserves concrete query syntax failures and accepts the reserved genesis minimum",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 1979,
+      "boundarySha256": "a1944b559d9c0ad29046815a818ed4b134728c3b7ea7cc947b6e81c7c13f84bc",
+      "evidenceKind": "emitted-runtime-fixture",
+      "httpExchanges": 5,
+      "stores": 1,
+      "productChildren": 0,
+      "listeners": 1,
+      "notes": "1 seed POST+1 successful point+3 query refusals."
+    },
+    {
+      "name": "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 2879,
+      "boundarySha256": "b6e70418a819e03a5ab18ddd6bba1c08d815b786cc355771cf25c0f8f2a0a45a",
+      "evidenceKind": "emitted-runtime-fixture",
+      "httpExchanges": 68,
+      "stores": 1,
+      "productChildren": 0,
+      "listeners": 1,
+      "notes": "1 seed+3 routes x(1 baseline+2 methods x(1 ordinary+2 conditions x2 conditional/timeout+2 context failures)+2 negotiation/auth)+2limit+6query+2missing routes x4. Retains missing/hidden incident behavior; no new semantics."
+    },
+    {
+      "name": "rejects malformed minimum tuples across read routes without entering the actual owner",
+      "file": "packages/server/src/transaction-http.test.ts",
+      "line": 4459,
+      "boundarySha256": "99002b99306f44c9fa3bd9f187263c5f6a2d849369e03733a86b9a235f14c7e6",
+      "evidenceKind": "source-handler",
+      "handlerInvocations": 33,
+      "stores": 1,
+      "productChildren": 0,
+      "httpExchanges": 0,
+      "notes": "15 routes x GET/HEAD+2precedence+1absent receipt; existing owner delegation/counters unchanged."
+    }
+  ],
+  "installedCallbacks": [
+    {
+      "name": "observes installed parser refusals before unknown minimum handling",
+      "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1489,
+      "boundarySha256": "a39499a07867272a24403f4e3c015f4070061b7d3c63e20f2720b7e2c5531629",
+      "evidenceKind": "packed-installed",
+      "httpExchanges": 25,
+      "setupGET": 1,
+      "refusalCalls": 24,
+      "stores": 1,
+      "productChildren": 1,
+      "maximumConcurrentChildren": 1,
+      "notes": "1 actual setup+12 unknown+4current/absent+6noncollection+2conditions. Existing operator/reader credentials, operator handle only. No seed mutation/reopen/retry."
+    },
+    {
+      "name": "observes genuine installed initial collection minimums, fixed-budget failures, conditionals and retained rows",
+      "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 391,
+      "boundarySha256": "9394a965287cdb5494a354e070ca85722900971956426c7afb4a64e52be5fb7e",
+      "evidenceKind": "packed-installed-preservation",
+      "httpExchanges": 42,
+      "stores": 1,
+      "productChildren": 1,
+      "maximumConcurrentChildren": 1,
+      "notes": "Predecessor callback is byte-identical; optional preservation selection for same final packed target, separate from new25.8 bounded real minimum waits remain unchanged."
+    }
+  ],
+  "totals": {
+    "newSourceCallbacks": 3,
+    "newSourceHandlerInvocations": 67,
+    "newSourceSetupGETs": 3,
+    "newSourceStores": 3,
+    "sourceSelectionCallbacks": 7,
+    "sourceSelectionHandlerInvocations": 100,
+    "sourceSelectionHTTPExchanges": 91,
+    "sourceSelectionStores": 7,
+    "sourceSelectionProductChildren": 0,
+    "newInstalledCallbacks": 1,
+    "newInstalledHTTPExchanges": 25,
+    "installedPreservationHTTPExchanges": 42
+  },
+  "ordering": "Fresh bound exact-candidate build+emitted inventory before any transaction-http.test.ts collection; fresh package/consumer provenance before installed selections. Native+actualClaude code disposition and separate root validation release."
+}
