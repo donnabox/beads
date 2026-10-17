@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T04:35:43Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-17T05:02:27Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Trish owns proposed main integration inventory/disposition and shared editorial/Types reconciliation; consensus hold remains, feedback is not merge authorization. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,10 +77,10 @@ Checkpoint 2026-10-17T04:35:43Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | Link plan v3 native findings disposed; actual Claude PLAN review launched | Inspect terminal outcome before source release; no frozen PR150 change |
-| Conditional author | Link plan v3 and review packet complete; idle pending council | No source authoring released |
-| Event reviewer | Native Link plan review complete; sole N1 corrected in v3 | Fixtures and workloads coherent; no S1/G2 inference |
-| Native reviewer | PR155 final local and exact-head CI audits clean | New plan/code review assignments remain bounded and separately released |
+| Root | Link plan council complete; isolated source authoring released | Review frozen draft before code council/validation; no frozen PR150 change |
+| Conditional author | Author exact Link six-file draft on isolated5bcd worktree | Freeze source/prefix/default/count evidence; no execution/commit/push |
+| Event reviewer | Native plan and actual Claude outcome audit complete | All12 dispositions accepted; code review follows frozen draft |
+| Native reviewer | Prepare CLOSED Link validation chain from successful Bead chain | 2fresh bootstrap+23 stages; no source binding or execution before draft/release |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -203,6 +203,11 @@ Conditional author now audits the next concrete serving/discovery/consistency ga
 
 
 **Link plan council in progress.** [Native plan review](bead-event-next-serving-audit/native-plan-v2-review.md)b94c8041 accepted bounded six-file fixtures, semantics and prospective workloads with one header-oracle clarification. [Plan v3](bead-event-next-serving-audit/plan-v3.md)a11df61c corrects only the version label and D: retain mandatory x-bdp-development:non-attesting; absence applies to x-bdp-development-limit on non500. Original v2 and unopened review packet remain archived; selection/context unchanged. Root inspected exact delta and independently rehashed679clean5bcd sources,14context and7artifacts plus closed index. [Root release](bead-event-next-serving-audit/claude-plan-review/root-release.json) authorizes one actual Claude PLAN review at04:35:26Z, releasedbinding658090b1/defaultmodel/Read-Glob-Grep/3600s nominal TERM3595/no retry. Review is running, no verdict or source authoring inferred. Frozen PR150 exact d4 CI remains green; no new external bus messages since04:22:16Z.
+
+
+**Link plan council complete; bounded source authoring active.** Actual [Claude PLAN review](bead-event-next-serving-audit/claude-plan-review/final-review.txt) completed exit0/1212.268s with4803records/one successful terminal, unchanged inputs and no cleanup/survivors. Root independently verified rawstreamc7306429/finalbb4468ff and sampledPIDs78879/84424 absent; [native outcome audit](bead-event-next-serving-audit/claude-plan-review/native-outcome-audit.md)f502e80c corroborates. No blockers. [Twelve dispositions](bead-event-next-serving-audit/claude-plan-review/root-dispositions.json) specify constant-clock four-row F, explicit narrowing, honest wait/exclusion claims, exact37245-byte installed prefix and audit-only4000ms elapsed stop under unchanged implicit5000ms callbacks. No plan scope/workload/semantic expansion.
+
+Root created isolated branchcodex/vickie-link-event-minimum at verifiedclean5bcd, remoteoriginGitHub, all679bytes identical; [source release](link-event-minimum-author/root-author-release.json) authorizes exactly six-file draft only. Conditional author is implementing; no test/build/install/import/service/commit/push released. Native reviewer prepares CLOSED fresh-bootstrap+23-stage harness without prematurely binding mutable source. PR155 exact5bcd remains green; PR150d4 frozen; no main/release/publicclaim or externaldecision needed.
 
 ## Current priority: BDP profile structure and implementation
 
