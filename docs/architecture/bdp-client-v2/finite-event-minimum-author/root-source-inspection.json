@@ -1,0 +1,14 @@
+{
+  "verifiedAt": "2026-10-17T01:11:35.658004+00:00",
+  "allTrackedInputs": 679,
+  "patchSha256": "ee6d34ccc8d253f845e1e7d07c469220883698382f788f69566291b6623fbf2d",
+  "scopeFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+  ],
+  "rootInspected": "Entire six-file diff. Native/Claude code review and validation pending. Native raised selected direct-call aborted/malformed precedence edge; no fix released."
+}

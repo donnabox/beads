@@ -1,0 +1,115 @@
+{
+  "executed": false,
+  "cases": [
+    {
+      "label": "A",
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "gates initial Scope Event unknown minima before retained scans",
+      "anchoredNamePattern": "^gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans$",
+      "prospectiveWorkload": {
+        "stores": 1,
+        "directReadEventsCalls": 8,
+        "directSeedTransactions": 1,
+        "http": 0
+      }
+    },
+    {
+      "label": "B",
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures an initial Scope Event opaque tuple across one bounded wait",
+      "anchoredNamePattern": "^captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait$",
+      "prospectiveWorkload": {
+        "stores": 1,
+        "serviceEventsCalls": 2,
+        "delegatedReadEventsAttempts": 4,
+        "waits": 2,
+        "withReadProbes": 2,
+        "attemptTimes": [
+          0,
+          0,
+          5,
+          10
+        ],
+        "http": 0
+      }
+    },
+    {
+      "label": "C",
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains initial Scope Event opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits$",
+      "prospectiveWorkload": {
+        "stores": 1,
+        "serviceEventsCalls": 4,
+        "delegatedReadEventsAttempts": 5,
+        "waits": 3,
+        "withReadProbes": 3,
+        "attemptTimes": [
+          0,
+          0,
+          5,
+          10,
+          15
+        ],
+        "postCloseDirectRefusals": 1,
+        "http": 0
+      }
+    },
+    {
+      "label": "D",
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves only initial finite Scope Event opaque minima through bounded waiting",
+      "anchoredNamePattern": "^serves\\ only\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting$",
+      "prospectiveWorkload": {
+        "stores": 1,
+        "inProcessListeners": 1,
+        "http": 32,
+        "mutationHttp": 1,
+        "minimumBudgetMs": 80,
+        "callbackBoundMs": 5000
+      }
+    },
+    {
+      "label": "E",
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes installed initial finite Scope Event opaque minimum timeout",
+      "anchoredNamePattern": "^observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout$",
+      "prospectiveWorkload": {
+        "stores": 1,
+        "installedChildren": 1,
+        "http": 3,
+        "routes": [
+          "GET events/",
+          "HEAD events/"
+        ],
+        "requestTimeoutMs": 5000,
+        "ownedDeadlineMs": 45000,
+        "callbackBoundMs": 60000
+      }
+    }
+  ],
+  "newTotals": {
+    "callbacks": 5,
+    "stores": 5,
+    "inProcessListeners": 1,
+    "installedChildren": 1,
+    "emittedHttp": 32,
+    "installedHttp": 3
+  },
+  "existingRegressionInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-author/existing-regression-inventory.md",
+    "sha256": "aaf622f55c1a47de1d2ca1d100febdbcc5fd598958f9b4576275e3e81a4e2eb7",
+    "callbacks": 5,
+    "emittedHttp": 59,
+    "installedHttp": 11
+  },
+  "combinedProspective": {
+    "callbacks": 10,
+    "stores": 10,
+    "inProcessListeners": 2,
+    "installedChildren": 2,
+    "emittedHttp": 91,
+    "installedHttp": 14
+  },
+  "countNote": "Owner attempts, probes, service invocations and HTTP are separate layers; no completion or conformance percentages."
+}
