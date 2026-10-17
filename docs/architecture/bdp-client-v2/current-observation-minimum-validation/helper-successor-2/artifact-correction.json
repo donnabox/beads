@@ -1,0 +1,22 @@
+{
+  "cause": "Preparation scratch variable s first held predecessor text, then was reused for reference hashes; standalone patch later consumed the final hash rather than source text. Actual auditor and full adapter were unaffected.",
+  "preservedFlawedPacket": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-1",
+    "indexSha256": "8bd489894b2347cb5983332a09e1957b5dcbff10922f17741a3091f6d91f197d",
+    "badPatchSha256": "c9b339121e94607436b5fef693e1daeb7c5e650f38931480437cd53419aacaca"
+  },
+  "actualBefore": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/oracle-successor-1/audit.py",
+    "sha256": "7aa52ee6eaaefa31fede0cdf90ee5a84731ede964e5360fbd09caf0e73e68c19"
+  },
+  "actualAfter": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/audit.py",
+    "sha256": "b7e7f12fc6b7d280979a284e66ed0527aa449a174bd240110ee989993d9b37be"
+  },
+  "forwardSha256": "74cd9e8bf005d1fb7769dfc1f048e31a58455f9f929d0220d065c21a306ada32",
+  "reverseSha256": "a44137c679432b67e0df57082b6ebcf704a62d6470e192f69118b2eb4a608de9",
+  "dataOnlyForwardReconstructionExact": true,
+  "dataOnlyReverseReconstructionExact": true,
+  "helperExecuted": false,
+  "productExecuted": false
+}

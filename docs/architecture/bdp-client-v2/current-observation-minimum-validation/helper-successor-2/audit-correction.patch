@@ -1,0 +1,13 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/oracle-successor-1/audit.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/audit.py
+@@ -117,7 +117,9 @@
+    for o in by[label]:base_success(o)
+   scalar_legacy={'fresh-snapshot-opaque-owner':{'snapshotCalls':14,'preEntryExcludedCalls':4,'offlineInspections':2},'finite-event-minimum-owner':{'reads':8,'seedMutations':1},'finite-event-minimum-http':{'calls':32,'productChildren':0},'bead-event-minimum-owner':{'reads':12,'seedMutations':2,'policyReplacements':1,'groupReadsAfterHidden':0},'bead-event-minimum-http':{'calls':37,'productChildren':0},'link-event-minimum-owner':{'reads':11,'seedMutations':2,'policyReplacements':1,'groupReadsAfterHidden':0},'link-event-minimum-http':{'calls':35,'productChildren':0},'scope-event-sse-minimum-owner':{'reads':14,'seedCommits':1},'scope-event-sse-minimum-http':{'requests':31,'seedCommits':1},'alias-minimum-http':{'attempted':28,'waits':6},'fresh-snapshot-opaque-http':{'requests':27,'waits':8},'receipt-root-minimum-http':{'requests':10,'waits':3}}
+   for label,values in scalar_legacy.items():scalars(by[label][0],values)
+-  for o in by['parser-refusal-source']:scalars(o,{'setupCalls':1,'refusedOwnerEntries':0,'refusedWaits':0,'refusedTokenAllocations':0,'owners':1,'httpRequests':0})
++  for o in by['parser-refusal-source']:
++   scalars(o,{'setupCalls':1,'refusedWaits':0,'refusedTokenAllocations':0,'owners':1,'httpRequests':0})
++   rows(o,'refusedOwnerEntries',0)
+   require(sorted(o['row'] for o in by['alias-minimum-capture'])==['pos-01','unknown'] and sorted(o['row'] for o in by['alias-minimum-missing'])==['absent','dangling','deleted','hidden'],'Legacy parameter rows')
+   require(by['fresh-snapshot-opaque-owner'][0]['baseline']==by['fresh-snapshot-opaque-owner'][0]['after'],'Legacy retained payload comparison')
+   for o in by['alias-minimum-capture']:scalars(o,{'apiCalls':3,'waits':2,'clockCalls':5,'writes':4});rows(o,'contexts',5);rows(o,'attempts',5);rows(o,'unproved',4)
