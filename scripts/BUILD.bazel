@@ -136,6 +136,7 @@ go_test(
         "check_testing_short_test.go",
         "check_winget_portable_alias_test.go",
         "ci_analytics_extract_test.go",
+        "ci_golangci_install_test.go",
         "complexity_script_test.go",
         "conformance_script_test.go",
         "host_tools_test.go",
@@ -382,12 +383,13 @@ exports_files(
 # //test/docsync checks resolve.
 exports_files(
     [
+        "README.md",
         "bump-version.sh",
         "check-cli-docs-drift.sh",
         "generate-cli-docs.sh",
         "test.sh",
     ],
-    visibility = ["//test/docsync:__pkg__"],
+    visibility = ["//:__pkg__", "//test/docsync:__pkg__"],
 )
 
 # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---

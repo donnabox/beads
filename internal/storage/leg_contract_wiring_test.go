@@ -33,6 +33,15 @@ var neverSatisfiedTags = map[string]bool{"ignore": true, "never": true}
 const importerOneAccessorWaiverReason = "Importer has one accessor (uow.ImporterSource); " +
 	"the store legs run bd import through the raw seam and implement no Importer role"
 
+// These new conformance fixtures are storage capabilities, not claims that the
+// HTTP client serves them. AsOf still has an explicit unsupported HTTP client
+// implementation; the wire has no store-address/instant selector and refusal
+// response. ParticipationGeneration requires toggling the store's write flag
+// and reading its raw generation column. Keep both gaps visible until a
+// supported HTTP surface is designed and tested.
+const asOfReadNoHTTPWireWaiverReason = "HTTP AsOf is explicitly unsupported by internal/httpclient; no store-address/instant selector and refusal response is wired"
+const participationGenerationRawStoreWaiverReason = "ParticipationGeneration exercises a store write flag and raw generation column that the HTTP client does not expose"
+
 // The waivers of the three legs registered here. Each is registered beside its
 // leg rather than written into one literal, so a leg registered elsewhere
 // brings its waivers the same way; see unwiredContractEntrypoints.
@@ -57,9 +66,21 @@ func init() {
 		"RunIssueOperationsCreateParentChildRecomputesWaitsForClosure":   stagingWaiverReason,
 	})
 	registerContractLegWaivers("http", map[string]string{
-		"RunCycleDetectorIncludeTracksFindsTheMoleculeRootShape":         cycleTracksWireGapWaiverReason,
-		"RunCycleDetectorIncludeTracksIgnoresAPureTracksLoop":            cycleTracksWireGapWaiverReason,
-		"RunCycleDetectorIncludeTracksWalksEachEdgeInItsStoredDirection": cycleTracksWireGapWaiverReason,
+		"RunAsOfReadIsCompleteOnlyForTheAnsweringStoresHoldings":              asOfReadNoHTTPWireWaiverReason,
+		"RunAsOfReadRefusesAsGoneOrUnknownNeverSubstitutingAnotherVersion":    asOfReadNoHTTPWireWaiverReason,
+		"RunAsOfReadReportsTheAddressItServed":                                asOfReadNoHTTPWireWaiverReason,
+		"RunAsOfReadReturnsTheLatestVersionAtOrBeforeTStrictlyExcludingLater": asOfReadNoHTTPWireWaiverReason,
+		"RunAsOfReadSelectorAcceptsEitherAnInstantOrAVersionAddress":          asOfReadNoHTTPWireWaiverReason,
+		"RunParticipationGenerationCreateWithFlagOffLeavesLegacyNull":         participationGenerationRawStoreWaiverReason,
+		"RunParticipationGenerationCreateWithFlagOnStampsAValue":              participationGenerationRawStoreWaiverReason,
+		"RunParticipationGenerationFenceIgnoresSchemaSkewHatch":               participationGenerationRawStoreWaiverReason,
+		"RunParticipationGenerationProceedsForPromotedRecord":                 participationGenerationRawStoreWaiverReason,
+		"RunParticipationGenerationSkipsUpdateOnLegacyRecord":                 participationGenerationRawStoreWaiverReason,
+		"RunParticipationGenerationWispPersistenceMoveBeginsHistory":          participationGenerationRawStoreWaiverReason,
+		"RunParticipationGenerationWispPromotionBeginsHistory":                participationGenerationRawStoreWaiverReason,
+		"RunCycleDetectorIncludeTracksFindsTheMoleculeRootShape":              cycleTracksWireGapWaiverReason,
+		"RunCycleDetectorIncludeTracksIgnoresAPureTracksLoop":                 cycleTracksWireGapWaiverReason,
+		"RunCycleDetectorIncludeTracksWalksEachEdgeInItsStoredDirection":      cycleTracksWireGapWaiverReason,
 
 		"RunBootstrapperIdentifiesAFreshSubstrate":                       bootstrapperPermanentlyUnservableWaiverReason,
 		"RunBootstrapperLeavesTheSubstrateUntouchedWhenItCannotComplete": bootstrapperPermanentlyUnservableWaiverReason,

@@ -2,7 +2,6 @@ package scripts_test
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -19,7 +18,8 @@ import (
 // `bazel test //... --config=ci` (test lane), and for the files only other
 // platforms compile inside the pure lane's release cross-compile
 // (//tools/bazel:release_cross, every release platform). These pin that
-// wiring and that golangci-lint is gone from CI, hooks and make.
+// wiring. The fork retains supplemental native PR lint and vet jobs; those
+// do not replace the Bazel nogo owner lanes.
 //
 // nogo validation is duplicated across lanes that compile the same Bazel
 // configuration (race: test, embedded, doltserver, doltserver-proxied,
@@ -58,26 +58,14 @@ func TestLintAndVetRunAsNogo(t *testing.T) {
 		t.Errorf(".bazelrc nogo configs = %q, want %q", got, nogoBazelrcLines)
 	}
 
-	// No workflow installs or runs golangci-lint.
-	entries, err := os.ReadDir(filepath.Join(root, ".github", "workflows"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, e := range entries {
-		if !strings.HasSuffix(e.Name(), ".yml") {
-			continue
-		}
-		for name, j := range readCIWorkflow(t, e.Name()).Jobs {
-			for _, st := range j.Steps {
-				if strings.Contains(st.Run, "golangci") || strings.Contains(st.Uses, "golangci") {
-					t.Errorf("%s %s step %q runs golangci-lint; nogo replaces it", e.Name(), name, st.Name)
-				}
+	// The upstream push workflow has moved fully to nogo. The fork's PR
+	// workflow still runs its additional native lint/vet checks; their
+	// ownership and exact commands are pinned by ci_workflow_test.go.
+	for name, job := range readCIWorkflow(t, "main.yml").Jobs {
+		for _, step := range job.Steps {
+			if strings.Contains(step.Run, "golangci") || strings.Contains(step.Uses, "golangci") {
+				t.Errorf("main.yml %s step %q runs golangci-lint in the nogo-owned push workflow", name, step.Name)
 			}
-		}
-	}
-	for _, gone := range []string{"scripts/ci/install-golangci-lint.sh", "scripts/ci/go-test-vet.sh"} {
-		if _, err := os.Stat(filepath.Join(root, filepath.FromSlash(gone))); err == nil {
-			t.Errorf("%s is back; nogo replaces it", gone)
 		}
 	}
 

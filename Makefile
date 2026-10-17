@@ -46,7 +46,7 @@ endif
 .PHONY: all build doctor-build test test-icu-path test-full-cgo test-regression test-upgrade test-cross-version test-migration corpus-regen githooks-regen bench bench-quick clean clean-test-tmp install install-force help check-up-to-date fmt fmt-check check-testing-short
 .PHONY: lint lint-changed vet
 .PHONY: check check-go test-go check-docs-go
-.PHONY: ci-pr-core ci-pr-lint ci-complexity ci-complexity-diff ci-complexity-check ci-package-mcp ci-package-npm nogo-ownership
+.PHONY: ci-pr-core ci-pr-policy ci-pr-lint ci-complexity ci-complexity-diff ci-complexity-check ci-package-mcp ci-package-npm nogo-ownership
 .PHONY: api-gen api-check
 .PHONY: bazel-sync bazel-sync-check
 
@@ -228,6 +228,9 @@ test-full-cgo:
 
 ci-pr-core:
 	@./scripts/ci/pr-core.sh
+
+ci-pr-policy:
+	@./scripts/ci/pr-policy.sh
 
 # Lint and vet are nogo (//tools/nogo): go test's vet checks plus the
 # golangci-lint linters .golangci.yml enables, validated beside every Go

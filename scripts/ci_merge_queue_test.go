@@ -186,16 +186,16 @@ func TestMergeQueueConcurrencyNeverCancelsQueueRuns(t *testing.T) {
 func TestMergeQueuePullRequestFieldsHandleMergeGroup(t *testing.T) {
 	// path suffix (workflow:YAML path) -> why null on merge_group is right.
 	nullOK := map[string]string{
-		"pr.yml:.concurrency.group":           "falls back to github.ref (TestMergeQueueConcurrencyNeverCancelsQueueRuns)",
-		"pr-risk.yml:.concurrency.group":      "falls back to github.ref",
-		"bazel.yml:.concurrency.group":        "falls back to github.ref",
-		"rbe.steps[0].env.FORK":               "null == true is false: a merge group is never a fork",
-		"rbe.steps[0].env.PR_NUMBER":          "read only for fork/Dependabot pull_request runs (the rbe-fork mint)",
-		".env.RBE_FORK_PR":                    "setup-bazel reads it only in the fork modes, which a merge group never takes",
+		"pr.yml:.concurrency.group":                          "falls back to github.ref (TestMergeQueueConcurrencyNeverCancelsQueueRuns)",
+		"pr-risk.yml:.concurrency.group":                     "falls back to github.ref",
+		"bazel.yml:.concurrency.group":                       "falls back to github.ref",
+		"rbe.steps[0].env.FORK":                              "null == true is false: a merge group is never a fork",
+		"rbe.steps[0].env.PR_NUMBER":                         "read only for fork/Dependabot pull_request runs (the rbe-fork mint)",
+		".env.RBE_FORK_PR":                                   "setup-bazel reads it only in the fork modes, which a merge group never takes",
 		"pr-risk.yml:.jobs.bazel-coverage.steps[0].env.FORK": "null == true is false: a merge group is never a fork",
-		"pr.yml:.jobs.bazel-coverage.steps[0].env.FORK": "null == true is false: a merge group is never a fork",
-		"bazel-test.steps[*].env.PR_NUMBER":   "bazel-sync patch metadata; bazel-autofix.yml ignores non-pull_request runs",
-		"bazel-test.steps[*].env.PR_HEAD_SHA": "bazel-sync patch metadata; bazel-autofix.yml ignores non-pull_request runs",
+		"pr.yml:.jobs.bazel-coverage.steps[0].env.FORK":      "null == true is false: a merge group is never a fork",
+		"bazel-test.steps[*].env.PR_NUMBER":                  "bazel-sync patch metadata; bazel-autofix.yml ignores non-pull_request runs",
+		"bazel-test.steps[*].env.PR_HEAD_SHA":                "bazel-sync patch metadata; bazel-autofix.yml ignores non-pull_request runs",
 		// bazel.yml's CI analytics summary step (rbe-ci-bep-analytics-
 		// design.md, S3), one entry per lane job (ciAnalyticsLaneJobs in
 		// ci_analytics_workflow_test.go) rather than a bare "steps[*]...",

@@ -267,15 +267,28 @@ func TestBlacksmithMacOSSaverMatchesPRLegs(t *testing.T) {
 	saverSave := saver.step(t, "Save non-race Go build cache")
 	for _, jobName := range blacksmithMacOSPRLegJobs {
 		job := pr.job(t, jobName)
-		// Every PR's macOS leg, forks included, runs on the saver's label.
+		// Trusted upstream PRs use the saver's runner; fork PRs must use
+		// GitHub-hosted macOS, which cannot consume the Blacksmith cache.
 		macOSLegs := 0
 		for _, leg := range job.Strategy.Matrix.Include {
 			if leg.OS != macOSRunner {
 				continue
 			}
 			macOSLegs++
-			if got := mustEvalGHRunsOn(t, job.RunsOn, map[string]string{"matrix.runner": leg.Runner, "matrix.os": leg.OS}); got != blacksmithMacOSLabel {
-				t.Errorf("pr.yml %s macOS leg resolves to %q, want the saver's %q", jobName, got, blacksmithMacOSLabel)
+			ctx := map[string]string{
+				"matrix.runner":     leg.Runner,
+				"matrix.os":         leg.OS,
+				"github.event_name": "pull_request",
+				"github.repository": "gastownhall/beads",
+				"github.event.pull_request.head.repo.full_name": "gastownhall/beads",
+				"github.actor": "alice",
+			}
+			if got := mustEvalGHRunsOn(t, job.RunsOn, ctx); got != blacksmithMacOSLabel {
+				t.Errorf("pr.yml %s trusted macOS leg resolves to %q, want the saver's %q", jobName, got, blacksmithMacOSLabel)
+			}
+			ctx["github.event.pull_request.head.repo.full_name"] = "someone-else/beads"
+			if got := mustEvalGHRunsOn(t, job.RunsOn, ctx); got != macOSRunner {
+				t.Errorf("pr.yml %s fork macOS leg resolves to %q, want %q", jobName, got, macOSRunner)
 			}
 		}
 		if macOSLegs != 1 {

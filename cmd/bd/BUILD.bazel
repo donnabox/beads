@@ -1917,6 +1917,7 @@ sh_test(
 # //test/docsync checks resolve.
 exports_files(
     [
+        "AGENTS.md",
         "capability_registry.go",
         "doctor.go",
         "init_safety_help.go",
@@ -1924,7 +1925,7 @@ exports_files(
         "main.go",
         "state.go",
     ],
-    visibility = ["//test/docsync:__pkg__"],
+    visibility = ["//:__pkg__", "//test/docsync:__pkg__"],
 )
 
 # CLI flag registrations pinned by //internal/httpapi spec parity tests.

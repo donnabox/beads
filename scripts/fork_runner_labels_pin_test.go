@@ -467,38 +467,25 @@ func forkUpstreamWorld(ctx map[string]string) map[string]string {
 // skips every job whose runs-on does not resolve to a Blacksmith label under
 // its two trust contexts. Those contexts name no owner, so once the guard is in
 // every job resolves to the hosted label, the sweep examines nothing, and it
-// still passes: 16 of its 76 (job, context) pairs before rule R6, 0 after (the
-// first R6 v2 sync, vb #101). This pins that the sweep still reaches every job
-// whose runs-on spells the same-repository predicate in front of a Blacksmith
-// label. If F7c's sweep is renamed or removed, delete this with it.
-func TestForkUpstreamSweepStillReachesBlacksmithJobs(t *testing.T) {
-	ctxNames := make([]string, 0, len(blacksmithTrustContexts))
-	for ctxName := range blacksmithTrustContexts {
-		ctxNames = append(ctxNames, ctxName)
+// Main is push-only now, so its Blacksmith runners no longer spell the
+// same-repository PR predicate. Keep the cache sweep non-vacuous against the
+// actual push-to-main topology rather than requiring a retired expression.
+func TestMainPushSweepReachesBlacksmithJobs(t *testing.T) {
+	if !slices.Contains(generalCacheSweepWorkflows, "main.yml") {
+		t.Fatal("cache sweep no longer includes main.yml")
 	}
-	sort.Strings(ctxNames)
-	spelled := 0
-	for _, file := range generalCacheSweepWorkflows {
-		jobs := readCIWorkflow(t, file).Jobs
-		names := make([]string, 0, len(jobs))
-		for name := range jobs {
-			names = append(names, name)
+	jobs := readCIWorkflow(t, "main.yml").Jobs
+	count := 0
+	for name, job := range jobs {
+		if !forkBlacksmithName.MatchString(job.RunsOn) {
+			continue
 		}
-		sort.Strings(names)
-		for _, name := range names {
-			runsOn := jobs[name].RunsOn
-			if !forkBlacksmithName.MatchString(runsOn) || !strings.Contains(runsOn, "head.repo.full_name == github.repository") {
-				continue
-			}
-			for _, ctxName := range ctxNames {
-				spelled++
-				if got := resolveRunsOnLabel(runsOn, blacksmithTrustContexts[ctxName]); !strings.HasPrefix(got, "blacksmith-") {
-					t.Errorf("%s job %s: runs-on resolves to %q under upstream's %s context, so upstream's cache sweep skips it; put the owner in upstream's world (rule R6, E1, be-ju6she)", file, name, got, ctxName)
-				}
-			}
+		count++
+		if !strings.Contains(job.If, "github.event_name == 'push'") || !strings.Contains(job.If, "github.ref == 'refs/heads/main'") {
+			t.Errorf("main.yml Blacksmith job %s lacks the push-to-main guard: %q", name, job.If)
 		}
 	}
-	if spelled == 0 {
-		t.Errorf("no job in the cache sweep's workflows spells the same-repository Blacksmith predicate: the sweep examines nothing, or upstream changed the shape; ask the architect")
+	if count == 0 {
+		t.Fatal("main.yml has no Blacksmith job; the cache sweep is vacuous")
 	}
 }

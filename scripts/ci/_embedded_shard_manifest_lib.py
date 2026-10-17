@@ -146,11 +146,12 @@ def write_block(path, total, out):
     replaced = False
     for b in blocks:
         if b['total'] == total:
-            result.extend(out)
-            replaced = True
-        else:
-            result.extend(b['header'])
-            result.extend(b['body'])
+            if not replaced:
+                result.extend(out)
+                replaced = True
+            continue
+        result.extend(b['header'])
+        result.extend(b['body'])
     if not replaced:
         if result and result[-1] != '':
             result.append('')

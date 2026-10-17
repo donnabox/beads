@@ -529,6 +529,7 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 		t.Fatal(err)
 	}
 	remoteSkips := strings.Fields(string(out))
+	bazelWorkflow := readCIWorkflow(t, bazelWorkflowName)
 	if !contains(required, prRiskCoverageGateID) {
 		t.Errorf("pr.yml's ci-gate does not require %s", prRiskCoverageGateID)
 	}
@@ -544,7 +545,16 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 		}
 		for _, lane := range r.bazelLanes {
 			if !lanes[lane]["remote"] {
-				t.Fatalf("%s does not run in mode remote", lane)
+				// In remote mode the Dolt unions execute their member tiers
+				// and publish classified workflow_call outputs to ci-gate.
+				unionName := bazelUnionOf(lane)
+				if unionName == "" {
+					t.Fatalf("%s does not run in mode remote and has no running Dolt union", lane)
+				}
+				union := bazelWorkflow.job(t, unionName)
+				if !bazelLaneRunModes(t, unionName, union.If, call.With)["remote"] {
+					t.Fatalf("%s does not run in mode remote and its union %s also skips", lane, unionName)
+				}
 			}
 			if !contains(required, bazelLaneGateIDs[lane]) {
 				t.Errorf("pr.yml's ci-gate does not require %s", bazelLaneGateIDs[lane])

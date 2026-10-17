@@ -180,10 +180,12 @@
 40 4 TestEmbeddedIssueOperationsUpdateLabelPatchOrdering
 40 4 TestEmbeddedReaderGetMissIsNotFoundAndBackendFailureDoesNotDecay
 40 4 TestMergeAndSettleWithStrategy_EmptyStrategyMatchesMergeAndSettle
+40 4 TestParticipationGenerationFence
 
 40 5 TestEmbeddedClaimerRefusesIncompleteRequestsAndAnAbsentIDWithoutTouchingState
 40 5 TestEmbeddedIssueOperationsCloseAndReopenAWisp
 40 5 TestEmbeddedReaderListKeysetPositionResumesTheCreatedDescIDAscOrder
+40 5 TestRecordVersionKeepsSubSecondChangeAt
 40 5 TestWithPeerAuth
 
 40 6 TestCreateBatchFastPathsMatchPerRowApplyWaitsFor_Embedded
@@ -192,6 +194,7 @@
 40 6 TestEmbeddedReaderListKeysetPositionNarrowsWithoutReplacingTheOtherPredicates
 40 6 TestEmbeddedRelationsAnswersAWispTargetInTheOutDirection
 40 6 TestPromoteStillWorksWithCollisionGuard
+40 6 TestRecordVersionPreservesCurrentIssueState
 40 6 TestSearchWithMissingWispPlaneTables
 
 40 7 TestConcurrencyMultiProcess
@@ -211,6 +214,7 @@
 40 8 TestEmbeddedReopenIssueCategorySemantics
 40 8 TestGetIssueCommentsPageEmbedded
 40 8 TestListWisps
+40 8 TestVersionedHistoryKeepsNumbersTheStoreDistinguishesApart
 
 40 9 TestEmbeddedDependencyEditorRefusesCrossPlaneCycle
 40 9 TestEmbeddedDependencyEditorSameTypeReAddIsIdempotent
@@ -240,6 +244,7 @@
 40 11 TestEmbeddedReadyClaimerRecordsOneHistoryEntryForAWin
 40 11 TestEventsJournal_ActorMatrixOnEmbedded
 40 11 TestMemoriesContract
+40 11 TestWakeSweepDecidesAsTheMintDoesOnEveryKindOfRow
 40 11 TestWithPeerAuth_WarnsWhenStoredPeerSuppressesAmbientPasswordStored
 
 40 12 TestCounterExcludeStatusAcceptsAWorkspaceCustomStatusWithoutIncludeInfra
@@ -308,6 +313,7 @@
 40 17 TestStatsReporterContract
 40 17 TestVersionReconcilerContract
 
+40 18 TestCreateBatchStampsParticipationGenerationOnBrandNewRows
 40 18 TestEmbeddedBatchCloserIdempotentRecloseIsAPerItemSuccess
 40 18 TestEmbeddedDependencyEditorMixedBatchWritesBothPlanes
 40 18 TestEmbeddedIssueOperationsUpdateRawMetadataTakesTheFunnelsValueShapes
@@ -319,6 +325,7 @@
 40 18 TestPromoteClearsNoHistory
 40 18 TestRemoteVerbPlainRemoteWithoutAuthPresentsNone
 
+40 19 TestCreateBatchWithHistoryOffStampsNothing
 40 19 TestEmbeddedDependencyEditorRetypeRefusalLeavesTheOriginalEdge
 40 19 TestEmbeddedIssueOperationsUpdateInvalidIssueTypePreservesValidationSentinel
 40 19 TestEmbeddedMigration0062FlipsEventsToIgnoredPlane
@@ -340,6 +347,7 @@
 40 20 TestForeignSkipDetailIsBounded
 40 20 TestHeartbeatRejectsWispEmbedded
 40 20 TestIgnoredCursorHealNeverResurrectsRolledBackVersions
+40 20 TestWakeSweepNamesASkippedRowOncePerProcess
 
 40 21 TestCreateRejectsCrossTableIDCollision
 40 21 TestEmbeddedBatchCloserItemsAnswerToTheCloseGuards
@@ -351,6 +359,7 @@
 40 21 TestEmbeddedRoleFixtureKitCountHistoryMovesWithACommit
 40 21 TestEmbeddedTransactionStandaloneWispLifecyclePersistsWithoutDoltCommit
 40 21 TestLargeBatchApplyWallClock_Embedded
+40 21 TestWakeSweepSkipsTheRefusedRowAndWakesTheRest
 
 40 22 TestEdgeReaderContract
 40 22 TestEmbeddedDepRekeyAbortLeavesMarkerUnrecorded
@@ -374,6 +383,7 @@
 40 23 TestEmbeddedRoleFixtureKitHooksAreUsable
 40 23 TestEventsAutoPruneBoundsTheJournalToTheFloors
 40 23 TestJournalContract
+40 23 TestParticipationGenerationFixtureKitIsWired
 
 40 24 TestBootstrapperContract
 40 24 TestEmbeddedBatchCloserOutcomesMirrorItemsIndexForIndex
@@ -436,8 +446,10 @@
 40 28 TestEmbeddedReaderListReadyFlagAnswersTheBlockerAwareSet
 40 28 TestRenameLabel
 40 28 TestUpdateIssueType
+40 28 TestWakeSweepWithHistoryOffWakesTheRowItWouldOtherwiseSkip
 40 28 TestWithPeerAuth_RestoresEnvWhenCallbackFails
 
+40 29 TestAsOfReadContract
 40 29 TestEmbeddedBatchCloserClaimFilterValueFailureIsARequestValidationFailure
 40 29 TestEmbeddedBatchCloserClaimNextIsNilWhenTheFrontIsEmpty
 40 29 TestEmbeddedDepRekeyMergesFreshDuplicateEdges
@@ -533,6 +545,7 @@
 40 36 TestGetReadyWorkMoleculeFilter
 40 36 TestReleaserContract
 40 36 TestSchemaAfterInit
+40 36 TestWakeSweepWritesNothingWhenEveryExpiredRowIsSkipped
 
 40 37 TestEmbeddedBatchCloserClaimNextSeesAnUnblockingFromItsOwnBatch
 40 37 TestEmbeddedBatchCloserOutcomeSnapshotIsTheDocumentedShape
@@ -559,6 +572,7 @@
 40 38 TestPolicyBlockingAnnotatorBatchEqualsPerItem
 40 38 TestWithPeerAuth_ConcurrentPeersDoNotMixCredentials
 
+40 39 TestCreateBatchLeavesExistingLegacyRowUnstamped
 40 39 TestDualWriteContractFlagOff
 40 39 TestEmbeddedBatchCloserPerItemRefusalIsAResultAndSurvivorsCommit
 40 39 TestEmbeddedBlockedRecheckFailureKeepsTheWrite
@@ -583,103 +597,30 @@
 40 40 TestEmbeddedRelationsSeparatesNoNeighborsFromNoSuchIssue
 40 40 TestEmbeddedReopenCustomDoneFallsBackWhenNormalizedTableMissing
 
-# Preview 3 preparation: fork-only roots in the upstream Bazel denominator.
-40 19 TestAsOfReadContract
-40 22 TestCreateBatchFastPathsMatchPerRow_Embedded
-40 7 TestCreateBatchLeavesExistingLegacyRowUnstamped
-40 3 TestCreateBatchStampsParticipationGenerationOnBrandNewRows
-40 16 TestCreateBatchWithHistoryOffStampsNothing
-40 23 TestParticipationGenerationFence
-40 17 TestParticipationGenerationFixtureKitIsWired
-40 9 TestRecordVersionKeepsSubSecondChangeAt
-40 4 TestRecordVersionPreservesCurrentIssueState
-40 20 TestVersionedHistoryKeepsNumbersTheStoreDistinguishesApart
-40 5 TestWakeSweepDecidesAsTheMintDoesOnEveryKindOfRow
-40 19 TestWakeSweepNamesASkippedRowOncePerProcess
-40 24 TestWakeSweepSkipsTheRefusedRowAndWakesTheRest
-40 21 TestWakeSweepWithHistoryOffWakesTheRowItWouldOtherwiseSkip
-40 39 TestWakeSweepWritesNothingWhenEveryExpiredRowIsSkipped
-40 10 TestWithPeerAuth_WarnsWhenStoredPeerSuppressesAmbientPassword
+# Embedded-Dolt storage test shard manifest.
+#
+# Format: <total_shards> <shard_number> <top_level_test_name>
+#
+# 15-shard split for the Bazel-only embedded-Dolt storage tier
+# (bazel-embedded in .github/workflows/bazel.yml), bin-packed
+# longest-processing-time-first by measured wall-time from
+# scripts/ci/embedded_storage_test_durations.json (see that file for provenance
+# and its "relative weight, not absolute SLA" caveat).
+# Regenerate with scripts/ci/gen_embedded_storage_shard_manifest.py 15
+# --weights=duration --write after adding or removing Test* functions in
+# internal/storage/embeddeddolt/*_test.go. --write is incremental: it
+# keeps every already-assigned test on its current shard and only places
+# newly-discovered names, onto whichever shard is currently lightest, so
+# two unrelated PRs that each add one test do not textually conflict or
+# silently invalidate each other's packing. Pass --repack to force a full
+# from-scratch rebalance instead (a deliberate, separate change — expect a
+# large diff). --check only verifies every discovered name is listed here
+# exactly once (no stale or duplicate entries); it does NOT verify the
+# packing is still well-balanced.
+#
+# This file is generated: notes added here are erased by the next
+# regeneration. Add them to the generator or the durations file instead.
 
-# Retained fork denominator blocks; CI retirement reconciliation is pending.
-5 1 TestActiveDatabaseSizeFailsForMissingEmbeddedDatabase
-5 2 TestActiveDatabaseSizeScopesToActiveEmbeddedDatabase
-5 3 TestAddDependency
-5 4 TestAddLabel
-5 4 TestBatchApplyContract
-5 5 TestBuildDSN_NoDatabase
-5 1 TestBuildDSN_SpacesInPath
-5 2 TestBuildDSN_WithDatabase
-5 3 TestCleanGitRemoteCacheGarbage
-5 4 TestCleanGitRemoteCacheGarbage_NoCacheDir
-5 5 TestCleanGitRemoteCacheGarbage_Throttled
-5 1 TestConcurrencyMultiProcess
-5 2 TestConcurrentOpenReturnsCached
-5 3 TestCountsIncludeWispDependencies
-5 4 TestCreateIssue
-5 5 TestCreateIssues
-5 1 TestCreateIssuesRejectStaleUpserts
-5 2 TestCreateRejectsCrossTableIDCollision
-5 1 TestEmbeddedConfigCommitStagesConfig
-5 2 TestEmbeddedDirtyTablesGate_BlocksReopenThenWorkingSetReconcileRecovers
-5 3 TestEmbeddedGetMergeBlockersOnAQuietStore
-5 4 TestEmbeddedMergeAndSettleDirtyWorkingSetSurvivesRefusedMerge
-5 5 TestEmbeddedMergeAndSettleFKCascadeRepair
-5 1 TestEmbeddedMergeAndSettleMemoryConfigConflict
-5 2 TestEmbeddedMergeAndSettleMetadataConflict
-5 3 TestEmbeddedMergeAndSettleRefusesUnknownTable
-5 4 TestEmbeddedMergeAndSettleReportsOperatorConflicts
-5 5 TestEmbeddedMergeAndSettleSkipsNonMemoryConfigConflict
-5 1 TestEmbeddedMigrateConvergesUnderConcurrentInterruptedRetries_4566
-5 2 TestEmbeddedMigrateRepairedDependenciesIDColumnCommitsAtomicallyWithVersion53_4690
-5 3 TestEmbeddedMigrateSelfHealsAfterMidPassFault_4566
-5 4 TestEmbeddedMigrateStepCommitLeavesUntouchedUserDirt_4566
-5 5 TestEmbeddedMigration0047DelegatesToSplitTargetRepairAndConvergesThroughIgnoredChain
-5 1 TestEmbeddedMigration0057ConvertsTextEventsColumnsToLongtext
-5 2 TestEmbeddedMigration0058AddsOnlyMissingConstraintInMixedPopulation
-5 3 TestEmbeddedMigration0058CleansOrphanedAndInvalidWispDependenciesRowsBeforeAddingConstraints
-5 4 TestEmbeddedMigration0058HealsAlreadyAffectedDatabase
-5 5 TestEmbeddedOpenForReadOnlyCommand_LenientGate
-5 1 TestEmbeddedOpenReadOnly_FreshDatabaseNoWrites
-5 2 TestEmbeddedOpenReadOnly_SkipsGateAndMigrations
-5 3 TestEmbeddedRecomputeAllBlockedDirtyGraphIsTyped
-5 4 TestEmbeddedRecomputeAllBlockedWiring
-5 5 TestEmbeddedRemoteMigrateGate_BlocksReopen
-5 1 TestEmbeddedSyncCommitsConfigBeforeMerge
-5 4 TestEventsSinceEmbedded
-5 5 TestGetDependentRecordsEmbedded
-5 1 TestGetDependentRecordsForIssuesEmbedded
-5 2 TestGetIssue
-5 3 TestGetIssueCommentsPageEmbedded
-5 4 TestGetLabels
-5 5 TestGetNextChildID
-5 1 TestGetReadyWorkIncludeEphemeralAppliesWispFilters
-5 2 TestGetReadyWorkIncludeEphemeralExcludesNonReadyWisps
-5 3 TestGetReadyWorkMoleculeFilter
-5 4 TestHeartbeatRejectsWispEmbedded
-5 5 TestHelperProcess
-5 1 TestHistory_NullTextColumns
-5 2 TestHookFiringStoreCreateIssuesFiresDependencyUpdatesFromEmbeddedStore
-5 3 TestIsBlockedBatchEmbedded
-5 2 TestLargeBatchApplyStatementCounts356_Embedded
-5 2 TestLargeBatchApplyStatementCounts712_Embedded
-5 2 TestLargeBatchApplyStatementCountsClassic40_Embedded
-5 5 TestLargeBatchApplyWallClock_Embedded
-5 4 TestLeaseLifecycleEmbedded
-5 5 TestListWisps
-5 1 TestOpenAfterCloseCreatesNewStore
-5 2 TestOpenDifferentDirsReturnsDifferentStores
-5 3 TestOpenReturnsCachedStore
-5 4 TestPromoteStillWorksWithCollisionGuard
-5 5 TestReclaimAnyReplicaOverride
-5 1 TestReclaimExpiredLeaseSurvivesRestartEmbedded
-5 2 TestReclaimRefusesForeignReplicaLease
-5 3 TestReopenIssue
-5 4 TestSchemaAfterInit
-5 5 TestUnknownProvenanceLeaseStaysReclaimable
-5 1 TestUpdateIssueType
-5 2 TestUpdateMergeOps_DoltEngine
-5 3 TestUpdateMergeOps_DoltEngine_TwoIssues
 15 1 TestBatchApplyContract
 15 1 TestCreateBatchStampsParticipationGenerationOnBrandNewRows
 15 1 TestEmbeddedClaimerClaimsAnUnassignedOpenIssueAndAnswersTheBareRow
@@ -702,20 +643,28 @@
 15 1 TestLifecycleCreateContract
 15 1 TestMergeWithStrategy_OursKeepsLocal
 15 1 TestWakeSweepNamesASkippedRowOncePerProcess
+
 15 2 TestActiveDatabaseSizeScopesToActiveEmbeddedDatabase
 15 2 TestCleanGitRemoteCacheGarbage
-15 2 TestCreateBatchFastPathsMatchPerRow_Embedded
+15 2 TestCreateBatchEquivalencePartsCoverEveryScenario
+15 2 TestCreateBatchFastPathsMatchPerRowApplyWaitsFor_Embedded
+15 2 TestCreateBatchFastPathsMatchPerRowSmallDepAdd_Embedded
+15 2 TestDatabases
 15 2 TestDepRekeyMarkerStillInIgnoredSeries
 15 2 TestDescendantWalkReachesEveryTargetKindAndStopsOnCycles
 15 2 TestDualWriteFixtureKitIsWired
+15 2 TestEmbeddedBatchCloserItemsAnswerToTheCloseGuards
 15 2 TestEmbeddedDepRekeyAbortLeavesMarkerUnrecorded
 15 2 TestEmbeddedDependencyEditorAppliesParentChildBeforeBlockingEdges
 15 2 TestEmbeddedDependencyEditorRefusesACycleThroughAParentChildHop
+15 2 TestEmbeddedDependencyEditorRefusesADottedChildGatedOnItsOwnParent
 15 2 TestEmbeddedDependencyEditorRefusesAGhostSource
 15 2 TestEmbeddedDependencyEditorRoutesWispSourcedRemovalToTheWispPlane
+15 2 TestEmbeddedDependencyEditorSameTypeReAddWithChangedThreadMintsOneVersion
 15 2 TestEmbeddedDependencyEditorSkipPerEdgeCycleCheckDropsOnlyTheProbe
 15 2 TestEmbeddedIssueOperationsCreateAggregatesRelations
 15 2 TestEmbeddedIssueOperationsUpdateStatusCrossingSettlesDependers
+15 2 TestEmbeddedMigrateConsent_BehindAndDirtyWorkingSetReconcileRecovers
 15 2 TestEmbeddedOpenReadOnly_FreshDatabaseNoWrites
 15 2 TestEmbeddedReaderListCountsAreBlocksOnlyWhereGetCountsEveryEdge
 15 2 TestEmbeddedRelationsDirectionSelectsTheInverseGraph
@@ -723,16 +672,18 @@
 15 2 TestEmbeddedRelationsOrdersNeighborsFromBothPlanesTogether
 15 2 TestEmbeddedRemoteMigrateGate_BlocksReopen
 15 2 TestGitRefPinsMatchDolt
+15 2 TestHeartbeatIssueCommitsARefusalOnlyWhenItReadTheIssueEmbedded
 15 2 TestHeartbeatRejectsWispEmbedded
 15 2 TestHookFiringStoreCreateIssuesFiresDependencyUpdatesFromEmbeddedStore
 15 2 TestIgnoredCursorHealRespectsOverrideUnderBroaderPattern
 15 2 TestLeaseLifecycleEmbedded
 15 2 TestLenientGateWarningBody_ShapedDecisions
 15 2 TestParticipationGenerationFence
+15 2 TestPolicyBlockingAnnotatorForeignOpensAreSublinear
 15 2 TestReadEventsAutoPruneStateResolvesBothHalvesInOneQuery
 15 2 TestSchemaAfterInit
 15 2 TestStageAndCommitAfterSQLCommitResponseLossIsIndeterminateAndNotReplayed
-15 2 TestWithPeerAuth_WarnsWhenStoredPeerSuppressesAmbientPassword
+
 15 3 TestEmbeddedBatchCloserDoesNotMutateTheCallerRequest
 15 3 TestEmbeddedBatchCloserOutcomeSnapshotIsTheDocumentedShape
 15 3 TestEmbeddedClaimerRefusesAWispIDAsNotFound
@@ -745,6 +696,7 @@
 15 3 TestEmbeddedMergeAndSettleFKCascadeRepair
 15 3 TestEmbeddedReaderListParentReachesEveryDescendantAndOnlyItsOwn
 15 3 TestEmbeddedReaderListPriorityKeysetWalkOverAnOversizedEqualKeyRunLosesNothingAndRepeatsNothing
+15 3 TestEmbeddedReaderListQueryMatchesTheTitleOrTheID
 15 3 TestEmbeddedReaderReadyLimitBoundary
 15 3 TestEmbeddedReadyClaimerFencesTheClaimByEveryLabelSetAndTheParentItWasGiven
 15 3 TestEmbeddedRelationsRefusesATypeFilterOverTheColumnLength
@@ -752,11 +704,15 @@
 15 3 TestEventsAutoPruneKeepsAnUnboundedJournalUnbounded
 15 3 TestEventsJournalReadRefusesAnInteriorHole
 15 3 TestForeignSkipDetailIsBounded
+15 3 TestHeartbeaterContract
 15 3 TestListWisps
 15 3 TestMergeAndSettleWithStrategy_ResolvesDeclinedConflict
+15 3 TestMoleculeContract
 15 3 TestPushCommitsPendingChangesFirst
 15 3 TestUpdateMergeOps_DoltEngine_TwoIssues
 15 3 TestWithPeerAuth_RestoresAbsentEnv
+15 3 TestWithPeerAuth_WarnsWhenStoredPeerSuppressesAmbientPasswordAmbient
+
 15 4 TestCounterExcludeStatusAcceptsAWorkspaceCustomStatusWithoutIncludeInfra
 15 4 TestEmbeddedBatchCloserSettlesTheDependersOfWhatItClosed
 15 4 TestEmbeddedBlockedRecheckSettlesWhatTheWriteRecorded
@@ -782,6 +738,7 @@
 15 4 TestReopenIssue
 15 4 TestWithPeerAuth
 15 4 TestWithPeerAuth_EnvFallbackDoesNotObservePeerCredentials
+
 15 5 TestActiveDatabaseSizeFailsForMissingEmbeddedDatabase
 15 5 TestAsOfReadContract
 15 5 TestBlockingAnnotatorContract
@@ -815,6 +772,7 @@
 15 5 TestPartitionWispIDs
 15 5 TestRetentionContract
 15 5 TestWithPeerAuth_KeyMismatchFailsClosed
+
 15 6 TestCreateIssuesRejectStaleUpserts
 15 6 TestDecryptPassword_KeyMismatchNamesTheLocalKey
 15 6 TestEmbeddedBatchCloserPerItemRefusalIsAResultAndSurvivorsCommit
@@ -840,6 +798,7 @@
 15 6 TestStatsReporterContract
 15 6 TestWithPeerAuth_ConcurrentPeersDoNotMixCredentials
 15 6 TestWithPeerAuth_RestoresEnvWhenCallbackFails
+
 15 7 TestCommitAllOutOfBandChangeAndHonestNoOp
 15 7 TestConcurrencyMultiProcess
 15 7 TestConcurrentOpenReturnsCached
@@ -866,6 +825,7 @@
 15 7 TestTreeWalkerContract
 15 7 TestWakeSweepSkipsTheRefusedRowAndWakesTheRest
 15 7 TestWithPeerAuth_DivergedRemoteURLFailsClosed
+
 15 8 TestAddLabel
 15 8 TestBuildDSN_NoDatabase
 15 8 TestCleanGitRemoteCacheGarbage_NoCacheDir
@@ -893,12 +853,14 @@
 15 8 TestEmbeddedSQLCommitResponseLossIsIndeterminate
 15 8 TestGetReadyWorkIncludeEphemeralAppliesWispFilters
 15 8 TestHasRepository
+15 8 TestLeaseReclaimerContract
 15 8 TestLenientGateWarning_ComposedOutput
 15 8 TestMergeAndSettleWithStrategy_EmptyStrategyMatchesMergeAndSettle
 15 8 TestParticipationGenerationFixtureKitIsWired
 15 8 TestReclaimExpiredLeaseSurvivesRestartEmbedded
 15 8 TestRemoteVerbPlainRemoteWithoutAuthPresentsNone
 15 8 TestTransactionCleanupAfterSQLCommitIsIndeterminate
+
 15 9 TestBatchGetterContract
 15 9 TestCommenterContract
 15 9 TestEmbeddedBatchCloserBackendFailureReturnsNoOutcomes
@@ -925,6 +887,7 @@
 15 9 TestReadyWorkWithMissingDeferredParentTables
 15 9 TestUpdateMergeOps_DoltEngine
 15 9 TestVersionedHistoryKeepsNumbersTheStoreDistinguishesApart
+
 15 10 TestBuildDSN_SpacesInPath
 15 10 TestCleanGitRemoteCacheGarbage_Throttled
 15 10 TestCreateIssues
@@ -958,6 +921,7 @@
 15 10 TestTransactionCleanupBeforeSQLCommitRemainsDefinite
 15 10 TestVersionReconcilerContract
 15 10 TestWithPeerAuth_MissingRemoteFailsClosed
+
 15 11 TestCycleDetectorContract
 15 11 TestEmbeddedBatchCloserClaimFilterValueFailureIsARequestValidationFailure
 15 11 TestEmbeddedBatchCloserIdempotentRecloseIsAPerItemSuccess
@@ -983,6 +947,7 @@
 15 11 TestPristineEmbeddedDoltFixtureRelocatesPrefixes
 15 11 TestReadyWorkPageTotal
 15 11 TestUpdateIssueType
+
 15 12 TestBatchCreatorContract
 15 12 TestDualWriteContract
 15 12 TestEmbeddedClaimerTakesAnOpenIssueTheActorAlreadyHolds
@@ -1009,6 +974,7 @@
 15 12 TestSearchWithMissingWispPlaneTables
 15 12 TestWakeSweepWithHistoryOffWakesTheRowItWouldOtherwiseSkip
 15 12 TestWorkspaceConfigContract
+
 15 13 TestCountsIncludeWispDependencies
 15 13 TestDecryptPassword_ShortCiphertextClassifiesAsKeyMismatch
 15 13 TestEmbeddedBatchCloserDurableHistoryNeverNamesAWisp
@@ -1034,7 +1000,10 @@
 15 13 TestExternalCapabilityBlocksEmbeddedReadyAndAppearsInTree
 15 13 TestIgnoredCursorHealRespectsOperatorOverride
 15 13 TestLegacyTrackedIgnoredCursorHealsOnOpen
+15 13 TestPolicyBlockingAnnotatorBatchEqualsPerItem
 15 13 TestSweeperContract
+15 13 TestWithPeerAuth_WarnsWhenStoredPeerSuppressesAmbientPasswordStored
+
 15 14 TestAddDependency
 15 14 TestCounterContract
 15 14 TestCountsWithMissingWispPlaneTables
@@ -1061,6 +1030,7 @@
 15 14 TestReadyCounterContract
 15 14 TestUnknownProvenanceLeaseStaysReclaimable
 15 14 TestWakeSweepWritesNothingWhenEveryExpiredRowIsSkipped
+
 15 15 TestCreateBatchLeavesExistingLegacyRowUnstamped
 15 15 TestCreateIssue
 15 15 TestEdgeReaderContract

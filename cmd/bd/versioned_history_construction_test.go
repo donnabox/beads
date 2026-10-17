@@ -135,7 +135,8 @@ func TestVersionedHistoryGuardSeesTheFactoriesEveryWriteUses(t *testing.T) {
 // the scan fails a test instead of shrinking the guard.
 var versionedHistoryFactoryKeys = []string{
 	"store_factory.go:newDoltStore",
-	"store_factory.go:newDoltStoreFromConfig",
+	// Both routed-open wrappers delegate to this activating implementation.
+	"store_factory.go:openDoltStoreFromConfig",
 	"store_factory.go:newRegisteredBackendStore",
 	"store_factory_nocgo.go:newDoltStore",
 	"store_factory_nocgo.go:newDoltStoreFromConfig",

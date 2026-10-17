@@ -32,9 +32,9 @@ set -euo pipefail
 manifest="$(dirname "${BASH_SOURCE[0]}")/release-targets.txt"
 
 targets=()
-while read -r goos goarch extra; do
-    if [[ -z "$goarch" || -n "$extra" ]]; then
-        echo "::error::malformed row in $manifest: '$goos $goarch $extra', want 'GOOS GOARCH'"
+while read -r goos goarch group extra; do
+    if [[ -z "$goarch" || -n "$extra" || ( "$group" != "unix" && "$group" != "desktop" ) ]]; then
+        echo "::error::malformed row in $manifest: '$goos $goarch $group $extra', want 'GOOS GOARCH unix|desktop'"
         exit 1
     fi
     targets+=("$goos/$goarch")

@@ -97,8 +97,19 @@ func TestConformanceE2ETierRunsUnderBazel(t *testing.T) {
 			t.Errorf("test/conformance/%s must build under e2e (scripts/conformance.sh) and integration (the Bazel lane)", file)
 		}
 	}
-	if _, err := os.Stat(filepath.Join(root, ".github", "workflows", "conformance.yml")); err == nil {
-		t.Error(".github/workflows/conformance.yml is back; its tiers run under Bazel")
+	// This fork still runs the standalone embedded-Dolt conformance workflow
+	// alongside Bazel. Pin both execution paths while the gate topology is
+	// reconciled; the Bazel target above does not replace that hosted job.
+	workflow := readPolicyFile(t, root, ".github/workflows/conformance.yml")
+	for _, want := range []string{
+		"pull_request:",
+		"merge_group:",
+		"name: Storage backend conformance (embedded Dolt oracle)",
+		"run: ./scripts/conformance.sh",
+	} {
+		if !strings.Contains(workflow, want) {
+			t.Errorf("conformance.yml lacks %q", want)
+		}
 	}
 }
 

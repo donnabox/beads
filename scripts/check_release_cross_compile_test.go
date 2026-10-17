@@ -103,10 +103,10 @@ func runBazelReleaseCrossCompile(t *testing.T, manifest, failPlatform, builtPkgs
 }
 
 const testReleaseManifest = "# comment\n" +
-	"linux amd64\n" +
+	"linux amd64 unix\n" +
 	"\n" +
-	"windows arm64\n" +
-	"darwin arm64\n"
+	"windows arm64 desktop\n" +
+	"darwin arm64 desktop\n"
 
 func buildCalls(calls []string) []string {
 	var out []string
@@ -215,9 +215,9 @@ func TestBazelReleaseCrossCompileEmptyManifestFails(t *testing.T) {
 	}
 }
 
-// A malformed row (not exactly GOOS GOARCH) must fail, not be skipped.
+// A malformed row (without a recognized group) must fail, not be skipped.
 func TestBazelReleaseCrossCompileMalformedRowFails(t *testing.T) {
-	out, err, _ := runBazelReleaseCrossCompile(t, "linux amd64 unix\n", "", testPkgs)
+	out, err, _ := runBazelReleaseCrossCompile(t, "linux amd64 unknown\n", "", testPkgs)
 	if err == nil {
 		t.Fatalf("script exited 0 for a malformed row; want non-zero\noutput:\n%s", out)
 	}

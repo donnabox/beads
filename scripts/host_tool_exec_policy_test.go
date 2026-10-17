@@ -612,13 +612,12 @@ type hostToolAllowlistEntry struct {
 }
 
 // hostToolExecAllowlist is file (repo-relative, slash-separated) -> the
-// entries justifying an ungated literal go/gofmt exec there. Every entry
-// here is a helper reached only when bazeltest.PrebuiltBD()/
-// findPrebuiltBDBinary() (which itself calls bazeltest.IsBazel() under the
-// hood) already reported no prebuilt bd binary -- under Bazel that call
-// never returns "", so the exec below it is unreachable there, just not
-// through a mention this scan's textual check can find in the same
-// function. goBuildBDCommand itself (nine call sites, cmd/bd/*_test.go) is
+// entries justifying an ungated literal go/gofmt exec there. The replay
+// fixtures call replaytest.Require(NeedBd), which skips under Bazel before
+// building from source; this scan does not follow that cross-package gate.
+// Other entries are helpers reached only after bazeltest.PrebuiltBD()/
+// findPrebuiltBDBinary() reports no prebuilt bd binary. goBuildBDCommand
+// itself (nine call sites, cmd/bd/*_test.go) is
 // deliberately NOT here: it has no gate of its own, so it is instead
 // verified by helperIsGatedByAllCallers, which checks every call site
 // directly rather than trusting a comment about them (review point 4).
@@ -629,6 +628,27 @@ type hostToolAllowlistEntry struct {
 // findPrebuiltBDBinary()/bazeltest.PrebuiltBD() result `!= ""` and returns),
 // so they need no allowlist entry.
 var hostToolExecAllowlist = map[string][]hostToolAllowlistEntry{
+	"internal/replay/driver/b7_fixture_test.go": {
+		{
+			fn:      "driverCoreBin",
+			snippet: `cmd := exec.Command("go", "build", "-tags", bdBuildTags, "-o", out, "./scripts/driver-core")`,
+			why:     "driverCoreBin calls replaytest.Require(NeedBd) before this build; NeedBd skips under Bazel",
+		},
+	},
+	"internal/replay/scenarios/lostupdate/lostupdate_test.go": {
+		{
+			fn:      "",
+			snippet: `cmd := exec.Command("go", "build", "-o", out, "./scripts/corpus-acquire")`,
+			why:     "acquireBin's once.Do closure is reached only after TestLostUpdateRace calls replaytest.Require(NeedBd); NeedBd skips under Bazel",
+		},
+	},
+	"internal/replay/scenarios/compatwindow/fixture_test.go": {
+		{
+			fn:      "buildOldWriter",
+			snippet: `cmd := exec.Command("go", "build", "-tags", bdBuildTags, "-o", bin, "./cmd/bd")`,
+			why:     "buildOldWriter is reached through oldWriter only after newCompat calls replaytest.Require(NeedBd); NeedBd skips under Bazel",
+		},
+	},
 	"internal/storage/embeddeddolt/concurrency_test.go": {
 		{
 			fn:      "TestConcurrencyMultiProcess",

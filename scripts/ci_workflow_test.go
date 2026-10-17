@@ -179,10 +179,9 @@ func TestPRCIGateRequiresPolicyAndLintWrappers(t *testing.T) {
 }
 
 // F5.2/F5.7: the pinned golangci-lint install script's version and sha256
-// values must stay in sync with LINTING.md's documented version and with
-// .githooks/pre-commit's `go run ...@<version>`, and the three workflows that
-// use the script (pr.yml, main.yml, ci-measurements.yml) must all call it
-// instead of `go install`.
+// values must stay in sync with LINTING.md's documented version. The fork's
+// retained native PR lint job installs through this script; upstream's push
+// workflow and the local hook have moved to Bazel nogo.
 func TestGolangciLintInstallScriptPinned(t *testing.T) {
 	root := sourceRepoRoot(t)
 	script := readPolicyFile(t, root, "scripts/ci/install-golangci-lint.sh")
@@ -209,180 +208,9 @@ func TestGolangciLintInstallScriptPinned(t *testing.T) {
 		t.Errorf("engdocs/LINTING.md does not mention v%s", version)
 	}
 
-	preCommit := readPolicyFile(t, root, ".githooks/pre-commit")
-	if !strings.Contains(preCommit, "golangci-lint/v2/cmd/golangci-lint@v"+version) {
-		t.Errorf(".githooks/pre-commit does not pin golangci-lint @v%s", version)
-	}
-	// The hook stays on `go run` deliberately (CI-only RUNNER_TEMP/GITHUB_PATH
-	// requirement); it must not switch to the install script.
-	if strings.Contains(preCommit, "install-golangci-lint.sh") {
-		t.Error(".githooks/pre-commit must keep using `go run`, not the CI-only install script")
-	}
-
-	for _, workflow := range []string{"pr.yml", "main.yml"} {
-		job := readCIWorkflow(t, workflow).job(t, "pr-lint-wrapper")
-		if got := job.step(t, "Install golangci-lint").Run; got != "./scripts/ci/install-golangci-lint.sh" {
-			t.Errorf("%s pr-lint-wrapper installs golangci-lint with %q, want the pinned install script", workflow, got)
-		}
-	}
-	measurements := readPolicyFile(t, root, ".github/workflows/ci-measurements.yml")
-	if strings.Contains(measurements, "go install github.com/golangci/golangci-lint") {
-		t.Error("ci-measurements.yml still uses go install for golangci-lint; use scripts/ci/install-golangci-lint.sh")
-	}
-	if !strings.Contains(measurements, "install-golangci-lint.sh") {
-		t.Error("ci-measurements.yml does not call scripts/ci/install-golangci-lint.sh")
-	}
-
-	// SF-2: install-golangci-lint.sh and the "pr-lint wrapper" measurement run
-	// in the same shell block (not separate steps), so appending to
-	// $GITHUB_PATH (which only takes effect in later *steps*) is not enough;
-	// the script's install_dir must also be exported into this step's own
-	// PATH, after the install call and before the wrapper that needs it.
-	const (
-		installMarker = "install-golangci-lint.sh"
-		pathExport    = `export PATH="$RUNNER_TEMP/golangci-lint:$PATH"`
-		wrapperMarker = `ci_time "pr-lint wrapper"`
-	)
-	installIdx := strings.Index(measurements, installMarker)
-	pathIdx := strings.Index(measurements, pathExport)
-	wrapperIdx := strings.Index(measurements, wrapperMarker)
-	if pathIdx < 0 {
-		t.Errorf("ci-measurements.yml does not export golangci-lint's install dir onto PATH in the same step (want %q)", pathExport)
-	}
-	if installIdx < 0 || wrapperIdx < 0 {
-		t.Fatalf("ci-measurements.yml missing expected markers: install=%d wrapper=%d", installIdx, wrapperIdx)
-	}
-	if !(installIdx < pathIdx && pathIdx < wrapperIdx) {
-		t.Errorf("ci-measurements.yml PATH export must sit between the golangci-lint install (%d) and the pr-lint wrapper call (%d); got PATH export at %d", installIdx, wrapperIdx, pathIdx)
-	}
-}
-
-// TestInstallGolangciLintFailsClosedOnChecksumMismatch is the regression net
-// for install-golangci-lint.sh's supply-chain gate (SF-3). Without it, nothing
-// exercises the sha256 comparison's behavior -- TestGolangciLintInstallScriptPinned
-// above only pins the hash strings as text, so e.g. replacing the comparison
-// with an always-false condition passes every other test in this package. A
-// fake curl hands the script a tarball whose content never matches either
-// pinned hash; a fake tar makes extraction succeed anyway (so a bypassed check
-// is exposed cleanly as "installed the wrong thing", not masked by tar
-// choking on bad bytes), which is exactly the gap a real supply-chain attack
-// (a compromised release asset, a MITM'd download) would exploit if the
-// comparison were missing or broken.
-func TestInstallGolangciLintFailsClosedOnChecksumMismatch(t *testing.T) {
-	bash := requireHostTool(t, "bash")
-
-	bin := t.TempDir()
-	stateDir := t.TempDir()
-	runnerTemp := t.TempDir()
-	curlLog := filepath.Join(stateDir, "curl-calls")
-	tarLog := filepath.Join(stateDir, "tar-calls")
-	githubPath := filepath.Join(stateDir, "github-path")
-	for _, path := range []string{curlLog, tarLog, githubPath} {
-		if err := os.WriteFile(path, nil, 0o600); err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	// Writes fixed, wrong-checksum bytes to curl's -o target. Any download
-	// (first attempt or a retry) "succeeds" the same way, so the script
-	// reaches the sha256 comparison deterministically.
-	writeExecutable(t, filepath.Join(bin, "curl"), `#!/bin/sh
-set -eu
-printf '%s\n' "$*" >>"$GOLANGCI_INSTALL_CURL_LOG"
-out=""
-prev=""
-for arg in "$@"; do
-  if [ "$prev" = "-o" ]; then
-    out="$arg"
-  fi
-  prev="$arg"
-done
-if [ -n "$out" ]; then
-  printf 'not the real golangci-lint release asset\n' >"$out"
-fi
-`)
-	// Materializes a plausible-looking extracted binary unconditionally, the
-	// way a real tarball's contents would after a successful `tar -xzf`. The
-	// script's sha256 check -- not tar's own format validation -- must be
-	// what stands between this fake binary and $RUNNER_TEMP/golangci-lint.
-	writeExecutable(t, filepath.Join(bin, "tar"), `#!/bin/sh
-set -eu
-printf '%s\n' "$*" >>"$GOLANGCI_INSTALL_TAR_LOG"
-outdir=""
-prev=""
-for arg in "$@"; do
-  if [ "$prev" = "-C" ]; then
-    outdir="$arg"
-  fi
-  prev="$arg"
-done
-mkdir -p "$outdir/golangci-lint-2.10.1-linux-amd64"
-cat >"$outdir/golangci-lint-2.10.1-linux-amd64/golangci-lint" <<'SCRIPT'
-#!/bin/sh
-printf 'golangci-lint has version 2.10.1 built from unknown\n'
-SCRIPT
-chmod +x "$outdir/golangci-lint-2.10.1-linux-amd64/golangci-lint"
-`)
-	// Pins the platform so the asset name, arch lookup and extracted layout
-	// are fixed regardless of the machine running the test.
-	writeExecutable(t, filepath.Join(bin, "uname"), `#!/bin/sh
-set -eu
-case "${1:-}" in
-  -m) printf 'x86_64\n' ;;
-  *) printf 'Linux\n' ;;
-esac
-`)
-
-	pathEnv := shellPathEnv()
-	binPath := shellPathUnderEnv(t, bash, bin, pathEnv)
-	statePath := shellPathUnderEnv(t, bash, stateDir, pathEnv)
-	commandPath := binPath + ":" + os.Getenv("PATH") + ":/usr/bin:/bin"
-	if runtime.GOOS == "windows" {
-		commandPath = binPath + ":/usr/bin:/bin"
-	}
-	root := sourceRepoRoot(t)
-	env := []string{
-		"PATH=" + os.Getenv("PATH"),
-		"BEADS_TEST_COMMAND_PATH=" + commandPath,
-		"LC_ALL=C",
-		"LANG=C",
-		"BASH_ENV=",
-		"ENV=",
-		"RUNNER_TEMP=" + shellPathUnderEnv(t, bash, runnerTemp, pathEnv),
-		"GITHUB_PATH=" + statePath + "/github-path",
-		"GOLANGCI_INSTALL_CURL_LOG=" + statePath + "/curl-calls",
-		"GOLANGCI_INSTALL_TAR_LOG=" + statePath + "/tar-calls",
-	}
-	for _, name := range []string{"curl", "tar", "uname"} {
-		requireShellCommandPath(t, bash, root, env, name, binPath+"/"+name)
-	}
-
-	cmd := bashScriptCommand(bash, "scripts/ci/install-golangci-lint.sh")
-	cmd.Dir = root
-	cmd.Env = env
-	output, runErr := cmd.CombinedOutput()
-
-	if code := pullDoltExitCode(runErr); code == 0 {
-		t.Fatalf("exit = 0, want non-zero; output:\n%s", output)
-	}
-	if !strings.Contains(string(output), "sha256 mismatch") {
-		t.Errorf("output does not contain %q:\n%s", "sha256 mismatch", output)
-	}
-	if calls := readCallLines(t, tarLog); len(calls) != 0 {
-		t.Errorf("tar was invoked %d time(s), want 0 (the sha256 check must reject the download before extraction): %q", len(calls), calls)
-	}
-	if calls := readCallLines(t, curlLog); len(calls) == 0 {
-		t.Fatalf("curl was never invoked; test did not exercise the script's download path")
-	}
-	if entries, err := os.ReadDir(runnerTemp); err != nil {
-		t.Fatal(err)
-	} else if len(entries) != 0 {
-		t.Errorf("RUNNER_TEMP = %v, want empty (nothing installed on a checksum mismatch)", entries)
-	}
-	if data, err := os.ReadFile(githubPath); err != nil {
-		t.Fatal(err)
-	} else if len(data) != 0 {
-		t.Errorf("GITHUB_PATH = %q, want empty (nothing appended on a checksum mismatch)", data)
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-lint-wrapper")
+	if got := job.step(t, "Install golangci-lint").Run; got != "./scripts/ci/install-golangci-lint.sh" {
+		t.Errorf("pr.yml pr-lint-wrapper installs golangci-lint with %q, want the pinned install script", got)
 	}
 }
 
@@ -1162,33 +990,29 @@ func TestDoltTestcontainerStepsDisableRyuk(t *testing.T) {
 	}
 }
 
-// TestNightlyFullTestRunsEmbeddedDoltBatchApplySuite pins the nightly
-// full-test job's embedded-Dolt step: it must set BEADS_TEST_EMBEDDED_DOLT=1
-// (the gate skipUnlessEmbeddedDolt checks) and run exactly
-// TestBatchApplyContract, TestLargeBatchApplyWallClock_Embedded, (F1)
-// TestLargeBatchApplyStatementCounts712_Embedded and the 458-issue
-// batch-create equivalence scenarios
-// (TestCreateBatchFastPathsMatchPerRowLarge_Embedded), non-race, after the main
-// "Full Test Suite" step. That main step never sets BEADS_TEST_EMBEDDED_DOLT,
-// so without this step the nightly job would never exercise a real
-// 1000-item apply through the embedded backend, nor the 712-item shape's
-// pinned statement-count baseline, at all — see the step's own comment in
-// nightly.yml for why non-race and why these tests specifically.
-func TestNightlyFullTestRunsEmbeddedDoltBatchApplySuite(t *testing.T) {
-	job := readCIWorkflow(t, "nightly.yml").job(t, "full-test")
-	const stepName = "Embedded Dolt batch-apply suite (non-race)"
-	const wantRun = "go test -tags gms_pure_go -timeout 20m -run '^(TestBatchApplyContract|TestLargeBatchApplyWallClock_Embedded|TestLargeBatchApplyStatementCounts712_Embedded|TestCreateBatchFastPathsMatchPerRowLarge_Embedded)$' ./internal/storage/embeddeddolt"
-	assertStepRunsExactly(t, job, stepName, wantRun)
-	assertStepEnvValue(t, job, stepName, "BEADS_TEST_EMBEDDED_DOLT", "1")
-	assertStepsBefore(t, job, []string{"Full Test Suite (including integration tests)"}, []string{stepName})
-	if strings.Contains(wantRun, "-race") {
-		t.Errorf("embedded-dolt nightly step run = %q, must stay non-race (race dramatically inflates this backend's own wall-clock)", wantRun)
+// Nightly delegates to the fresh Bazel workflow. Its embedded tier must
+// include the dedicated non-race batch-apply target with the original four
+// cases and BEADS_TEST_EMBEDDED_DOLT set; a race-only run misses the pinned
+// statement-count baseline.
+func TestNightlyRunsEmbeddedDoltBatchApplySuiteUnderBazel(t *testing.T) {
+	nightly := readCIWorkflow(t, "nightly.yml").job(t, "bazel")
+	if nightly.Uses != "./.github/workflows/bazel.yml" || nightly.With["fresh-test-results"] != "true" {
+		t.Errorf("nightly Bazel call = %q with fresh-test-results=%q", nightly.Uses, nightly.With["fresh-test-results"])
 	}
-	// N4 (F1 review): this step must still run (and report) even if an
-	// earlier nightly step failed, and must carry its own explicit Go
-	// timeout independent of the job-level timeout-minutes.
-	if got := job.step(t, stepName).If; got != "${{ !cancelled() }}" {
-		t.Errorf("embedded-dolt nightly step if = %q, want ${{ !cancelled() }}", got)
+	embedded := readCIWorkflow(t, "bazel.yml").job(t, "bazel-embedded")
+	if run := embedded.step(t, "bazel test //... --config=embedded").Run; !strings.Contains(run, "bazel test //... --config=embedded") {
+		t.Errorf("Bazel embedded tier does not run --config=embedded: %q", run)
+	}
+	rule := bazelRuleBlock(readPolicyFile(t, sourceRepoRoot(t), "internal/storage/embeddeddolt/BUILD.bazel"), "embeddeddolt_batch_apply_nonrace_test")
+	for _, want := range []string{
+		"TestBatchApplyContract", "TestLargeBatchApplyWallClock_Embedded",
+		"TestLargeBatchApplyStatementCounts712_Embedded", "TestCreateBatchFastPathsMatchPerRowLarge_Embedded",
+		`env = {"BEADS_TEST_EMBEDDED_DOLT": "1"}`, `tags = ["embedded"]`,
+		`data = [":embeddeddolt_race_off"]`,
+	} {
+		if !strings.Contains(rule, want) {
+			t.Errorf("batch-apply Bazel target lacks %q", want)
+		}
 	}
 }
 
@@ -1343,9 +1167,6 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 		}
 	})
 
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "build-artifacts"), []goCacheStep{
-		mainRestoreModuleCache(), mainRestoreBuildCache("non-race"), saveModuleCache(), saveBuildCache("non-race"),
-	})
 	// Blacksmith macOS: restores what blacksmith-macos-go-build-cache's
 	// Blacksmith leg saves and owns only its race cache (day-bucketed, S7).
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "test"), []goCacheStep{
@@ -1354,29 +1175,6 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	})
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "test-windows"), []goCacheStep{
 		mainRestoreModuleCache(), mainRestoreBuildCacheDayBucketedIf("non-race", ""), saveModuleCache(), saveBuildCacheDayBucketed("non-race"),
-	})
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "pr-lint-wrapper"), []goCacheStep{
-		restoreModuleCache(), mainRestoreGolangciCache(), saveGolangciCache(),
-	})
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "go-vet-cache"), []goCacheStep{
-		mainRestoreModuleCache(), mainRestoreVetCache(), saveVetCache(),
-	})
-	// F4.7: seeds the module and xcompile caches pr.yml's windows-test-binaries
-	// job only restores (PR workflows never save).
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "windows-test-binaries-cache"), []goCacheStep{
-		mainRestoreModuleCache(), mainRestoreXCompileCache(), saveModuleCacheAfterFailure(), saveXCompileCache(),
-	})
-	// F7b: race/non-race GOCACHE saves for same-repo PR consumers
-	// (scripts-go-checks, pr-preflight-platforms, check-doc-freshness-platforms)
-	// that run on Blacksmith, whose cache namespace is invisible to
-	// GitHub-hosted build-artifacts; its github venue leg seeds the fork
-	// path's race cache (build-artifacts seeds its non-race one).
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "blacksmith-go-build-cache"), []goCacheStep{
-		mainRestoreModuleCache(),
-		mainRestoreBuildCacheDayBucketedIf("race", "matrix.flavor == 'race'"),
-		mainRestoreBuildCacheDayBucketedIf("non-race", "matrix.flavor == 'non-race'"),
-		saveBuildCacheDayBucketedAfterFailureIf("race", "matrix.flavor == 'race'"),
-		saveBuildCacheDayBucketedAfterFailureIf("non-race", "matrix.flavor == 'non-race'"),
 	})
 	// macOS saver for pr-preflight-platforms'/check-doc-freshness-platforms'
 	// macOS legs: its blacksmith venue leg seeds the same-repo path (and the
@@ -1403,14 +1201,13 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	assertGoCacheInventory(t, workflows["pr.yml"].job(t, "worktree-remove-windows"), []goCacheStep{
 		restoreModuleCache(), restoreBuildCache("non-race"),
 	})
-	// F4.4 advisory phase: windows-test-binaries cross-compiles on Linux and
-	// only restores (never saves; main.yml's windows-test-binaries-cache job
-	// is the saver). Its "-prebuilt" twins (test-windows-liveness-prebuilt,
+	// The Windows cross-compile job restores modules but has no main-side
+	// xcompile cache writer. Its "-prebuilt" twins (test-windows-liveness-prebuilt,
 	// worktree-remove-windows-prebuilt) download the resulting artifact and
 	// run the binaries directly, so they use no Go cache action at all and
 	// need no entry here or in the managed map below.
 	assertGoCacheInventory(t, workflows["pr.yml"].job(t, "windows-test-binaries"), []goCacheStep{
-		restoreModuleCache(), restoreXCompileCache(),
+		restoreModuleCache(),
 	})
 	// F7b review (S2): restore-only non-race Go build cache seeded by
 	// main.yml's test-windows Blacksmith leg (warm-non-race-cache.sh) on the
@@ -1445,17 +1242,8 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	})
 	assertNoUnmanagedGoCacheSteps(t, workflows, map[string]map[string]bool{
 		"main.yml": {
-			"build-artifacts": true, "test": true, "test-windows": true,
-			"pr-lint-wrapper": true, "go-vet-cache": true, "windows-test-binaries-cache": true, "blacksmith-go-build-cache": true,
+			"test": true, "test-windows": true,
 			"blacksmith-macos-go-build-cache": true,
-			// F7c: blacksmith-setup-go-cache's own restore/save pair seeds the
-			// self-defined blacksmith-sg-v1- cache namespace every advisory
-			// Blacksmith consumer restores from (B2, F7c implementation
-			// report); it is covered by its own
-			// TestBlacksmithSetupGoSeedExistsForAdvisoryConsumers and
-			// TestBlacksmithSetupGoCacheKeysMatchAcrossSeederAndConsumers in
-			// ci_f7c_advisory_test.go, not by assertGoCacheInventory above.
-			"blacksmith-setup-go-cache": true,
 		},
 		"pr.yml": {
 			"build-artifacts": true, "pr-core-wrapper": true, "scripts-go-checks": true, "worktree-remove-windows": true,
@@ -1465,10 +1253,6 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 		},
 		"pr-risk.yml": {"build-embedded": true},
 	})
-
-	mainArtifacts := workflows["main.yml"].job(t, "build-artifacts")
-	assertStepsBefore(t, mainArtifacts, []string{"Restore Go module cache", "Restore non-race Go build cache"}, []string{"Build reusable Linux artifacts"})
-	assertStepsBefore(t, mainArtifacts, []string{"Build reusable Linux artifacts", "Upload build artifacts"}, []string{"Save Go module cache", "Save non-race Go build cache"})
 
 	embeddedRaceBuilds := []string{"Build embedded bd binary", "Build embedded storage test binary", "Build embedded cmd test binary"}
 
@@ -1488,13 +1272,8 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 		[]string{"Restore Go module cache", "Restore race Go build cache"}, []string{"Run PR core wrapper"})
 	prXCompile := workflows["pr.yml"].job(t, "windows-test-binaries")
 	assertStepsBefore(t, prXCompile, []string{"Restore Go module cache"}, []string{"Verify Go module checksums", "Build Windows test binaries"})
-	assertStepsBefore(t, prXCompile, []string{"Install mingw cross-compiler", "Restore Go build cache (Windows cross-compile)"}, []string{"Build Windows test binaries"})
+	assertStepsBefore(t, prXCompile, []string{"Install mingw cross-compiler"}, []string{"Build Windows test binaries"})
 	assertStepsBefore(t, prXCompile, []string{"Build Windows test binaries"}, []string{"Upload Windows test binaries"})
-
-	mainXCompileCache := workflows["main.yml"].job(t, "windows-test-binaries-cache")
-	assertStepsBefore(t, mainXCompileCache, []string{"Restore Go module cache"}, []string{"Install mingw cross-compiler", "Build Windows test binaries"})
-	assertStepsBefore(t, mainXCompileCache, []string{"Install mingw cross-compiler", "Restore Go build cache (Windows cross-compile)"}, []string{"Build Windows test binaries"})
-	assertStepsBefore(t, mainXCompileCache, []string{"Build Windows test binaries"}, []string{"Save Go module cache", "Save Go build cache (Windows cross-compile)"})
 
 	assertStepsBefore(t, workflows["pr.yml"].job(t, "worktree-remove-windows"),
 		[]string{"Restore Go module cache", "Restore non-race Go build cache"}, []string{"Run native Windows worktree removal boundary tests"})
@@ -1511,11 +1290,9 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	assertStepsBefore(t, prRiskEmbedded, []string{"Restore race Go build cache"}, embeddedRaceBuilds)
 	assertStepsBefore(t, prRiskEmbedded, []string{"Restore non-race Go build cache"}, prRiskNonRaceBuilds)
 
-	assertGoCacheEnv(t, workflows["main.yml"].job(t, "build-artifacts"), "Build reusable Linux artifacts", "non-race")
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test"), "Build", "non-race")
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test"), "Test", "race")
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test-windows"), "Build (pure Go regex)", "non-race")
-	assertGoCacheEnv(t, workflows["main.yml"].job(t, "windows-test-binaries-cache"), "Build Windows test binaries", xcompileCacheProfile())
 	assertGoCacheEnv(t, workflows["pr.yml"].job(t, "build-artifacts"), "Build reusable Linux artifacts", "non-race")
 	assertGoCacheEnv(t, workflows["pr.yml"].job(t, "pr-core-wrapper"), "Run PR core wrapper", "race")
 	assertGoCacheEnv(t, workflows["pr.yml"].job(t, "windows-test-binaries"), "Build Windows test binaries", xcompileCacheProfile())
@@ -1537,24 +1314,14 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 		}
 	}
 
-	assertGoCacheWriter(t, workflows["main.yml"], "build-artifacts", "ubuntu-latest", "Save Go module cache", cacheMissCondition(goModuleCacheRestoreID))
-	assertGoCacheWriter(t, workflows["main.yml"], "build-artifacts", "ubuntu-latest", "Save non-race Go build cache", cacheMissCondition(goBuildCacheRestoreID("non-race")))
 	assertGoCacheWriter(t, workflows["main.yml"], "test", mainBlacksmithMacOSTestRunsOn, "Save race Go build cache", failureSurvivingCacheSaveCondition(cacheMissCondition(goBuildCacheRestoreID("race"))))
-	assertGoCacheWriter(t, workflows["main.yml"], "test-windows", mainVenueBlacksmithWindows4vcpuRunsOn, "Save Go module cache", cacheMissCondition(goModuleCacheRestoreID))
-	assertGoCacheWriter(t, workflows["main.yml"], "test-windows", mainVenueBlacksmithWindows4vcpuRunsOn, "Save non-race Go build cache", cacheMissCondition(goBuildCacheRestoreID("non-race")))
-	assertGoCacheWriter(t, workflows["main.yml"], "pr-lint-wrapper", mainVenueBlacksmithUbuntu4vcpuRunsOn, "Save golangci-lint cache", failureSurvivingCacheSaveCondition(cacheMissCondition(golangciCacheRestoreID())))
-	assertGoCacheWriter(t, workflows["main.yml"], "go-vet-cache", mainVenueBlacksmithUbuntu4vcpuRunsOn, "Save vet Go build cache", failureSurvivingCacheSaveCondition(cacheMissCondition(goVetCacheRestoreID())))
-	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-go-build-cache", mainBlacksmithGoBuildCacheRunsOn, "Save race Go build cache", saveBuildCacheAfterFailureIf("race", "matrix.flavor == 'race'").ifCondition)
-	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-go-build-cache", mainBlacksmithGoBuildCacheRunsOn, "Save non-race Go build cache", saveBuildCacheAfterFailureIf("non-race", "matrix.flavor == 'non-race'").ifCondition)
-	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-macos-go-build-cache", mainBlacksmithMacOSGoBuildCacheRunsOn, "Save Go module cache", saveModuleCacheAfterFailure().ifCondition)
-	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-macos-go-build-cache", mainBlacksmithMacOSGoBuildCacheRunsOn, "Save non-race Go build cache", saveBuildCacheAfterFailureIf("non-race", "").ifCondition)
-	assertGoCacheWriter(t, workflows["main.yml"], "windows-test-binaries-cache", mainWindowsTestBinariesCacheRunsOn, "Save Go module cache", saveModuleCacheAfterFailure().ifCondition)
-	assertGoCacheWriter(t, workflows["main.yml"], "windows-test-binaries-cache", mainWindowsTestBinariesCacheRunsOn, "Save Go build cache (Windows cross-compile)", saveXCompileCache().ifCondition)
+	assertGoCacheWriter(t, workflows["main.yml"], "test-windows", "${{ 'blacksmith-4vcpu-windows-2025' }}", "Save Go module cache", cacheMissCondition(goModuleCacheRestoreID))
+	assertGoCacheWriter(t, workflows["main.yml"], "test-windows", "${{ 'blacksmith-4vcpu-windows-2025' }}", "Save non-race Go build cache", cacheMissCondition(goBuildCacheRestoreID("non-race")))
+	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-macos-go-build-cache", mainBlacksmithMacOSTestRunsOn, "Save Go module cache", saveModuleCacheAfterFailure().ifCondition)
+	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-macos-go-build-cache", mainBlacksmithMacOSTestRunsOn, "Save non-race Go build cache", saveBuildCacheAfterFailureIf("non-race", "").ifCondition)
 	for _, target := range []struct{ workflow, job string }{
-		{"main.yml", "build-artifacts"},
 		{"main.yml", "test"},
 		{"main.yml", "test-windows"},
-		{"main.yml", "windows-test-binaries-cache"},
 		{"main.yml", "blacksmith-macos-go-build-cache"},
 		{"pr.yml", "build-artifacts"},
 		{"pr.yml", "pr-core-wrapper"},
@@ -1571,32 +1338,23 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	}
 }
 
-// TestMainWindowsTestBinariesCacheSeedsBothRunnerSelections is the regression
-// test for F4 review SF-1: main.yml's windows-test-binaries-cache job must
-// seed its cache keys from both runner selections pr.yml's windows-test-
-// binaries job can land on (Blacksmith for same-repo PRs/merge_group,
-// ubuntu-latest for forks/Dependabot), because Blacksmith and GitHub-hosted
-// runners cannot see each other's actions/cache entries even for an
-// identical key. A single-leg seeder would silently leave one of the two
-// consumer paths permanently cold.
-func TestMainWindowsTestBinariesCacheSeedsBothRunnerSelections(t *testing.T) {
-	job := readCIWorkflow(t, "main.yml").job(t, "windows-test-binaries-cache")
-
-	if job.RunsOn != mainWindowsTestBinariesCacheRunsOn {
-		t.Errorf("windows-test-binaries-cache runs-on = %q, want %q", job.RunsOn, mainWindowsTestBinariesCacheRunsOn)
+// Upstream retired the main-side cross-compile cache seeder. Keep the PR
+// build required and make sure it no longer restores an unwritten key.
+func TestPRWindowsTestBinariesHasNoOrphanCacheRestore(t *testing.T) {
+	if _, found := readCIWorkflow(t, "main.yml").Jobs["windows-test-binaries-cache"]; found {
+		t.Fatal("main.yml restored the cross-compile cache seeder; review both runner selections before relying on it")
 	}
-	wantRunners := []string{"blacksmith", "github"}
-	if !equalStrings(job.Strategy.Matrix.Runner, wantRunners) {
-		t.Errorf("windows-test-binaries-cache strategy.matrix.runner = %v, want %v", job.Strategy.Matrix.Runner, wantRunners)
-	}
-	if job.Strategy.FailFast {
-		t.Error("windows-test-binaries-cache strategy.fail-fast must be false: one runner selection being unavailable must not cancel the other's seed")
-	}
-	// Mirrors pr.yml's windows-test-binaries job (pr.yml:522's timeout is 30
-	// too): this job runs the same mingw install + cross-compile.
+	job := readCIWorkflow(t, "pr.yml").job(t, "windows-test-binaries")
 	if job.TimeoutMinutes != 30 {
-		t.Errorf("windows-test-binaries-cache timeout-minutes = %d, want 30", job.TimeoutMinutes)
+		t.Errorf("windows-test-binaries timeout-minutes = %d, want 30", job.TimeoutMinutes)
 	}
+	for _, step := range job.Steps {
+		if step.Name == "Restore Go build cache (Windows cross-compile)" {
+			t.Fatal("PR cross-compile restores a cache with no main-side writer")
+		}
+	}
+	job.step(t, "Build Windows test binaries")
+	job.step(t, "Upload Windows test binaries")
 }
 
 // TestPRRiskGateReachesFullServerDoltStorageSuite is the regression test for
@@ -2840,18 +2598,18 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 	}
 }
 
-// F3: bazelPackageRunsOn's comment and the package-mcp job's 4 vCPU runner
-// are both premised on mcp_pytest() in package-mcp.sh passing an explicit
-// "-n 8" (not "-n auto", which would reintroduce the CPU-count/cgroup-quota
-// mismatch -n 8 was pinned to avoid), and on pytest-xdist itself being a
-// locked dev dependency so that worker count is reproducible across CI runs.
-// Neither half of that premise is checked by any other policy test, so pin
-// both here directly against the script and the MCP package's manifest/lock.
+// MCP pytest uses an explicit bounded worker count: eight by default, with
+// the Bazel package lane selecting sixteen only in remote mode. This avoids
+// deriving the count from a runner's reported host CPU total.
 func TestMCPPytestWorkerCountPinned(t *testing.T) {
 	root := sourceRepoRoot(t)
 	script := readPolicyFile(t, root, "scripts/ci/package-mcp.sh")
-	if !strings.Contains(script, "pytest -n 8") {
-		t.Errorf("scripts/ci/package-mcp.sh mcp_pytest() does not pass an explicit -n 8")
+	if !strings.Contains(script, `local workers="${BEADS_MCP_PYTEST_WORKERS:-8}"`) || !strings.Contains(script, `pytest -n "$workers"`) {
+		t.Errorf("scripts/ci/package-mcp.sh mcp_pytest() must default to eight bounded workers and pass that count to pytest")
+	}
+	bazelWorkflow := readPolicyFile(t, root, ".github/workflows/bazel.yml")
+	if !strings.Contains(bazelWorkflow, "BEADS_MCP_PYTEST_WORKERS: ${{ needs.rbe.outputs.mode == 'remote' && '16' || '8' }}") {
+		t.Errorf("bazel.yml must choose 16 workers only in remote mode and eight otherwise")
 	}
 	if strings.Contains(script, "-n auto") {
 		t.Errorf("scripts/ci/package-mcp.sh mcp_pytest() uses -n auto; want the pinned -n 8")
