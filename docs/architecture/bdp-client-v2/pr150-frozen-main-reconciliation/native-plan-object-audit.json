@@ -1,0 +1,174 @@
+{
+  "outcome": "APPROVE_BOUNDED_PLAN_NO_BLOCKERS",
+  "planSha256": "95d484356506bc126bee947391a624c8c5e393fd1c9b470406d27c24d79074ce",
+  "validationPlanSha256": "4aadcaa0d40bfb3e72714aa6677598bc96f69b5d424c7a6fded04a9ebbfc8c51",
+  "authorizationSha256": "b7e647a9bb49bc3a533fc84c6128187c5adff42e8a4876a2ea5c8c4f884518d1",
+  "reviewedMapSha256": "ce70215ab0d384aa681b9ec0cd0649fc6475859815f7b515224520c72383607f",
+  "actualCheckout": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+  "actualHead": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "actualClean": true,
+  "expectedParentsInOrder": [
+    "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+    "8d6671ed19b0c0406428ccc2d2161768d01e8b9b"
+  ],
+  "commonBase": "9df574a9ac980272fa31be9f443a771233b69c6a",
+  "changedFiles": {
+    "candidate": 35,
+    "main": 99
+  },
+  "overlap": [
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "docs/specs/bdp.md",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "hiddenLiveReaders": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts"
+  ],
+  "schemaBlobs": {
+    "d4f3f4be88c7837b71d6646518ca3589d464ba3d:schemas/bdp-v0.schema.json": "a106b40871ed67e712f334575d025f4cdbefb28d",
+    "8d6671ed19b0c0406428ccc2d2161768d01e8b9b:specs/profiles/core/bdp-v0.schema.json": "a106b40871ed67e712f334575d025f4cdbefb28d",
+    "d4f3f4be88c7837b71d6646518ca3589d464ba3d:packages/protocol/schemas/bdp-v0.schema.json": "a106b40871ed67e712f334575d025f4cdbefb28d",
+    "8d6671ed19b0c0406428ccc2d2161768d01e8b9b:packages/protocol/schemas/bdp-v0.schema.json": "a106b40871ed67e712f334575d025f4cdbefb28d"
+  },
+  "legacyAnchors": 148,
+  "manifestScenarios": 17,
+  "manifestActions": 241,
+  "actualCumulativeHttpAssertion": 234,
+  "unplannedRequirementsInventoryAlso234": "Separate assertion, not HTTP proof",
+  "packedCallbacks": [
+    {
+      "path": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "title": "installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds",
+      "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--testNamePattern",
+        "^installed\\ Scope/Bead/Link\\ Event\\ SSE\\ matches\\ finite\\ bytes\\ and\\ sparse\\ Bead\\ survives\\ fifteen\\ seconds$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json",
+        "<OUT>/packed-affected-1.json"
+      ],
+      "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "title": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+      "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--testNamePattern",
+        "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json",
+        "<OUT>/packed-affected-2.json"
+      ],
+      "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+      "title": "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes",
+      "expectedHttp": 13,
+      "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+        "--testNamePattern",
+        "^serves\\ byte\\-bounded\\ deep\\ mutations\\ receipts\\ Events\\ and\\ owned\\-Link\\ Snapshots\\ over\\ packed\\ bytes$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json",
+        "<OUT>/packed-affected-3.json"
+      ],
+      "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "title": "serves missing-first current Resources and bounds unproved minimum eligibility",
+      "expectedHttp": 32,
+      "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed.js",
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+        "--testNamePattern",
+        "^serves\\ missing\\-first\\ current\\ Resources\\ and\\ bounds\\ unproved\\ minimum\\ eligibility$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json",
+        "<OUT>/packed-affected-4.json"
+      ],
+      "entryRequirement": "Verify measured contained entry/hash and its unchanged private wrapper contract before dispatch; never substitute the process entry for this module"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+      "title": "observes retained sequence member conflict and fresh deep execution over packed bytes",
+      "expectedHttp": 8,
+      "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+        "--testNamePattern",
+        "^observes\\ retained\\ sequence\\ member\\ conflict\\ and\\ fresh\\ deep\\ execution\\ over\\ packed\\ bytes$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json",
+        "<OUT>/packed-affected-5.json"
+      ],
+      "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+    }
+  ],
+  "runtimeExecuted": false,
+  "mergePerformed": false
+}

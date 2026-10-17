@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-17T10:20:36.060730+00:00",
+  "files": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/bin/bd": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/bin/bd",
+      "sha256": "9556f847f844854a9bd3f45436e70034b63171511c820bb02175929158245542"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/go/bin/go": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/go/bin/go",
+      "sha256": "005640c7ff93028cb704283b0f737f2db3faf8b51b2561170c769b83905da646"
+    },
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": {
+      "realpath": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "sha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8"
+    },
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": {
+      "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "sha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+    },
+    "/opt/homebrew/opt/icu4c@78/include/unicode/regex.h": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/include/unicode/regex.h",
+      "sha256": "0684d6723b84ca8fd44bb35329a28b73e4919006d56155a77408d7ba00abdd25"
+    },
+    "/opt/homebrew/opt/icu4c@78/lib/libicutest.78.dylib": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/lib/libicutest.78.3.dylib",
+      "sha256": "9706bbd7a96197beb6a954c4d772d21e94ed1ba314dd0f1905d29eb35c99c63a"
+    },
+    "/opt/homebrew/opt/icu4c@78/lib/libicuio.78.dylib": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/lib/libicuio.78.3.dylib",
+      "sha256": "467096a6ab0a73ff2a6a349127f8f482a8ce35a5498af708fb8b6a5c575d7cab"
+    },
+    "/opt/homebrew/opt/icu4c@78/lib/libicutu.78.dylib": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/lib/libicutu.78.3.dylib",
+      "sha256": "35caa490f322fbcb1051f08739be4997aa84c3886461e5bbc6ccda017a6e9dba"
+    },
+    "/opt/homebrew/opt/icu4c@78/lib/libicudata.78.dylib": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/lib/libicudata.78.3.dylib",
+      "sha256": "e7dafc3fe6613326daa30d1c930aa66219ab5524fe576b0e7b3039451652b6bf"
+    },
+    "/opt/homebrew/opt/icu4c@78/lib/libicui18n.78.dylib": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/lib/libicui18n.78.3.dylib",
+      "sha256": "f319e50c965a1a0065d2cc5595d8553ff60b0e78a2e76bc3173774fd112de9ed"
+    },
+    "/opt/homebrew/opt/icu4c@78/lib/libicuuc.78.dylib": {
+      "realpath": "/opt/homebrew/Cellar/icu4c@78/78.3/lib/libicuuc.78.3.dylib",
+      "sha256": "177dab8ae0bf0b1357d7ec6404a1e145bcc3d927aa15c3064171d23b2a1fd263"
+    }
+  },
+  "strictBdIdentityVerified": true,
+  "goModule": "github.com/steveyegge/beads@v1.0.5",
+  "priorFailurePreserved": "bd-install-exit.json",
+  "correctedSuccess": "icu-path-correction/exit.json",
+  "sampledBuildPidsAbsent": [
+    84252,
+    86965
+  ],
+  "pythonFreeze": "attrs==26.1.0\njsonschema==4.26.0\njsonschema-specifications==2025.9.1\nreferencing==0.37.0\nrpds-py==2026.9.1\n",
+  "scope": "Only isolated task tools; no Janet CLI or shared database used"
+}

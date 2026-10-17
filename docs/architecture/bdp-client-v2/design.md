@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-17T10:16:08Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
+Checkpoint 2026-10-17T10:24:34Z. **ACTIVE — bounded PR150 reconciliation now; Transactional implementation remains separate.** Session `2026-10-08T20:26:35Z-81e5`. Donna explicitly authorized reconciliation of frozen main `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` into frozen PR150 `d4f3f4be88c7837b71d6646518ca3589d464ba3d` on a separate integration branch, with review, validation and a reviewable PR. Root verified the human authorization in Trish's chat; [authorization record](pr150-frozen-main-reconciliation/authorization.json), [reviewed map](pr150-frozen-main-reconciliation/reviewed-map.md), [ACK](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6232679249). First parent will be PR150, second the frozen main. Original heads remain frozen. No newer main, main landing, shared-design integration, cleanup/closure, rebase/force push, downstream pins, release, Preview2 or complete Write claim. Trish owns Core/Write reconciliation and #59; Vickie owns code/tests/qualification. Subsequent PR151/154–158, alias draft, retention ca303411 and amendments152/153 are excluded. S1/G2 and public-profile gates remain.
 
 ### Current verified source and validation
 
@@ -78,9 +78,9 @@ Checkpoint 2026-10-17T10:16:08Z. **ACTIVE — bounded PR150 reconciliation now; 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
 | Root | Reconcile exact frozen PR150/main inputs on isolated branch | Review plan/council, merge, validate exact result and publish PR; no main landing |
-| Conditional reviewer | Prepare exact-object merge/validation plan | Frozen plan with isolated tool prerequisites; no source changes |
-| Event reviewer | Prepare actual Claude reconciliation PLAN review | Closed runner/input bindings; alias draft frozen and stopped |
-| Native reviewer | Independently review reconciliation plan and Claude preparation | Findings before merge release; no source mutation |
+| Conditional reviewer | Prepare executable validation from accepted plan | Closed staged runner; no product execution |
+| Event reviewer | Reconciliation Claude packet frozen; alias stopped | Idle; source unchanged |
+| Native reviewer | Reconciliation plan accepted; runner audit | Check executable preparation next; no source mutation |
 
 
 The merged commit2dfd also passed its own push CI38957358894; exact head/status/conclusion independently verified. The [ordinary Update audit](shared-depth-update-audit/audit.md) found no concrete implementation regression and substantial existing deep equality/no-op/retry coverage. One optional combined deep key-reorder/no-op/replay test is proposed but deferred; it does not displace Event/conditional validation or require rewriting Update through TX.
@@ -346,6 +346,13 @@ Next alias detailedplan remains closed on dirty planning basis pending PR158 exa
 **Alias draft frozen at the reconciliation boundary.** [Author report](alias-opaque-minimum-author/report.md), binding8b077746/patchf538ccdb/index0e2d5bef pin exactly four changed files and675 unchanged inputs on9d2cd441. No alias tests/build/install/CODE review/commit/push has run. The exported classifier and historical callbacks are preserved in the draft, pending review and execution. The worktree stays separate and untouched.
 
 **Reconciliation preparation active.** Isolated `codex/vickie-pr150-main-reconciliation` starts clean at d4f3f4be, with exact incoming8d6671 object fetched. No merge yet. Native/object audit confirms the nine shared files, four hidden schema readers and sole minimum-read normative delta. Plan and native/Claude review preparation precede authoring. Local Go1.26.3 is not the required1.26.2; validation will provision and verify an isolated toolchain/Beads1.0.5 instead of using shared CLI. No validation or combined-tree claim yet. Earlier blanket reconciliation holds below are historical and superseded only for this authorized isolated pair.
+
+
+**Reconciliation plan native-accepted; actual Claude PLAN review active.** [Plan](pr150-frozen-main-reconciliation/reconciliation-plan.md)95d48435 and [validation matrix](pr150-frozen-main-reconciliation/validation-plan.json)4aadcaa0 have [native approval](pr150-frozen-main-reconciliation/native-plan-review.md)d1b111eb and [root disposition](pr150-frozen-main-reconciliation/root-native-plan-disposition.json). Both exact parents/order, one normative block, eight overlaps/four hidden readers and per-callback installed entries are explicit. Full suite and package smoke plus five affected installed callbacks; no duplicate packed234 run or profile completion claim. Actual234 exchanges are independently distinguished from234unplanned inventory requirements. Executable preparation corrects overescaped prospective test selectors without changing workload.
+
+[Root review release](pr150-frozen-main-reconciliation/claude-plan-review/root-release.json) opens one read-only default-Claude review with clean679source/118contexts/18artifacts verified, no Bash/write/MCP,3600s supervisor/TERM3595 and no retry. Closedbindingd591d847 is preserved; actual review session11052 is running with no verdict yet. Source remains clean PR150d4 and no merge has occurred. Root independently read/accepted the proven cwd-only runner adaptation; native runner audit was requested in parallel.
+
+[Isolated tool verification](pr150-frozen-main-reconciliation/tools/root-tools-verified.json) binds actual Go1.26.2/Beads1.0.5dev binary9556f847, exact text/JSON/module/build metadata, ICU78.3 and Python dependencies. Original Go build failed due to missing explicit ICU header path; raw exit1/log remain. The targeted include/link-path correction built successfully and identity checks passed. No shared Janet CLI/database used. Tools are prerequisites, not product validation evidence.
 
 ## Current priority: BDP profile structure and implementation
 

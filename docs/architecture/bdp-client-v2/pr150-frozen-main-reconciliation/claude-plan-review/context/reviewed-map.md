@@ -1,0 +1,107 @@
+Vickie — Donna has explicitly authorized the isolated reconciliation of frozen main with PR150 and preparation/validation of the integration PR. Please proceed at your next safe boundary. Preserve frozen source heads; create a separate integration branch. Use a `codex/vickie-*` branch if retaining the checkpoint workflow's push validation route. Verify every run is bound to the actual result SHA.
+
+Only the two inputs below are in scope. PR151 and PR154–158, retention ca303411, and amendments #152/#153 remain excluded. Do not land main, rebase, close/clean up PRs, or update downstream pins. Trish owns the specification mapping and will help with unexpected conflicts; Vickie owns the actual merge, implementation intent, code/test resolution and qualification. Return the PR URL, exact resulting SHA, resolved semantic/path changes, review/check results and remaining limitations. Keep unsupported profiles unadvertised. Please ACK the handoff and report completion through the existing bus/#59.
+
+The reviewed map follows; the authorization update above supersedes its original preparation-only status.
+
+# BDP checkpoint relocation and semantic map
+
+Read-only audit, October 16, 2026. No runtime tests, merges, rebases, repository edits, pushes, or external writes were performed. A private bare clone at `/tmp/trish-bdp-map.git` was used for object reads; shared repository refs were not changed.
+
+## Exact inputs and result
+
+- Frozen public main: `8d6671ed19b0c0406428ccc2d2161768d01e8b9b` (PR145).
+- Proposed bounded Vickie candidate: `d4f3f4be88c7837b71d6646518ca3589d464ba3d` (PR150).
+- Common ancestor: `9df574a9ac980272fa31be9f443a771233b69c6a`.
+- Candidate CI38981157039 now completed **success**, bound to that exact candidate: https://github.com/gastownhall/bdp/actions/runs/38981157039 . This does not validate a future combined tree.
+- Read current BDP#59 and Vickie's `docs/architecture/bdp-client-v2/integration-checkpoint-feedback/feedback.md` on `donnabox/beads:codex/vickie-bdp-client-design`.
+
+**There is exactly one normative protocol prose delta between the common-base monolith and the candidate: the PR141 Transactional minimum-read ordering block.** No other monolith edits appear in the candidate, despite the later runtime/test commits. Candidate monolith blob is `e097e46c3602a9cc802fb2fb609201b896e2cb9f`; SHA256 is `67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8`.
+
+Independently normalized the common-base normative body from `## Part I — Data Model` onward against main's concatenated Core/Write/conformance body: equal after allowing Markdown link destinations, relocation-only anchor tags, whitespace, and schema filesystem path. This verifies the published editorial claim for the normative body; the changed preface explicitly explains the split and is not included in that equality comparison.
+
+## Required semantic reconciliation
+
+The candidate's old monolith lines5823–5851 map to **`specs/profiles/write/write.md` under `#transactional-http-consistency`**, frozen-main lines3817–3835. These are Transactional rules, not a new Core capability.
+
+Preserve the candidate block in the authoritative Write document:
+
+1. Unknown/deleted/authorization-hidden current Bead or Link Resource (including properties), alias target, or initial Bead `view=links` anchor returns uniform404 before semantic minimum comparison/waiting. Ordinary validation and lexical receiving refusal still precede this. The404 includes actual current observation context without hidden-target disclosure.
+2. For an existing authorized current Bead/Link Resource or properties view, a lexically valid unrecognized minimum using the actual current epoch/view invokes bounded wait. If eligibility remains unproved,503 `catch-up-timeout`, `retry: "after-delay"`; no stale success, invented expiry or lexical400.
+3. Preserve the limiting sentence: this does not settle retained continuations/Snapshots or extend unknown-position waiting to successful incident-Link lists.
+
+The candidate also fixes initial collection unknown-minimum behavior, deep JSON, retained key precedence, conditional reads and Event restart evidence in code/tests; those later changes do not introduce additional monolith text changes. Their behavioral qualification belongs to Vickie; prose comparison alone does not prove implementation conformance.
+
+Keep `docs/specs/bdp.md` as main's nonnormative navigation page. Do not resolve the conflict by restoring the monolith or dropping the candidate paragraph. All148 legacy anchors retain mapping through `docs/design/spec-path-map.json`. Core/Write filenames do not rename advertised profiles. Existing Type contract stays in Core; optional Type draft publication is not adoption.
+
+## Conflict and hidden-fallout inventory
+
+Changed-on-both-sides set has nine files: the monolith plus eight test files. This is an overlap prediction, not a simulated merge or confirmed Git conflict list.
+
+- `apps/bdptest/src/transactional-collection-minimum-installed.test.ts`
+- `apps/bdptest/src/transactional-depth-key-order-installed.test.ts`
+- `apps/bdptest/src/transactional-matrix.test.ts`
+- `packages/conformance/src/transactional-cumulative.test.ts`
+- `packages/server/src/transaction-http.test.ts`
+- `packages/server/src/transaction-sequence.test.ts`
+- `packages/server/src/transaction-set.test.ts`
+- `packages/server/src/transaction-snapshot.test.ts`
+
+For all eight tests, main-side changes are only schema-file path relocation. Preserve candidate behavioral tests and use `specs/profiles/core/bdp-v0.schema.json`.
+
+**Four candidate-only tests still directly load the deleted old schema path. They require explicit repairs even if Git reports a clean merge:**
+
+- `apps/bdptest/src/transactional-event-sse-installed.test.ts:531`
+- `apps/bdptest/src/transactional-fresh-depth-installed.test.ts:71`
+- `apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:87`
+- `apps/bdptest/src/transactional-sequence-depth-installed.test.ts:79`
+
+Sweep the final tree for live filesystem readers of `schemas/bdp-v0.schema.json` and `docs/specs/bdp.md`; classify historical evidence references separately. Do not blindly replace all matches.
+
+## Schema and evidence bindings
+
+Candidate old schema, main relocated schema, and both packaged schema copies all have identical blob `a106b40871ed67e712f334575d025f4cdbefb28d`. No schema-content/$id change is required by this integration. The public schema identifiers remain stable.
+
+Main's `packages/conformance/test-support/spec-source.ts` assembles current authoritative files in memory when historical catalogs cite `docs/specs/bdp.md`; physical anchor/source validation lives in `spec-layout.test.ts`. Preserve this mechanism and its source-boundary checks. Do not alter sealed catalog/evidence bytes merely to modernize paths.
+
+Candidate changes `packages/conformance/test-support/transactional/{manifest-v1,coverage-v1}.json`; keep these bounded scenario additions. Coverage explicitly says `claimEligible: false`, `status: bounded-observation`, `transportAdmission: private-exact-available`. No public Update/Transactional claim follows from green CI or merge.
+
+Candidate does not change sealed catalog/development evidence directories, packaged schema bytes or hash-bound `packages/protocol/src/index.ts` relative to the common ancestor. Preserve historical evidence identity; create fresh exact-target evidence when served configuration or qualification claims change. A combined candidate is a new test target, not a relabeling of either parent's run.
+
+## Exact-head validation route after authorized reconciliation
+
+Candidate workflow runs PRs targeting main, pushes to main and `codex/vickie-*`; main workflow currently has main only. Neither inherently validates `codex/trish-spec-integration` or PR143 targeting it. No attached checks must never count as green.
+
+Two valid routes: (1) reviewed workflow coverage for the intended integration/shared branches, or (2) recorded equivalent checks on an immutable candidate. For a Vickie-owned integration branch matching `codex/vickie-*`, the inherited candidate workflow offers a push-triggered route, subject to agreeing that branch and verifying the actual run SHA. Any changed conflict resolution creates a new candidate and requires revalidation.
+
+The checked-in candidate CI specifies Node24.16.0, pnpm11.20.0, Go1.26.2, libicu-dev and a separately installed/identity-verified `github.com/steveyegge/beads/cmd/bd@v1.0.5`. Record these requirements; arbitrary local tools are not equivalent.
+
+Full command sequence after dependency/tool setup:
+
+```
+pnpm install --frozen-lockfile
+pnpm format:check
+pnpm lint
+pnpm check:boundaries
+pnpm typecheck
+pnpm build
+BDP_BD_MATRIX_EXECUTABLE=/absolute/path/to/verified/bd BDP_REQUIRE_BD_MATRIX=1 pnpm test
+pnpm e2e:ready:preflight
+pnpm smoke
+pnpm evidence:verify
+```
+
+For the evidence gate, exit0 passes; exit2 means no evidence claim and fail-closed admission (CI permits it but do not call it qualification). Exit1 or3 fails. Preserve exact exit/output. Build precedes installed tests because child processes load dist exports.
+
+Supplement with `python3 scripts/check_type_examples.py` and the link/index review for edited docs. Full tests include spec-layout, profile-contract-plan, profile-catalog-boundaries, schema-bundle, cumulative and installed tests. Verify the four repaired candidate-only schema consumers actually execute. Vickie determines any additional fresh installed/cumulative evidence needed for changes to served configuration or supported claims.
+
+For the later Memory integration candidate, run `python3 scripts/check_memory_examples.py` and `python3 scripts/check_type_examples.py` on the exact reconciled tree, full relevant protocol/layout gates above, and review the final `specs/README.md` Memory row and root links. Prior72Memory/95Type cases are baseline reports, not a pass for a future candidate. Preserve the new status inventory; reconcile the old Memory row deliberately. No runtime Memory qualification follows from shape checks.
+
+## Decisions/gates remaining
+
+- Authorization update October 17: Donna has now authorized Vickie to execute this reconciliation on an isolated integration branch and prepare/validate a PR. Main landing, cleanup and pins remain held. The audit itself was read-only.
+- Agree both immutable heads, bounded claims and branch/validation route before Vickie's ordinary merge.
+- S1 retained Snapshot/continuation minima and G2 incident-Link metadata Event membership remain separate product questions; no ruling inferred.
+- Memory deletion/minimum behavior, related identity/selector and ProvenanceV2 remain explicit draft/adoption gates.
+- No additional normative delta was found requiring Donna to adjudicate for this exact candidate pair. Unexpected differences introduced by subsequent work require renewed comparison.
+

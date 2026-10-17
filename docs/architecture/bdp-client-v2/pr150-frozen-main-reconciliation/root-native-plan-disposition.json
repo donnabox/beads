@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-17T10:21:33.460445+00:00",
+  "inputs": {
+    "reconciliation-plan.md": "95d484356506bc126bee947391a624c8c5e393fd1c9b470406d27c24d79074ce",
+    "validation-plan.json": "4aadcaa0d40bfb3e72714aa6677598bc96f69b5d424c7a6fded04a9ebbfc8c51",
+    "native-plan-review.md": "d1b111eba222a074da644ee881e97cd4e932d29914125018d9ac6fcf7fa45f3f"
+  },
+  "nativeFindings": "No blocking findings; root accepts concrete path/semantics/parent-order plan and focused validation scope",
+  "acceptedCorrections": [
+    "First parentd4, second8d on actual existing branch",
+    "Separate per-callback packed entry transaction-installed.js versus transaction-installed-process.js",
+    "234observedHTTP is distinct from234unplannedrequirements",
+    "No duplicate packed234run; existing fullsuite pluspackage smoke and fiveaffectedcallbacks",
+    "Tool bootstrap independent of candidate; actual identity recorded separately"
+  ],
+  "tools": "tools/root-tools-verified.json",
+  "actualClaudePending": true,
+  "sourceAuthoringReleased": false
+}
