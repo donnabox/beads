@@ -1,0 +1,131 @@
+{
+  "kind": "bounded-trusted-startup-planning",
+  "createdUtc": "2026-10-18T03:11:56.688975+00:00",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "statusPorcelain": "",
+  "sourceInputs": [
+    {
+      "path": "packages/config/src/index.ts",
+      "bytes": 40311,
+      "sha256": "356febdfe9e3818f471da4c2ddf8d62370ad91542404e4aa630d3734a61babe3",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/config/src/index.test.ts",
+      "bytes": 53079,
+      "sha256": "a966a2c223f263d2db5dd0b48082f7bc57aca66e346ca109c1a9d1eab53c2a0f",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "docs/design/startup-configuration.md",
+      "bytes": 37223,
+      "sha256": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/installed-reference-configuration.ts",
+      "bytes": 7815,
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/transaction-installed-configuration.ts",
+      "bytes": 2942,
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "bytes": 16196,
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/development-contracts.ts",
+      "bytes": 11334,
+      "sha256": "182a1a6d06b09f08ca3c83ad0fb27a09a419ad3e99729528381f210973b2c40a",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/development-authority.ts",
+      "bytes": 14384,
+      "sha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/installed-contract-artifact.ts",
+      "bytes": 17456,
+      "sha256": "db8f3b1e0a4b8dc1a07a56bcadb66d3cdbebff114fb119becec79d11474eb7f0",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 96344,
+      "sha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "bytes": 45508,
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "bytes": 16727,
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/installed-reference.ts",
+      "bytes": 1585,
+      "sha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/src/transaction-installed.ts",
+      "bytes": 1112,
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/package.json",
+      "bytes": 495,
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/server/tsconfig.json",
+      "bytes": 225,
+      "sha256": "da054bc9239dfe20febb2fd9255e4263781627499af7eccc3c40a5c80526b1da",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/protocol/src/json-admission.ts",
+      "bytes": 13557,
+      "sha256": "fad4bd5159e7ff9a309d9c094c0c8beb950593a60d69f088971cb9bb6b84e76e",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "packages/protocol/src/index.ts",
+      "bytes": 21684,
+      "sha256": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+      "equalsCommittedHEAD": true
+    },
+    {
+      "path": "scripts/smoke-executables.mjs",
+      "bytes": 43245,
+      "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+      "equalsCommittedHEAD": true
+    }
+  ],
+  "priorD3Plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-20261018/plan.md",
+    "sha256": "5a335cdb5f0a5c31ad590948dc19a0ee9fa9fc9be5b9cd1c4e7bddc00ef3e952"
+  },
+  "executedTestsBuildsInstallRuntimeReview": false,
+  "sourceAuthoringReleased": false,
+  "publicActivationReleased": false
+}

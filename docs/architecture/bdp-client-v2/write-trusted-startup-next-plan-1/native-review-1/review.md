@@ -1,0 +1,15 @@
+# Native trusted-startup PLAN review
+
+**Verdict: revisions required for N1.** The non-listening loader design and its existing-capture delegation are otherwise acceptable within this bounded review. No new product ruling or BDP semantic change is needed.
+
+1. **[P1 / High] Add the shared export allowlist and regression fixture to the footprint.** Plan.md54,63–66,94 requires a new `./reference-configuration` package export but freezes exactly seven files. `scripts/smoke-executables.mjs:408–411` calls `assertServerExports`; `scripts/smoke-safety.mjs:5–13` requires exact deep equality with only `.` and `./development`. Therefore the newly packed package deterministically fails smoke even after adding the four emitted files and proposed loader checks. `scripts/smoke-safety.test.mjs:7–20` also pins the old positive map.
+
+   Smallest correction: preserve this plan and make an explicit nine-file footprint successor adding `scripts/smoke-safety.mjs` and `scripts/smoke-safety.test.mjs`. Extend the shared exact map with only `./reference-configuration` targeting the new d.ts/js, update its positive fixture and retain narrow rejection of missing, wildcard, private/candidate/runtime/admission exports. Keep smoke calling the shared checker. Do not strip the added export, weaken deep equality or duplicate the allowlist.
+
+Reviewed architecture: the bdptest-owned optional path follows existing config role isolation and globally loud vocabulary. It supplies trusted local storage/credentials/artifacts while shared startup remains the single Scope/listener/profile/limit authority. RU policy/compile identities and TX seam-free preflight/readOptions exist in the inspected modules. Current runtime capture does not open a store/listener; current candidate startup does, and its TX listener-before-owner order is explicitly left to the later lifecycle slice. Retaining TX intended listener separately from privateport0 is honest. Loader success grants no public capability or live owner-metadata proof.
+
+The planned source tests cover actual capture behavior, strict bounded file/JSON handling, snapshot immutability, safe diagnostics and no-store/no-listener behavior. Fresh external-consumer loader tests are meaningful packaging proof; they do not claim ordinary service startup or profile completion. Existing Read/no-serve and normal executable refusal behavior remain required.
+
+Reviewed exact clean source: a56254d682cf4623cab22a552e3d2f695f691795 / tree144f278c7f5a08516c4ac99ba553d4cc25bcf560. All19 source-evidence entries rehashed unchanged; five directly relevant package/build helpers additionally inspected. Full exact hashes and evidence are in review.json. Original four packet files remain unchanged.
+
+Next: root dispositions N1 and binds the explicit footprint successor for actual Claude PLAN review. This is bounded PLAN acceptance with one concrete revision, not source authoring/review/runtime release. No tests/builds/installs/services/CLI reviewers executed; no source/design/launch/running-packet edits or remote writes occurred.
