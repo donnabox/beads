@@ -800,6 +800,11 @@ func graphPrintTo(out io.Writer, result any, human string, quiet, structured boo
 }
 
 func graphStorageError(err error) error {
+	// A failed rollback may join uncertainty with a definite storage refusal.
+	// No other classification may hide the inspect-before-retry boundary.
+	if errors.Is(err, graphstore.ErrOutcomeUnknown) {
+		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
+	}
 	// A graph route may validate a selected Type only after reading it inside
 	// withGraphStore. graphFailure has already reported this typed CLI refusal.
 	var reported *exitError
@@ -825,8 +830,6 @@ func graphStorageError(err error) error {
 		return graphFailure("gone", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):
 		return graphFailure("capability_unavailable", err.Error(), 5)
-	case errors.Is(err, graphstore.ErrOutcomeUnknown):
-		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
 	case errors.Is(err, graphstore.ErrInvalidStore):
 		return graphFailure("invalid_store", err.Error(), 5)
 	case errors.Is(err, graph.ErrValidation):
