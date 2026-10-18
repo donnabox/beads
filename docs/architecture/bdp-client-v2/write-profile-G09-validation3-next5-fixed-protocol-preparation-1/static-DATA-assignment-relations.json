@@ -1,0 +1,408 @@
+{
+  "count": 50,
+  "kind": "FINITE_TEXT_COMPARISONS_NOT_SUBJECT_EVALUATION",
+  "noRuntimeControlsOrPasses": true,
+  "rows": [
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    }
+  ],
+  "syntheticId": "STATIC_ONLY_TOOL_ID"
+}

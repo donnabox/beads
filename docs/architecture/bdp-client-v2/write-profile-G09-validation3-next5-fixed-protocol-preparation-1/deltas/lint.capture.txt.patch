@@ -1,0 +1,92 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/proposals/lint.capture.txt
+@@ -8,8 +8,8 @@
+ ORIGIN = time.monotonic()
+ import os, json, hashlib, subprocess, select
+ from pathlib import Path
+-STAGE = 'node-version'
+-ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']
++STAGE = 'lint'
++ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'lint']
+ CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'
+ P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')
+ # Root must prepare/review/publish these exact replacements in a future literal
+@@ -18,10 +18,10 @@
+ EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+ EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+ EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+-OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'
++OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint'
+ # Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+ APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
+-EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')
++EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')
+ assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+ assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+ execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+@@ -34,7 +34,7 @@
+ assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+ assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+ assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+-assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']
++assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']
+ assert STAGE in execution_acceptance['approvedStages']
+ assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+ assert execution_acceptance['activeGate'] == {'path':str(P/'execution-gate.json'),'sha256':APPROVED_GATE_SHA256}
+@@ -58,7 +58,7 @@
+     assert hashlib.sha256((P/'source-binding.json').read_bytes()).hexdigest() == EXPECTED_SOURCE_BINDING_SHA256
+     assert hashlib.sha256((P/'commands.json').read_bytes()).hexdigest() == EXPECTED_COMMANDS_SHA256
+     root = Path(OWNED_ROOT_OUTPUT)
+-    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)
++    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)
+     else: assert root.parent.is_dir() and not root.parent.is_symlink()
+     root.mkdir(mode=0o700, exist_ok=False)  # exclusive; any prior attempt blocks
+     root_acquired = True
+@@ -213,7 +213,7 @@
+ OBSERVER_FIRST = time.monotonic()
+ import os, json, subprocess, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint')
+ ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'
+ ACTUAL_A_TOOL_RAW_EXIT = 0
+ # These root-source observations must come from the actual ordinary-tool result,
+@@ -225,7 +225,7 @@
+ origin=json.loads(origin_raw); provisional=json.loads(provisional_raw)
+ ORIGIN=origin['originMonotonic']
+ assert type(ACTUAL_A_TOOL_RAW_EXIT) is int and ACTUAL_A_TOOL_RAW_EXIT==0
+-assert provisional['stage']=='node-version' and provisional['accepted'] is False
++assert provisional['stage']=='lint' and provisional['accepted'] is False
+ assert provisional['failure'] is None and provisional['rawExit']==0 and provisional['forcedTermination'] is False and provisional['pipeCloseSucceeded'] is True
+ assert time.monotonic()-ORIGIN<115
+ known_pids=provisional['knownTaskRegistry']['pids']
+@@ -290,7 +290,7 @@
+         for pipe in [p.stdout,p.stderr]:
+             try:pipe.close()
+             except OSError as exc:failure=failure or type(exc).__name__
+-    value={'stage':'node-version','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}
++    value={'stage':'lint','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}
+     try:
+         assert time.monotonic()-ORIGIN<120
+         with (ROOT/'postterminal-census.json').open('x') as f:f.write(json.dumps(value,allow_nan=False)+'\n')
+@@ -310,17 +310,17 @@
+ POST_TERMINAL_WITNESS = time.monotonic() # FIRST before all further DATA processing.
+ import json, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint')
+ ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ ACTUAL_B_TOOL_RAW_EXIT = 0
+ assert ACTUAL_B_TOOL_ID != 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ assert type(ACTUAL_B_TOOL_RAW_EXIT) is int and ACTUAL_B_TOOL_RAW_EXIT==0
+ origin_raw=(ROOT/'origin.json').read_bytes(); origin=json.loads(origin_raw)
+ census_raw=(ROOT/'postterminal-census.json').read_bytes(); census=json.loads(census_raw)
+-assert census['stage']=='node-version' and census['accepted'] is False
++assert census['stage']=='lint' and census['accepted'] is False
+ assert census['failure'] is None and census['probeRawExit']==0 and census['probeBothEOF'] is True and census['probeDirectReaped'] is True and census['matchingTaskRows']==[]
+ elapsed=POST_TERMINAL_WITNESS-origin['originMonotonic']
+ assert 0<=elapsed<115
+-witness={'stage':'node-version','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}
++witness={'stage':'lint','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}
+ with (ROOT/'final-clock-witness.json').open('x') as f:f.write(json.dumps(witness,allow_nan=False)+'\n')
+ The witness file is static proof attribution of the already-completed target/census interval. Its own later DATA publication is not falsely represented as preceding its first timestamp. All target/runtime cleanup and the B census/receipts already completed before that timestamp; no runtime activity may be deferred into this static audit. This does not recursively require a new supervisor proving the static writer's death.
