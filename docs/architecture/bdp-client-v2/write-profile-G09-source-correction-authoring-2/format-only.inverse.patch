@@ -1,0 +1,113 @@
+--- after/packages/server/src/transaction-service.test.ts
++++ preformat/packages/server/src/transaction-service.test.ts
+@@ -4411,27 +4411,23 @@
+     "G09-S01",
+     async (f) => {
+       active = f;
+-      const aborted = AbortSignal.abort();
+-      const first = f.invoke(undefined, aborted);
+-      expect(f.counts().entries).toBe(1); // Original no-minimum synchronous observation timing.
+-      expect(await first).toEqual({ context: f.context });
+-      const supplied = {
+-        scopeEpoch: f.context.scopeEpoch,
+-        authorizationView: f.context.authorizationView,
+-        minimumPosition: "pos-0",
+-      };
+-      const captured = f.invoke(supplied);
+-      supplied.scopeEpoch = "changed-after-invocation";
+-      supplied.minimumPosition = "opaque";
+-      expect(await captured).toEqual({ context: f.context });
+-      expect(
+-        await f.invoke({
+-          ...supplied,
+-          scopeEpoch: f.context.scopeEpoch,
+-          minimumPosition: "genesis",
+-        }),
+-      ).toEqual({ context: f.context });
+-      expect(f.counts()).toMatchObject({ calls: 3, entries: 3 });
++    const aborted = AbortSignal.abort();
++    const first = f.invoke(undefined, aborted);
++    expect(f.counts().entries).toBe(1); // Original no-minimum synchronous observation timing.
++    expect(await first).toEqual({ context: f.context });
++    const supplied = {
++      scopeEpoch: f.context.scopeEpoch,
++      authorizationView: f.context.authorizationView,
++      minimumPosition: "pos-0",
++    };
++    const captured = f.invoke(supplied);
++    supplied.scopeEpoch = "changed-after-invocation";
++    supplied.minimumPosition = "opaque";
++    expect(await captured).toEqual({ context: f.context });
++    expect(
++      await f.invoke({ ...supplied, scopeEpoch: f.context.scopeEpoch, minimumPosition: "genesis" }),
++    ).toEqual({ context: f.context });
++    expect(f.counts()).toMatchObject({ calls: 3, entries: 3 });
+       const minimum = {
+         scopeEpoch: f.context.scopeEpoch,
+         authorizationView: f.context.authorizationView,
+@@ -4566,12 +4562,8 @@
+           controller.abort();
+           closing = active.service.close();
+           void closing.then(
+-            () => {
+-              closeFinished = true;
+-            },
+-            () => {
+-              closeFinished = true;
+-            },
++            () => { closeFinished = true; },
++            () => { closeFinished = true; },
+           );
+           expect(active.inEntry()).toBe(false);
+           expect(active.closed()).toBe(false);
+--- after/packages/server/src/transaction-schema-http.test.ts
++++ preformat/packages/server/src/transaction-schema-http.test.ts
+@@ -568,19 +568,15 @@
+       const { ScopeServerOperationAbortedError } = await import("./read-request.js");
+       const original = new ScopeServerOperationAbortedError();
+       const request = new Request(root, { headers: g09Minimum });
+-      const abortSelect = schemaHttp.createTransactionSchemaHttp(
+-        scope,
+-        contracts,
+-        async (...args) => {
+-          abortCalls++;
+-          expect(args).toEqual([
+-            { scopeEpoch: "epoch", authorizationView: "view", minimumPosition: "pos-0" },
+-            request.signal,
+-          ]);
+-          abortSignalForwarded = args[1] === request.signal;
+-          throw original;
+-        },
+-      );
++      const abortSelect = schemaHttp.createTransactionSchemaHttp(scope, contracts, async (...args) => {
++        abortCalls++;
++        expect(args).toEqual([
++          { scopeEpoch: "epoch", authorizationView: "view", minimumPosition: "pos-0" },
++          request.signal,
++        ]);
++        abortSignalForwarded = args[1] === request.signal;
++        throw original;
++      });
+       let observed: unknown;
+       try {
+         await abortSelect(request, authorized);
+@@ -596,16 +592,9 @@
+     3000,
+   );
+   expect(calls).toBe(8);
+-  console.log(
+-    JSON.stringify({
+-      observation: "G09-S05",
+-      calls,
+-      rows,
+-      abortCalls,
+-      abortPropagated,
+-      abortSignalForwarded,
+-    }),
+-  );
++  console.log(JSON.stringify({
++    observation: "G09-S05", calls, rows, abortCalls, abortPropagated, abortSignalForwarded,
++  }));
+ }, 5000);
+ type G09SourceRow = {
+   ordinal: number;

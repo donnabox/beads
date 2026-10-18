@@ -1,0 +1,19 @@
+{
+  "effectiveChanges": [
+    {
+      "after": "OMIT ownerPgid from event. Derive ownerPid solely from already-held direct io/control registration parent fields (require agreement), cross-check native ownerPid. No new getpid/getpgrp/getpgid or process query. Root existing native/task observations supply its own group records; event does not manufacture an observed owner PGID.",
+      "before": "ownerPgid from existing getpgrp already used by owner, captured value only",
+      "location": "final-registry-contract.json identityFields",
+      "reason": "A prior getpgrp call may not leave a retained value on normal paths; no extra process lookup is permitted."
+    },
+    {
+      "after": "PID/PPID/PGID tokens are positive integers of at most10 decimal characters; rawExit may carry a sign and at most11 characters. Existing clock fields finite representation<=32 characters. Refuse observational encoding no-fit, never truncate/adjust a value.",
+      "before": "integer tokens<=11 decimal characters",
+      "location": "registry/capacity wire encoding assumptions",
+      "reason": "The24-byte identity-row and11-byte group-entry bounds require explicit10-digit positive identifier tokens;11 characters apply only to signed exit metadata."
+    }
+  ],
+  "effectiveComposition": "Original41 physical bytes remain immutable; apply only these two precision qualifications to plan/contracts. All other fields,600832/618240 bounds, noQuery/noRuntime/noSource/noRetry restrictions remain. This addendum is DATA-only pending OTHER-native/root, not selfapproval.",
+  "kind": "AUTHOR_DATA_PRECISION_ERRATUM_BEFORE_OTHER_NATIVE_NO_SOURCE_CHANGE",
+  "originalIndexSha256": "81fbe211957aa158ec372e2fdfe5ea804516cecefaf05aac94abd1c01c416e6c"
+}

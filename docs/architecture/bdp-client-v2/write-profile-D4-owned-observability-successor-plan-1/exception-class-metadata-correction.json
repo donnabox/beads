@@ -1,0 +1,16 @@
+{
+  "affectedExistingCallers": {
+    "D03": "report_controls.py:112",
+    "D04": "report_controls.py:118",
+    "D06": "report_controls.py:131"
+  },
+  "change": "Only exact_refusal returned exceptionType string becomes type(exc).__name__",
+  "rationale": "Already-proven hardcoded label defect, independent of D02 unknown ownership cause. Actual caught Refusal remains dynamically named; RuntimeError stays RuntimeError when actual type is RuntimeError.",
+  "site": "H5 report_controls.py:15",
+  "unchanged": [
+    "except RuntimeError catches same concrete subclasses",
+    "str(exc)==expected equality and all expected reason strings",
+    "same actual function targets, mutations, fixture/baseline requirements, raw data, protocol grammar and no-credit fields",
+    "D03/D04/D06 remain required, unattempted, no automatic eligibility or authority"
+  ]
+}

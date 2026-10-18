@@ -1,0 +1,74 @@
+--- before/source-cases.proposed.json
++++ after/source-cases.proposed.json
+@@ -21,7 +21,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S01",
+-      "proposedFullName": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
++      "proposedFullName": "schemaObserved zero-min/current and captured supplied tuple",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "Original3 calls unchanged plus one real pos1 pending/retry snapshot call; genuine owner.admit+execute once, no service.submit/wire"
+@@ -47,7 +47,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S02",
+-      "proposedFullName": "G09-S02 schemaObserved epoch and view errors",
++      "proposedFullName": "schemaObserved epoch and view errors",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "2 direct service calls; actual context, zero waits"
+@@ -73,7 +73,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S03",
+-      "proposedFullName": "G09-S03 schemaObserved ahead and opaque bounded attempts",
++      "proposedFullName": "schemaObserved ahead and opaque bounded attempts",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "Original2 timeoutcases unchanged first, then one pending abort/owner-release/cached-close-drain call; no post-close observation invocation"
+@@ -99,7 +99,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S04",
+-      "proposedFullName": "G09-S04 schema selector receiving and exact identity",
++      "proposedFullName": "schema selector receiving and exact identity",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "8 direct excluded calls; no observe; exact retrieval not$id/query/foreign/local Resource alias; no getter invocation"
+@@ -125,7 +125,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S05",
+-      "proposedFullName": "G09-S05 schema selector HTTP/min failure order",
++      "proposedFullName": "schema selector HTTP/min failure order",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "Original8 rows+exact forwarded request.signal assertions unchanged; one same-clock direct handler abort error identity counterfactual, no response/wire"
+@@ -151,7 +151,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S06",
+-      "proposedFullName": "G09-S06 schema runtime satisfied and context errors",
++      "proposedFullName": "schema runtime satisfied and context errors",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "5 real source wire requests: baselineGET, knownGET, knownHEAD, epochGET, viewHEAD; canonical Host, same captured bytes"
+@@ -177,7 +177,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S07",
+-      "proposedFullName": "G09-S07 schema runtime ahead before conditional",
++      "proposedFullName": "schema runtime ahead before conditional",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "2 real source wire requests: baseline then aheadGET+If-None-Match:* ->503"
+@@ -203,7 +203,7 @@
+         "requiresNewAuthorFreeze": true
+       },
+       "id": "G09-S08",
+-      "proposedFullName": "G09-S08 schema runtime unknown before HEAD/media",
++      "proposedFullName": "schema runtime unknown before HEAD/media",
+       "status": "PROPOSED_NOT_AUTHORED",
+       "workSeconds": 3,
+       "workload": "2 real source wire requests: baseline then opaqueHEAD+conditional/media ->503"

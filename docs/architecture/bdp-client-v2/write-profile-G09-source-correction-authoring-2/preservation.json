@@ -1,0 +1,35 @@
+{
+  "all10CallbackNamesExact": true,
+  "allOther676ByteExact": true,
+  "allPrefixHashesExact": true,
+  "historicalInstalled14ByteExact": true,
+  "legacyPrefixes": {
+    "apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18590,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    },
+    "packages/server/src/transaction-schema-http.test.ts": {
+      "bytes": 16866,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "082c17775d42960a7a0ea1f6091c274c51f2bd71ee38eb19bd49b97b70613d21"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "bytes": 156516,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "e2fc3121bb92e5378ed41b4ea904f04451b2c474072d08c31a0891f51ba70210"
+    }
+  },
+  "noCompilerTestsRuntimeGitOrHelpers": true,
+  "oldAuthor1ActualCODEAndBothPlanNativePacketsUnchanged": true,
+  "oldPassReuse": false,
+  "onlyAuthorizedException": "ONE pinned native Biome format --write exact3 paths rawexit0, stdout/stderr retained",
+  "otherFourCumulativeDirtyD3ByteExact": true,
+  "productionAllByteExact": true,
+  "runtimeFit": "UNKNOWN",
+  "source9WireTailByteExact": true,
+  "sourceEditsAfterFormatter": false
+}
