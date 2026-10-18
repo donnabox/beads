@@ -1,0 +1,12 @@
+--- preparation-3/package-consumer-contract.json
++++ preparation-4/package-consumer-contract.json
+@@ -26,7 +26,7 @@
+   "consumerPolicy": "Exclusively owned externalroot; all package/dependency realpaths contained,full packageclosure+symlinkmap, actual source/consumerlockhash; reproducible path-sensitive recursive payload; literal/resolved entry/hash. No prior consumer/proof identity reuse.",
+   "rootGates": "Actual consumer lock acceptance and actual proof acceptance are separate required stages; no archive/build/source commit can stand in for actual lock/proof.",
+   "actualAuthoredReportBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/report-schemas.json",
+-    "sha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/report-schemas.json",
++    "sha256": "6b554f5bd9520bbe0a46399c97736496eda2c646d2bff105a75fcb8561e7b8e9"
+   }
+ }

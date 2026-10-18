@@ -1,0 +1,74 @@
+--- preparation-3/unresolved-inputs.json
++++ preparation-4/unresolved-inputs.json
+@@ -1,36 +1,36 @@
+ {
+-  "state": "CLOSED successor3: corrected source/report grammar and original completed CODE disposition bound; new native/root acceptance and all runtime outputs unresolved",
++  "state": "CLOSED successor4; same helpers/grammar, exact tuple-corrected source and actual prior failure bound; no prefix reuse",
+   "inputs": {
+     "finalSourceCheckout": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+     "finalSourceHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+     "finalSourceTree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+-    "finalSourceBinaryDiffSha256": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2",
++    "finalSourceBinaryDiffSha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
+     "finalTrackedSourceMap": {
+-      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/source-binding.json",
+-      "sha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec"
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/source-binding.json",
++      "sha256": "f03a40dc7431b657bd862e40b45b4c7c81ff7115cce1faef7b1640a0d17a155f"
+     },
+     "finalSixFileHashes": {
+       "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+       "packages/server/src/transaction-changefeed.test.ts": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+       "packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+       "packages/server/src/transaction-service.ts": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+-      "packages/server/src/transaction-sse.test.ts": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd",
++      "packages/server/src/transaction-sse.test.ts": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589",
+       "packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+     },
+-    "finalSourceIdentity": "bada68a4268fa521b7651b8afca3c68b2c8f8f741fcf9795464d51455c914d68",
++    "finalSourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+     "finalAuthoredReportSchemaHashes": {
+-      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/report-schemas.json",
+-      "sha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be"
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/report-schemas.json",
++      "sha256": "6b554f5bd9520bbe0a46399c97736496eda2c646d2bff105a75fcb8561e7b8e9"
+     },
+     "nativeCodeReviewDisposition": "UNRESOLVED",
+-    "actualCodeReviewDisposition": "completed original review1f6dce33; executable corrected-source disposition wrapper UNRESOLVED",
++    "actualCodeReviewDisposition": "known original completed CODE1f6dce33 + F1F3 native history; executable tuple-corrected source wrapper UNRESOLVED",
+     "planReviewDisposition": {
+-      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/context/plan-root-disposition-2.json",
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/plan-root-disposition-2.json",
+       "sha256": "465e4b40ff039193bba829e24350f782750bb04e0d67a6670850f1a2d4fe092c"
+     },
+     "baseToolRealpathsAndHashes": {
+-      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/base-tools.candidate.json",
+-      "sha256": "c0b8fbe198ba77cec12178149145b3ae049a59835860017a2ccd389578321e9e"
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/base-tools.candidate.json",
++      "sha256": "d85250c410ea613cb67374968565894fd1155100c118ae38f19a277ea3c22481"
+     },
+     "freshWorkspaceInstallLogAndExit": "UNRESOLVED",
+     "actualWorkspaceToolMap": "UNRESOLVED",
+@@ -50,11 +50,19 @@
+     "actualRunOutputsAndProcessClosure": "UNRESOLVED",
+     "finalExactHeadCIRunAndRawLog": "UNRESOLVED",
+     "originalActualCodeRootDisposition": {
+-      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/context/actual-code-root-disposition-1.json",
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/actual-code-root-disposition-1.json",
+       "sha256": "1f6dce33f3927e320b1c5773ac86cd1361bc5f35629207d401490e4867fb6ce4"
+     },
+-    "correctedSourceNativeAcceptance": "UNRESOLVED",
+-    "correctedSourceRootAcceptance": "UNRESOLVED"
++    "correctedSourceNativeAcceptance": "UNRESOLVED final executable wrapper",
++    "correctedSourceRootAcceptance": "UNRESOLVED",
++    "knownTupleNativeClosure": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/typecheck-correction-1/native-precision-closure-1/index.json",
++      "sha256": "cb03830035659e4275016a4dbfbe143e0f8fbd6351d5511e9038ba265f3993d7"
++    },
++    "knownTypecheckFailure": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/typecheck-failure-1/diagnosis-and-release.json",
++      "sha256": "6049ee516a1634b1593554e76b227d6bf86aba09553ad7ee778dd71d79b2f846"
++    }
+   },
+   "knownPlanningBaseOnly": {
+     "head": "a56254d682cf4623cab22a552e3d2f695f691795",

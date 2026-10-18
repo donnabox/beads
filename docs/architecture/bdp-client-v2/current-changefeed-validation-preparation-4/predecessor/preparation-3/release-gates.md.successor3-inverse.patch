@@ -1,0 +1,8 @@
+--- preparation-3/release-gates.md
++++ preparation-2/release-gates.md
+@@ -19,5 +19,3 @@
+ 9. Complete required boundaries/preflight/smoke/evidence checks on the same source. Evidence raw exit0 verifies its existing claim; exit2 means explicit no-claim only, never Read/Write qualification. Root final local acceptance rehashes every actual stage/log/exit/observation and source/build/archive/lock/proof/inventory, preserving all failures and known limits. Exact actual commit/tree/push/CI/full raw logs are future independent root-owned actions; no authority or identities are inferred here.
+ 
+ No gate document may use a guessed, future or historical runtime hash. Changes between accepted prefixes are root actions; do not change a gate while its stage runs. If the source/helper changes, preserve this closed packet and prepare a genuine separately indexed successor. Do not flip released as a substitute for resolving the remaining documents.
+-
+-Successor3 prerequisite: root must supply corrected-source accepted native/actual disposition wrappers and rootDisposition binding sourceBindingSha25692152f96... . Original actual CODE disposition1f6dce33 is immutable evidence only and must be referenced by root's final corrected-source disposition; it is not rewritten to invent accepted/source fields. All existing schema/mechanics and actual build/archive/lock/proof barriers remain. Native correction/packet precision findings must be resolved before execution. No gate/document may change while a released stage runs.

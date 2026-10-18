@@ -1,0 +1,12 @@
+--- preparation-3/audit-expectations.json
++++ preparation-4/audit-expectations.json
+@@ -1,7 +1,7 @@
+ {
+   "finalized": true,
+-  "finalizedMeaning": "Corrected authored source/report grammar candidate for named validation3; not review disposition or execution approval",
+-  "reportSchemasSha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be",
++  "finalizedMeaning": "Same strict source/report grammar rebound to tuple-corrected source for CLOSED preparation4, not execution approval",
++  "reportSchemasSha256": "6b554f5bd9520bbe0a46399c97736496eda2c646d2bff105a75fcb8561e7b8e9",
+   "sourceLabels": [
+     "current-changefeed-minimum-owner",
+     "current-changefeed-minimum-capture",

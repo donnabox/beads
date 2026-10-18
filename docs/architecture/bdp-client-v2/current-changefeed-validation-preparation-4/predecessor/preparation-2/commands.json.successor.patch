@@ -1,0 +1,874 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-1/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/commands.json
+@@ -1,21 +1,13 @@
+ {
+-  "state": "CLOSED PREPARATION; symbolic templates are not executable release",
+-  "executionIdentity": "UNRESOLVED",
+-  "sourceRoot": "UNRESOLVED",
+-  "executionRoot": "UNRESOLVED",
+-  "placeholderPolicy": "${...} denotes a required concrete binding, not shell interpolation; reject every unresolved value before building a released command packet. Root owns exact-source/CODE disposition and release.",
+-  "orderedStages": [
+-    {
+-      "id": "freeze-source-code-disposition",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
+-      "contract": "Root freezes six-file authored source, binary diff/full tracked map, final report schemas and exact selection; native+actual CODE findings explicitly disposed; bind sole plan/accepted proposal and current session. No validation release until this gate is concrete.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    {
++  "configurationFinalized": true,
++  "closedPreparation": true,
++  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2",
++  "commands": {
++    "node-version": {
+       "id": "node-version",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--version"
+@@ -26,12 +18,13 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "expectedStdout": "v24.16.0"
+-    },
+-    {
++      "expectedStdout": "v24.16.0",
++      "configurationFinalized": true
++    },
++    "pnpm-version": {
+       "id": "pnpm-version",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -43,19 +36,13 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "expectedStdout": "11.20.0"
+-    },
+-    {
+-      "id": "bind-base-tools",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
+-      "contract": "Fresh actual executable realpath/hash, pnpm entry/corepack/runtime and tool closure; full dependency inputs/lock map; no bootstrap reuse inherited from Event.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    {
++      "expectedStdout": "11.20.0",
++      "configurationFinalized": true
++    },
++    "workspace-install": {
+       "id": "workspace-install",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -69,19 +56,31 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "expectedSourceChange": "none; install outputs/tool maps separately measured"
+-    },
+-    {
++      "expectedSourceChange": "none; install outputs/tool maps separately measured",
++      "configurationFinalized": true
++    },
++    "bind-workspace-tools": {
+       "id": "bind-workspace-tools",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/audit.py",
++        "tools"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "Bind actual completed install log/exit plus Biome/TypeScript/Vitest/package-manager tool identities and full dependency input invariance. Failure/timeout means stop, no online retry.",
+       "mustCompleteBeforeNextStage": true
+     },
+-    {
++    "typecheck": {
+       "id": "typecheck",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -93,17 +92,18 @@
+       "automaticRetries": 0,
+       "acceptedRawExitCodes": [
+         0
+-      ]
+-    },
+-    {
++      ],
++      "configurationFinalized": true
++    },
++    "format-check": {
+       "id": "format-check",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "${FINAL_SOURCE_ROOT}/node_modules/@biomejs/biome/bin/biome",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/@biomejs/biome/bin/biome",
+         "format",
+-        "--config-path=${FINAL_SOURCE_ROOT}/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/biome.json",
+         "packages/server/src/transaction-http.ts",
+         "packages/server/src/transaction-service.ts",
+         "packages/server/src/transaction-store.ts",
+@@ -117,17 +117,18 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "mutatesSource": false
+-    },
+-    {
++      "mutatesSource": false,
++      "configurationFinalized": true
++    },
++    "lint": {
+       "id": "lint",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "${FINAL_SOURCE_ROOT}/node_modules/@biomejs/biome/bin/biome",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/@biomejs/biome/bin/biome",
+         "lint",
+-        "--config-path=${FINAL_SOURCE_ROOT}/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/biome.json",
+         "packages/server/src/transaction-http.ts",
+         "packages/server/src/transaction-service.ts",
+         "packages/server/src/transaction-store.ts",
+@@ -141,12 +142,13 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "mutatesSource": false
+-    },
+-    {
++      "mutatesSource": false,
++      "configurationFinalized": true
++    },
++    "fresh-build": {
+       "id": "fresh-build",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -159,29 +161,41 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "mustPrecede": "Any source test module collection or installed entry resolution; build script cleans then tsc -b"
+-    },
+-    {
++      "mustPrecede": "Any source test module collection or installed entry resolution; build script cleans then tsc -b",
++      "configurationFinalized": true
++    },
++    "bind-fresh-build": {
+       "id": "bind-fresh-build",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/audit.py",
++        "build"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "Fresh dist/map/package inventory binds authored source+actual build log/exit and tools; include full required dist exports and schema bytes. No old build/filecount/hash inference.",
+       "mustCompleteBeforeNextStage": true
+     },
+-    {
++    "focused-source": {
+       "id": "focused-source",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "${FINAL_SOURCE_ROOT}/node_modules/vitest/vitest.mjs",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "packages/server/src/transaction-changefeed.test.ts",
+         "packages/server/src/transaction-sse.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=${EXECUTION_ROOT}/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:preserves\\ changefeed\\ cursor\\ precedence\\ under\\ current\\-admission\\ opaque\\ minima|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ start\\-now\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ genesis\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-pos\\-01|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ start\\-now|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ retained|preserves\\ current\\ changefeed\\ anchor\\ capture\\ before\\ waiter\\ preflight|serves\\ current\\ changefeed\\ opaque\\ minima\\ across\\ finite\\ and\\ SSE\\ admission|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|disconnect\\ cancels\\ the\\ actual\\ finite\\ minimum\\ wait\\ without\\ consuming\\ its\\ remaining\\ budget|effective\\ reconnect\\ cursor\\ owns\\ epoch/view/retention\\ decisions;\\ overridden\\ query\\ is\\ not\\ looked\\ up)$"
+       ],
+@@ -235,29 +249,49 @@
+         "listeners": 5,
+         "newReports": 9,
+         "legacyReports": 2
+-      }
+-    },
+-    {
++      },
++      "configurationFinalized": true
++    },
++    "audit-focused-source": {
+       "id": "audit-focused-source",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/audit.py",
++        "source"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "IMMEDIATE: exact15 unique titles/files passed, no failed/unhandled/runtime errors or unintended executions; validate actual A/B/C/F/D reports and historical reports against final bound schemas; strict status/context/framing/lifecycle plus independent stage process/directory closure. Resolve historical report inventory note before accepting counts.",
+-      "mustCompleteBeforeNextStage": true,
+-      "inputLog": "${EXECUTION_ROOT}/run/focused-source.log",
+-      "inputVitestReport": "${EXECUTION_ROOT}/run/focused-source.results.json",
+-      "auditContract": "source-audit-contract.json"
+-    },
+-    {
++      "mustCompleteBeforeNextStage": true
++    },
++    "prepare-package-directory": {
+       "id": "prepare-package-directory",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-owned-preparation-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/packages.py",
++        "directory"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "Exclusively create new task-owned ${EXECUTION_ROOT}/run/packages; refuse existing contents, no deletion/reuse.",
+       "mustCompleteBeforeNextStage": true
+     },
+-    {
++    "pack-protocol": {
+       "id": "pack-protocol",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -265,19 +299,20 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "${EXECUTION_ROOT}/run/packages"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ]
+-    },
+-    {
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/packages"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
++      "configurationFinalized": true
++    },
++    "pack-server": {
+       "id": "pack-server",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -285,34 +320,56 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "${EXECUTION_ROOT}/run/packages"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ]
+-    },
+-    {
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/packages"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
++      "configurationFinalized": true
++    },
++    "verify-archives": {
+       "id": "verify-archives",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/packages.py",
++        "tar"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "Rehash actual archives and safe members; compare complete expected fresh dist/schema/license/package metadata maps to frozen source/build. Only expected workspace-protocol dependency rewrite is allowed; no extraction traversal/duplicates/symlinks. Archive names/digests/member counts UNRESOLVED until actual pack.",
+-      "mustCompleteBeforeNextStage": true,
+-      "auditContract": "package-consumer-contract.json"
+-    },
+-    {
++      "mustCompleteBeforeNextStage": true
++    },
++    "prepare-consumer": {
+       "id": "prepare-consumer",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-owned-preparation-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/packages.py",
++        "consumer"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "Exclusively create ${EXECUTION_ROOT}/run/consumer outside workspace; manifest uses actual archive file paths and pnpm-workspace overrides for protocol and frozen transitive versions; actual closure derived from frozen lock. No old consumer/entry/lock reused.",
+       "mustCompleteBeforeNextStage": true
+     },
+-    {
++    "consumer-install": {
+       "id": "consumer-install",
+-      "kind": "command-template",
+-      "cwd": "${EXECUTION_ROOT}/run/consumer",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -327,43 +384,40 @@
+       "automaticRetries": 0,
+       "acceptedRawExitCodes": [
+         0
+-      ]
+-    },
+-    {
+-      "id": "root-accept-actual-consumer-lock",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
+-      "contract": "Root rehashes the ACTUAL generated consumer/pnpm-lock.yaml and manifest/settings/archive linkage. Record immutable hash; release only installed-consumer verification. Never predict or use historical lock hash.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    {
++      ],
++      "configurationFinalized": true
++    },
++    "verify-installed-consumer": {
+       "id": "verify-installed-consumer",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/packages.py",
++        "installed"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "Reproduce complete package-member linkage, resolved production dependency graph within owned consumer, actual lock and payload recursive hash; bind entry literal+realpath+bytes and full inventory/symlinks; no workspace fallback. Emit actual installed-provenance/inventory records.",
+-      "mustCompleteBeforeNextStage": true,
+-      "auditContract": "package-consumer-contract.json"
+-    },
+-    {
+-      "id": "root-accept-actual-proof",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
+-      "contract": "Root/native inspect actual proof+inventory+lock+build/archive/source chain and observed payload; separately authorize only three sequential installed callback/audit pairs. No child before actual proof acceptance.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    {
++      "mustCompleteBeforeNextStage": true
++    },
++    "historical-context-external": {
+       "id": "historical-context-external",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "${FINAL_SOURCE_ROOT}/node_modules/vitest/vitest.mjs",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=${EXECUTION_ROOT}/run/historical-context-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/historical-context-external.results.json",
+         "--testNamePattern",
+         "^observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals$"
+       ],
+@@ -378,10 +432,6 @@
+       ],
+       "selectedFilesByFullName": {
+         "observes genuine installed current context on changefeed parameter refusals": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+-      },
+-      "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "${ACTUAL_CONSUMER_ENTRY_REALPATH}",
+-        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "${FROZEN_SOURCE_DECLARED_COMMIT}"
+       },
+       "expectedObservation": "private-installed-changefeed-parameter-context",
+       "prospectiveHttp": 10,
+@@ -390,32 +440,47 @@
+       "requestMs": 5000,
+       "workMs": 45000,
+       "totalCleanupMs": 10000,
+-      "callbackMs": 60000
+-    },
+-    {
++      "callbackMs": 60000,
++      "configurationFinalized": true,
++      "environmentFromGate": "Actual verified external proof only; literal entry remains UNRESOLVED until root accepts generated proof.",
++      "prospectiveWorkload": {
++        "callbacks": 1,
++        "http": 10,
++        "children": 1,
++        "stores": 1
++      }
++    },
++    "audit-historical-context-external": {
+       "id": "audit-historical-context-external",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/audit.py",
++        "history"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "IMMEDIATE: exact one callback/title/file and expected observation; raw stage exit0 and final binding invariance; actual 10 exchanges; consumer proof/payload/entry/lock chain; historical schema preserved; child/process/store closure verified before next callback.",
+-      "mustCompleteBeforeNextStage": true,
+-      "observation": "private-installed-changefeed-parameter-context",
+-      "inputLog": "${EXECUTION_ROOT}/run/historical-context-external.log",
+-      "inputVitestReport": "${EXECUTION_ROOT}/run/historical-context-external.results.json",
+-      "auditContract": "installed-audit-contract.json"
+-    },
+-    {
++      "mustCompleteBeforeNextStage": true
++    },
++    "finite-start-now-external": {
+       "id": "finite-start-now-external",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "${FINAL_SOURCE_ROOT}/node_modules/vitest/vitest.mjs",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=${EXECUTION_ROOT}/run/finite-start-now-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/finite-start-now-external.results.json",
+         "--testNamePattern",
+         "^observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal$"
+       ],
+@@ -430,10 +495,6 @@
+       ],
+       "selectedFilesByFullName": {
+         "observes genuine installed finite start-now opaque minimum refusal": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+-      },
+-      "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "${ACTUAL_CONSUMER_ENTRY_REALPATH}",
+-        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "${FROZEN_SOURCE_DECLARED_COMMIT}"
+       },
+       "expectedObservation": "private-installed-changefeed-opaque-minimum",
+       "prospectiveHttp": 4,
+@@ -442,32 +503,47 @@
+       "requestMs": 5000,
+       "workMs": 45000,
+       "totalCleanupMs": 10000,
+-      "callbackMs": 60000
+-    },
+-    {
++      "callbackMs": 60000,
++      "configurationFinalized": true,
++      "environmentFromGate": "Actual verified external proof only; literal entry remains UNRESOLVED until root accepts generated proof.",
++      "prospectiveWorkload": {
++        "callbacks": 1,
++        "http": 4,
++        "children": 1,
++        "stores": 1
++      }
++    },
++    "audit-finite-start-now-external": {
+       "id": "audit-finite-start-now-external",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/audit.py",
++        "finite"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "IMMEDIATE: exact one callback/title/file and expected observation; raw stage exit0 and final binding invariance; actual 4 exchanges; consumer proof/payload/entry/lock chain; historical schema preserved; child/process/store closure verified before next callback.",
+-      "mustCompleteBeforeNextStage": true,
+-      "observation": "private-installed-changefeed-opaque-minimum",
+-      "inputLog": "${EXECUTION_ROOT}/run/finite-start-now-external.log",
+-      "inputVitestReport": "${EXECUTION_ROOT}/run/finite-start-now-external.results.json",
+-      "auditContract": "installed-audit-contract.json"
+-    },
+-    {
++      "mustCompleteBeforeNextStage": true
++    },
++    "current-changefeed-external": {
+       "id": "current-changefeed-external",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "${FINAL_SOURCE_ROOT}/node_modules/vitest/vitest.mjs",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=${EXECUTION_ROOT}/run/current-changefeed-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/run/current-changefeed-external.results.json",
+         "--testNamePattern",
+         "^observes\\ installed\\ current\\ changefeed\\ minimum\\ admission\\ and\\ retained\\ replay$"
+       ],
+@@ -482,10 +558,6 @@
+       ],
+       "selectedFilesByFullName": {
+         "observes installed current changefeed minimum admission and retained replay": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+-      },
+-      "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "${ACTUAL_CONSUMER_ENTRY_REALPATH}",
+-        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "${FROZEN_SOURCE_DECLARED_COMMIT}"
+       },
+       "expectedObservation": "private-installed-current-changefeed-minimum",
+       "prospectiveHttp": 10,
+@@ -494,23 +566,38 @@
+       "requestMs": 5000,
+       "workMs": 45000,
+       "totalCleanupMs": 10000,
+-      "callbackMs": 60000
+-    },
+-    {
++      "callbackMs": 60000,
++      "configurationFinalized": true,
++      "environmentFromGate": "Actual verified external proof only; literal entry remains UNRESOLVED until root accepts generated proof.",
++      "prospectiveWorkload": {
++        "callbacks": 1,
++        "http": 10,
++        "children": 1,
++        "stores": 1
++      }
++    },
++    "audit-current-changefeed-external": {
+       "id": "audit-current-changefeed-external",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/audit.py",
++        "current"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "contract": "IMMEDIATE: exact one callback/title/file and expected observation; raw stage exit0 and final binding invariance; actual 10 exchanges; consumer proof/payload/entry/lock chain; historical schema preserved; child/process/store closure verified before next callback.",
+-      "mustCompleteBeforeNextStage": true,
+-      "observation": "private-installed-current-changefeed-minimum",
+-      "inputLog": "${EXECUTION_ROOT}/run/current-changefeed-external.log",
+-      "inputVitestReport": "${EXECUTION_ROOT}/run/current-changefeed-external.results.json",
+-      "auditContract": "installed-audit-contract.json"
+-    },
+-    {
++      "mustCompleteBeforeNextStage": true
++    },
++    "required-check-boundaries": {
+       "id": "required-check-boundaries",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -522,12 +609,13 @@
+       "automaticRetries": 0,
+       "acceptedRawExitCodes": [
+         0
+-      ]
+-    },
+-    {
++      ],
++      "configurationFinalized": true
++    },
++    "required-e2e-ready-preflight": {
+       "id": "required-e2e-ready-preflight",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -539,12 +627,13 @@
+       "automaticRetries": 0,
+       "acceptedRawExitCodes": [
+         0
+-      ]
+-    },
+-    {
++      ],
++      "configurationFinalized": true
++    },
++    "required-smoke": {
+       "id": "required-smoke",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -556,12 +645,13 @@
+       "automaticRetries": 0,
+       "acceptedRawExitCodes": [
+         0
+-      ]
+-    },
+-    {
++      ],
++      "configurationFinalized": true
++    },
++    "required-evidence-verify": {
+       "id": "required-evidence-verify",
+-      "kind": "command-template",
+-      "cwd": "${FINAL_SOURCE_ROOT}",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -580,25 +670,50 @@
+         "2": "No evidence claim; explicit fail-closed no-claim accepted by current CI policy, never Write/RU/TX qualification",
+         "1": "Claimed but unproved: failure",
+         "3": "Unable to inspect claim/stale build: failure"
+-      }
+-    },
+-    {
+-      "id": "root-final-local-acceptance",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
+-      "contract": "Recheck exact authored source full map/diff/head+status, tools/build/archive/actual consumer lock/proof/inventory and all fresh stage raw exits/logs/audits. Preserve failures; unknown source/process/directory ownership prevents acceptance. Distinguish callback-reported closure from independent local observations.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    {
+-      "id": "exact-head-ci",
+-      "kind": "required-root-or-bound-auditor-verification",
+-      "implementationIdentity": "UNRESOLVED",
+-      "contract": "After root-controlled commit/push/publication, verify exact actual head/tree and CI workflow/step exits/full raw logs and final source identity. Required full test suite remains CI-owned; no local arbitrary full-suite expansion. Actual run/head/tree/log/report identities UNRESOLVED. CI masked/unparseable reports remain explicit limitations, not fabricated local evidence.",
+-      "mustCompleteBeforeNextStage": true
++      },
++      "configurationFinalized": true
+     }
++  },
++  "finalOrder": [
++    "node-version",
++    "pnpm-version",
++    "workspace-install",
++    "bind-workspace-tools",
++    "typecheck",
++    "format-check",
++    "lint",
++    "fresh-build",
++    "bind-fresh-build",
++    "focused-source",
++    "audit-focused-source",
++    "prepare-package-directory",
++    "pack-protocol",
++    "pack-server",
++    "verify-archives",
++    "prepare-consumer",
++    "consumer-install",
++    "verify-installed-consumer",
++    "historical-context-external",
++    "audit-historical-context-external",
++    "finite-start-now-external",
++    "audit-finite-start-now-external",
++    "current-changefeed-external",
++    "audit-current-changefeed-external",
++    "required-check-boundaries",
++    "required-e2e-ready-preflight",
++    "required-smoke",
++    "required-evidence-verify"
+   ],
+-  "freshPipeline": true,
+-  "bootstrapReuse": [],
++  "expectedProductionVersions": {
++    "@bdp/protocol": "0.0.0",
++    "@bdp/server": "0.0.0",
++    "ajv": "8.17.1",
++    "ajv-formats": "3.0.1",
++    "fast-deep-equal": "3.1.3",
++    "fast-uri": "3.1.5",
++    "json-schema-traverse": "1.0.0",
++    "require-from-string": "2.0.2"
++  },
+   "bounds": {
+     "sourceDefaultCallbackMs": 5000,
+     "newDWorkMs": 3000,
+@@ -614,5 +729,36 @@
+     "termAtMs": 115000,
+     "automaticRetries": 0
+   },
+-  "noValidationExecuted": true
++  "freshPipeline": true,
++  "bootstrapReuse": [],
++  "rootBarriers": [
++    {
++      "before": "node-version",
++      "require": "Current source binding plus accepted native and actual CODE dispositions, helper inspection, current-session/root release and measured base tool bytes"
++    },
++    {
++      "before": "typecheck",
++      "require": "Fresh workspace install/tool map actually produced and root-pinned"
++    },
++    {
++      "before": "focused-source",
++      "require": "Actual build map/log/exit independently accepted by root"
++    },
++    {
++      "before": "prepare-consumer",
++      "require": "Actual safe complete archive provenance accepted by root"
++    },
++    {
++      "before": "verify-installed-consumer",
++      "require": "Root independently accepts ACTUAL generated lock/manifest/settings, not predicted hash"
++    },
++    {
++      "before": "historical-context-external",
++      "require": "Root independently accepts ACTUAL installed proof/inventory/payload and literal/resolved entry"
++    },
++    {
++      "after": "required-evidence-verify",
++      "require": "Root final local acceptance and separate exact-head CI/publish authority, all actual identities unresolved"
++    }
++  ]
+ }

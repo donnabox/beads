@@ -1,0 +1,65 @@
+{
+  "createdUtc": "2026-10-18T04:28:30.332354+00:00",
+  "basis": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "actualCodeReviewComplete": true,
+  "independentTerminalAuditAccepted": true,
+  "auditIndexSha256": "6af428b3d75db0be24aebb95540b15eff4dd95baa4765044b47fc7c40b012d0b",
+  "rootCorroboration": {
+    "rawBytes": 3903704,
+    "rawRecords": 6613,
+    "singleActualResult": true,
+    "rawSha256": "ed7e0dbfc9acc5c0e3ce9e0fd051317cc0df9c740788dedb977c3680cff06b36",
+    "beforeAfterIdentical": true,
+    "currentPatchSha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
+    "allEightAuditFilesAndMirrorVerified": true
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "disposition": "accept bounded format correction; prediction is not observed formatter failure",
+      "release": "pinned Biome format --write only six owned paths; rebind exact patch/maps/report source locations"
+    },
+    {
+      "id": "F2",
+      "disposition": "accept evidence-before-assertion correction",
+      "verifiedOriginalLocation": "packages/server/src/transaction-sse.test.ts:981",
+      "release": "record actual ready status/headers/body/wire snapshot before assertions; refresh same ordinal after actual drain; distinguish partial from drained; preserve all successful dispatches and oracles"
+    },
+    {
+      "id": "F3",
+      "disposition": "accept bounded cached metadata correction",
+      "verifiedOriginalLocation": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts:1088",
+      "release": "capture required git diff metadata within existing work budget using explicit bounded timeout/maxBuffer, catch failure into null plus fixed reason and aggregate required-evidence failure; finally uses cached metadata"
+    },
+    {
+      "id": "F4",
+      "disposition": "informational; preserve unsupported owner sentinel and receiving fence"
+    },
+    {
+      "id": "F5",
+      "disposition": "informational; preserve finite-start-now compatibility"
+    },
+    {
+      "id": "F6",
+      "disposition": "informational; truthful count requires no change"
+    }
+  ],
+  "sourceCorrectionReleased": true,
+  "sourceScope": "same six owned files, behavior corrections restricted D and E evidence; other edits format-only",
+  "forbidden": [
+    "product tests/build/install/runtime",
+    "review retry",
+    "git mutations",
+    "source protocol semantics changes",
+    "deadline widening",
+    "historical packet modification"
+  ],
+  "requiredBeforeValidation": [
+    "new frozen source/report binding",
+    "independent native correction closure",
+    "root exact-source acceptance",
+    "named CLOSED validation successor preserving preparation2"
+  ],
+  "runtimeValidationReleased": false,
+  "approvalInferred": false
+}

@@ -1,0 +1,11 @@
+--- before/packages/server/src/transaction-sse.test.ts
++++ after/packages/server/src/transaction-sse.test.ts
+@@ -1507,7 +1507,7 @@
+       [6, 7],
+       [8, 9],
+       [4, 5],
+-    ]) {
++    ] as const) {
+       expect(records[head - 1]!.bodyOctets).toBe(0);
+       expect(records[head - 1]!.headers["content-length"]).toBe(
+         records[get - 1]!.headers["content-length"],

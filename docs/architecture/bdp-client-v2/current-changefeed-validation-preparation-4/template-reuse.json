@@ -1,0 +1,71 @@
+{
+  "templates": {
+    "run.py": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run.py",
+      "originalSha256": "5da0ba913d27e1b0c3989e1b1e45139b4c26645c83bb3964e4e8532daf880c99",
+      "successorSha256": "cd36402bdddfc691029c2bd4c9ddeb71ca1a9edf4a1f9a4451a56613bd950c77",
+      "forwardDelta": "run.py.adaptation.patch",
+      "inverseDelta": "run.py.adaptation-inverse.patch"
+    },
+    "gate.py": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/gate.py",
+      "originalSha256": "1dd6ae6e98b56e69ef3a7576d50d7e605e2443a31e9cd6d10beaeb97eae94280",
+      "successorSha256": "1f47a1d2c4f5de91d366ab64f7c7f7bb9bf471e957889d4a657294abbbc1627d",
+      "forwardDelta": "gate.py.adaptation.patch",
+      "inverseDelta": "gate.py.adaptation-inverse.patch"
+    },
+    "audit.py": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/audit.py",
+      "originalSha256": "ba76c85abd490c4927eabb96f4fc77e143a1b2d0d76e9a5461b6ad307d4e8bf9",
+      "successorSha256": "4669bf01024381545e0daccbc289d6ec5c549e12281b06180053b057bc300f26",
+      "forwardDelta": "audit.py.adaptation.patch",
+      "inverseDelta": "audit.py.adaptation-inverse.patch"
+    },
+    "packages.py": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/packages.py",
+      "originalSha256": "6364a727f70971e068d4fd75926734b331252703dd542a13e3ba1dd0acc4f44a",
+      "successorSha256": "d4be62bef0118a591eeecc97103cf600626e9d501ea63f7ffdbdee2eb8805bbd",
+      "forwardDelta": "packages.py.adaptation.patch",
+      "inverseDelta": "packages.py.adaptation-inverse.patch"
+    }
+  },
+  "currentSessionGuardByteIdentical": true,
+  "noHistoricalRunOutputsReused": true,
+  "bootstrapReuse": [],
+  "changes": [
+    "Source/session/stage rebind",
+    "Fresh pipeline replaces old bootstrap reuse",
+    "Actual authored report grammar replaces Event grammar; historical schema separation preserved",
+    "Root actual build/archive/lock/proof barriers",
+    "Explicit accepted raw evidence exit semantics without conversion",
+    "Exact literal request/frame/typed counters and unhandled-result checks"
+  ],
+  "supervision": "Same accepted Event120s/TERM115 stage process-group runner and exclusive attempt discipline. No new orchestration framework.",
+  "predecessor": "immutable preparation3",
+  "predecessorIndexSha256": "f46a11b4ee85fb14b4602d104f9f271da79049ebbe1dc11d8a8270ad16f78d5f",
+  "minimalSuccessor3Changes": [
+    "audit.py strict D ready/drained/all32/availability/bodyState/drainKind/transport-close pass fields",
+    "audit.py E cached diff fingerprint/null reason pass fields",
+    "data paths/current source/report/context pins only"
+  ],
+  "byteIdenticalToPrep2": [
+    "run.py",
+    "gate.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "noFrameworkRedesign": true,
+  "minimalSuccessor4Changes": [
+    "data paths",
+    "exact tuple-corrected source/file SHA pins",
+    "failure/typecorrection/native/root evidence contexts",
+    "fresh measured base-tool candidates; no runtime output reuse"
+  ],
+  "byteIdenticalToPrep3": [
+    "run.py",
+    "gate.py",
+    "packages.py",
+    "audit.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ]
+}

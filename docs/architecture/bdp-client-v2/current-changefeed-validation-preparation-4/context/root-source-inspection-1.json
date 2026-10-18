@@ -1,0 +1,34 @@
+{
+  "inspectedAt": "2026-10-18T03:50:28.324207+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "authorIndexSha256": "31bb0664e3174bdff460d3a8b876f328a7c04d8aa24be236603ce60217fb1072",
+  "authorBindingSha256": "6b349233d20cc2b7d676e9a6ce8a66c43606cda8d7519a238a5ab8f896ab4983",
+  "patchSha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
+  "trackedSourceFiles": 679,
+  "changedExactly": [
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "otherFilesByteIdentical": 673,
+  "originalPR167CleanAndAll679Match": true,
+  "indexedArtifactsAndMirrorMatch": 25,
+  "installedPrefixBytes": 33116,
+  "installedAndSsePrefixesExact": true,
+  "allSourceCopiesAndReportLineBindingsMatch": true,
+  "rootReadFullActualDiff": true,
+  "staticInspection": {
+    "production": "Only canonical changefeed HTTP/service/readChanges seams changed. Intent and minimum copied synchronously; start anchor once before waiter preflight; cursor decode/future/retained row checks remain before semantic minimum. Pump/default strict/old tag/readConfiguration untouched outside seam.",
+    "tests": "A/B/C/F/D/E and associated two legacy500\u2192503 rows/vector only. Local B/C/F owner lifetimes; per-row F cleanup and unknown retains. Source D3swork/4stotal; E45swork/10scleanup/60scallback; callback-local recorder.",
+    "reportAttribution": "TWO selected historical reports plus NINE new, third parameter-context callback unselected; counts prospective."
+  },
+  "staticAcceptanceForCodeReview": true,
+  "independentNativeCodeReviewRequired": true,
+  "actualClaudeCodeReviewRequired": true,
+  "validationReleased": false,
+  "sourceCommitPushReleased": false,
+  "executionClaims": "No formatter/compiler/test/build/install/runtime or code reviewer execution by this inspection."
+}

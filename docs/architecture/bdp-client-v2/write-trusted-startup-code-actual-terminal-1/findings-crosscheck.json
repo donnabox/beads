@@ -1,0 +1,77 @@
+{
+  "scope": "Independent bounded static crosscheck of complete actual CODE findings; root owns disposition/release",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "Medium",
+      "location": "reference-deployment.ts:40,150; config/index.ts:570\u2013573",
+      "evidence": "Confirmed: real config.bdptest contains deploymentFile, but exact nested allowlist accepts fixture only. A structurally assignable real section is refused before open. Current loader is still an isolated future-consumer seam; this is a concrete integration hazard, not evidence that an existing listener ran.",
+      "recommendation": "Accept deploymentFile in nested type/allowlist, preserve fixture conflict; witness deploymentFile-only success and fixture+deploymentFile refusal. If equality is added, make the chosen policy explicit."
+    },
+    {
+      "id": "F2",
+      "severity": "Low\u2013Medium caveat",
+      "location": "reference-deployment.ts:269,292\u2013298; installed-reference-configuration.ts:170\u2013172",
+      "evidence": "Confirmed public SHA identities commit to secret-containing content. Existing accepted provenance permits them; absence of literal tokens in JSON does not imply secrecy.",
+      "recommendation": "Accept documentation saying digests commit to contents and must not be diagnostic-emitted. Do not introduce a salting/hash-identity change under this bounded correction."
+    },
+    {
+      "id": "F3",
+      "severity": "Low",
+      "location": "reference-deployment.ts:154; transaction-runtime-configuration.ts:118",
+      "evidence": "Confirmed TX loopback is a duplicate literal, currently equal to the authoritative default.",
+      "recommendation": "Reuse TRANSACTION_RUNTIME_DEFAULTS.transport.host; preserve existing accepted host behavior."
+    },
+    {
+      "id": "F4",
+      "severity": "Low",
+      "location": "reference-deployment.ts:160\u2013173,321\u2013324; transaction-runtime-configuration.ts:334\u2013340",
+      "evidence": "Confirmed duplicate page formula. Reviewer proposed relying solely on the postcapture check, which would move unsupported-limit refusal after file access and conflicts with the accepted pre-file refusal order.",
+      "recommendation": "Retain the explicit pre-file unsupported tuple refusal and authoritative captured readOptions comparison. Defer abstraction unless both timing and current behavior stay explicit."
+    },
+    {
+      "id": "F5",
+      "severity": "Low",
+      "location": "reference-deployment.ts:317\u2013320; transaction-runtime-configuration.ts:307\u2013308",
+      "evidence": "Confirmed heartbeat check duplicates liveStreamsAvailable and seams is empty at this call site. Harmless future-refactor tripwires.",
+      "recommendation": "Retain/defer or explain briefly; no correctness blocker."
+    },
+    {
+      "id": "F6",
+      "severity": "Low",
+      "location": "reference-deployment.ts:182\u2013198",
+      "evidence": "Confirmed unconditional 32 MiB+1 allocation (33,554,433 bytes), bounded and intentional; stat is not the real growth bound.",
+      "recommendation": "Retain/defer. Optional future allocation optimization must preserve one-handle reads, stale-stat growth ceiling and close discipline; no bound change now."
+    },
+    {
+      "id": "F7",
+      "severity": "Low witness gap",
+      "location": "reference-deployment.test.ts:340\u2013355,601\u2013620",
+      "evidence": "Confirmed calls.length is only used as a no-reread baseline and close spy uses mockImplementationOnce; neither proves exactly one open.",
+      "recommendation": "Accept an explicit exactly-one-open assertion, resetting/isolating counts appropriately."
+    },
+    {
+      "id": "F8",
+      "severity": "Low witness gaps",
+      "location": "reference-deployment.test.ts:340\u2013355,591\u2013600",
+      "evidence": "Confirmed mutation targets page.maximumItems but assertions omit preflightReadLimits; MAX+1 refusal exists, exact-MAX acceptance and empty syntax are not in these witnesses.",
+      "recommendation": "Accept preflightReadLimits snapshot assertion and a small empty-file syntax witness. Exact-MAX accept is optional; if added use a valid envelope plus trailing whitespace to isolate the outer byte boundary."
+    },
+    {
+      "id": "F9",
+      "severity": "Low",
+      "location": "config/index.ts:1080\u20131094; reference-deployment.ts:99\u2013110",
+      "evidence": "Confirmed equivalent path grammar across the package boundary. Server does not depend on config; duplicate validation is structurally justified.",
+      "recommendation": "Retain/defer or cross-reference comments; do not add a new runtime/package dependency."
+    },
+    {
+      "id": "F10",
+      "severity": "Informational",
+      "location": "reference-deployment.ts:213,251,262\u2013301",
+      "evidence": "Confirmed fixed non-echo code policy: explicit internal refuses remain internal; arbitrary capture defects under contract phase are masked as contract. No demonstrated boundary breach.",
+      "recommendation": "Retain/defer; optional error policy prose, no new semantics needed."
+    }
+  ],
+  "noNewReviewAttempt": true,
+  "approvalInferred": false
+}

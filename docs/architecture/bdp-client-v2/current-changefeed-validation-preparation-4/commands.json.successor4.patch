@@ -1,0 +1,164 @@
+--- preparation-3/commands.json
++++ preparation-4/commands.json
+@@ -2,7 +2,7 @@
+   "configurationFinalized": true,
+   "closedPreparation": true,
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4",
+   "commands": {
+     "node-version": {
+       "id": "node-version",
+@@ -65,7 +65,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -170,7 +170,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -195,7 +195,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:preserves\\ changefeed\\ cursor\\ precedence\\ under\\ current\\-admission\\ opaque\\ minima|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ start\\-now\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ genesis\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-pos\\-01|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ start\\-now|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ retained|preserves\\ current\\ changefeed\\ anchor\\ capture\\ before\\ waiter\\ preflight|serves\\ current\\ changefeed\\ opaque\\ minima\\ across\\ finite\\ and\\ SSE\\ admission|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|disconnect\\ cancels\\ the\\ actual\\ finite\\ minimum\\ wait\\ without\\ consuming\\ its\\ remaining\\ budget|effective\\ reconnect\\ cursor\\ owns\\ epoch/view/retention\\ decisions;\\ overridden\\ query\\ is\\ not\\ looked\\ up)$"
+       ],
+@@ -258,7 +258,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -276,7 +276,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -299,7 +299,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -320,7 +320,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -336,7 +336,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -354,7 +354,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -369,7 +369,7 @@
+     "consumer-install": {
+       "id": "consumer-install",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -393,7 +393,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -417,7 +417,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/historical-context-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/historical-context-external.results.json",
+         "--testNamePattern",
+         "^observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals$"
+       ],
+@@ -456,7 +456,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+         "history"
+       ],
+       "outerSeconds": 120,
+@@ -480,7 +480,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/finite-start-now-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/finite-start-now-external.results.json",
+         "--testNamePattern",
+         "^observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal$"
+       ],
+@@ -519,7 +519,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+         "finite"
+       ],
+       "outerSeconds": 120,
+@@ -543,7 +543,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/current-changefeed-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/current-changefeed-external.results.json",
+         "--testNamePattern",
+         "^observes\\ installed\\ current\\ changefeed\\ minimum\\ admission\\ and\\ retained\\ replay$"
+       ],
+@@ -582,7 +582,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+         "current"
+       ],
+       "outerSeconds": 120,

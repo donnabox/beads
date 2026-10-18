@@ -1,0 +1,125 @@
+{
+  "parentIndexSha256": "cb1a558d165ce396246b22b697e2182d8356a51f26077fe6faf4ed1af40178bb",
+  "parent46FilesPreserved": {
+    "before.json": "a8c42890ec5af1202ce79dfd90467a244b4af09cfd9371032e5e16f4e46d62cf",
+    "report-bindings.json": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be",
+    "changed-lines.json": "950ca8cf574fb11000bd37d80b0dbbc2bed1c782fe29bfc49573ef6c5e91f150",
+    "source-binding.json": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+    "functional-after-map.json": "17027422342fccffbb37cdbea652ffdd704947de02ad10e19c7502b0eb422f42",
+    "full.patch": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2",
+    "before-to-after.patch": "b6b813ad75bff1874ac6532149cd65a1cfa61543bb17184c3f26c65c41e2f288",
+    "binding.json": "b7e17dba9095b3903915f50155581a755a82917d4b9423f91fe3041015504511",
+    "report.md": "a224349ee73c6b1cc86676bbac3b2f3fcb381f268c2caa0a66253c4cc175cf98",
+    "scope.json": "cbde48200bf3e42543c480dd60db3501a4d85ee140a490ba903625fdd8f7d2f5",
+    "workload.json": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+    "preservation.json": "4aa58a095fa90d80ebd0587afbb8f1f529b17398567b59732b8063a149e0d3ce",
+    "after-map.json": "fedb18be46e61b03fff469b7d56d09c057f60a2294e497f0deda7ec0d4948a78",
+    "stage-snapshots.json": "cb7154f3720f6a31717d13edf6f51c1da780b214d050495a63d3a2b32a7b6fd8",
+    "actual-selection-locations.json": "906bff2c084876c1ef2c83606607540f741b164cc72cd2f9067c8eb340ca8260",
+    "after-to-before.patch": "837bbe26fa36f8df8e59597151789c9dc5b58fe6ef798bb56d387f17c231a65f",
+    "formatter-binding.json": "144f312e786f22715ebbaf5e26e77bd2e418d14d79d345052a013b8faa4d3196",
+    "audit-expectations.json": "4f1fe820dc901e49efc9e552b7b514985fb4f3822c7c0974298aae7d3631cc3f",
+    "selection.json": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+    "root-disposition.json": "1f6dce33f3927e320b1c5773ac86cd1361bc5f35629207d401490e4867fb6ce4",
+    "index.json": "cb1a558d165ce396246b22b697e2182d8356a51f26077fe6faf4ed1af40178bb",
+    "validation-successor-3-inputs/source-binding.json": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+    "validation-successor-3-inputs/required-delta.md": "298bca70333e5c1038a4cd4dd3c03e9b04a661d8bc4e172737d04534ec91d9c4",
+    "validation-successor-3-inputs/workload.json": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+    "validation-successor-3-inputs/report-schemas.json": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be",
+    "validation-successor-3-inputs/actual-selection-locations.json": "906bff2c084876c1ef2c83606607540f741b164cc72cd2f9067c8eb340ca8260",
+    "validation-successor-3-inputs/audit-expectations.json": "4f1fe820dc901e49efc9e552b7b514985fb4f3822c7c0974298aae7d3631cc3f",
+    "validation-successor-3-inputs/selection.json": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+    "before-source/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "55f9b0eb8b5b8686c16bc7ee006d80578597d0c8c20b727f8987f1696b97ce66",
+    "before-source/packages/server/src/transaction-changefeed.test.ts": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
+    "before-source/packages/server/src/transaction-sse.test.ts": "8ed09116f709d47573b394fdf9d6cc6eb4c90db858bfce9afa89097d0f305d9d",
+    "before-source/packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+    "before-source/packages/server/src/transaction-service.ts": "25a993b33a49dc55bc3bb24619d7ea5ea73f8f3d030c4798b250f9ffa0583622",
+    "before-source/packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "pre-format-source/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c7d58938a27bb7954fca6c3f67229bfa2e35ac6fe9ac8e127b338e3651ab7312",
+    "pre-format-source/packages/server/src/transaction-changefeed.test.ts": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
+    "pre-format-source/packages/server/src/transaction-sse.test.ts": "fab2c4d0bd6128ddb8578094480c161079785c72e9e34a1e0a5757e2c07a4390",
+    "pre-format-source/packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+    "pre-format-source/packages/server/src/transaction-service.ts": "25a993b33a49dc55bc3bb24619d7ea5ea73f8f3d030c4798b250f9ffa0583622",
+    "pre-format-source/packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "source/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+    "source/packages/server/src/transaction-changefeed.test.ts": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+    "source/packages/server/src/transaction-sse.test.ts": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd",
+    "source/packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+    "source/packages/server/src/transaction-service.ts": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+    "source/packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+  },
+  "all45IndexedArtifactsAndMirrorVerified": true,
+  "sourceBindingSha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+  "all679SourceBytesMatch": true,
+  "sixFrozenSourceCopiesMatch": true,
+  "oldAuthorMapMatchesBefore": true,
+  "unchangedOther673": true,
+  "fullPatchSha256": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2",
+  "fullPatchStaticallyReconstructsSixSourcesFromOriginal": true,
+  "successorForwardInverseReconstructExact": true,
+  "successorChangedPaths": [
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+  ],
+  "historicalPrefixes": {
+    "packages/server/src/transaction-sse.test.ts": {
+      "bytes": 33419,
+      "sha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+      "matchesCommittedHEADAndAuthorBefore": true
+    },
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+      "bytes": 33116,
+      "sha256": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b",
+      "matchesCommittedHEADAndAuthorBefore": true
+    }
+  },
+  "original679AndStartup682BytesPreserved": true,
+  "reportBindingsSha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be",
+  "selectionSha256": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+  "workloadSha256": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+  "all18CallbackLocationsAndSixReportLocationsVerified": true,
+  "formatterRecord": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "realpath": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+    "version": "2.5.7",
+    "action": "format --write exactly six owned files, no check/lint/unsafe",
+    "ownedFiles": [
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-store.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-sse.test.ts",
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+    ],
+    "execution": {
+      "invocations": 2,
+      "argvTail": [
+        "format",
+        "--write",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-sse.test.ts",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+      ],
+      "results": [
+        {
+          "exit": 0,
+          "stdout": "Formatted 6 files in 17ms. Fixed 4 files."
+        },
+        {
+          "exit": 0,
+          "stdout": "Formatted 6 files in 13ms. No fixes applied.",
+          "reason": "F2 actual-finite-drain snapshot refinement after first formatting; same six-file formatter only, no checks/tests/lint/unsafe"
+        }
+      ]
+    }
+  },
+  "formatterCheckExecutedByReviewer": false,
+  "initialExactRoleGuardExit": 0,
+  "noProductHelperReviewCompilerGitOrFlagExecution": true
+}

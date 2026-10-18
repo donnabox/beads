@@ -1,0 +1,1 @@
+Accept the complete actual review as substantive evidence while preserving failed supervised finalization and missing runner outputs. Release only F1/F2/F3/F7/F8 bounded corrections on three paths; no retry, runtime or profile activation.

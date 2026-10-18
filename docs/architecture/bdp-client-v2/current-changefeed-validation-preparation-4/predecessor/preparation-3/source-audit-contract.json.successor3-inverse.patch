@@ -1,0 +1,30 @@
+--- preparation-3/source-audit-contract.json
++++ preparation-2/source-audit-contract.json
+@@ -150,14 +150,13 @@
+     },
+     "current-changefeed-minimum-http": {
+       "attempted": 32,
+-      "completed": "exact32 actual drained on success, never records.length",
+-      "records": "same ordinal ready-before-status snapshot; strict ready/drained/bodyState/drainKind/availability/transport-close success fields from actual source; partial/null snapshots cannot pass",
++      "completed": "32 on success",
++      "records": "ordinal/method/canonical target/raw-safe control fields/status/context/media/body bytes/hash; wire hash only actual raw recorder",
+       "stream": "exact group2 frame+CP2,liveBeforeClose,afterDrain,ready/status/headers",
+       "elapsedMs": "actual includes cleanup, <4000 on success",
+       "runtimeClosed": true,
+       "directoryAbsent": true,
+-      "failureCount": 0,
+-      "observedResponses": 32
++      "failureCount": 0
+     }
+   },
+   "sourceGroupChecks": {
+@@ -191,7 +190,7 @@
+   },
+   "sourceVsWire": "60HTTP and18stores/19ownerlifetimes/23commits are prospective source-derived inventories. Emitted actual report counters/context/frames must be independently parsed; no whole-workload wire census or invented response/wire bytes. Fetch seeds do not provide raw-wire hash.",
+   "actualAuthoredReportBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/report-schemas.json",
+-    "sha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/report-schemas.json",
++    "sha256": "9a35ee47add02370d5980e2d937c5909645b9bdb049b2bcd7ad22d33d19f5346"
+   }
+ }

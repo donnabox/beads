@@ -1,0 +1,33 @@
+--- preparation-4/source-binding.json
++++ preparation-3/source-binding.json
+@@ -468,7 +468,7 @@
+     "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+     "packages/server/src/transaction-snapshot.test.ts": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5",
+     "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+-    "packages/server/src/transaction-sse.test.ts": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589",
++    "packages/server/src/transaction-sse.test.ts": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd",
+     "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
+     "packages/server/src/transaction-store.test.ts": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+     "packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+@@ -711,17 +711,17 @@
+     },
+     "packages/server/src/transaction-sse.test.ts": {
+       "beforeSha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+-      "afterSha256": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589"
++      "afterSha256": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd"
+     },
+     "packages/server/src/transaction-store.ts": {
+       "beforeSha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002",
+       "afterSha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+     }
+   },
+-  "binaryDiffSha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
++  "binaryDiffSha256": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2",
+   "binaryDiffArtifact": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-typecheck-correction-1/full.patch",
+-    "sha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-review-corrections-1/full.patch",
++    "sha256": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2"
+   },
+   "attribution": "Exact dirty source after accepted CODE F1-F3 corrections; a562 base alone is not this candidate. No new runtime/CODE acceptance inferred."
+ }

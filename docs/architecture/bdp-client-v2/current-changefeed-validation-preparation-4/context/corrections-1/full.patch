@@ -1,0 +1,2049 @@
+diff --git a/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts b/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+index b3fadd5..c2cdc18 100644
+--- a/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
++++ b/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+@@ -852,3 +852,489 @@ it("observes genuine installed finite start-now opaque minimum refusal", async (
+   if (failures.length)
+     throw new AggregateError(failures, "installed opaque changefeed observation or cleanup failed");
+ }, 60000);
++
++it("observes installed current changefeed minimum admission and retained replay", async () => {
++  const { recordRawSse } = await import("@bdp/server/testing");
++  const { stringifyJsonValue } = await import("@bdp/protocol");
++  type Page = {
++    after: string;
++    observedHeadPosition: string;
++    next: string | null;
++    groups: { checkpoint: string; changes: { resource: { id: string } }[] }[];
++  };
++  const controller = new AbortController(),
++    streamController = new AbortController();
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-current-feed-installed-"));
++  const ownedDirectory = realpathSync(directory),
++    token = randomBytes(32).toString("base64url");
++  const failures: unknown[] = [],
++    failureCategories: string[] = [];
++  function fail(category: string, error: unknown) {
++    if (!failures.includes(error)) {
++      failures.push(error);
++      failureCategories.push(category);
++    }
++  }
++  const workBegan = performance.now();
++  let trackedDiffSha256: string | null = null,
++    trackedDiffUnavailableReason: string | null = null;
++  let deadlineFired = false;
++  const workTimer = setTimeout(() => {
++    deadlineFired = true;
++    const error = new Error("installed current feed work deadline");
++    fail("work-deadline", error);
++    controller.abort(error);
++  }, 45000);
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let recorder: ReturnType<typeof recordRawSse> | undefined, childDrain: Promise<void> | undefined;
++  let attempted = 0,
++    settledFiniteExchanges = 0,
++    launchAttempted = false,
++    cleanClose = false,
++    pendingDrained = false,
++    streamDrained = false,
++    directoryRemoved = false,
++    stopUnknown = false,
++    lateCleanupRejectionObserved = false,
++    assertionsCompleted = false;
++  const processEvents: {
++    exit: { code: number | null; signal: NodeJS.Signals | null } | undefined;
++    close: { code: number | null; signal: NodeJS.Signals | null } | undefined;
++  } = { exit: undefined, close: undefined };
++  const pending = new Set<Promise<unknown>>();
++  const responses: {
++    ordinal: number;
++    method: string;
++    url: string;
++    status: number;
++    bodyOctets: number;
++    bodySha256: string;
++    wireSha256: string;
++    requestHeaders: { name: string; value: string }[];
++    headers: Record<string, string | null>;
++  }[] = [];
++  let stream: Record<string, unknown> | null = null;
++  const safeHeaders = [...retainedHeaders, "etag"];
++  function dispatch() {
++    controller.signal.throwIfAborted();
++    if (attempted >= 10) throw new Error("installed current feed global dispatch bound");
++    return ++attempted;
++  }
++  async function bounded<T>(operation: Promise<T>, deadline: number, label: string) {
++    let timer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      return await Promise.race([
++        operation,
++        new Promise<never>((_, reject) => {
++          timer = setTimeout(
++            () => reject(new Error(label)),
++            Math.max(1, deadline - performance.now()),
++          );
++        }),
++      ]);
++    } finally {
++      if (timer !== undefined) clearTimeout(timer);
++    }
++  }
++  function track<T>(operation: Promise<T>) {
++    pending.add(operation);
++    void operation.then(
++      () => {
++        pending.delete(operation);
++        settledFiniteExchanges++;
++      },
++      () => {
++        pending.delete(operation);
++        settledFiniteExchanges++;
++      },
++    );
++    return operation;
++  }
++  try {
++    try {
++      controller.signal.throwIfAborted();
++      const timeout = Math.min(1500, Math.floor(workBegan + 45000 - performance.now()));
++      if (timeout < 1000) throw new Error("tracked diff work budget unavailable");
++      const diff = execFileSync("git", ["diff", "--binary", "HEAD"], {
++        cwd: root,
++        timeout,
++        maxBuffer: 8 * 1024 * 1024,
++        stdio: ["ignore", "pipe", "ignore"],
++      });
++      if (performance.now() >= workBegan + 45000)
++        throw new Error("tracked diff work budget expired");
++      trackedDiffSha256 = digest(diff);
++    } catch {
++      trackedDiffSha256 = null;
++      trackedDiffUnavailableReason = "bounded tracked diff capture unavailable";
++      const error = new Error(trackedDiffUnavailableReason);
++      fail("tracked-diff-metadata", error);
++      throw error;
++    }
++    launchAttempted = true;
++    const launching = launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        credentials: [{ token, principal: "writer", canMutate: true }],
++      },
++      controller.signal,
++    );
++    void launching.catch((error: unknown) => fail("launch", error));
++    child = await launching;
++    const ownedProcess = child.child;
++    ownedProcess.once("exit", (code, signal) => {
++      processEvents.exit = { code, signal };
++    });
++    childDrain = new Promise<void>((resolve) => {
++      ownedProcess.once("close", (code, signal) => {
++        processEvents.close = { code, signal };
++        resolve();
++      });
++    });
++    expect(ownedProcess.exitCode).toBeNull();
++    expect(ownedProcess.signalCode).toBeNull();
++    expect(child.ready).toMatchObject({
++      scope,
++      profile: "transactional",
++      history: false,
++      claimEligible: false,
++    });
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    const address = new URL(child.ready.listenUrl as string);
++    const routes = [
++      { method: "POST" as const, url: scope + "operations/batch" },
++      { method: "GET" as const, url: scope + "changes/?after=genesis" },
++      { method: "GET" as const, url: scope + "changes/?start=now" },
++    ];
++    function executor() {
++      return createRawHttpExchangeExecutor(
++        { transport: "plain", host: address.hostname, port: Number(address.port) },
++        {
++          requestTimeoutMs: 5000,
++          maximumBodyBytes: 131072,
++          exactMode: {
++            scope,
++            profile: "transactional",
++            routes: [...routes],
++            maximumRequestHeaderBytes: 16384,
++            maximumRequestBodyBytes: 65536,
++            defaultCredentialRef: "writer",
++            credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
++            resolveCredentials: () => ({ authorization: "Bearer " + token }),
++          },
++        },
++      );
++    }
++    let execute = executor();
++    async function exchange(
++      method: "POST" | "GET",
++      url: string,
++      expected: number,
++      headerLines: { name: string; value: string }[],
++      input?: unknown,
++    ) {
++      if (!routes.some((r) => r.method === method && r.url === url))
++        throw new Error("unbound installed current feed target");
++      const ordinal = dispatch();
++      const response = await track(
++        execute({
++          method,
++          url,
++          signal: controller.signal,
++          credentialRef: "writer",
++          raw: {
++            headerLines,
++            ...(input === undefined ? {} : { bodyBytes: Buffer.from(JSON.stringify(input)) }),
++          },
++        }),
++      );
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(
++        response.exactRequest?.headerLines.find((h) => h.name.toLowerCase() === "host")?.value,
++      ).toBe("reference.invalid");
++      expect(response.url).toBe(url);
++      if (!response.wireResponseBytes?.length || response.bodyOctets === undefined)
++        throw new Error("missing installed current feed actual wire/body");
++      expect(response.bodyOctets).toBe(Buffer.byteLength(response.bodyText));
++      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++      responses.push({
++        ordinal,
++        method,
++        url,
++        status: response.status,
++        bodyOctets: response.bodyOctets,
++        bodySha256: digest(response.bodyText),
++        wireSha256: digest(response.wireResponseBytes),
++        requestHeaders: headerLines.map((h) => ({ ...h })),
++        headers: Object.fromEntries(
++          safeHeaders.map((name) => [name, response.headers[name] ?? null]),
++        ),
++      });
++      expect(response.status).toBe(expected);
++      const value: unknown = JSON.parse(response.bodyText);
++      return { response, value };
++    }
++    let secondReceipt: Record<string, unknown> | undefined;
++    for (const id of ["a", "b"]) {
++      const seed = await exchange(
++        "POST",
++        scope + "operations/batch",
++        200,
++        [
++          { name: "content-type", value: "application/json" },
++          { name: "accept", value: "application/json" },
++          { name: "idempotency-key", value: "current-feed-" + id },
++        ],
++        {
++          operations: [
++            {
++              operation: "createBead",
++              id: "beads/" + id,
++              type: beadType,
++              properties: { title: "current-feed-" + id },
++            },
++          ],
++        },
++      );
++      expect(validReceipt(seed.value), JSON.stringify(validReceipt.errors)).toBe(true);
++      expect(seed.value).toMatchObject({
++        status: "completed",
++        requiredPosition: id === "a" ? "pos-1" : "pos-2",
++      });
++      secondReceipt = seed.value as Record<string, unknown>;
++    }
++    if (!secondReceipt) throw new Error("missing second installed receipt");
++    const current = [secondReceipt.scopeEpoch, secondReceipt.authorizationView, "pos-2"];
++    const k = [
++      { name: "bdp-scope-epoch", value: String(secondReceipt.scopeEpoch) },
++      { name: "bdp-authorization-view", value: String(secondReceipt.authorizationView) },
++      { name: "bdp-minimum-scope-position", value: "pos-2" },
++    ];
++    const u = k.map((h) => ({
++      ...h,
++      value: h.name === "bdp-minimum-scope-position" ? "unknown" : h.value,
++    }));
++    const p = u.map((h) => ({
++      ...h,
++      value: h.name === "bdp-minimum-scope-position" ? "pos-01" : h.value,
++    }));
++    const json = { name: "Accept", value: "application/json" },
++      sse = { name: "Accept", value: "text/event-stream" };
++    const firstResponse = await exchange("GET", scope + "changes/?after=genesis", 200, [
++      json,
++      ...k,
++    ]);
++    expect(validPage(firstResponse.value), JSON.stringify(validPage.errors)).toBe(true);
++    const first = firstResponse.value as Page;
++    expect(first.groups).toHaveLength(1);
++    expect(first.observedHeadPosition).toBe("pos-2");
++    const cp1 = first.groups[0]!.checkpoint;
++    expect(first.next).toBe(scope + "changes/?after=" + cp1);
++    const afterUrl = first.next!;
++    routes.push({ method: "GET", url: afterUrl });
++    execute = executor();
++    const secondResponse = await exchange("GET", afterUrl, 200, [json, ...k]);
++    expect(validPage(secondResponse.value), JSON.stringify(validPage.errors)).toBe(true);
++    const page2 = secondResponse.value as Page;
++    expect(page2.groups).toHaveLength(1);
++    expect(page2.next).toBeNull();
++    expect(page2.after).toBe(cp1);
++    expect(page2.observedHeadPosition).toBe("pos-2");
++    for (const response of [firstResponse.response, secondResponse.response])
++      expect(contextNames.map((name) => response.headers[name])).toEqual(current);
++    expect(page2.groups[0]!.changes[0]!.resource.id).toBe(scope + "beads/b");
++    const cp2 = page2.groups[0]!.checkpoint;
++    expect(cp2).not.toBe(cp1);
++    for (const [url, headers] of [
++      [scope + "changes/?after=genesis", [json, ...u, { name: "If-None-Match", value: "*" }]],
++      [afterUrl, [json, ...p, { name: "If-Match", value: '"missing"' }]],
++      [scope + "changes/?start=now", [sse, ...u]],
++      [scope + "changes/?start=now", [sse, ...u, { name: "Last-Event-ID", value: cp1 }]],
++      [
++        scope + "changes/?after=genesis",
++        [
++          json,
++          ...u,
++          { name: "Last-Event-ID", value: "bad" },
++          { name: "Last-Event-ID", value: "also-bad" },
++        ],
++      ],
++    ] as const) {
++      const result = await exchange("GET", url, 503, [...headers]);
++      expect(validProblem(result.value), JSON.stringify(validProblem.errors)).toBe(true);
++      expect(result.value).toMatchObject({
++        code: "catch-up-timeout",
++        status: 503,
++        retry: "after-delay",
++      });
++      expect(contextNames.map((name) => result.response.headers[name])).toEqual(current);
++      expect(result.response.headers["content-type"]).toBe("application/problem+json");
++      expect(result.response.headers["cache-control"]).toBe("private, no-store");
++      expect(result.response.headers["retry-after"]).toBe("1");
++      expect(result.response.headers.etag).toBeUndefined();
++      expect(result.response.headers["x-bdp-development-limit"]).toBeUndefined();
++      expect(result.response.bodyText).not.toContain("event: change-group");
++    }
++    const ordinal = dispatch();
++    const streamHeaders: [string, string][] = [
++      ["Authorization", "Bearer " + token],
++      ...[sse, ...k, { name: "Last-Event-ID", value: cp1 }].map((h): [string, string] => [
++        h.name,
++        h.value,
++      ]),
++    ];
++    recorder = recordRawSse({
++      dial: child.ready.listenUrl as string,
++      host: new URL(scope).host,
++      target: new URL(scope).pathname + "changes/?after=genesis",
++      headers: streamHeaders,
++      signal: AbortSignal.any([controller.signal, streamController.signal]),
++      timeoutMs: 5000,
++    });
++    const rec = recorder;
++    await rec.ready;
++    expect(rec.status).toBe(200);
++    await rec.until(() => rec.frames.filter((f) => f.startsWith("id: ")).length >= 1);
++    const expectedFrame =
++      "id: " + cp2 + "\nevent: change-group\ndata: " + stringifyJsonValue(page2.groups[0]);
++    expect(rec.frames.filter((f) => f.startsWith("id: "))).toEqual([expectedFrame]);
++    expect(rec.headers["content-type"]).toBe("text/event-stream");
++    expect(contextNames.map((name) => rec.headers[name])).toEqual(current);
++    expect(controller.signal.aborted).toBe(false);
++    expect(streamController.signal.aborted).toBe(false);
++    expect(rec.destroyed).toBe(false);
++    const liveBeforeClose =
++      !rec.destroyed && !controller.signal.aborted && !streamController.signal.aborted;
++    await rec.close();
++    streamDrained = true;
++    expect(rec.frames.filter((f) => f.startsWith("id: "))).toEqual([expectedFrame]);
++    const actualGroup: unknown = JSON.parse(
++      rec.frames.filter((f) => f.startsWith("id: "))[0]!.split("\ndata: ")[1]!,
++    );
++    expect(actualGroup).toEqual(page2.groups[0]);
++    stream = {
++      request: ordinal,
++      status: rec.status,
++      readyObserved: true,
++      liveBeforeClose,
++      afterDrain: true,
++      frames: rec.frames,
++      group: actualGroup,
++      checkpoint: cp2,
++      wireSha256: digest(rec.wireBytes),
++      bodySha256: digest(rec.body),
++      requestHeaders: streamHeaders.filter(([name]) => name !== "Authorization"),
++      headers: Object.fromEntries(safeHeaders.map((name) => [name, rec.headers[name] ?? null])),
++    };
++    expect(attempted).toBe(10);
++    expect(settledFiniteExchanges).toBe(9);
++    expect(responses).toHaveLength(9);
++    expect(responses.map((r) => r.status)).toEqual([200, 200, 200, 200, 503, 503, 503, 503, 503]);
++    assertionsCompleted = true;
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    fail("observation", error);
++  } finally {
++    controller.abort();
++    streamController.abort();
++    clearTimeout(workTimer);
++    const cleanupDeadline = performance.now() + 10000;
++    const cleaning = (async () => {
++      const cleanupFailures: unknown[] = [];
++      try {
++        if (recorder) {
++          await recorder.close();
++          streamDrained = true;
++        }
++      } catch (error) {
++        cleanupFailures.push(error);
++      }
++      const pendingResults = await Promise.allSettled([...pending]);
++      pendingDrained = pending.size === 0;
++      for (const result of pendingResults)
++        if (result.status === "rejected") cleanupFailures.push(result.reason);
++      if (child) {
++        const closing = child.close();
++        void closing.catch((error: unknown) => {
++          lateCleanupRejectionObserved = true;
++          fail("late-child-close", error);
++        });
++        const results = await Promise.allSettled([closing, childDrain]);
++        for (const result of results)
++          if (result.status === "rejected") cleanupFailures.push(result.reason);
++        if (!cleanupFailures.length) {
++          expect(processEvents.exit).toEqual({ code: 0, signal: null });
++          expect(processEvents.close).toEqual({ code: 0, signal: null });
++          expect(child.child.exitCode).toBe(0);
++          if (!child.child.pid) throw new Error("missing owned child pid");
++          expect(() => process.kill(child!.child.pid!, 0)).toThrow();
++          cleanClose = true;
++        }
++      }
++      if (cleanupFailures.length)
++        throw new AggregateError(cleanupFailures, "installed current feed cleanup failed");
++    })();
++    void cleaning.catch((error: unknown) => fail("cleanup-operation", error));
++    try {
++      await bounded(cleaning, cleanupDeadline, "installed current feed total cleanup deadline");
++      if (
++        cleanClose &&
++        pendingDrained &&
++        (recorder === undefined || streamDrained) &&
++        realpathSync(directory) === ownedDirectory
++      ) {
++        rmSync(directory, { recursive: true, force: false });
++        directoryRemoved = true;
++      } else if (launchAttempted) stopUnknown = true;
++    } catch (error) {
++      stopUnknown = true;
++      fail("cleanup", error);
++    }
++    console.log(
++      JSON.stringify({
++        observation: "private-installed-current-changefeed-minimum",
++        outcome: failures.length ? "failed" : "passed",
++        attempted,
++        settledFiniteExchanges,
++        responses,
++        stream,
++        declaredSourceCommit: sourceCommit,
++        workspaceDirty,
++        witnessSourceSha256: digest(readFileSync(fileURLToPath(import.meta.url))),
++        trackedDiffSha256,
++        trackedDiffUnavailableReason,
++        sourceLimitation:
++          "Declared source and witness/diff hashes; installed payload/configuration independently bound by external validation",
++        entryLiteral: entry,
++        entry: resolvedEntry,
++        entrySha256,
++        binding,
++        ready: child?.ready ?? null,
++        childPid: child?.child.pid ?? null,
++        processEvents,
++        cleanClose,
++        closed: cleanClose,
++        stopUnknown,
++        lateCleanupRejectionObserved,
++        pendingDrained,
++        streamDrained,
++        pendingOperationsAtReport: pending.size,
++        directory,
++        directoryRemoved,
++        directoryAbsent: !existsSync(directory),
++        launchAttempted,
++        assertionsCompleted,
++        deadlineFired,
++        failureCategories,
++        failureCount: failures.length,
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length) throw new AggregateError(failures, "installed current feed witness failed");
++}, 60000);
+diff --git a/packages/server/src/transaction-changefeed.test.ts b/packages/server/src/transaction-changefeed.test.ts
+index b118f64..877a974 100644
+--- a/packages/server/src/transaction-changefeed.test.ts
++++ b/packages/server/src/transaction-changefeed.test.ts
+@@ -1819,15 +1819,31 @@ it("serves finite start-now opaque minima before HTTP shortcuts", async () => {
+     }
+     const unknown = { ...minimum, "bdp-minimum-scope-position": "unknown" };
+     const after = await exchange("changes/?after=genesis", "GET", unknown);
+-    expect(after.status).toBe(500);
+-    expect(after.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++    expect(after.status).toBe(503);
++    expect(validProblem(JSON.parse(after.text)), JSON.stringify(validProblem.errors)).toBe(true);
++    expect(JSON.parse(after.text)).toMatchObject({
++      code: "catch-up-timeout",
++      status: 503,
++      retry: "after-delay",
++    });
++    expect(names.map((name) => after.headers.get(name))).toEqual(current);
++    expect(after.headers.get("retry-after")).toBe("1");
++    expect(after.headers.get("x-bdp-development-limit")).toBeNull();
+     const sse = await exchange(target, "GET", {
+       ...unknown,
+       accept: "text/event-stream",
+       "last-event-id": "genesis",
+     });
+-    expect(sse.status).toBe(500);
+-    expect(sse.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++    expect(sse.status).toBe(503);
++    expect(validProblem(JSON.parse(sse.text)), JSON.stringify(validProblem.errors)).toBe(true);
++    expect(JSON.parse(sse.text)).toMatchObject({
++      code: "catch-up-timeout",
++      status: 503,
++      retry: "after-delay",
++    });
++    expect(names.map((name) => sse.headers.get(name))).toEqual(current);
++    expect(sse.headers.get("retry-after")).toBe("1");
++    expect(sse.headers.get("x-bdp-development-limit")).toBeNull();
+     expect(sse.headers.get("content-type")).not.toBe("text/event-stream");
+     const malformed = await exchange(target, "GET", {
+       "bdp-minimum-scope-position": "unknown",
+@@ -1840,7 +1856,7 @@ it("serves finite start-now opaque minima before HTTP shortcuts", async () => {
+     expect(malformed.headers.get("x-bdp-development-limit")).toBeNull();
+     expect(attempted).toBe(10);
+     expect(records.map((record) => record.status)).toEqual([
+-      200, 200, 200, 503, 503, 503, 503, 500, 500, 400,
++      200, 200, 200, 503, 503, 503, 503, 503, 503, 400,
+     ]);
+     controller.signal.throwIfAborted();
+   } catch (error) {
+@@ -1893,3 +1909,723 @@ it("serves finite start-now opaque minima before HTTP shortcuts", async () => {
+   }
+   if (failures.length) throw new AggregateError(failures, "opaque changefeed HTTP failed");
+ }, 60000);
++
++it("preserves changefeed cursor precedence under current-admission opaque minima", () => {
++  const f = fixture(),
++    records: Record<string, unknown>[] = [],
++    failures: unknown[] = [];
++  let commits = 0,
++    ownerLifetimes = 1,
++    offlineDeletes = 0;
++  function observe(
++    role: string,
++    after: string,
++    minimum?: Parameters<typeof f.owner.readChanges>[1],
++    admission?: Parameters<typeof f.owner.readChanges>[2],
++  ) {
++    const record: Record<string, unknown> = {
++      ordinal: records.length + 1,
++      role,
++      after,
++      admission: admission ?? null,
++      minimum: minimum === undefined ? null : minimum,
++      tupleFrozen: minimum && minimum !== "unsupported" ? Object.isFrozen(minimum) : null,
++      outcome: "attempted",
++      context: null,
++    };
++    records.push(record);
++    try {
++      const result = f.owner.readChanges(after, minimum, admission);
++      record.outcome = result.kind;
++      if (result.kind === "page") record.context = result.context;
++      return result;
++    } catch (error) {
++      record.outcome = error instanceof Error ? error.constructor.name : "non-Error";
++      if (
++        error instanceof TransactionMinimumUnproved ||
++        error instanceof TransactionMinimumFailure ||
++        error instanceof TransactionChangefeedParameterError
++      ) {
++        record.context = error.context ?? null;
++        if (error instanceof TransactionMinimumFailure) record.reason = error.reason;
++      }
++      throw error;
++    }
++  }
++  try {
++    expect(f.run([create("a")]).status).toBe("completed");
++    commits++;
++    expect(f.run([create("b")]).status).toBe("completed");
++    commits++;
++    const first = observe("baseline", "genesis"),
++      second =
++        first.kind === "page" ? observe("baseline", first.page.groups[0]!.checkpoint) : undefined;
++    if (first.kind !== "page" || second?.kind !== "page") throw new Error("missing baseline pages");
++    for (const result of [first, second]) {
++      expect(validPage(result.page), JSON.stringify(validPage.errors)).toBe(true);
++      expect(result.page.groups).toHaveLength(1);
++    }
++    const cp1 = first.page.groups[0]!.checkpoint,
++      cp2 = second.page.groups[0]!.checkpoint;
++    const current = second.context;
++    expect(current.scopePosition).toBe("pos-2");
++    expect(first.page.next).toBe(scope + "changes/?after=" + cp1);
++    expect(second.page.next).toBeNull();
++    expect(cp1).not.toBe(cp2);
++    const k = Object.freeze({
++      scopeEpoch: current.scopeEpoch,
++      authorizationView: current.authorizationView,
++      minimumPosition: "pos-2",
++    });
++    const u = Object.freeze({ ...k, minimumPosition: "unknown" });
++    const p = Object.freeze({ ...k, minimumPosition: "pos-01" });
++    const stale = transactionCheckpoint(scope, { ...current, scopeEpoch: "foreign" }, 1);
++    const foreign = transactionCheckpoint(scope, { ...current, authorizationView: "foreign" }, 1);
++    const future = transactionCheckpoint(scope, current, 3);
++    const rows: {
++      after: string;
++      minimum?: Parameters<typeof f.owner.readChanges>[1];
++      tag?: Parameters<typeof f.owner.readChanges>[2];
++      expected: string;
++    }[] = [
++      { after: "genesis", minimum: u, expected: "unproved" },
++      { after: cp1, minimum: p, expected: "unproved" },
++      { after: cp1, minimum: k, expected: "second" },
++      { after: "genesis", expected: "first" },
++      { after: cp1, minimum: { ...u, scopeEpoch: "foreign" }, expected: "cursor-expired" },
++      { after: cp1, minimum: { ...u, authorizationView: "foreign" }, expected: "foreign-view" },
++      {
++        after: cp1,
++        minimum: { ...u, scopeEpoch: "foreign", authorizationView: "foreign" },
++        expected: "cursor-expired",
++      },
++      { after: stale, minimum: { ...u, authorizationView: "foreign" }, expected: "cursor-expired" },
++      { after: foreign, minimum: { ...u, scopeEpoch: "foreign" }, expected: "foreign-view" },
++      { after: future, minimum: u, expected: "parameter" },
++      { after: "bad", minimum: u, expected: "parameter" },
++      { after: "bad", minimum: "unsupported", expected: "unsupported" },
++      { after: cp1, minimum: u, tag: "finite-start-now", expected: "unproved" },
++      { after: "genesis", minimum: { ...u, minimumPosition: "two tokens" }, expected: "type" },
++      { after: cp1, minimum: u, expected: "corruption" },
++      { after: "genesis", minimum: k, expected: "corruption" },
++    ];
++    for (const [index, row] of rows.entries()) {
++      if (index === 14) {
++        f.owner.close();
++        const raw = new DatabaseSync(f.options.file);
++        try {
++          raw.prepare("DELETE FROM groups WHERE position=1").run();
++          offlineDeletes++;
++        } finally {
++          raw.close();
++        }
++        f.reopen();
++        ownerLifetimes++;
++      }
++      let value: ReturnType<typeof f.owner.readChanges> | undefined, error: unknown;
++      try {
++        value = observe(
++          "table-" + (index + 1),
++          row.after,
++          row.minimum,
++          row.tag ?? "current-changefeed",
++        );
++      } catch (cause) {
++        error = cause;
++      }
++      if (row.expected === "first" || row.expected === "second") {
++        expect(error).toBeUndefined();
++        if (value?.kind !== "page") throw new Error("missing eligible group");
++        expect(value.page).toEqual(row.expected === "first" ? first.page : second.page);
++        expect(value.context).toEqual(current);
++      } else if (row.expected === "unsupported") {
++        expect(error).toBeUndefined();
++        expect(value).toEqual({ kind: "unsupported" });
++      } else if (row.expected === "type") expect(error).toBeInstanceOf(TypeError);
++      else if (row.expected === "corruption") {
++        expect(error).toBeInstanceOf(Error);
++        expect((error as Error).message).toBe("missing retained change group");
++        expect(error).not.toBeInstanceOf(TransactionMinimumUnproved);
++        expect(error).not.toBeInstanceOf(TransactionMinimumFailure);
++      } else {
++        if (row.expected === "unproved") expect(error).toBeInstanceOf(TransactionMinimumUnproved);
++        else if (row.expected === "parameter")
++          expect(error).toBeInstanceOf(TransactionChangefeedParameterError);
++        else {
++          expect(error).toBeInstanceOf(TransactionMinimumFailure);
++          expect((error as TransactionMinimumFailure).reason).toBe(row.expected);
++        }
++        const observed = error as { context: TransactionReadContext };
++        expect(observed.context).toEqual(current);
++        expect(Object.isFrozen(observed.context)).toBe(true);
++      }
++    }
++    expect(records).toHaveLength(18);
++    expect(records.filter((r) => r.context === null)).toHaveLength(4);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    console.log(
++      JSON.stringify({
++        observation: "current-changefeed-minimum-owner",
++        outcome: failures.length ? "failed" : "passed",
++        records,
++        commits,
++        ownerLifetimes,
++        offlineDeletes,
++        failureCount: failures.length,
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "current changefeed owner boundary failed");
++});
++
++// Appended callbacks own these stores; unknown drainage deliberately retains
++// the directory without registering a legacy afterEach cleanup backstop.
++function currentChangefeedCase() {
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-current-feed-"));
++  const owner = openTransactionStore({
++    file: path.join(directory, "store.sqlite"),
++    scope,
++    types,
++    create: true,
++    receiptMaximumItems: 2,
++  });
++  const reads: {
++    after: string;
++    minimum: unknown;
++    tupleFrozen: boolean | null;
++    admission: string | null;
++    outcome: string;
++    context: TransactionReadContext | null;
++  }[] = [];
++  const anchors: string[] = [],
++    order: string[] = [];
++  let commits = 0,
++    closes = 0;
++  const delegated = {
++    ...owner,
++    captureChangesStart() {
++      const after = owner.captureChangesStart();
++      anchors.push(after);
++      return after;
++    },
++    readChanges(...args: Parameters<typeof owner.readChanges>) {
++      const record = {
++        after: args[0],
++        minimum: args[1] && args[1] !== "unsupported" ? { ...args[1] } : (args[1] ?? null),
++        tupleFrozen: args[1] && args[1] !== "unsupported" ? Object.isFrozen(args[1]) : null,
++        admission: args[2] ?? null,
++        outcome: "attempted",
++        context: null as TransactionReadContext | null,
++      };
++      reads.push(record);
++      try {
++        const result = owner.readChanges(...args);
++        record.outcome = result.kind;
++        if (result.kind === "page") record.context = result.context;
++        return result;
++      } catch (error) {
++        record.outcome = error instanceof Error ? error.constructor.name : "non-Error";
++        if (
++          error instanceof TransactionMinimumUnproved ||
++          error instanceof TransactionMinimumFailure ||
++          error instanceof TransactionChangefeedParameterError
++        )
++          record.context = error.context ?? null;
++        throw error;
++      }
++    },
++    close() {
++      closes++;
++      order.push("owner-close");
++      owner.close();
++    },
++  };
++  return {
++    directory,
++    owner,
++    delegated,
++    reads,
++    anchors,
++    order,
++    get commits() {
++      return commits;
++    },
++    get closes() {
++      return closes;
++    },
++    run(id: string) {
++      const admitted = owner.admit(
++        "p",
++        "current_" + id,
++        prepareTransactionSetCore(scope, JSON.stringify({ operations: [create(id)] })),
++      );
++      if (admitted.kind !== "owned") throw new Error("current changefeed admission");
++      const receipt = owner.execute(admitted.claim);
++      expect(receipt.status).toBe("completed");
++      commits++;
++      return receipt;
++    },
++    service(
++      minimumReads: NonNullable<Parameters<typeof createTransactionService>[1]["minimumReads"]>,
++    ) {
++      let token = 0;
++      return createTransactionService(delegated, {
++        ownerLifetime: "service",
++        minimumReads,
++        read: {
++          selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
++          advertisedLimits: {
++            page: { defaultItems: 2, maximumItems: 2 },
++            selector: { bytes: 4096, depth: 32, nodes: 256 },
++            cursorTtlMilliseconds: 1000,
++          },
++          pagination: {
++            scope,
++            defaultPageItems: 2,
++            maxPageItems: 2,
++            cursorTtlMs: 1000,
++            retainedStateCapacity: 100,
++            maxRetainedCursorPositionsPerSnapshot: 20,
++            retainedSnapshotByteCapacity: 100000,
++            retainedSnapshotNodeCapacity: 10000,
++            maxOpaqueTokenLength: 64,
++            tokenGenerationAttempts: 3,
++            idleCleanup: "on-demand",
++            clock: () => 1000,
++            generateOpaqueToken: () => "current_" + ++token,
++          },
++        },
++      });
++    },
++  };
++}
++async function currentChangefeedBound<T>(
++  operation: Promise<T>,
++  label: string,
++  milliseconds = 1000,
++): Promise<T> {
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  try {
++    return await Promise.race([
++      operation,
++      new Promise<never>((_, reject) => {
++        timer = setTimeout(() => reject(new Error(label)), Math.max(1, milliseconds));
++      }),
++    ]);
++  } finally {
++    if (timer !== undefined) clearTimeout(timer);
++  }
++}
++async function currentChangefeedCleanup(
++  f: ReturnType<typeof currentChangefeedCase>,
++  instance: ReturnType<typeof createTransactionService> | undefined,
++  observed: Promise<unknown> | undefined,
++  closing: Promise<unknown> | undefined,
++  failures: unknown[],
++) {
++  let closed = false,
++    stopUnknown = false;
++  try {
++    const close =
++      closing ?? (instance ? instance.close() : Promise.resolve().then(() => f.delegated.close()));
++    await currentChangefeedBound(
++      Promise.all([observed, close]),
++      "current changefeed owned drain deadline",
++    );
++    closed = true;
++    rmSync(f.directory, { recursive: true, force: false });
++  } catch (error) {
++    stopUnknown = true;
++    failures.push(error);
++  }
++  return { closed, stopUnknown, directory: f.directory, directoryAbsent: !existsSync(f.directory) };
++}
++
++for (const label of [
++  "start-now-unknown",
++  "genesis-unknown",
++  "retained-unknown",
++  "retained-pos-01",
++] as const)
++  it("captures current changefeed admission once across owner entries: " + label, async () => {
++    const f = currentChangefeedCase(),
++      controller = new AbortController();
++    const entered = Promise.withResolvers<void>(),
++      release = Promise.withResolvers<void>();
++    const failures: unknown[] = [];
++    let instance: ReturnType<typeof createTransactionService> | undefined;
++    let observed: Promise<{ ok: boolean; error?: unknown }> | undefined;
++    let waits = 0,
++      clocks = 0,
++      tick = 0,
++      originalAfter: string | null = null;
++    let positiveGroup: TransactionChangeGroup | null = null,
++      cleanupState: unknown;
++    try {
++      f.run("a");
++      const baseline = f.delegated.readChanges("genesis");
++      if (baseline.kind !== "page") throw new Error("missing current baseline");
++      const cp1 = baseline.page.groups[0]!.checkpoint;
++      originalAfter = label.startsWith("genesis") ? "genesis" : cp1;
++      const minimum = {
++        scopeEpoch: baseline.context.scopeEpoch,
++        authorizationView: baseline.context.authorizationView,
++        minimumPosition: label.endsWith("pos-01") ? "pos-01" : "unknown",
++      };
++      const expectedMinimum = { ...minimum };
++      const intent: { start: "now"; after?: string } | { after: string } = label.startsWith("start")
++        ? { start: "now" }
++        : { after: originalAfter };
++      instance = f.service({
++        budgetMs: 2,
++        now: () => {
++          clocks++;
++          return tick;
++        },
++        wait: async (ms) => {
++          waits++;
++          expect(ms).toBe(2);
++          entered.resolve();
++          await release.promise;
++        },
++      });
++      observed = instance.changes(intent, minimum, controller.signal, "current-changefeed").then(
++        () => ({ ok: true }),
++        (error: unknown) => ({ ok: false, error }),
++      );
++      expect(
++        await currentChangefeedBound(
++          Promise.race([
++            entered.promise.then(() => "entered"),
++            observed.then(() => "settled-before-wait"),
++          ]),
++          "current changefeed wait entry deadline",
++        ),
++      ).toBe("entered");
++      intent.after = "genesis" === originalAfter ? cp1 : "genesis";
++      minimum.scopeEpoch = "foreign";
++      minimum.authorizationView = "foreign";
++      minimum.minimumPosition = "genesis";
++      f.run("b");
++      tick = 2;
++      release.resolve();
++      const outcome = await currentChangefeedBound(observed, "current changefeed attempt deadline");
++      expect(outcome.ok).toBe(false);
++      expect(outcome.error).toBeInstanceOf(TransactionMinimumFailure);
++      expect((outcome.error as TransactionMinimumFailure).reason).toBe("catch-up-timeout");
++      expect((outcome.error as TransactionMinimumFailure).context).toEqual({
++        ...baseline.context,
++        scopePosition: "pos-2",
++      });
++      expect(f.reads.slice(1).map((r) => r.after)).toEqual([originalAfter, originalAfter]);
++      expect(f.reads.slice(1).map((r) => r.minimum)).toEqual([expectedMinimum, expectedMinimum]);
++      expect(f.reads.slice(1).every((r) => r.tupleFrozen)).toBe(true);
++      expect(f.reads[1]!.context!.scopePosition).toBe("pos-1");
++      expect(f.reads[2]!.context!.scopePosition).toBe("pos-2");
++      expect(Object.isFrozen(f.reads[1]!.context)).toBe(true);
++      const positive = await instance.changes(
++        { after: originalAfter },
++        { ...expectedMinimum, minimumPosition: "pos-2" },
++        controller.signal,
++        "current-changefeed",
++      );
++      if (positive.kind !== "page") throw new Error("missing current positive page");
++      expect(validPage(positive.page), JSON.stringify(validPage.errors)).toBe(true);
++      expect(positive.page.groups).toHaveLength(1);
++      positiveGroup = positive.page.groups[0]!;
++      expect(positiveGroup.changes).toHaveLength(1);
++      expect(positiveGroup.eventCount).toBe(positiveGroup.events.length);
++      expect(positiveGroup.position).toBe(originalAfter === "genesis" ? "pos-1" : "pos-2");
++      expect(positiveGroup.previousPosition).toBe(originalAfter === "genesis" ? "pos-0" : "pos-1");
++      expect(positiveGroup.changes[0]!.resource.id).toBe(
++        scope + "beads/" + (originalAfter === "genesis" ? "a" : "b"),
++      );
++      expect(positive.page.next).toBe(
++        originalAfter === "genesis" ? scope + "changes/?after=" + cp1 : null,
++      );
++      expect(positive.context.scopePosition).toBe("pos-2");
++      expect(f.reads).toHaveLength(4);
++      expect(f.commits).toBe(2);
++      expect({ waits, clocks }).toEqual({ waits: 1, clocks: 4 });
++      expect(f.anchors).toEqual(label.startsWith("start") ? [cp1] : []);
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      controller.abort();
++      release.resolve();
++      cleanupState = await currentChangefeedCleanup(f, instance, observed, undefined, failures);
++      if (f.closes !== 1) failures.push(new Error("current changefeed close count"));
++      console.log(
++        JSON.stringify({
++          observation: "current-changefeed-minimum-capture",
++          label,
++          outcome: failures.length ? "failed" : "passed",
++          reads: f.reads,
++          captures: f.anchors.length,
++          anchors: f.anchors,
++          waits,
++          clocks,
++          commits: f.commits,
++          closes: f.closes,
++          originalAfter,
++          positiveGroup,
++          cleanupState,
++          failureCount: failures.length,
++          claimEligible: false,
++        }),
++      );
++    }
++    if (failures.length) throw new AggregateError(failures, "current changefeed capture failed");
++  });
++
++for (const label of ["start-now", "retained"] as const)
++  it("drains current changefeed admission before owner close: " + label, async () => {
++    const f = currentChangefeedCase(),
++      controller = new AbortController();
++    const entered = Promise.withResolvers<void>(),
++      release = Promise.withResolvers<void>();
++    const failures: unknown[] = [];
++    let instance: ReturnType<typeof createTransactionService> | undefined;
++    let observed: Promise<{ ok: boolean; error?: unknown }> | undefined,
++      closing: Promise<void> | undefined;
++    let waits = 0,
++      clocks = 0,
++      closeSettled = false,
++      rawClosedProbes = 0,
++      serviceClosedProbes = 0;
++    let cleanupState: unknown;
++    try {
++      f.run("a");
++      const baseline = f.delegated.readChanges("genesis");
++      if (baseline.kind !== "page") throw new Error("missing current drain baseline");
++      const cp1 = baseline.page.groups[0]!.checkpoint;
++      instance = f.service({
++        budgetMs: 2,
++        now: () => {
++          clocks++;
++          return 0;
++        },
++        wait: async () => {
++          waits++;
++          f.order.push("wait-entered");
++          entered.resolve();
++          await release.promise;
++          f.order.push("wait-released");
++        },
++      });
++      observed = instance
++        .changes(
++          label === "start-now" ? { start: "now" } : { after: cp1 },
++          {
++            scopeEpoch: baseline.context.scopeEpoch,
++            authorizationView: baseline.context.authorizationView,
++            minimumPosition: "unknown",
++          },
++          controller.signal,
++          "current-changefeed",
++        )
++        .then(
++          () => ({ ok: true }),
++          (error: unknown) => ({ ok: false, error }),
++        );
++      expect(
++        await currentChangefeedBound(
++          Promise.race([
++            entered.promise.then(() => "entered"),
++            observed.then(() => "settled-before-wait"),
++          ]),
++          "current drain wait entry deadline",
++        ),
++      ).toBe("entered");
++      closing = instance.close();
++      void closing.then(
++        () => {
++          closeSettled = true;
++          f.order.push("close-resolved");
++        },
++        () => {
++          closeSettled = true;
++        },
++      );
++      await Promise.resolve();
++      await Promise.resolve();
++      expect(closeSettled).toBe(false);
++      expect(f.closes).toBe(0);
++      f.order.push("abort");
++      controller.abort();
++      release.resolve();
++      const outcome = await currentChangefeedBound(observed, "current abort observation deadline");
++      expect(outcome.ok).toBe(false);
++      expect(outcome.error).toBeInstanceOf(ScopeServerOperationAbortedError);
++      await currentChangefeedBound(closing, "current close observation deadline");
++      expect(f.order).toEqual([
++        "wait-entered",
++        "abort",
++        "wait-released",
++        "owner-close",
++        "close-resolved",
++      ]);
++      expect(f.reads).toHaveLength(2);
++      const beforeCapture = f.anchors.length;
++      serviceClosedProbes++;
++      expect(() =>
++        instance!.changes({ start: "now" }, undefined, controller.signal, "current-changefeed"),
++      ).toThrow("closing or closed");
++      expect(f.anchors).toHaveLength(beforeCapture);
++      expect(f.reads).toHaveLength(2);
++      rawClosedProbes++;
++      expect(() => f.owner.readChanges("genesis")).toThrow("closed");
++      expect({ waits, clocks, captures: f.anchors.length, closes: f.closes }).toEqual({
++        waits: 1,
++        clocks: 2,
++        captures: label === "start-now" ? 1 : 0,
++        closes: 1,
++      });
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      controller.abort();
++      release.resolve();
++      cleanupState = await currentChangefeedCleanup(f, instance, observed, closing, failures);
++      console.log(
++        JSON.stringify({
++          observation: "current-changefeed-minimum-drain",
++          label,
++          outcome: failures.length ? "failed" : "passed",
++          reads: f.reads,
++          readsBeforeClosedProbe: f.reads.length,
++          captures: f.anchors.length,
++          waits,
++          clocks,
++          closes: f.closes,
++          commits: f.commits,
++          serviceClosedProbes,
++          rawClosedProbes,
++          order: f.order,
++          closeSettled,
++          cleanupState,
++          failureCount: failures.length,
++          claimEligible: false,
++        }),
++      );
++    }
++    if (failures.length) throw new AggregateError(failures, "current changefeed drain failed");
++  });
++
++it("preserves current changefeed anchor capture before waiter preflight", async () => {
++  const failures: unknown[] = [],
++    rows: Record<string, unknown>[] = [];
++  for (const label of [
++    "already-aborted",
++    "invalid-policy",
++    "throwing-clock",
++    "nonfinite-clock",
++  ] as const) {
++    const row: Record<string, unknown> = {
++      label,
++      initialized: false,
++      attempted: false,
++      closed: false,
++    };
++    rows.push(row);
++    const controller = new AbortController(),
++      clockError = new Error("controlled current changefeed clock failure");
++    const rowFailures: unknown[] = [];
++    let f: ReturnType<typeof currentChangefeedCase> | undefined,
++      instance: ReturnType<typeof createTransactionService> | undefined;
++    let observed: Promise<{ ok: boolean; error?: unknown }> | undefined;
++    let waits = 0,
++      clocks = 0;
++    try {
++      f = currentChangefeedCase();
++      row.initialized = true;
++      f.run("a");
++      const config = f.owner.readConfiguration();
++      instance = f.service({
++        budgetMs: label === "invalid-policy" ? 0 : 2,
++        now: () => {
++          clocks++;
++          if (label === "throwing-clock") throw clockError;
++          return label === "nonfinite-clock" ? Number.NaN : 0;
++        },
++        wait: async () => {
++          waits++;
++          throw new Error("unexpected current preflight wait");
++        },
++      });
++      if (label === "already-aborted") controller.abort();
++      row.attempted = true;
++      observed = instance
++        .changes(
++          { start: "now" },
++          {
++            scopeEpoch: config.scopeEpoch,
++            authorizationView: config.authorizationView,
++            minimumPosition: "unknown",
++          },
++          controller.signal,
++          "current-changefeed",
++        )
++        .then(
++          () => ({ ok: true }),
++          (error: unknown) => ({ ok: false, error }),
++        );
++      const outcome = await currentChangefeedBound(observed, "current preflight outcome deadline");
++      expect(outcome.ok).toBe(false);
++      row.errorClass =
++        outcome.error instanceof Error ? outcome.error.constructor.name : "non-Error";
++      if (label === "already-aborted")
++        expect(outcome.error).toBeInstanceOf(ScopeServerOperationAbortedError);
++      else if (label === "throwing-clock") expect(outcome.error).toBe(clockError);
++      else {
++        expect(outcome.error).toBeInstanceOf(TypeError);
++        expect((outcome.error as TypeError).message).toBe(
++          label === "invalid-policy"
++            ? "finite minimum-read wait policy required"
++            : "invalid minimum-read clock",
++        );
++      }
++      expect({ captures: f.anchors.length, reads: f.reads.length, waits, clocks }).toEqual({
++        captures: 1,
++        reads: 0,
++        waits: 0,
++        clocks: label === "invalid-policy" ? 0 : 1,
++      });
++    } catch (error) {
++      rowFailures.push(error);
++    } finally {
++      controller.abort();
++      if (f) {
++        const state = await currentChangefeedCleanup(f, instance, observed, undefined, rowFailures);
++        Object.assign(row, {
++          ...state,
++          captures: f.anchors.length,
++          reads: f.reads.length,
++          waits,
++          clocks,
++          closes: f.closes,
++          commits: f.commits,
++        });
++        if (f.closes !== 1) rowFailures.push(new Error("current preflight close count"));
++      }
++      row.outcome = rowFailures.length ? "failed" : "passed";
++      row.failureCount = rowFailures.length;
++      failures.push(...rowFailures);
++    }
++  }
++  console.log(
++    JSON.stringify({
++      observation: "current-changefeed-minimum-preflight",
++      rows,
++      outcome: failures.length ? "failed" : "passed",
++      failureCount: failures.length,
++      claimEligible: false,
++    }),
++  );
++  if (failures.length)
++    throw new AggregateError(failures, "current changefeed preflight rows failed");
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 2681949..d8c1e62 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -476,19 +476,16 @@ export function createTransactionHttpHandler(
+       if (media === "sse" && fields.length > 1)
+         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+-      // Only the finite fresh request supplies this private admission provenance.
+-      // Undefined media still checks the minimum before ordinary negotiation.
+-      const finiteStartNow = media !== "sse" && "start" in effective && effective.start === "now";
++      // Canonical current changefeed admission preserves one lexical minimum
++      // across finite/reconnect attempts, before ordinary media negotiation.
+       const minimum = hasMinimumControls(request)
+-        ? ((finiteStartNow
+-            ? currentReadMinimumHeaders(request.headers)
+-            : transactionMinimumHeaders(request.headers)) ?? "unsupported")
++        ? (currentReadMinimumHeaders(request.headers) ?? "unsupported")
+         : undefined;
+       const observed = await service.changes(
+         effective,
+         minimum,
+         request.signal,
+-        finiteStartNow ? "finite-start-now" : undefined,
++        "current-changefeed",
+       );
+       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+       if (media !== "sse") return context(jsonResponse(observed.page), observed.context);
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 1f9e8c7..06befc4 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -467,7 +467,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       intent: TransactionChangefeedIntent,
+       supplied?: TransactionMinimum | "unsupported",
+       signal?: AbortSignal,
+-      admission?: "finite-start-now",
++      admission?: "finite-start-now" | "current-changefeed",
+     ) {
+       // Capture controls before asynchronous retries. start=now observes admission
+       // head once; advancing it at every attempt would skip intervening commits.
+@@ -477,16 +477,26 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+           : Object.freeze({ start: intent.start });
+       const finiteStartNow =
+         admission === "finite-start-now" && "start" in copied && copied.start === "now";
++      const currentChangefeed = admission === "current-changefeed";
+       const minimum =
+         supplied === undefined || supplied === "unsupported"
+           ? supplied
+-          : finiteStartNow
++          : finiteStartNow || currentChangefeed
+             ? snapshotCurrentReadMinimum(supplied)
+             : snapshotTransactionMinimum(supplied);
+       return run(() => {
+         const after = "after" in copied ? copied.after : owner.captureChangesStart();
+         return waitForTransactionMinimum(
+-          () => owner.readChanges(after, minimum, finiteStartNow ? "finite-start-now" : undefined),
++          () =>
++            owner.readChanges(
++              after,
++              minimum,
++              currentChangefeed
++                ? "current-changefeed"
++                : finiteStartNow
++                  ? "finite-start-now"
++                  : undefined,
++            ),
+           minimumReads,
+           signal,
+         );
+diff --git a/packages/server/src/transaction-sse.test.ts b/packages/server/src/transaction-sse.test.ts
+index f6cd58f..b989a3f 100644
+--- a/packages/server/src/transaction-sse.test.ts
++++ b/packages/server/src/transaction-sse.test.ts
+@@ -907,3 +907,667 @@ it("start=now reconnect checkpoint survives a controlled minimum wait", async ()
+   expect(group(groups(r)[0]!).previousPosition).toBe("pos-1");
+   expect(r.headers["bdp-scope-position"]).toBe("pos-3");
+ });
++
++it("serves current changefeed opaque minima across finite and SSE admission", async () => {
++  const began = performance.now();
++  const { createHash } = await import("node:crypto");
++  const { existsSync, readFileSync } = await import("node:fs");
++  const { Ajv2020 } = await import("ajv/dist/2020.js");
++  const { isJsonSchemaUri, isJsonSchemaDateTime } = await import("@bdp/protocol");
++  const validator = new Ajv2020({ strict: true, allErrors: true });
++  validator.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++  validator.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++  const schema = JSON.parse(
++    readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
++  );
++  validator.addSchema(schema);
++  const validReceipt = validator.compile({ $ref: schema.$id + "#/$defs/mutationReceipt" });
++  const validPage = validator.compile({ $ref: schema.$id + "#/$defs/changefeedPage" });
++  const validProblem = validator.compile({ $ref: schema.$id + "#/$defs/transactionalProblem" });
++  const hash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++  const controller = new AbortController(),
++    failures: unknown[] = [];
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-current-feed-http-"));
++  const token = randomBytes(32).toString("base64url");
++  const recorders: ReturnType<typeof recordRawSse>[] = [],
++    pending = new Set<Promise<unknown>>();
++  const records: {
++    ordinal: number;
++    method: string;
++    url: string;
++    status: number | null;
++    bodyOctets: number | null;
++    bodySha256: string | null;
++    wireSha256: string | null;
++    requestHeaders: [string, string][];
++    headers: Record<string, string | null>;
++    readyObserved: boolean;
++    drained: boolean;
++    transportClosedObserved: boolean | null;
++    drainKind: "none" | "finite-body" | "intentional-live" | "seed-body";
++    availability: { status: boolean; headers: boolean; body: boolean; wire: boolean };
++    bodyState: "unavailable" | "partial" | "drained";
++  }[] = [];
++  const rawSnapshots: (() => void)[] = [];
++  const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"];
++  const safeHeaders = [
++    ...contextNames,
++    "content-type",
++    "content-length",
++    "cache-control",
++    "retry-after",
++    "etag",
++    "x-bdp-development-limit",
++    "x-bdp-development",
++  ];
++  let runtime: Awaited<ReturnType<typeof startTransactionRuntime>> | undefined;
++  let attempted = 0,
++    tick = 0,
++    runtimeClosed = false,
++    stopUnknown = false,
++    workDeadlineFired = false;
++  let stream: Record<string, unknown> | null = null;
++  const workTimer = setTimeout(
++    () => {
++      workDeadlineFired = true;
++      controller.abort(new Error("current feed HTTP work deadline"));
++    },
++    Math.max(1, began + 3000 - performance.now()),
++  );
++  function track<T>(operation: Promise<T>) {
++    const settled = operation.then(
++      (value) => ({ ok: true as const, value }),
++      (error: unknown) => ({ ok: false as const, error }),
++    );
++    pending.add(settled);
++    void settled.then(() => pending.delete(settled));
++    return settled.then((result) => {
++      if (!result.ok) throw result.error;
++      return result.value;
++    });
++  }
++  async function bounded<T>(operation: Promise<T>, stop: number, label: string) {
++    let timer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      return await Promise.race([
++        operation,
++        new Promise<never>((_, reject) => {
++          timer = setTimeout(() => reject(new Error(label)), Math.max(1, stop - performance.now()));
++        }),
++      ]);
++    } finally {
++      if (timer !== undefined) clearTimeout(timer);
++    }
++  }
++  function dispatch() {
++    controller.signal.throwIfAborted();
++    if (attempted >= 32) throw new Error("current feed HTTP dispatch bound");
++    return ++attempted;
++  }
++  function record(
++    ordinal: number,
++    method: string,
++    suffix: string,
++    status: number | null,
++    body: string | Uint8Array | null,
++    headers: Record<string, string>,
++    requestHeaders: [string, string][],
++    wire: Uint8Array | undefined,
++    readyObserved: boolean,
++    drained: boolean,
++    transportClosedObserved: boolean | null,
++    drainKind: "none" | "finite-body" | "intentional-live" | "seed-body",
++  ) {
++    const snapshot = {
++      ordinal,
++      method,
++      url: new URL(suffix, scope).href,
++      status,
++      bodyOctets:
++        body === null ? null : typeof body === "string" ? Buffer.byteLength(body) : body.byteLength,
++      bodySha256: body === null ? null : hash(body),
++      wireSha256: wire?.length ? hash(wire) : null,
++      requestHeaders: requestHeaders.filter(([name]) => name.toLowerCase() !== "authorization"),
++      headers: Object.fromEntries(safeHeaders.map((name) => [name, headers[name] ?? null])),
++      readyObserved,
++      drained,
++      transportClosedObserved,
++      drainKind,
++      availability: {
++        status: status !== null,
++        headers: readyObserved,
++        body: body !== null,
++        wire: wire !== undefined && wire.length > 0,
++      },
++      bodyState:
++        body === null
++          ? ("unavailable" as const)
++          : drained
++            ? ("drained" as const)
++            : ("partial" as const),
++    };
++    const previous = records.findIndex((entry) => entry.ordinal === ordinal);
++    if (previous < 0) records.push(snapshot);
++    else records[previous] = snapshot;
++  }
++  async function raw(
++    suffix: string,
++    method: "GET" | "HEAD",
++    headers: [string, string][],
++    expected: number,
++    live = false,
++    authenticated = true,
++  ) {
++    if (!runtime) throw new Error("missing current HTTP runtime");
++    const ordinal = dispatch(),
++      target = new URL(suffix, scope);
++    expect(target.origin + target.pathname).toBe(scope + "changes/");
++    const requestHeaders: [string, string][] = [
++      ...(authenticated ? [["Authorization", "Bearer " + token] as [string, string]] : []),
++      ...headers,
++    ];
++    const rec = recordRawSse({
++      dial: runtime.listenUrl,
++      host: new URL(runtime.listenUrl).host,
++      target: target.pathname + target.search,
++      method,
++      headers: requestHeaders,
++      signal: controller.signal,
++      timeoutMs: 5000,
++    });
++    recorders.push(rec);
++    const observed = {
++      ready: false,
++      closed: false,
++      drained: false,
++      kind: "none" as "none" | "finite-body" | "intentional-live",
++    };
++    const refresh = () => {
++      const finiteDrained =
++        observed.ready &&
++        observed.closed &&
++        (method === "HEAD"
++          ? rec.body === ""
++          : rec.headers["content-length"] !== undefined
++            ? Buffer.byteLength(rec.body) === Number(rec.headers["content-length"])
++            : [204, 304].includes(rec.status) && rec.body === "");
++      record(
++        ordinal,
++        method,
++        suffix,
++        observed.ready ? rec.status : null,
++        observed.ready ? rec.body : null,
++        rec.headers,
++        requestHeaders,
++        rec.wireBytes,
++        observed.ready,
++        observed.drained || finiteDrained,
++        observed.closed,
++        observed.kind === "none" && finiteDrained ? "finite-body" : observed.kind,
++      );
++    };
++    rawSnapshots.push(refresh);
++    void rec.ready.then(
++      () => {
++        observed.ready = true;
++        refresh();
++      },
++      () => refresh(),
++    );
++    void rec.closed.then(() => {
++      observed.closed = true;
++      refresh();
++    });
++    try {
++      await track(rec.ready);
++      observed.ready = true;
++      refresh();
++      expect(rec.status).toBe(expected);
++      if (!live) {
++        await track(rec.closed);
++        observed.closed = true;
++        const completeBody =
++          method === "HEAD"
++            ? rec.body === ""
++            : rec.headers["content-length"] !== undefined
++              ? Buffer.byteLength(rec.body) === Number(rec.headers["content-length"])
++              : rec.status === 304 && rec.body === "";
++        observed.drained = completeBody;
++        observed.kind = completeBody ? "finite-body" : "none";
++        refresh();
++        if (method === "HEAD") expect(rec.body).toBe("");
++        else if (rec.headers["content-length"] !== undefined)
++          expect(Buffer.byteLength(rec.body)).toBe(Number(rec.headers["content-length"]));
++        expect(rec.frames).toHaveLength(0);
++      }
++      return {
++        rec,
++        ordinal,
++        suffix,
++        method,
++        requestHeaders,
++        refresh,
++        drained() {
++          observed.closed = true;
++          observed.drained = true;
++          observed.kind = "intentional-live";
++          refresh();
++        },
++      };
++    } catch (error) {
++      refresh();
++      throw error;
++    }
++  }
++  try {
++    runtime = await startTransactionRuntime(
++      {
++        scope,
++        directory,
++        port: 0,
++        create: true,
++        types: [
++          parseTypeDescriptor({
++            id: type,
++            name: "Task",
++            describes: "bead",
++            conformsTo: [],
++            ownsOutgoing: { [linkType]: { max: 4 } },
++          }),
++          parseTypeDescriptor({
++            id: linkType,
++            name: "Link",
++            describes: "link",
++            conformsTo: [],
++            source: { conformsTo: [], external: "none" },
++            target: { conformsTo: [], external: "none" },
++          }),
++        ],
++        credentials: [{ token, principal: "p", canMutate: true }],
++      },
++      {
++        minimumReads: {
++          budgetMs: 2,
++          now: () => tick,
++          wait: async (ms) => {
++            tick += ms;
++          },
++        },
++      },
++    );
++    const receipts: Record<string, unknown>[] = [];
++    for (const id of ["a", "b"]) {
++      const ordinal = dispatch(),
++        suffix = "operations/batch";
++      const headers: [string, string][] = [
++        ["authorization", "Bearer " + token],
++        ["accept", "application/json"],
++        ["content-type", "application/json"],
++        ["idempotency-key", "current-feed-" + id],
++      ];
++      const seed = await track(
++        (async () => {
++          const response = await fetch(new URL("/acme/" + suffix, runtime!.listenUrl), {
++            method: "POST",
++            headers: Object.fromEntries(headers),
++            signal: controller.signal,
++            body: JSON.stringify({
++              operations: [
++                {
++                  operation: "createBead",
++                  id: "beads/" + id,
++                  type,
++                  properties: { title: "current-feed-" + id },
++                },
++              ],
++            }),
++          });
++          const reader = response.body?.getReader(),
++            chunks: Uint8Array[] = [];
++          let bytes = 0,
++            bodyDrained = false;
++          const refresh = () =>
++            record(
++              ordinal,
++              "POST",
++              suffix,
++              response.status,
++              Buffer.concat(chunks),
++              Object.fromEntries(response.headers),
++              headers,
++              undefined,
++              true,
++              bodyDrained,
++              null,
++              bodyDrained ? "seed-body" : "none",
++            );
++          refresh();
++          try {
++            if (reader) {
++              try {
++                for (;;) {
++                  const chunk = await reader.read();
++                  if (chunk.done) {
++                    bodyDrained = true;
++                    break;
++                  }
++                  bytes += chunk.value.byteLength;
++                  chunks.push(chunk.value);
++                  refresh();
++                  if (bytes > 131072) throw new Error("current seed body bound");
++                }
++              } catch (error) {
++                controller.abort(error);
++                await reader.cancel(error);
++                throw error;
++              } finally {
++                reader.releaseLock();
++              }
++            } else bodyDrained = true;
++            return {
++              response,
++              text: new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks)),
++            };
++          } finally {
++            refresh();
++          }
++        })(),
++      );
++      expect(seed.response.status).toBe(200);
++      const receipt = JSON.parse(seed.text);
++      expect(validReceipt(receipt), JSON.stringify(validReceipt.errors)).toBe(true);
++      expect(receipt).toMatchObject({
++        status: "completed",
++        requiredPosition: id === "a" ? "pos-1" : "pos-2",
++      });
++      receipts.push(receipt);
++    }
++    const second = receipts[1]!;
++    const k: [string, string][] = [
++      ["bdp-scope-epoch", String(second.scopeEpoch)],
++      ["bdp-authorization-view", String(second.authorizationView)],
++      ["bdp-minimum-scope-position", "pos-2"],
++    ];
++    const u = k.map(([name, value]): [string, string] => [
++      name,
++      name === "bdp-minimum-scope-position" ? "unknown" : value,
++    ]);
++    const p = u.map(([name, value]): [string, string] => [
++      name,
++      name === "bdp-minimum-scope-position" ? "pos-01" : value,
++    ]);
++    const json: [string, string] = ["Accept", "application/json"],
++      sse: [string, string] = ["Accept", "text/event-stream"];
++    const firstRead = await raw("changes/?after=genesis", "GET", [json, ...k], 200);
++    const first = JSON.parse(firstRead.rec.body) as TransactionChangefeedPage;
++    expect(validPage(first), JSON.stringify(validPage.errors)).toBe(true);
++    expect(first.groups).toHaveLength(1);
++    expect(first.observedHeadPosition).toBe("pos-2");
++    expect(contextNames.map((name) => firstRead.rec.headers[name])).toEqual([
++      second.scopeEpoch,
++      second.authorizationView,
++      "pos-2",
++    ]);
++    const cp1 = first.groups[0]!.checkpoint;
++    expect(first.next).toBe(scope + "changes/?after=" + cp1);
++    const after = "changes/?after=" + cp1;
++    const secondRead = await raw(after, "GET", [json, ...k], 200);
++    const page2 = JSON.parse(secondRead.rec.body) as TransactionChangefeedPage;
++    expect(validPage(page2), JSON.stringify(validPage.errors)).toBe(true);
++    expect(page2.groups).toHaveLength(1);
++    expect(page2.after).toBe(cp1);
++    expect(page2.next).toBeNull();
++    expect(page2.observedHeadPosition).toBe("pos-2");
++    expect(page2.groups[0]!.changes[0]!.resource.id).toBe(scope + "beads/b");
++    const cp2 = page2.groups[0]!.checkpoint;
++    expect(cp2).not.toBe(cp1);
++    await raw(after, "HEAD", [json, ...k], 200);
++    const stale = cp1.slice(0, 3) + (cp1[3] === "A" ? "B" : "A") + cp1.slice(4);
++    const foreign = cp1.slice(0, 47) + (cp1[47] === "A" ? "B" : "A") + cp1.slice(48);
++    const future = cp1.slice(0, 91) + "3";
++    const foreignMinimum = (values: [string, string][], field: string) =>
++      values.map(([name, value]): [string, string] => [name, name === field ? "foreign" : value]);
++    const rows: {
++      method?: "GET" | "HEAD";
++      suffix: string;
++      headers: [string, string][];
++      expected: number;
++      auth?: boolean;
++      live?: boolean;
++    }[] = [
++      {
++        suffix: "changes/?after=genesis",
++        headers: [json, ...u, ["If-None-Match", "*"]],
++        expected: 503,
++      },
++      {
++        method: "HEAD",
++        suffix: "changes/?after=genesis",
++        headers: [json, ...u, ["If-None-Match", "*"]],
++        expected: 503,
++      },
++      { suffix: after, headers: [json, ...p, ["If-Match", '"missing"']], expected: 503 },
++      {
++        method: "HEAD",
++        suffix: after,
++        headers: [json, ...p, ["If-Match", '"missing"']],
++        expected: 503,
++      },
++      { suffix: "changes/?start=now", headers: [sse, ...u], expected: 503 },
++      { suffix: after, headers: [sse, ...u], expected: 503 },
++      { suffix: "changes/?start=now", headers: [sse, ...u, ["Last-Event-ID", cp1]], expected: 503 },
++      {
++        suffix: "changes/?after=" + stale,
++        headers: [sse, ...u, ["Last-Event-ID", cp1]],
++        expected: 503,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [json, ...u, ["Last-Event-ID", "bad"], ["Last-Event-ID", "also-bad"]],
++        expected: 503,
++      },
++      { suffix: after, headers: [json, ...u, ["Last-Event-ID", foreign]], expected: 503 },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [["Accept", "text/plain"], ...u],
++        expected: 503,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [["Accept", "text/plain"], ...k],
++        expected: 406,
++      },
++      { suffix: after, headers: [json, ...k, ["If-None-Match", "*"]], expected: 304 },
++      { suffix: after, headers: [json, ...k, ["If-Match", '"missing"']], expected: 412 },
++      { suffix: after, headers: [json, ["bdp-minimum-scope-position", "unknown"]], expected: 400 },
++      { suffix: "changes/?after=bad", headers: [sse, ...u, ["Last-Event-ID", cp1]], expected: 400 },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [sse, ...u, ["Last-Event-ID", cp1], ["Last-Event-ID", cp1]],
++        expected: 400,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [sse, ...u, ["Last-Event-ID", "bad"]],
++        expected: 400,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [sse, ...foreignMinimum(u, "bdp-authorization-view"), ["Last-Event-ID", stale]],
++        expected: 410,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [sse, ...foreignMinimum(u, "bdp-scope-epoch"), ["Last-Event-ID", foreign]],
++        expected: 409,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [sse, ...u, ["Last-Event-ID", future]],
++        expected: 400,
++      },
++      { suffix: after, headers: [json, ...foreignMinimum(u, "bdp-scope-epoch")], expected: 410 },
++      {
++        suffix: after,
++        headers: [json, ...foreignMinimum(u, "bdp-authorization-view")],
++        expected: 409,
++      },
++      {
++        suffix: after,
++        headers: [
++          json,
++          ...foreignMinimum(foreignMinimum(u, "bdp-scope-epoch"), "bdp-authorization-view"),
++        ],
++        expected: 410,
++      },
++      {
++        suffix: "changes/?after=genesis",
++        headers: [sse, ...k, ["Last-Event-ID", cp1]],
++        expected: 200,
++        live: true,
++      },
++      { method: "HEAD", suffix: "changes/?start=now", headers: [sse, ...u], expected: 503 },
++      { suffix: "changes/?after=genesis", headers: [sse, ...u], expected: 401, auth: false },
++    ];
++    for (const row of rows) {
++      const result = await raw(
++        row.suffix,
++        row.method ?? "GET",
++        row.headers,
++        row.expected,
++        row.live,
++        row.auth,
++      );
++      const rec = result.rec;
++      if (row.live) {
++        await track(rec.until(() => groups(rec).length >= 1));
++        const expectedFrame =
++          "id: " +
++          cp2 +
++          "\nevent: change-group\ndata: " +
++          stringifyJsonValue(page2.groups[0]) +
++          "\n";
++        expect(groups(rec)).toEqual([expectedFrame.trimEnd()]);
++        expect(rec.headers["content-type"]).toBe("text/event-stream");
++        expect(controller.signal.aborted).toBe(false);
++        expect(rec.destroyed).toBe(false);
++        const liveBeforeClose = !controller.signal.aborted && !rec.destroyed;
++        await track(rec.close());
++        result.drained();
++        expect(groups(rec)).toEqual([expectedFrame.trimEnd()]);
++        expect(group(groups(rec)[0]!)).toEqual(page2.groups[0]);
++        stream = {
++          request: result.ordinal,
++          status: rec.status,
++          readyObserved: true,
++          liveBeforeClose,
++          afterDrain: true,
++          destroyed: rec.destroyed,
++          frames: groups(rec),
++          checkpoint: cp2,
++          group: group(groups(rec)[0]!),
++          headers: Object.fromEntries(safeHeaders.map((name) => [name, rec.headers[name] ?? null])),
++        };
++      }
++      const current = contextNames.map((name) => rec.headers[name] ?? null);
++      if (row.expected === 401 || (result.ordinal >= 20 && result.ordinal <= 22))
++        expect(current).toEqual([null, null, null]);
++      else expect(current).toEqual([second.scopeEpoch, second.authorizationView, "pos-2"]);
++      expect(rec.headers["x-bdp-development"]).toBe("non-attesting");
++      if (row.expected === 503) {
++        expect(rec.headers["content-type"]).toBe("application/problem+json");
++        expect(rec.headers["cache-control"]).toBe("private, no-store");
++        expect(rec.headers["retry-after"]).toBe("1");
++        expect(rec.headers.etag).toBeUndefined();
++        expect(rec.headers["x-bdp-development-limit"]).toBeUndefined();
++        if (row.method !== "HEAD") {
++          const problem = JSON.parse(rec.body);
++          expect(validProblem(problem), JSON.stringify(validProblem.errors)).toBe(true);
++          expect(problem).toMatchObject({
++            code: "catch-up-timeout",
++            status: 503,
++            retry: "after-delay",
++          });
++        }
++      } else if ([400, 409, 410].includes(row.expected)) {
++        const problem = JSON.parse(rec.body);
++        expect(validProblem(problem), JSON.stringify(validProblem.errors)).toBe(true);
++        expect(problem.code).toBe(
++          row.expected === 409
++            ? "foreign-view"
++            : row.expected === 410
++              ? "cursor-expired"
++              : result.ordinal === 20
++                ? "malformed-request"
++                : "invalid-parameter",
++        );
++      } else if ([406, 304, 412].includes(row.expected)) expect(rec.body).toBe("");
++    }
++    for (const [get, head] of [
++      [6, 7],
++      [8, 9],
++      [4, 5],
++    ]) {
++      expect(records[head - 1]!.bodyOctets).toBe(0);
++      expect(records[head - 1]!.headers["content-length"]).toBe(
++        records[get - 1]!.headers["content-length"],
++      );
++      expect(records[get - 1]!.headers["content-length"]).toBe(
++        String(records[get - 1]!.bodyOctets),
++      );
++    }
++    expect(attempted).toBe(32);
++    expect(records).toHaveLength(32);
++    expect(records.filter((entry) => entry.drained)).toHaveLength(32);
++    expect(records.map((r) => r.status)).toEqual([
++      200, 200, 200, 200, 200, 503, 503, 503, 503, 503, 503, 503, 503, 503, 503, 503, 406, 304, 412,
++      400, 400, 400, 400, 410, 409, 400, 410, 409, 410, 200, 503, 401,
++    ]);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    clearTimeout(workTimer);
++    const cleaning = (async () => {
++      await Promise.all(recorders.map((rec) => rec.close()));
++      await Promise.all([...pending]);
++      if (runtime) {
++        await runtime.close();
++        runtimeClosed = true;
++      }
++    })();
++    void cleaning.catch(() => {});
++    try {
++      await bounded(cleaning, began + 4000, "current feed HTTP cleanup-inclusive deadline");
++      if (runtimeClosed) rmSync(directory, { recursive: true, force: false });
++    } catch (error) {
++      stopUnknown = true;
++      failures.push(error);
++    }
++    for (const refresh of rawSnapshots) refresh();
++    const elapsedMs = performance.now() - began;
++    if (elapsedMs >= 4000) failures.push(new Error("current feed HTTP total deadline exceeded"));
++    console.log(
++      JSON.stringify({
++        observation: "current-changefeed-minimum-http",
++        outcome: failures.length ? "failed" : "passed",
++        attempted,
++        observedResponses: records.filter((entry) => entry.readyObserved).length,
++        completed: records.filter((entry) => entry.drained).length,
++        records,
++        stream,
++        elapsedMs,
++        runtimeClosed,
++        stopUnknown,
++        workDeadlineFired,
++        pendingOperationsAtReport: pending.size,
++        directory,
++        directoryAbsent: !existsSync(directory),
++        failureCount: failures.length,
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length) throw new AggregateError(failures, "current feed HTTP witness failed");
++});
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 7b29de0..d1a6516 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1848,7 +1848,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     readChanges(
+       after: string,
+       supplied?: TransactionMinimum | "unsupported",
+-      admission?: "finite-start-now",
++      admission?: "finite-start-now" | "current-changefeed",
+     ):
+       | {
+           readonly kind: "page";
+@@ -1857,13 +1857,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         }
+       | { readonly kind: "unsupported" } {
+       if (typeof after !== "string") throw new TypeError("changefeed checkpoint must be a string");
+-      // A captured admission checkpoint is textually indistinguishable from an
+-      // after cursor. Only the private caller carries its fresh finite intent.
++      // Captured start anchors and explicit cursors share the same text shape.
++      // Only the private caller supplies current-read admission provenance.
+       const finiteStartNow = admission === "finite-start-now";
++      const currentChangefeed = admission === "current-changefeed";
+       const minimum =
+         supplied === undefined || supplied === "unsupported"
+           ? supplied
+-          : finiteStartNow
++          : finiteStartNow || currentChangefeed
+             ? snapshotCurrentReadMinimum(supplied)
+             : snapshotTransactionMinimum(supplied);
+       return enter(() => {
+@@ -1877,7 +1878,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         if (start > 0 && !db.prepare("SELECT position FROM groups WHERE position=?").get(start))
+           throw new Error("missing retained change group");
+         if (minimum !== undefined) {
+-          if (finiteStartNow) checkCurrentReadMinimum(minimum, context, true);
++          if (finiteStartNow || currentChangefeed) checkCurrentReadMinimum(minimum, context, true);
+           else checkTransactionMinimum(minimum, context);
+         }
+         const row = retainedGroupReader()(start + 1, head);

@@ -1,0 +1,11 @@
+# CLOSED validation preparation3 — corrected D1 source
+
+Immutable prep2 remains preserved; this successor binds correction freeze1/index cb1a558d..., full source679 and dirty patch12c783fc..., report schemas9ca89fdf..., and original completed actual CODE root disposition1f6dce33. That original review is known evidence, not direct approval of corrected bytes. Executable native/actual corrected-source acceptance wrappers and root final acceptance stay UNRESOLVED. Every execution flagfalse, no approvedStages, no attempts/run directory. No helper/guard/product command was invoked.
+
+Same28 stages, Event runner/supervision, root actual build/archive/lock/proof barriers,120s/TERM115,zero retries. run.py, gate.py, packages.py and current-session guard are byte-identical to prep2. Only audit.py changes: require D observedResponses32 and every ready/drained/bodyState/drainKind/availability/transport-close success field; require E cached diff fingerprint and null unavailable reason. Null/partial failure records cannot pass. Original body/status/HEAD/control/frame/source/closure checks remain. Historical installed10 and finite4 branches and both selected legacy source report branches remain exact; parameter-context unselected.
+
+Every current command/data path is rebound to this root. Source15 callbacks emits9 new plus2 selectedlegacy; installed3 callbacks10/4/10 are separately supervised/audited. All counts remain prospective. Original schema/history/template copies remain available, with genuine prep2->3 and Event->current patches, complete source/tool/context/helper inventories.
+
+Root/native must inspect this exact helper/data rebind and supply corrected-source acceptance records before any release. Original CODE evidence is pinned as knownOriginalActualCodeDisposition; root later supplies an accepted corrected-source actualCodeDisposition wrapper binding this exact source SHA and disposition1f6dce33. This keeps existing gate mechanics: no inferred acceptance, relaxed approval shape or framework redesign.
+
+Build/archive/consumer/lock/proof/entry/payload outputs remain unresolved and require real independent acceptance barriers in release-gates.md. No reuse of prior runtime outputs. No source/protocol/default/deadline/unknown-retention change is authorized by this packet.
