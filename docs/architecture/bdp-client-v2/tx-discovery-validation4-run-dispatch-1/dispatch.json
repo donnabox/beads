@@ -1,0 +1,39 @@
+{
+  "utc": "2026-10-18T10:08:26.520522+00:00",
+  "durableReleaseCommit": "5321e3b341bc812214aa5c8e33e9c579a6a56d51",
+  "rootReleaseSha256": "3136204245726e2639b7a67f796f526a63648bce3f81d32288b955d29e50683f",
+  "gateSha256": "1c784a63edfde7dd1fa05336d3557609bfab4af005f3433356d0196dacc901e1",
+  "stages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "actualRootArgv": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/run.py",
+      "final",
+      "node-version"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/run.py",
+      "final",
+      "pnpm-version"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/run.py",
+      "final",
+      "workspace-install"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/run.py",
+      "final",
+      "bind-workspace-tools"
+    ]
+  ],
+  "freshAttemptNoRetry": true
+}
