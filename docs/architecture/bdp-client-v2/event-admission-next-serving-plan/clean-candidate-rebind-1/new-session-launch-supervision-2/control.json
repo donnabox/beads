@@ -1,0 +1,30 @@
+{
+  "rootLaunchReleased": true,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED N2 correction successor2; predecessor1 remains frozen as failed. Only direct-child ownership/error cleanup and retryable signal escalation are corrected; original1800 total/TERM1790/KILL1798, frozen packet and root release duties are unchanged.",
+  "predecessorIndexSha256": "83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6"
+}

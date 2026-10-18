@@ -66,7 +66,7 @@ Vickie's current Write completion can proceed in bounded source increments again
 
 After authorization for a specific source integration, reconcile only repository/layout and existing-contract changes necessary to land that source. Preserve her normative pin and accepted minimum-read semantics; do not smuggle in new Type mutability, terminal deletion, Activity, batch-subset or Event redesign requirements through conflict resolution. Unexpected semantic differences return to the ledger for explicit disposition.
 
-A source increment landing does **not** satisfy Donna's “current reference Write work complete and landed” gate by implication. Vickie must identify the completion boundary and evidence, and Donna must accept that milestone before new spec adoption is fed into her implementation work. The earlier PR159 bounded landing alone does not lift this restriction.
+A source increment landing does **not** satisfy Donna's “current reference Write work complete and landed” gate by implication. Vickie’s measured completion boundary is plan D1–D5: pinned required Read/RU/TX on one installed target/configuration, ordinary cold credentialed discovery/startup, applicable installed law fixtures, fresh cumulative qualification and exact-tree CI. Record that evidence and main landing before feeding new specification adoption into her work. This creates no additional manual completion-approval gate beyond existing main/adoption decisions. The earlier PR159 bounded landing alone does not lift this restriction.
 
 Once that milestone is complete and landed, select the next amendment set, create/reuse an authorized reconciliation branch against then-current main, and qualify the exact combined result. Keep historical evidence pinned to its original source. Downstream consumers change their contract pins deliberately, separately from merely updating implementation binaries.
 
@@ -79,3 +79,14 @@ Once that milestone is complete and landed, select the next amendment set, creat
 ## Practical next step
 
 Continue Types completion and independent proposal review. Prepare the owner survey and semantic ledger without changing Vickie's input. Ask Donna to select unresolved product/wire decisions when she returns, one at a time. Ask Vickie only for the completion boundary and evidence through the already-authorized coordination process; do not assign new protocol changes. No merge permission is requested or inferred by this note.
+
+## Existing-contract decisions for the dinner agenda
+
+Vickie identifies two ambiguities in the contract she is already implementing. Keep these separate from future semantic amendments:
+
+- **S1:** evaluate a retained Snapshot/continuation minimum against the current serving context or the immutable retained anchor.
+- **G2:** decide whether metadata-only changes to an incident Link belong in the Bead’s Event stream.
+
+Neither is settled by this note. They gate affected full-support claims, not D1 changefeed or D3 discovery preparation. Ask bounded questions after dinner if they remain unresolved; do not infer a ruling from implementation preparation. Vickie reports the three-file private D3 discovery plan ready, with ordinary trusted startup and evidence admission still required.
+
+Vickie mirrored the workflow discussion in her sole plan at `docs/architecture/bdp-client-v2/spec-change-workflow-dinner-20261017.md`; reported source checkpoint `c15dba22` supersedes `4c54afa2`. These are owner-reported references, not a fresh qualification by Trish.

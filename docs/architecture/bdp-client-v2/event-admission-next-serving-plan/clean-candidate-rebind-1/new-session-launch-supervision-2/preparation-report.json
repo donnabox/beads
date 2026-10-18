@@ -1,0 +1,75 @@
+{
+  "createdUtc": "2026-10-18T03:03:08.557181+00:00",
+  "scope": "CLOSED N2 direct-child registration and escalation retry corrections only",
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1",
+    "indexSha256": "83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6",
+    "files": 8,
+    "state": "Frozen failed; unchanged"
+  },
+  "successor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2",
+    "rootLaunchReleased": false,
+    "preciseInvocationAfterRelease": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py"
+  },
+  "findingsDisposed": {
+    "N2a": "All explicit Popen handles registered immediately before fallible inventory; retain handle, serialize reaping/fallback and collect all direct children",
+    "N2b": "Signal attempt counts separate from successful-pass flags; failed STOP/KILL inventory keeps retryable state until original1800 boundary",
+    "sameFailureFamily": "Final inventory failure no longer cancels cleanup/watchdog with outstanding direct children"
+  },
+  "unchanged": {
+    "packetFiles": 44,
+    "closedPacketIndexSha256": "480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076",
+    "packetBindingSha256": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
+    "source": {
+      "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+      "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+      "parents": [
+        "9f89271e2563a105410789ca8ca1e77dfb4d0b9f"
+      ]
+    },
+    "sourceFiles": 679,
+    "contextFiles": 24,
+    "artifactFiles": 12,
+    "termSeconds": 1790,
+    "killSeconds": 1798,
+    "totalSeconds": 1800,
+    "modelOverride": false,
+    "reviewerArgs": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "sourceEdits": false,
+    "actualExecution": false,
+    "remoteWrites": false
+  },
+  "genuineDelta": "successor-delta.patch and successor-inverse.patch compare the four changed non-index originals; predecessor-index.json preserves all original file identities. Historical supervisor-addition.patch remains frozen predecessor attribution.",
+  "staticChecks": [
+    "Python AST parses without execution",
+    "Every explicit Popen is immediately followed by register_direct",
+    "No raw waitpid; all retained handle polls use poll_direct locking",
+    "Collect enumerates every registered direct child",
+    "No unconditional successful KILL flag before fallible escalation",
+    "Failed signal passes retain retryable state; all signals bounded by absolute1800",
+    "All44packet/source679/context24/artifact12 hashes match; both flags remain false; no attempts"
+  ],
+  "limitations": [
+    "No actual runtime fault-injection or reviewer attempt occurred",
+    "Operating-system scheduling/process-inventory failure may leave ownership unknown, which fails completion",
+    "Local post-stop evidence grants no reviewer execution allowance"
+  ]
+}
