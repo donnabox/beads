@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-18T10:19:59.265613+00:00",
+  "accepted": true,
+  "phase": "FIRST actual lifecycle CODE ONLY",
+  "sourceHead": "d181d9167fdf71d64ceb1d8dc73a86557ba8f032",
+  "sourceTree": "06993ca26f0dd4fd586706b1c764782e72276339",
+  "knownSourceFiles": 686,
+  "sourceMapSha256": "a93b1192aae94116da9912dc895a887e206f1b275b764f92df0b35e5137db34c",
+  "preparationIndexSha256": "031c9d2fca30ba2dc8f7a31dd35868500717867c506111e70c67db1573057c4e",
+  "nativeMechanicsClosureSha256": "4b57229afa46df93007af8257911054a000cc7f3c79c116fd93d8c8d24264760",
+  "rootMechanicsInspectionSha256": "931bb04be69a3e86b50e4f4b88cc23699954203ed058c88997644e6dc2005238",
+  "rootFullNativeReportRead": true,
+  "releasedFlags": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review/binding.json",
+      "beforeSha256": "3079099a286481a861e3ec5e62c522a30bd4a0aae1594e4b26222b69ce3ba486",
+      "afterSha256": "8ac06557b01b35c4ec91c8039404a2fb67d8f9f418f37e26414f4ddf3aed86d4",
+      "soleChangedField": "rootLaunchReleased false -> true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/launch-supervision/control.json",
+      "beforeSha256": "32120bba65db4b81a04a6359acb6874d10508ddf2b9c541804627348bc2f400d",
+      "afterSha256": "1af82d9cc73663ca4160f658ba5d4bcf0ae97c6dc706d206a7ab905a1e146941",
+      "soleChangedField": "rootLaunchReleased false -> true"
+    }
+  ],
+  "allOtherBytesPreserved": true,
+  "durablePushReadbackRequiredBeforeExecution": true,
+  "launchArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/launch-supervision/supervise.py"
+  ],
+  "defaultExternalReviewOnly": true,
+  "singleAttemptNoRetry": true,
+  "limits": "1800total/TERM1790/KILL1798 unchanged",
+  "originalPlan": "FAILED supervision/CLIUNKNOWN/fourMISSING despiteacceptedcomplete10+R1; never secondPLAN/relabel",
+  "requiredAfterAttempt": "Inspect actualterminal/processes, independent native actualaudit and rootfindingsdisposition BEFOREany productvalidation or sourcecorrection",
+  "productValidationReleased": false,
+  "mainLandingReleased": false
+}

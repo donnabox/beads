@@ -1,0 +1,60 @@
+{
+  "complete": true,
+  "count": 7,
+  "critical": 0,
+  "high": 0,
+  "medium": 1,
+  "low": 6,
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "Medium",
+      "title": "unrecognized post-ready IPC control silently terminates the lifecycle with exit 2; branch is neither documented nor witnessed",
+      "disposition": "PENDING root; no approval inferred"
+    },
+    {
+      "id": "F2",
+      "severity": "Low",
+      "title": "RU request task's derived rejection is discarded, unlike the TX dispatcher",
+      "disposition": "PENDING root; no approval inferred"
+    },
+    {
+      "id": "F3",
+      "severity": "Low",
+      "title": "post-publish guards throw outside the cleanup scope, and one explanatory comment is inaccurate",
+      "disposition": "PENDING root; no approval inferred"
+    },
+    {
+      "id": "F4",
+      "severity": "Low",
+      "title": "the installed report's secret tripwire cannot screen its own base64 wire fields",
+      "disposition": "PENDING root; no approval inferred"
+    },
+    {
+      "id": "F5",
+      "severity": "Low",
+      "title": "the smoke's private-specifier tripwire omits the deep form for `development-authority`",
+      "disposition": "PENDING root; no approval inferred"
+    },
+    {
+      "id": "F6",
+      "severity": "Low",
+      "title": "the RU prepared bind host is neither taken from nor asserted against `handle.listener.host`",
+      "disposition": "PENDING root; no approval inferred"
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "title": "the doc calls the three entry variables \"opt-in\" though the installed cohort always runs",
+      "disposition": "PENDING root; no approval inferred"
+    }
+  ],
+  "dispositionRisks": [
+    "F1 suggested additional callback/normal child is not authorized by this audit; any witness must be explicitly reconciled with fixed21callbacks/36children and original budgets.",
+    "F2 explicitly latent with no concrete reachable throw; original candidate source versus introduced-diff attribution is unestablished by actual reviewer.",
+    "F3 explicitly unreachable current guards; wrong explanatory comment and defensive provenance concerns should remain distinct.",
+    "F4 reports a missing encoded-wire screening safety net, not a current demonstrated credential echo.",
+    "F5/F6/F7 are precise private refusal/bind witness/documentation improvements; runtime passes remain unobserved.",
+    "Source2/native/root/plan coverage was not achieved by this actual review due to context path-origin mismatch; native/root evidence is independent and must not be attributed to reviewer."
+  ]
+}
