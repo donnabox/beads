@@ -1,0 +1,154 @@
+{
+  "status": "VERIFIED_BEFORE_CHILD",
+  "tarProvenanceSha256": "136836ffedeadfe19df33c1f99bc2f181cdeb0ec61f9148baa60a12ff5017561",
+  "sourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "consumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer",
+  "entryRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "packages": {
+    "protocol": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol",
+      "archiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "checkedMembers": 63
+    },
+    "server": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server",
+      "archiveSha256": "78f014af635f0903886be31f467447d45b72750ac8a7cbc7ba6cabe32cc7ee30",
+      "checkedMembers": 258
+    }
+  },
+  "installedProductionGraph": [
+    {
+      "name": "@bdp/protocol",
+      "version": "0.0.0",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/package.json",
+      "manifestSha256": "2415a9a929050fc642fceceb15dce1084debaf1bf7b05f1602ba034afa57f17f",
+      "resolvedDependencies": {
+        "ajv": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json",
+          "version": "8.17.1"
+        },
+        "ajv-formats": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats/package.json",
+          "version": "3.0.1"
+        }
+      }
+    },
+    {
+      "name": "@bdp/server",
+      "version": "0.0.0",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/package.json",
+      "manifestSha256": "d583f4158c3a393923c37d70a61212f6a716c951a5f3be7ed9bbe3aa8846ca2e",
+      "resolvedDependencies": {
+        "@bdp/protocol": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/package.json",
+          "version": "0.0.0"
+        },
+        "fast-uri": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri/package.json",
+          "version": "3.1.5"
+        }
+      }
+    },
+    {
+      "name": "ajv-formats",
+      "version": "3.0.1",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats/package.json",
+      "manifestSha256": "402fb4bcfa457f0226813f3976ac42839dd619907c075c108efba8600d7edb69",
+      "resolvedDependencies": {
+        "ajv": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json",
+          "version": "8.17.1"
+        }
+      }
+    },
+    {
+      "name": "ajv",
+      "version": "8.17.1",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json",
+      "manifestSha256": "ce1539e6f4e0f345ed402c47137d2679497b2035d4a4f420ee11acdde03dea92",
+      "resolvedDependencies": {
+        "fast-deep-equal": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/fast-deep-equal@3.1.3/node_modules/fast-deep-equal/package.json",
+          "version": "3.1.3"
+        },
+        "fast-uri": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri/package.json",
+          "version": "3.1.5"
+        },
+        "json-schema-traverse": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/json-schema-traverse@1.0.0/node_modules/json-schema-traverse/package.json",
+          "version": "1.0.0"
+        },
+        "require-from-string": {
+          "manifestRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/require-from-string@2.0.2/node_modules/require-from-string/package.json",
+          "version": "2.0.2"
+        }
+      }
+    },
+    {
+      "name": "fast-deep-equal",
+      "version": "3.1.3",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/fast-deep-equal@3.1.3/node_modules/fast-deep-equal/package.json",
+      "manifestSha256": "a5c63940db0260739be9e2ac67f3aac268df4db5770420ee4e34e493152f97d2",
+      "resolvedDependencies": {}
+    },
+    {
+      "name": "fast-uri",
+      "version": "3.1.5",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri/package.json",
+      "manifestSha256": "3b01e17f5de289a0905ad894187235c8a8bb284a1fd285b40227b1d862f86b4d",
+      "resolvedDependencies": {}
+    },
+    {
+      "name": "json-schema-traverse",
+      "version": "1.0.0",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/json-schema-traverse@1.0.0/node_modules/json-schema-traverse/package.json",
+      "manifestSha256": "156fb24af02845c190701360d06dfda35ef04282e34a734289ea9535ad9819ae",
+      "resolvedDependencies": {}
+    },
+    {
+      "name": "require-from-string",
+      "version": "2.0.2",
+      "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/require-from-string@2.0.2/node_modules/require-from-string/package.json",
+      "manifestSha256": "c0002f7d4c7d7e2a885cf0f97226344902417c3a0980f2beca41962d2bc1f6d8",
+      "resolvedDependencies": {}
+    }
+  ],
+  "expectedProductionVersionsFromFrozenLock": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "1532d15c60db968a31bb0e84ce0adbdc79bfa5ef2dc78c9dd6fcf4361453b6e1",
+  "consumerManifestSha256": "4173da0e53cac1aa27eec628775774932fbd411e224a11b2573236dad38d8a8b",
+  "consumerSettingsSha256": "85aed09590f1958a91c27dd255e7622a9a4728c665bae3a608aa6dc6b0fa0211",
+  "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+  "payloadRecursiveVisits": [
+    "@bdp/server",
+    "@bdp/server>@bdp/protocol",
+    "@bdp/server>@bdp/protocol>ajv",
+    "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+    "@bdp/server>@bdp/protocol>ajv>fast-uri",
+    "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+    "@bdp/server>@bdp/protocol>ajv>require-from-string",
+    "@bdp/server>@bdp/protocol>ajv-formats",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>require-from-string",
+    "@bdp/server>fast-uri"
+  ],
+  "payloadFileVisits": 475,
+  "limitations": "Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity."
+}

@@ -1,0 +1,95 @@
+{
+  "actualClaudeReviewDisposed": true,
+  "actualCodeDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-7/actual-code-disposition.json",
+    "sha256": "c60dcb2420c18cedc63973781e3755a9b644e05b2f8bbd017e6131800cc75d80"
+  },
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer"
+  ],
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/base-tools.candidate.json",
+    "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+  },
+  "bootstrapReuse": [],
+  "consumerInventory": {
+    "path": "UNRESOLVED",
+    "sha256": "UNRESOLVED"
+  },
+  "consumerLockSha256": "1532d15c60db968a31bb0e84ce0adbdc79bfa5ef2dc78c9dd6fcf4361453b6e1",
+  "implementationIndexSha256": "8d623d949f221cdedf52114a7a8bca5c3784cf2fdcab4ad971cbd9abbac90106",
+  "installedProvenance": {
+    "path": "UNRESOLVED",
+    "sha256": "UNRESOLVED"
+  },
+  "knownCorrectedSourceFreeze": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-snapshot-target-source-correction-1/index.json",
+    "sha256": "268ee16e9388dec80a80728d2890df1cec5f45953eef9880860432d99904b6d7"
+  },
+  "knownOriginalActualCodeTerminal": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/predecessor2/predecessor/context/corrected-source2/context/original-actual-code-terminal-closure.json",
+    "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084"
+  },
+  "mode": "final",
+  "nativeCodeDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-7/native-code-disposition.json",
+    "sha256": "0daa3047b68a5c52c55e19211a61f4b5a97bc67c6444ac3a40c2b603341c7260"
+  },
+  "nativeCodeReviewDisposed": true,
+  "released": true,
+  "rootArchiveAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-archive-root-release-1/acceptance.json",
+    "sha256": "207d5666f7e2651c747f470f621ee6a42a848004a7e09c86ad92e3bd869e3175"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-build-binding-root-release-1/acceptance.json",
+    "sha256": "4fc214ace777e1591e77f453f94edf4582a7753a1dc8c35d4fde6d228f224682"
+  },
+  "rootConsumerLockAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-consumer-lock-root-release-1/acceptance.json",
+    "sha256": "b8baf04eb5bc0dbd3013ad9a43d7ce3daf0cef3a39999aa7926965155ca57b30"
+  },
+  "rootConsumerProofAcceptance": {
+    "path": "UNRESOLVED",
+    "sha256": "UNRESOLVED"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-7/disposition.json",
+    "sha256": "f8eb221ee7c13daabce9f9449a4a65216e8d8f828365460ef3c11e2be60ddf88"
+  },
+  "rootExactSourceAccepted": true,
+  "rootPlanAccepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/source-binding.json",
+    "sha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41"
+  },
+  "staticValidationAuthorized": true,
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/workspace-tools.json",
+    "sha256": "f7964d05c4ed6264caaf7feffa59ad07fc8901a7a5c5231f49ba20d8fb8aabb0"
+  }
+}

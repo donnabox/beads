@@ -1,0 +1,46 @@
+{
+  "utc": "2026-10-18T12:28:29.542374+00:00",
+  "durableReleaseCommit": "c0803bee5611dfbb221b41002f889d8c82d05ae0",
+  "rootReleaseSha256": "67767c9b69f8832d6cb594fe8b2d2e45f60c3973929a17c872e05cbebe7a5ec4",
+  "gateSha256": "a2c14837d6e9352dd7c96eccdc054e0918557b8333a8fc559b19abb42d5bf23c",
+  "stages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "actualRootArgv": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "typecheck"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "format-check"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "lint"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "fresh-build"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "bind-fresh-build"
+    ]
+  ],
+  "freshAttemptNoRetry": true
+}

@@ -1,0 +1,43 @@
+{
+  "utc": "2026-10-18T12:39:28.471261+00:00",
+  "accepted": true,
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-archive-root-release-1/acceptance.json",
+    "sha256": "207d5666f7e2651c747f470f621ee6a42a848004a7e09c86ad92e3bd869e3175"
+  },
+  "gate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/execution-gate.json",
+    "sha256": "550219a75be7ec6f7e27ae8fa96a55285609900f402c363f11c13f08dcf5e6bc"
+  },
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "newStages": [
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "mustPushAndReadbackBeforeExecution": true,
+  "laterStagesClosed": true
+}

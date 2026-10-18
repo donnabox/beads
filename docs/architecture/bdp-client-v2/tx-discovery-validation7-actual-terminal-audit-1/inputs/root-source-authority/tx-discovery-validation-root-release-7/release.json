@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-18T12:24:09.451147+00:00",
+  "acceptedFullIndependentMechanics": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation7-native-mechanics-closure-1/closure.json",
+    "sha256": "23e49c60de8a880aa7eade2dfe44d8db62f6a26ba7a4dbf43f2a809052732331"
+  },
+  "rootHelperInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-helper-inspection-7/inspection.json",
+    "sha256": "998d1594cbea5fb73ec1773a6b92134e0278c4e54c7ffd7b4fef171dae191aa6"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-7/disposition.json",
+    "sha256": "f8eb221ee7c13daabce9f9449a4a65216e8d8f828365460ef3c11e2be60ddf88"
+  },
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "gateBeforeSha256": "7ed635aa05fe54b6f0dbdd0f941ed7df868bf56fdf590444080d7692dfde6f89",
+  "gateAfterSha256": "341f8b88828a0616c0d848ec87ac0c4b95d8e542c86ac2f288f090dd3f645ea3",
+  "durablePushRequiredBeforeFirstLaunch": true,
+  "noRetry": true,
+  "laterRootToolBuildSourceArchiveActualConsumerLockFullProofBarriersRequired": true
+}
