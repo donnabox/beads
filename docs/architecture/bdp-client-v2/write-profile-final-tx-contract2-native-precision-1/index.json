@@ -1,0 +1,2076 @@
+{
+  "state": "COMPLETE_FROZEN_CLOSED_NATIVE_STATIC_REVIEW",
+  "fileCountExcludingIndex": 517,
+  "physicalFilesIncludingIndex": 518,
+  "originCopies": 510,
+  "files": {
+    "closure.json": {
+      "sha256": "9a22d0636283e3ff8ab091793e3ffaa89c2c4a0eca398e486bea0d18f3d51449",
+      "bytes": 1296
+    },
+    "findings.json": {
+      "sha256": "609194bc3c3d48008fbc96a85dea03cf50ec503547f07ad5d597256cecfeeb0b",
+      "bytes": 630
+    },
+    "input-origins.json": {
+      "sha256": "412ace3f03e04fc4f890def8bc5d43f242929872bfc171a2b9b3e983f233e454",
+      "bytes": 219299
+    },
+    "inputs/contract2/adaptation-map.json": {
+      "sha256": "1b42f623c39061c0d4c3cceed94cf3157135299a6d6f554a15a05ddb6cb55c19",
+      "bytes": 1384
+    },
+    "inputs/contract2/adaptations/execution-contract.json.inverse.patch": {
+      "sha256": "e05746a529d4bef8f265dcdb78895772e100766c7457b1a1b84ef71784911986",
+      "bytes": 3906
+    },
+    "inputs/contract2/adaptations/execution-contract.json.patch": {
+      "sha256": "6adef3d227403cd4228c7bbdfd7683187ceb2442ee48d2bd890f977dbd7ba5de",
+      "bytes": 3906
+    },
+    "inputs/contract2/adaptations/report.md.inverse.patch": {
+      "sha256": "3fd9846dc74ac441c19c9dedf7ac71a934731e700fc1e31a10c22aac9a5a3e78",
+      "bytes": 3776
+    },
+    "inputs/contract2/adaptations/report.md.patch": {
+      "sha256": "ff63e3ae41923206b2f4967832cb6594e6991b9fa506727958c4513f6c9d1eeb",
+      "bytes": 3776
+    },
+    "inputs/contract2/closure.json": {
+      "sha256": "63599743a3b78562fefcfb866070d1064989f535a2ebb849e440d1f70dbf9c75",
+      "bytes": 1577
+    },
+    "inputs/contract2/context/D5-boundary/closure.json": {
+      "sha256": "58a7d49125c2549f7520121ff3f8b63094e69a9105ee8ac0833fc6b3aa47e5a0",
+      "bytes": 1601
+    },
+    "inputs/contract2/context/D5-boundary/configuration-table.json": {
+      "sha256": "336129ae849a9df222601ebd4df4347ed1668d64d65d927a602de00c6b45ab71",
+      "bytes": 4653
+    },
+    "inputs/contract2/context/D5-boundary/context/current-changefeed-exact-ci-1/root-final-acceptance-1/acceptance.json": {
+      "sha256": "0c550825a6da468344d3bb4c3cae4d24c30bc27099a68fcea5e361ea52e2fc92",
+      "bytes": 1943
+    },
+    "inputs/contract2/context/D5-boundary/context/sole-plan-design.md": {
+      "sha256": "4aa56334401f671751e41fe5f93348a14c25bcac66f350bfa7e0f6622d515db4",
+      "bytes": 386978
+    },
+    "inputs/contract2/context/D5-boundary/context/tx-discovery-installed02-audit-failure-1/failure.json": {
+      "sha256": "631c232cd1fa6ac7d7570d64bb1d77d9719cf8753d2206b468187f58e4f95bbc",
+      "bytes": 1396
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/basis.json": {
+      "sha256": "11384399a76e0a73c6a9a93dfe7da617b9bc045a3db7cd82529eadd68e1bd8cb",
+      "bytes": 992
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/configuration-partitions.json": {
+      "sha256": "86b7c3409fc33d2b542efe89752cbc43ac8e21de80a002c34abb09b4112c89cb",
+      "bytes": 2701
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/index.json": {
+      "sha256": "327b50c79d1270d7f15da5eccffe3606c53de66ff4586f63a6007e1518294c7a",
+      "bytes": 8408
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/next-successor.json": {
+      "sha256": "f4dbbe97cb5ef0fe0dbd0c4e97f7f1f54721966cf03e5eed14fda0694d2ec4ad",
+      "bytes": 3587
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/report.md": {
+      "sha256": "b316b02edb77c3ffee599a6ac9e8fab93a3b69fd3e0f225448384c90950b4bc1",
+      "bytes": 12086
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/selection-inventory.json": {
+      "sha256": "5bad09f178df9e8ef75a4cfb13c253ba6353089ce211fedd76d4f6c5176e4811",
+      "bytes": 90630
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-cumulative-carrier-root-clean-candidate-3/candidate.json": {
+      "sha256": "1aef1ebb62ada08897d0118b1271001333055f4b78c6fe64b2f4b326db829d41",
+      "bytes": 2556
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/basis.json": {
+      "sha256": "04ce7a564fc9030bcb7b5ac08a1f956eaded5c5883b8a22c3b957200cb0a2b2b",
+      "bytes": 2261
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/index.json": {
+      "sha256": "9287ad25ef760a81bdfb35d4581dcd18c9b5b568ad6a7893cbdf38f248048a29",
+      "bytes": 26659
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/next-successor.json": {
+      "sha256": "ce5ba8dd92246696b8c7553cace1c18e56eb19aadbf33b64f93234149558e99c",
+      "bytes": 2611
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/plan.md": {
+      "sha256": "2aefcb82209e5929df1a81d22511ebb66a70c751d8d066c4b304c83a10f6cbf7",
+      "bytes": 18569
+    },
+    "inputs/contract2/context/D5-boundary/context/write-profile-private-integration-preflight-2/report.md": {
+      "sha256": "9bea67445b771bcc1c0db6c0b49afa3bf227393a6a422c4c9f6c38960538cfac",
+      "bytes": 3004
+    },
+    "inputs/contract2/context/D5-boundary/context/write-trusted-startup-exact-ci-1/root-final-acceptance-1/acceptance.json": {
+      "sha256": "99d404b7fec751aff6e478dcd36ef48fe86b11ef2d972e1ae79e829a3d198e1a",
+      "bytes": 1284
+    },
+    "inputs/contract2/context/D5-boundary/context/write-trusted-startup-lifecycle-source-authoring-3/closure.json": {
+      "sha256": "c6e527bdf8552c4c5d9143c724823f2415c70a7f3845bc43c23dc1391f4b83cf",
+      "bytes": 883
+    },
+    "inputs/contract2/context/D5-boundary/contract-boundary.json": {
+      "sha256": "2580feb46880c624c667c3448b255dda9a7734fa0d3625ed970fa76590c67325",
+      "bytes": 2915
+    },
+    "inputs/contract2/context/D5-boundary/index.json": {
+      "sha256": "ff0ee1b3e64b53eefe2be455d269a758155d6476a80ac41582952e0ec9ff54db",
+      "bytes": 12529
+    },
+    "inputs/contract2/context/D5-boundary/input-origins.json": {
+      "sha256": "a8a8860632677209946a12841754f567b82fb1c536d96111f1620e3ddfd7b194",
+      "bytes": 22957
+    },
+    "inputs/contract2/context/D5-boundary/line-map.json": {
+      "sha256": "bee8dda97a6a59fe8abd219b343f20f5fe97bb7435bbef5923487ccb339bfa20",
+      "bytes": 11495
+    },
+    "inputs/contract2/context/D5-boundary/maps/D1.json": {
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874
+    },
+    "inputs/contract2/context/D5-boundary/maps/D3a.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/context/D5-boundary/maps/D4.json": {
+      "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+      "bytes": 87874
+    },
+    "inputs/contract2/context/D5-boundary/maps/carrier-source3.json": {
+      "sha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+      "bytes": 88133
+    },
+    "inputs/contract2/context/D5-boundary/maps/lifecycle-source3.json": {
+      "sha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
+      "bytes": 88755
+    },
+    "inputs/contract2/context/D5-boundary/maps/pure-loader.json": {
+      "sha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "bytes": 88236
+    },
+    "inputs/contract2/context/D5-boundary/next-slice.json": {
+      "sha256": "98c5ec250a0fd81de45660ec7641f54dc3fd48639021ce78ccf2cd085af443bd",
+      "bytes": 3983
+    },
+    "inputs/contract2/context/D5-boundary/parent-verification.json": {
+      "sha256": "e700c07b85fbb681dd064fe2a751a5467ce8a03ce294fee3c35f489b14d9c809",
+      "bytes": 780
+    },
+    "inputs/contract2/context/D5-boundary/preparation-failure-1.json": {
+      "sha256": "68413dc63abf410cb9f0397b06da346233afe0038a5bf216360980da35774400",
+      "bytes": 899
+    },
+    "inputs/contract2/context/D5-boundary/preparation-observations.json": {
+      "sha256": "e42a594338c717a71b82e35a2161257c82de0e729352fcc1c25fbbb6a0667183",
+      "bytes": 656
+    },
+    "inputs/contract2/context/D5-boundary/report.md": {
+      "sha256": "554798c0f001b1e80c939c5762cd17647b8801163a9f2a988f6c30f09d681db9",
+      "bytes": 9697
+    },
+    "inputs/contract2/context/D5-boundary/required-law-inventory.json": {
+      "sha256": "11469df019715b6cb01527590428180b8632ca5779f861ea78a6e84af846cf6a",
+      "bytes": 62823
+    },
+    "inputs/contract2/context/D5-boundary/route-law-table.json": {
+      "sha256": "ac4f2e91b08f9749bd89dffba3e3d658f5c638c3cb84b97fd4918efe9b5adbf8",
+      "bytes": 3132
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/apps/bdptest/src/main.ts": {
+      "sha256": "2749fa0ad9aadfc548f07b9e87d8b604290ed63e699423a18742fc9ab771e940",
+      "bytes": 4947
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/packages/conformance/matrices/README.md": {
+      "sha256": "b51b4a96c91f9c6c8b9cab621356a3b82b5c10028f664744787ab0f3275d9146",
+      "bytes": 56602
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/packages/conformance/src/profile-contract-selection.ts": {
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "bytes": 5113
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/packages/conformance/src/selection.ts": {
+      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+      "bytes": 3255
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "inputs/contract2/context/D5-boundary/source/D1/packages/server/src/index.ts": {
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "bytes": 55615
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/conformance/catalog/read-v1.json": {
+      "sha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "bytes": 39021
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "bytes": 133364
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "bytes": 867804
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "inputs/contract2/context/D5-boundary/source/D3a/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/context/D5-boundary/source/D4/apps/bdptest/src/transactional-set-installed.test.ts": {
+      "sha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+      "bytes": 35849
+    },
+    "inputs/contract2/context/D5-boundary/source/carrier-source3/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "bytes": 191181
+    },
+    "inputs/contract2/context/D5-boundary/source/carrier-source3/packages/conformance/test-support/profile-evidence.ts": {
+      "sha256": "0b457dfbd74fbf53fca0dfa0e93507fd0051792de4df54f5ddc4931823a52bfc",
+      "bytes": 42677
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/development-composition.ts": {
+      "sha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "bytes": 3484
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/development-runtime.ts": {
+      "sha256": "bb50d83f79b4f3aeb09080276a8cc4a72ffe0fd06eb1bbf4349d778aa060a8ef",
+      "bytes": 32062
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/installed-reference-configuration.ts": {
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-process.ts": {
+      "sha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+      "bytes": 4555
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-runtime.ts": {
+      "sha256": "a3386c680014ea9762739e315b3459fe82480d0a0717774ef2386ad8015eff8d",
+      "bytes": 1769
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-state.ts": {
+      "sha256": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+      "bytes": 1613
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment.ts": {
+      "sha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+      "bytes": 13758
+    },
+    "inputs/contract2/context/D5-boundary/source/lifecycle-source3/packages/server/src/transaction-runtime.ts": {
+      "sha256": "8d2185e75474ffadb5d17aa57ccf3fdf822292f9cf2c46640f6bc6ab81702694",
+      "bytes": 22327
+    },
+    "inputs/contract2/context/D5-boundary/source-verification.json": {
+      "sha256": "a8ebacd69164dd247ab01c733c4715af346a9954fc2dae5b892735a96b883a73",
+      "bytes": 1914
+    },
+    "inputs/contract2/context/root-order-correction/disposition.json": {
+      "sha256": "cd5723365985c39363f291a0196a4cecce75bd8676f0776da31d937d4568317a",
+      "bytes": 1512
+    },
+    "inputs/contract2/context/root-order-correction/index.json": {
+      "sha256": "9e050debdcb6c5732f658bc00014ad9f955487ae12fe35995cb4b5c61c8dd935",
+      "bytes": 93
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/binding.json": {
+      "sha256": "d559c8f6000e14c8a8ee960dfd96e71947eea6f01a6495814b20ac2a4319179c",
+      "bytes": 756
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/stable-source-binding.json": {
+      "sha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+      "bytes": 93857
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/index.json": {
+      "sha256": "e95297910733e0776df439f3ddf046a86b8ca111832b77f7dbf1b85a99bab834",
+      "bytes": 6411
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/interfaces.json": {
+      "sha256": "ee4d0b1fec457dd77530c9836a1518195f32dce7c21b26fcdb3872b953a6fca2",
+      "bytes": 3502
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/laws.json": {
+      "sha256": "5c18d807752196d430326e8399da2d7aa7c333cc4a172ef79bb16241e62006e7",
+      "bytes": 5632
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/plan.md": {
+      "sha256": "23b93b6592ad02eec46afd8e1bee6d9aed4ffbfac821eeff9e4904c056728e34",
+      "bytes": 11772
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/applicability-table.json": {
+      "sha256": "d416aadaa89ff00df205b1c2fbaafbebd0e9173f7c2ae22cab5e50b3136c05b2",
+      "bytes": 10872
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/finite-boundary-table.json": {
+      "sha256": "dae3a10644a28472846a12d58fef0745a830df641fe98bd43e593de35acb4740",
+      "bytes": 4915
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/index.json": {
+      "sha256": "e31679a4d94b6d8df58c51779400418e99d8c2ca33c9f4b642790711e12714b0",
+      "bytes": 4585
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/line-anchors.json": {
+      "sha256": "37b35c92712bf39bb9295f748b789c511958fb9b5907fce511b0d1d968ba2e9d",
+      "bytes": 37976
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/origins.json": {
+      "sha256": "7fc786da40dd7451a7f465650abbbd333207f4315d496f5e46795db5e6a5b47d",
+      "bytes": 5948
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/report.md": {
+      "sha256": "f5b540364f4192cfd110ba9bef2ba8300b0358170a2e6e169ad49dd5989664ee",
+      "bytes": 3290
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/recovery-store.ts": {
+      "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+      "bytes": 40784
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-recovery.test.ts": {
+      "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+      "bytes": 5728
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-store.test.ts": {
+      "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+      "bytes": 138540
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/source-map.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/context/write-profile-D4-recovery-next-boundary-1/supported-recipe-boundary.json": {
+      "sha256": "6b1a62fba49290405d7c80ecc8c0113ec5c0f059b2e56173b9345f3380d3f3f2",
+      "bytes": 4516
+    },
+    "inputs/contract2/controls.json": {
+      "sha256": "d1a7174c7cef0008c358548c189cfab50f037267e5e1045802403ea991031017",
+      "bytes": 307
+    },
+    "inputs/contract2/effective-profile-rules.json": {
+      "sha256": "ea3d7521cfacc920ceb1c20f69623ab35f9bf5b43f131ff9752495aeca4e6cdb",
+      "bytes": 2618
+    },
+    "inputs/contract2/execution-contract.json": {
+      "sha256": "d5bcf99d9e4119c08c9ac003363981c68ee09f1a7c16d71a20805294739be556",
+      "bytes": 15539
+    },
+    "inputs/contract2/fixture-decision.json": {
+      "sha256": "bedbbe9e9f0757fb4667801d3075f2553c8f60cc4e89ef84af4bd6ee38fbddf0",
+      "bytes": 2321
+    },
+    "inputs/contract2/governing-clause-index.json": {
+      "sha256": "ae28e9eda1834aac320ea88efa60026fe6f2ccfb5338289808c08691631ed16f",
+      "bytes": 366615
+    },
+    "inputs/contract2/history/contract1/closure.json": {
+      "sha256": "66a4b7464e7e77ab2f65a6d9e6404a29cfd8ac83ca58a0ddff8a0ae085db6a4f",
+      "bytes": 1036
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/closure.json": {
+      "sha256": "58a7d49125c2549f7520121ff3f8b63094e69a9105ee8ac0833fc6b3aa47e5a0",
+      "bytes": 1601
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/configuration-table.json": {
+      "sha256": "336129ae849a9df222601ebd4df4347ed1668d64d65d927a602de00c6b45ab71",
+      "bytes": 4653
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/current-changefeed-exact-ci-1/root-final-acceptance-1/acceptance.json": {
+      "sha256": "0c550825a6da468344d3bb4c3cae4d24c30bc27099a68fcea5e361ea52e2fc92",
+      "bytes": 1943
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/sole-plan-design.md": {
+      "sha256": "4aa56334401f671751e41fe5f93348a14c25bcac66f350bfa7e0f6622d515db4",
+      "bytes": 386978
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/tx-discovery-installed02-audit-failure-1/failure.json": {
+      "sha256": "631c232cd1fa6ac7d7570d64bb1d77d9719cf8753d2206b468187f58e4f95bbc",
+      "bytes": 1396
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/basis.json": {
+      "sha256": "11384399a76e0a73c6a9a93dfe7da617b9bc045a3db7cd82529eadd68e1bd8cb",
+      "bytes": 992
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/configuration-partitions.json": {
+      "sha256": "86b7c3409fc33d2b542efe89752cbc43ac8e21de80a002c34abb09b4112c89cb",
+      "bytes": 2701
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/index.json": {
+      "sha256": "327b50c79d1270d7f15da5eccffe3606c53de66ff4586f63a6007e1518294c7a",
+      "bytes": 8408
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/next-successor.json": {
+      "sha256": "f4dbbe97cb5ef0fe0dbd0c4e97f7f1f54721966cf03e5eed14fda0694d2ec4ad",
+      "bytes": 3587
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/report.md": {
+      "sha256": "b316b02edb77c3ffee599a6ac9e8fab93a3b69fd3e0f225448384c90950b4bc1",
+      "bytes": 12086
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/selection-inventory.json": {
+      "sha256": "5bad09f178df9e8ef75a4cfb13c253ba6353089ce211fedd76d4f6c5176e4811",
+      "bytes": 90630
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-cumulative-carrier-root-clean-candidate-3/candidate.json": {
+      "sha256": "1aef1ebb62ada08897d0118b1271001333055f4b78c6fe64b2f4b326db829d41",
+      "bytes": 2556
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/basis.json": {
+      "sha256": "04ce7a564fc9030bcb7b5ac08a1f956eaded5c5883b8a22c3b957200cb0a2b2b",
+      "bytes": 2261
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/index.json": {
+      "sha256": "9287ad25ef760a81bdfb35d4581dcd18c9b5b568ad6a7893cbdf38f248048a29",
+      "bytes": 26659
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/next-successor.json": {
+      "sha256": "ce5ba8dd92246696b8c7553cace1c18e56eb19aadbf33b64f93234149558e99c",
+      "bytes": 2611
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/plan.md": {
+      "sha256": "2aefcb82209e5929df1a81d22511ebb66a70c751d8d066c4b304c83a10f6cbf7",
+      "bytes": 18569
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-profile-private-integration-preflight-2/report.md": {
+      "sha256": "9bea67445b771bcc1c0db6c0b49afa3bf227393a6a422c4c9f6c38960538cfac",
+      "bytes": 3004
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-trusted-startup-exact-ci-1/root-final-acceptance-1/acceptance.json": {
+      "sha256": "99d404b7fec751aff6e478dcd36ef48fe86b11ef2d972e1ae79e829a3d198e1a",
+      "bytes": 1284
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/context/write-trusted-startup-lifecycle-source-authoring-3/closure.json": {
+      "sha256": "c6e527bdf8552c4c5d9143c724823f2415c70a7f3845bc43c23dc1391f4b83cf",
+      "bytes": 883
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/contract-boundary.json": {
+      "sha256": "2580feb46880c624c667c3448b255dda9a7734fa0d3625ed970fa76590c67325",
+      "bytes": 2915
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/index.json": {
+      "sha256": "ff0ee1b3e64b53eefe2be455d269a758155d6476a80ac41582952e0ec9ff54db",
+      "bytes": 12529
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/input-origins.json": {
+      "sha256": "a8a8860632677209946a12841754f567b82fb1c536d96111f1620e3ddfd7b194",
+      "bytes": 22957
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/line-map.json": {
+      "sha256": "bee8dda97a6a59fe8abd219b343f20f5fe97bb7435bbef5923487ccb339bfa20",
+      "bytes": 11495
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/maps/D1.json": {
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/maps/D3a.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/maps/D4.json": {
+      "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/maps/carrier-source3.json": {
+      "sha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+      "bytes": 88133
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/maps/lifecycle-source3.json": {
+      "sha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
+      "bytes": 88755
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/maps/pure-loader.json": {
+      "sha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "bytes": 88236
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/next-slice.json": {
+      "sha256": "98c5ec250a0fd81de45660ec7641f54dc3fd48639021ce78ccf2cd085af443bd",
+      "bytes": 3983
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/parent-verification.json": {
+      "sha256": "e700c07b85fbb681dd064fe2a751a5467ce8a03ce294fee3c35f489b14d9c809",
+      "bytes": 780
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/preparation-failure-1.json": {
+      "sha256": "68413dc63abf410cb9f0397b06da346233afe0038a5bf216360980da35774400",
+      "bytes": 899
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/preparation-observations.json": {
+      "sha256": "e42a594338c717a71b82e35a2161257c82de0e729352fcc1c25fbbb6a0667183",
+      "bytes": 656
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/report.md": {
+      "sha256": "554798c0f001b1e80c939c5762cd17647b8801163a9f2a988f6c30f09d681db9",
+      "bytes": 9697
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/required-law-inventory.json": {
+      "sha256": "11469df019715b6cb01527590428180b8632ca5779f861ea78a6e84af846cf6a",
+      "bytes": 62823
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/route-law-table.json": {
+      "sha256": "ac4f2e91b08f9749bd89dffba3e3d658f5c638c3cb84b97fd4918efe9b5adbf8",
+      "bytes": 3132
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/apps/bdptest/src/main.ts": {
+      "sha256": "2749fa0ad9aadfc548f07b9e87d8b604290ed63e699423a18742fc9ab771e940",
+      "bytes": 4947
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/packages/conformance/matrices/README.md": {
+      "sha256": "b51b4a96c91f9c6c8b9cab621356a3b82b5c10028f664744787ab0f3275d9146",
+      "bytes": 56602
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/packages/conformance/src/profile-contract-selection.ts": {
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "bytes": 5113
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/packages/conformance/src/selection.ts": {
+      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+      "bytes": 3255
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D1/packages/server/src/index.ts": {
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "bytes": 55615
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/conformance/catalog/read-v1.json": {
+      "sha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "bytes": 39021
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "bytes": 133364
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "bytes": 867804
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/D4/apps/bdptest/src/transactional-set-installed.test.ts": {
+      "sha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+      "bytes": 35849
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/carrier-source3/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "bytes": 191181
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/carrier-source3/packages/conformance/test-support/profile-evidence.ts": {
+      "sha256": "0b457dfbd74fbf53fca0dfa0e93507fd0051792de4df54f5ddc4931823a52bfc",
+      "bytes": 42677
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/development-composition.ts": {
+      "sha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "bytes": 3484
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/development-runtime.ts": {
+      "sha256": "bb50d83f79b4f3aeb09080276a8cc4a72ffe0fd06eb1bbf4349d778aa060a8ef",
+      "bytes": 32062
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/installed-reference-configuration.ts": {
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-process.ts": {
+      "sha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+      "bytes": 4555
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-runtime.ts": {
+      "sha256": "a3386c680014ea9762739e315b3459fe82480d0a0717774ef2386ad8015eff8d",
+      "bytes": 1769
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-state.ts": {
+      "sha256": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+      "bytes": 1613
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment.ts": {
+      "sha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+      "bytes": 13758
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/transaction-runtime.ts": {
+      "sha256": "8d2185e75474ffadb5d17aa57ccf3fdf822292f9cf2c46640f6bc6ab81702694",
+      "bytes": 22327
+    },
+    "inputs/contract2/history/contract1/context/D5-boundary/source-verification.json": {
+      "sha256": "a8ebacd69164dd247ab01c733c4715af346a9954fc2dae5b892735a96b883a73",
+      "bytes": 1914
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/binding.json": {
+      "sha256": "d559c8f6000e14c8a8ee960dfd96e71947eea6f01a6495814b20ac2a4319179c",
+      "bytes": 756
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/stable-source-binding.json": {
+      "sha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+      "bytes": 93857
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/index.json": {
+      "sha256": "e95297910733e0776df439f3ddf046a86b8ca111832b77f7dbf1b85a99bab834",
+      "bytes": 6411
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/interfaces.json": {
+      "sha256": "ee4d0b1fec457dd77530c9836a1518195f32dce7c21b26fcdb3872b953a6fca2",
+      "bytes": 3502
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/laws.json": {
+      "sha256": "5c18d807752196d430326e8399da2d7aa7c333cc4a172ef79bb16241e62006e7",
+      "bytes": 5632
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/plan.md": {
+      "sha256": "23b93b6592ad02eec46afd8e1bee6d9aed4ffbfac821eeff9e4904c056728e34",
+      "bytes": 11772
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/applicability-table.json": {
+      "sha256": "d416aadaa89ff00df205b1c2fbaafbebd0e9173f7c2ae22cab5e50b3136c05b2",
+      "bytes": 10872
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/finite-boundary-table.json": {
+      "sha256": "dae3a10644a28472846a12d58fef0745a830df641fe98bd43e593de35acb4740",
+      "bytes": 4915
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/index.json": {
+      "sha256": "e31679a4d94b6d8df58c51779400418e99d8c2ca33c9f4b642790711e12714b0",
+      "bytes": 4585
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/line-anchors.json": {
+      "sha256": "37b35c92712bf39bb9295f748b789c511958fb9b5907fce511b0d1d968ba2e9d",
+      "bytes": 37976
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/origins.json": {
+      "sha256": "7fc786da40dd7451a7f465650abbbd333207f4315d496f5e46795db5e6a5b47d",
+      "bytes": 5948
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/report.md": {
+      "sha256": "f5b540364f4192cfd110ba9bef2ba8300b0358170a2e6e169ad49dd5989664ee",
+      "bytes": 3290
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/recovery-store.ts": {
+      "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+      "bytes": 40784
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-recovery.test.ts": {
+      "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+      "bytes": 5728
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-store.test.ts": {
+      "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+      "bytes": 138540
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/source-map.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/contract1/context/write-profile-D4-recovery-next-boundary-1/supported-recipe-boundary.json": {
+      "sha256": "6b1a62fba49290405d7c80ecc8c0113ec5c0f059b2e56173b9345f3380d3f3f2",
+      "bytes": 4516
+    },
+    "inputs/contract2/history/contract1/controls.json": {
+      "sha256": "d1a7174c7cef0008c358548c189cfab50f037267e5e1045802403ea991031017",
+      "bytes": 307
+    },
+    "inputs/contract2/history/contract1/effective-profile-rules.json": {
+      "sha256": "ea3d7521cfacc920ceb1c20f69623ab35f9bf5b43f131ff9752495aeca4e6cdb",
+      "bytes": 2618
+    },
+    "inputs/contract2/history/contract1/execution-contract.json": {
+      "sha256": "a64f91838982b6481fc6e17f44123167ae4f2f9729a86bdcc49ac23a12794c06",
+      "bytes": 14871
+    },
+    "inputs/contract2/history/contract1/fixture-decision.json": {
+      "sha256": "bedbbe9e9f0757fb4667801d3075f2553c8f60cc4e89ef84af4bd6ee38fbddf0",
+      "bytes": 2321
+    },
+    "inputs/contract2/history/contract1/governing-clause-index.json": {
+      "sha256": "ae28e9eda1834aac320ea88efa60026fe6f2ccfb5338289808c08691631ed16f",
+      "bytes": 366615
+    },
+    "inputs/contract2/history/contract1/index.json": {
+      "sha256": "5463d75611513bf9711bb38757c5e234420df7df4e2f974e60e0669929e2124b",
+      "bytes": 29163
+    },
+    "inputs/contract2/history/contract1/input-origins.json": {
+      "sha256": "5ca660601f6bfed8cd7b6547c74fdc794b1e240a2cce0b7fbf8b8930b91a4b8a",
+      "bytes": 58364
+    },
+    "inputs/contract2/history/contract1/preparation-observations.json": {
+      "sha256": "0310945564d8a4614d2f783c88a2fb364fb6a18a23698021df95abfff1a0450a",
+      "bytes": 729
+    },
+    "inputs/contract2/history/contract1/prospective-ownership.json": {
+      "sha256": "413fcb1737539ccf2b095c24e744f849161137aaedc4cff985633a1c609c0513",
+      "bytes": 17360
+    },
+    "inputs/contract2/history/contract1/report.md": {
+      "sha256": "5ab4564b7c1ff345efbaaec9f4052c39fbf5549348f5895ff8028c6946922852",
+      "bytes": 8854
+    },
+    "inputs/contract2/history/contract1/retirements.json": {
+      "sha256": "4dfffb0ae3bfb2f6fd1a7b374eab23d5b91e0e875a5e734ba5b9c2dc3f72ed0d",
+      "bytes": 20946
+    },
+    "inputs/contract2/history/contract1/selected-laws.json": {
+      "sha256": "f7ffdb9152d8668183cac87acbf2eb31ed1b39a7db305b853e991a60b2311a33",
+      "bytes": 891550
+    },
+    "inputs/contract2/history/contract1/selected-laws.md": {
+      "sha256": "32fcd1f283916781f3990394b547fdfd967e176886d0b48449df44522173174a",
+      "bytes": 19444
+    },
+    "inputs/contract2/history/contract1/source/D3a/apps/bdptest/test-support/installed-contract-identity.ts": {
+      "sha256": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
+      "bytes": 364
+    },
+    "inputs/contract2/history/contract1/source/D3a/apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378
+    },
+    "inputs/contract2/history/contract1/source/D3a/docs/design/requirements.md": {
+      "sha256": "e8a49df01fea42ea719694585fb6c1d4bc2590c9c78239f911da3c6237d6daee",
+      "bytes": 19487
+    },
+    "inputs/contract2/history/contract1/source/D3a/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/catalog/history-v1.json": {
+      "sha256": "e09f2870cb267d4c9f74da6072dc84c42271913b7f3a7cd7ab5155a040102724",
+      "bytes": 28954
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/catalog/numeric-model-v1.json": {
+      "sha256": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+      "bytes": 6508
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/catalog/owned-wildcard-v1.json": {
+      "sha256": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd",
+      "bytes": 9966
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/catalog/read-update-v1.json": {
+      "sha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+      "bytes": 85899
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/catalog/read-v1.json": {
+      "sha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "bytes": 39021
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/catalog/transactional-v1.json": {
+      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+      "bytes": 94826
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/src/artifact-bundle.ts": {
+      "sha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+      "bytes": 21853
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/src/http-executor.ts": {
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "bytes": 50611
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/src/profile-contract-selection.ts": {
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "bytes": 5113
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/src/runner.ts": {
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 133683
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/src/selection.ts": {
+      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+      "bytes": 3255
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/src/transactional-observation.ts": {
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "bytes": 14289
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "bytes": 133364
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "bytes": 867804
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/installed-payload.ts": {
+      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+      "bytes": 3594
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "inputs/contract2/history/contract1/source/D3a/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/history/contract1/source/D3a/scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264
+    },
+    "inputs/contract2/history/contract1/source/carrier-source3/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "bytes": 191181
+    },
+    "inputs/contract2/history/contract1/source-basis.json": {
+      "sha256": "c3211bebee1d7db6eab205577691bc60ea6b4b2c5268ffbdfb70039b73198e18",
+      "bytes": 2174
+    },
+    "inputs/contract2/history/contract1/source-gaps.json": {
+      "sha256": "2d4f45d0628716f1cb1caa0fcc22bff9114dc2682ef10a1d9f99612ab3577ba8",
+      "bytes": 6401
+    },
+    "inputs/contract2/history/contract1/source-seams.json": {
+      "sha256": "25a6397edfede3fe6db244435b720e7edfa2c1a6e62a4452a6162742a7b2c49e",
+      "bytes": 2146
+    },
+    "inputs/contract2/history/contract1/verification.json": {
+      "sha256": "716eee87d4acead3d17f1d833aac6628cd6a91529a96c6e3d8ddd20224b02865",
+      "bytes": 730
+    },
+    "inputs/contract2/history/native1/closure.json": {
+      "sha256": "466b4a27b2c54420efd4263f0781ca6d149ddc3c1ddd602a4d20804882e245cb",
+      "bytes": 1379
+    },
+    "inputs/contract2/history/native1/findings.json": {
+      "sha256": "95e2d7a0f4e62e6be0459270c307c4db2deb79a686ed1ebfaed516b4ecfe5334",
+      "bytes": 2178
+    },
+    "inputs/contract2/history/native1/historical-basis-assessment.json": {
+      "sha256": "b428534b7d91d74f7ae5cf7ebad7a1b7b8f15d126a748eb1f1bf9247f7a4620f",
+      "bytes": 5343
+    },
+    "inputs/contract2/history/native1/index.json": {
+      "sha256": "50287f985e8d5dca7e7b91207a0ae0f6b42bdd0d38a1db7e1423318772d18f09",
+      "bytes": 38064
+    },
+    "inputs/contract2/history/native1/input-origins.json": {
+      "sha256": "20dd03278a1a567c5ba1158b5fcba9daf972bd495b579564d78abe539bbb5839",
+      "bytes": 91760
+    },
+    "inputs/contract2/history/native1/inputs/contract1/closure.json": {
+      "sha256": "66a4b7464e7e77ab2f65a6d9e6404a29cfd8ac83ca58a0ddff8a0ae085db6a4f",
+      "bytes": 1036
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/closure.json": {
+      "sha256": "58a7d49125c2549f7520121ff3f8b63094e69a9105ee8ac0833fc6b3aa47e5a0",
+      "bytes": 1601
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/configuration-table.json": {
+      "sha256": "336129ae849a9df222601ebd4df4347ed1668d64d65d927a602de00c6b45ab71",
+      "bytes": 4653
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/current-changefeed-exact-ci-1/root-final-acceptance-1/acceptance.json": {
+      "sha256": "0c550825a6da468344d3bb4c3cae4d24c30bc27099a68fcea5e361ea52e2fc92",
+      "bytes": 1943
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/sole-plan-design.md": {
+      "sha256": "4aa56334401f671751e41fe5f93348a14c25bcac66f350bfa7e0f6622d515db4",
+      "bytes": 386978
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/tx-discovery-installed02-audit-failure-1/failure.json": {
+      "sha256": "631c232cd1fa6ac7d7570d64bb1d77d9719cf8753d2206b468187f58e4f95bbc",
+      "bytes": 1396
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/basis.json": {
+      "sha256": "11384399a76e0a73c6a9a93dfe7da617b9bc045a3db7cd82529eadd68e1bd8cb",
+      "bytes": 992
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/configuration-partitions.json": {
+      "sha256": "86b7c3409fc33d2b542efe89752cbc43ac8e21de80a002c34abb09b4112c89cb",
+      "bytes": 2701
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/index.json": {
+      "sha256": "327b50c79d1270d7f15da5eccffe3606c53de66ff4586f63a6007e1518294c7a",
+      "bytes": 8408
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/next-successor.json": {
+      "sha256": "f4dbbe97cb5ef0fe0dbd0c4e97f7f1f54721966cf03e5eed14fda0694d2ec4ad",
+      "bytes": 3587
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/report.md": {
+      "sha256": "b316b02edb77c3ffee599a6ac9e8fab93a3b69fd3e0f225448384c90950b4bc1",
+      "bytes": 12086
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-D5-evidence-spine-audit-1/selection-inventory.json": {
+      "sha256": "5bad09f178df9e8ef75a4cfb13c253ba6353089ce211fedd76d4f6c5176e4811",
+      "bytes": 90630
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-cumulative-carrier-root-clean-candidate-3/candidate.json": {
+      "sha256": "1aef1ebb62ada08897d0118b1271001333055f4b78c6fe64b2f4b326db829d41",
+      "bytes": 2556
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/basis.json": {
+      "sha256": "04ce7a564fc9030bcb7b5ac08a1f956eaded5c5883b8a22c3b957200cb0a2b2b",
+      "bytes": 2261
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/index.json": {
+      "sha256": "9287ad25ef760a81bdfb35d4581dcd18c9b5b568ad6a7893cbdf38f248048a29",
+      "bytes": 26659
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/next-successor.json": {
+      "sha256": "ce5ba8dd92246696b8c7553cace1c18e56eb19aadbf33b64f93234149558e99c",
+      "bytes": 2611
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-cumulative-evidence-carrier-plan-4/plan.md": {
+      "sha256": "2aefcb82209e5929df1a81d22511ebb66a70c751d8d066c4b304c83a10f6cbf7",
+      "bytes": 18569
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-profile-private-integration-preflight-2/report.md": {
+      "sha256": "9bea67445b771bcc1c0db6c0b49afa3bf227393a6a422c4c9f6c38960538cfac",
+      "bytes": 3004
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-trusted-startup-exact-ci-1/root-final-acceptance-1/acceptance.json": {
+      "sha256": "99d404b7fec751aff6e478dcd36ef48fe86b11ef2d972e1ae79e829a3d198e1a",
+      "bytes": 1284
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/context/write-trusted-startup-lifecycle-source-authoring-3/closure.json": {
+      "sha256": "c6e527bdf8552c4c5d9143c724823f2415c70a7f3845bc43c23dc1391f4b83cf",
+      "bytes": 883
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/contract-boundary.json": {
+      "sha256": "2580feb46880c624c667c3448b255dda9a7734fa0d3625ed970fa76590c67325",
+      "bytes": 2915
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/index.json": {
+      "sha256": "ff0ee1b3e64b53eefe2be455d269a758155d6476a80ac41582952e0ec9ff54db",
+      "bytes": 12529
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/input-origins.json": {
+      "sha256": "a8a8860632677209946a12841754f567b82fb1c536d96111f1620e3ddfd7b194",
+      "bytes": 22957
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/line-map.json": {
+      "sha256": "bee8dda97a6a59fe8abd219b343f20f5fe97bb7435bbef5923487ccb339bfa20",
+      "bytes": 11495
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/maps/D1.json": {
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/maps/D3a.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/maps/D4.json": {
+      "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/maps/carrier-source3.json": {
+      "sha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+      "bytes": 88133
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/maps/lifecycle-source3.json": {
+      "sha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
+      "bytes": 88755
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/maps/pure-loader.json": {
+      "sha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "bytes": 88236
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/next-slice.json": {
+      "sha256": "98c5ec250a0fd81de45660ec7641f54dc3fd48639021ce78ccf2cd085af443bd",
+      "bytes": 3983
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/parent-verification.json": {
+      "sha256": "e700c07b85fbb681dd064fe2a751a5467ce8a03ce294fee3c35f489b14d9c809",
+      "bytes": 780
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/preparation-failure-1.json": {
+      "sha256": "68413dc63abf410cb9f0397b06da346233afe0038a5bf216360980da35774400",
+      "bytes": 899
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/preparation-observations.json": {
+      "sha256": "e42a594338c717a71b82e35a2161257c82de0e729352fcc1c25fbbb6a0667183",
+      "bytes": 656
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/report.md": {
+      "sha256": "554798c0f001b1e80c939c5762cd17647b8801163a9f2a988f6c30f09d681db9",
+      "bytes": 9697
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/required-law-inventory.json": {
+      "sha256": "11469df019715b6cb01527590428180b8632ca5779f861ea78a6e84af846cf6a",
+      "bytes": 62823
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/route-law-table.json": {
+      "sha256": "ac4f2e91b08f9749bd89dffba3e3d658f5c638c3cb84b97fd4918efe9b5adbf8",
+      "bytes": 3132
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/apps/bdptest/src/main.ts": {
+      "sha256": "2749fa0ad9aadfc548f07b9e87d8b604290ed63e699423a18742fc9ab771e940",
+      "bytes": 4947
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/packages/conformance/matrices/README.md": {
+      "sha256": "b51b4a96c91f9c6c8b9cab621356a3b82b5c10028f664744787ab0f3275d9146",
+      "bytes": 56602
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/packages/conformance/src/profile-contract-selection.ts": {
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "bytes": 5113
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/packages/conformance/src/selection.ts": {
+      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+      "bytes": 3255
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D1/packages/server/src/index.ts": {
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "bytes": 55615
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/conformance/catalog/read-v1.json": {
+      "sha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "bytes": 39021
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "bytes": 133364
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "bytes": 867804
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D3a/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/D4/apps/bdptest/src/transactional-set-installed.test.ts": {
+      "sha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+      "bytes": 35849
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/carrier-source3/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "bytes": 191181
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/carrier-source3/packages/conformance/test-support/profile-evidence.ts": {
+      "sha256": "0b457dfbd74fbf53fca0dfa0e93507fd0051792de4df54f5ddc4931823a52bfc",
+      "bytes": 42677
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/development-composition.ts": {
+      "sha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "bytes": 3484
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/development-runtime.ts": {
+      "sha256": "bb50d83f79b4f3aeb09080276a8cc4a72ffe0fd06eb1bbf4349d778aa060a8ef",
+      "bytes": 32062
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/installed-reference-configuration.ts": {
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-process.ts": {
+      "sha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+      "bytes": 4555
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-runtime.ts": {
+      "sha256": "a3386c680014ea9762739e315b3459fe82480d0a0717774ef2386ad8015eff8d",
+      "bytes": 1769
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment-state.ts": {
+      "sha256": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+      "bytes": 1613
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/reference-deployment.ts": {
+      "sha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+      "bytes": 13758
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source/lifecycle-source3/packages/server/src/transaction-runtime.ts": {
+      "sha256": "8d2185e75474ffadb5d17aa57ccf3fdf822292f9cf2c46640f6bc6ab81702694",
+      "bytes": 22327
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/D5-boundary/source-verification.json": {
+      "sha256": "a8ebacd69164dd247ab01c733c4715af346a9954fc2dae5b892735a96b883a73",
+      "bytes": 1914
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/binding.json": {
+      "sha256": "d559c8f6000e14c8a8ee960dfd96e71947eea6f01a6495814b20ac2a4319179c",
+      "bytes": 756
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/stable-source-binding.json": {
+      "sha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+      "bytes": 93857
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/index.json": {
+      "sha256": "e95297910733e0776df439f3ddf046a86b8ca111832b77f7dbf1b85a99bab834",
+      "bytes": 6411
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/interfaces.json": {
+      "sha256": "ee4d0b1fec457dd77530c9836a1518195f32dce7c21b26fcdb3872b953a6fca2",
+      "bytes": 3502
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/laws.json": {
+      "sha256": "5c18d807752196d430326e8399da2d7aa7c333cc4a172ef79bb16241e62006e7",
+      "bytes": 5632
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-administration-next-plan-1/plan.md": {
+      "sha256": "23b93b6592ad02eec46afd8e1bee6d9aed4ffbfac821eeff9e4904c056728e34",
+      "bytes": 11772
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/applicability-table.json": {
+      "sha256": "d416aadaa89ff00df205b1c2fbaafbebd0e9173f7c2ae22cab5e50b3136c05b2",
+      "bytes": 10872
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/finite-boundary-table.json": {
+      "sha256": "dae3a10644a28472846a12d58fef0745a830df641fe98bd43e593de35acb4740",
+      "bytes": 4915
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/index.json": {
+      "sha256": "e31679a4d94b6d8df58c51779400418e99d8c2ca33c9f4b642790711e12714b0",
+      "bytes": 4585
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/line-anchors.json": {
+      "sha256": "37b35c92712bf39bb9295f748b789c511958fb9b5907fce511b0d1d968ba2e9d",
+      "bytes": 37976
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/origins.json": {
+      "sha256": "7fc786da40dd7451a7f465650abbbd333207f4315d496f5e46795db5e6a5b47d",
+      "bytes": 5948
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/report.md": {
+      "sha256": "f5b540364f4192cfd110ba9bef2ba8300b0358170a2e6e169ad49dd5989664ee",
+      "bytes": 3290
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/recovery-store.ts": {
+      "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+      "bytes": 40784
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-recovery.test.ts": {
+      "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+      "bytes": 5728
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-store.test.ts": {
+      "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+      "bytes": 138540
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/source-map.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/native1/inputs/contract1/context/write-profile-D4-recovery-next-boundary-1/supported-recipe-boundary.json": {
+      "sha256": "6b1a62fba49290405d7c80ecc8c0113ec5c0f059b2e56173b9345f3380d3f3f2",
+      "bytes": 4516
+    },
+    "inputs/contract2/history/native1/inputs/contract1/controls.json": {
+      "sha256": "d1a7174c7cef0008c358548c189cfab50f037267e5e1045802403ea991031017",
+      "bytes": 307
+    },
+    "inputs/contract2/history/native1/inputs/contract1/effective-profile-rules.json": {
+      "sha256": "ea3d7521cfacc920ceb1c20f69623ab35f9bf5b43f131ff9752495aeca4e6cdb",
+      "bytes": 2618
+    },
+    "inputs/contract2/history/native1/inputs/contract1/execution-contract.json": {
+      "sha256": "a64f91838982b6481fc6e17f44123167ae4f2f9729a86bdcc49ac23a12794c06",
+      "bytes": 14871
+    },
+    "inputs/contract2/history/native1/inputs/contract1/fixture-decision.json": {
+      "sha256": "bedbbe9e9f0757fb4667801d3075f2553c8f60cc4e89ef84af4bd6ee38fbddf0",
+      "bytes": 2321
+    },
+    "inputs/contract2/history/native1/inputs/contract1/governing-clause-index.json": {
+      "sha256": "ae28e9eda1834aac320ea88efa60026fe6f2ccfb5338289808c08691631ed16f",
+      "bytes": 366615
+    },
+    "inputs/contract2/history/native1/inputs/contract1/index.json": {
+      "sha256": "5463d75611513bf9711bb38757c5e234420df7df4e2f974e60e0669929e2124b",
+      "bytes": 29163
+    },
+    "inputs/contract2/history/native1/inputs/contract1/input-origins.json": {
+      "sha256": "5ca660601f6bfed8cd7b6547c74fdc794b1e240a2cce0b7fbf8b8930b91a4b8a",
+      "bytes": 58364
+    },
+    "inputs/contract2/history/native1/inputs/contract1/preparation-observations.json": {
+      "sha256": "0310945564d8a4614d2f783c88a2fb364fb6a18a23698021df95abfff1a0450a",
+      "bytes": 729
+    },
+    "inputs/contract2/history/native1/inputs/contract1/prospective-ownership.json": {
+      "sha256": "413fcb1737539ccf2b095c24e744f849161137aaedc4cff985633a1c609c0513",
+      "bytes": 17360
+    },
+    "inputs/contract2/history/native1/inputs/contract1/report.md": {
+      "sha256": "5ab4564b7c1ff345efbaaec9f4052c39fbf5549348f5895ff8028c6946922852",
+      "bytes": 8854
+    },
+    "inputs/contract2/history/native1/inputs/contract1/retirements.json": {
+      "sha256": "4dfffb0ae3bfb2f6fd1a7b374eab23d5b91e0e875a5e734ba5b9c2dc3f72ed0d",
+      "bytes": 20946
+    },
+    "inputs/contract2/history/native1/inputs/contract1/selected-laws.json": {
+      "sha256": "f7ffdb9152d8668183cac87acbf2eb31ed1b39a7db305b853e991a60b2311a33",
+      "bytes": 891550
+    },
+    "inputs/contract2/history/native1/inputs/contract1/selected-laws.md": {
+      "sha256": "32fcd1f283916781f3990394b547fdfd967e176886d0b48449df44522173174a",
+      "bytes": 19444
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/apps/bdptest/test-support/installed-contract-identity.ts": {
+      "sha256": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
+      "bytes": 364
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/docs/design/requirements.md": {
+      "sha256": "e8a49df01fea42ea719694585fb6c1d4bc2590c9c78239f911da3c6237d6daee",
+      "bytes": 19487
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/catalog/history-v1.json": {
+      "sha256": "e09f2870cb267d4c9f74da6072dc84c42271913b7f3a7cd7ab5155a040102724",
+      "bytes": 28954
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/catalog/numeric-model-v1.json": {
+      "sha256": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+      "bytes": 6508
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/catalog/owned-wildcard-v1.json": {
+      "sha256": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd",
+      "bytes": 9966
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/catalog/read-update-v1.json": {
+      "sha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+      "bytes": 85899
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/catalog/read-v1.json": {
+      "sha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "bytes": 39021
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/catalog/transactional-v1.json": {
+      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+      "bytes": 94826
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/src/artifact-bundle.ts": {
+      "sha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+      "bytes": 21853
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/src/http-executor.ts": {
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "bytes": 50611
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/src/profile-contract-selection.ts": {
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "bytes": 5113
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/src/runner.ts": {
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 133683
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/src/selection.ts": {
+      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+      "bytes": 3255
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/src/transactional-observation.ts": {
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "bytes": 14289
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "bytes": 133364
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "bytes": 867804
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/installed-payload.ts": {
+      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+      "bytes": 3594
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/D3a/scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source/carrier-source3/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "bytes": 191181
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source-basis.json": {
+      "sha256": "c3211bebee1d7db6eab205577691bc60ea6b4b2c5268ffbdfb70039b73198e18",
+      "bytes": 2174
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source-gaps.json": {
+      "sha256": "2d4f45d0628716f1cb1caa0fcc22bff9114dc2682ef10a1d9f99612ab3577ba8",
+      "bytes": 6401
+    },
+    "inputs/contract2/history/native1/inputs/contract1/source-seams.json": {
+      "sha256": "25a6397edfede3fe6db244435b720e7edfa2c1a6e62a4452a6162742a7b2c49e",
+      "bytes": 2146
+    },
+    "inputs/contract2/history/native1/inputs/contract1/verification.json": {
+      "sha256": "716eee87d4acead3d17f1d833aac6628cd6a91529a96c6e3d8ddd20224b02865",
+      "bytes": 730
+    },
+    "inputs/contract2/history/native1/inputs/later-carrier4/after-map.json": {
+      "sha256": "919829b131a0521c455a4fba968ae25edcda55c27c371b354e2af1c84a7fb096",
+      "bytes": 88133
+    },
+    "inputs/contract2/history/native1/inputs/later-carrier4/closure.json": {
+      "sha256": "99b457575ca904a1fdd9832e7600bc8547867aa40fdedcdc5405b00d098266ef",
+      "bytes": 822
+    },
+    "inputs/contract2/history/native1/inputs/later-carrier4/index.json": {
+      "sha256": "a2180c7cb377ecfd73c65090ddf49f827369e01e96709a189400afacfc52bf83",
+      "bytes": 30383
+    },
+    "inputs/contract2/history/native1/inputs/later-carrier4/root-inspection.json": {
+      "sha256": "33fb41162179f0da54e596afa70cdf216bcb84f84477eabc3a0ee71314617263",
+      "bytes": 1469
+    },
+    "inputs/contract2/history/native1/inputs/later-carrier4/source-binding.json": {
+      "sha256": "9053afb712849d403fb316d396ad3d252934302a16c443aec9c5f31565c03f33",
+      "bytes": 2714
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-query-native-precision-1/closure.json": {
+      "sha256": "0f1eae0dd8b70cc1240122ba2ad368586b009f64d83fa83bd683bcabe86b4028",
+      "bytes": 1141
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-root-source-acceptance-1/acceptance.json": {
+      "sha256": "d310d113e13758197b6f430eb7c7fda1c0985aac545e82225d675731cb64de97",
+      "bytes": 3177
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-root-source-inspection-1/current-six.binary.patch": {
+      "sha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+      "bytes": 107248
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-root-source-inspection-1/index.json": {
+      "sha256": "d0d76ad726e2c0a23e99d3258f14c40cea52ec107da46a8153f915dfa3af3cc9",
+      "bytes": 190
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-root-source-inspection-1/inspection.json": {
+      "sha256": "8e5814f79b3fe7da25b017bbdda1c7aae90e2d2de075a89538084db43b555182",
+      "bytes": 2947
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/after/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+      "bytes": 65414
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/after-source-map.json": {
+      "sha256": "0f259127fcad3d5206d724de2b57ba31e14cda36a76daa46a4b79e50d8fb3caf",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/before/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+      "bytes": 65401
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/before-source-map.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/binding.json": {
+      "sha256": "b8a17bd1e0dde1d35b888a20741ead70c1a231611856ba13b55db46748118a0c",
+      "bytes": 90453
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/format-exit.json": {
+      "sha256": "f25bb5e271cc5ae939e589fa3c67ff749e25dde48f39890ef64279facf675afd",
+      "bytes": 757
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/format.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/format.stdout": {
+      "sha256": "f7013aa591b85d587494691ba044c4095440a167f4db5c2d573e8fe0dcdf5cd7",
+      "bytes": 44
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/index.json": {
+      "sha256": "268ee16e9388dec80a80728d2890df1cec5f45953eef9880860432d99904b6d7",
+      "bytes": 1826
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/one-call.forward.patch": {
+      "sha256": "43398cd56f238761c9509f5646b6dd452055aaf14b3aeb2447c5a71e6c451e27",
+      "bytes": 491
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/one-call.inverse.patch": {
+      "sha256": "c8155286ef5c597a4bf11b8733b3169ef41ec5e8369d775d9bd59684fd8d172c",
+      "bytes": 491
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/origins.json": {
+      "sha256": "e6197227fc3b1de0c75d75be472927f3c0874affba27faea723e2b617f596815",
+      "bytes": 521
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/report.md": {
+      "sha256": "98c6beb2370dc80daa3ff4f88330ecd9c922997c103a011eff6471f93fe2ea5e",
+      "bytes": 771
+    },
+    "inputs/contract2/history/native1/inputs/later-source/tx-discovery-snapshot-target-source-correction-1/semantic/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+      "bytes": 65414
+    },
+    "inputs/contract2/history/native1/law-precision-assessment.json": {
+      "sha256": "4b130d62e22f6d555279254611c7b781902e0ad54cbf09240711cc9337437b28",
+      "bytes": 179393
+    },
+    "inputs/contract2/history/native1/report.md": {
+      "sha256": "62d22481ba34ab1ee53d9d2983e0977bf487757cb6f7cecd1700104dc61f27b2",
+      "bytes": 7990
+    },
+    "inputs/contract2/history/native1/review-process-notes.json": {
+      "sha256": "c3200ae99d6251650ff04299af31b9c35698c32137853e6d951f4cfb774521dd",
+      "bytes": 1124
+    },
+    "inputs/contract2/history/native1/semantic-assessment.json": {
+      "sha256": "58dac92dab1d4687ac8ca1d49214c2cbe8312b97d862ccd49d92576190e7beba",
+      "bytes": 2781
+    },
+    "inputs/contract2/history/native1/verification.json": {
+      "sha256": "84fdc12642cfac227f8661f0e52bac73f9e53dd54d7482b8cb2ac036305f3dc6",
+      "bytes": 1195
+    },
+    "inputs/contract2/index.json": {
+      "sha256": "1c2ce8c291bfe4961da5a6f2b1e840a884c3304e47c393b73316186e465d965b",
+      "bytes": 103462
+    },
+    "inputs/contract2/input-origins.json": {
+      "sha256": "e0e8e9140f1c44d9bf9f05ef2ae22c046e58d7f7528a7334ec625eba0eb4797b",
+      "bytes": 263604
+    },
+    "inputs/contract2/precision-map.json": {
+      "sha256": "f26613d7c0fb813eea71e6ffa1953574fcb3e2c3c1cb4fa73678a0cb4079de5d",
+      "bytes": 3970
+    },
+    "inputs/contract2/preparation-observations.json": {
+      "sha256": "0310945564d8a4614d2f783c88a2fb364fb6a18a23698021df95abfff1a0450a",
+      "bytes": 729
+    },
+    "inputs/contract2/prospective-ownership.json": {
+      "sha256": "413fcb1737539ccf2b095c24e744f849161137aaedc4cff985633a1c609c0513",
+      "bytes": 17360
+    },
+    "inputs/contract2/report.md": {
+      "sha256": "f6b9aca26738455e8dc0acd5bca23732d4da04d18d8a1f252b08e9a70bee7a51",
+      "bytes": 9228
+    },
+    "inputs/contract2/retirements.json": {
+      "sha256": "4dfffb0ae3bfb2f6fd1a7b374eab23d5b91e0e875a5e734ba5b9c2dc3f72ed0d",
+      "bytes": 20946
+    },
+    "inputs/contract2/selected-laws.json": {
+      "sha256": "f7ffdb9152d8668183cac87acbf2eb31ed1b39a7db305b853e991a60b2311a33",
+      "bytes": 891550
+    },
+    "inputs/contract2/selected-laws.md": {
+      "sha256": "32fcd1f283916781f3990394b547fdfd967e176886d0b48449df44522173174a",
+      "bytes": 19444
+    },
+    "inputs/contract2/source/D3a/apps/bdptest/test-support/installed-contract-identity.ts": {
+      "sha256": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
+      "bytes": 364
+    },
+    "inputs/contract2/source/D3a/apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378
+    },
+    "inputs/contract2/source/D3a/docs/design/requirements.md": {
+      "sha256": "e8a49df01fea42ea719694585fb6c1d4bc2590c9c78239f911da3c6237d6daee",
+      "bytes": 19487
+    },
+    "inputs/contract2/source/D3a/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "inputs/contract2/source/D3a/packages/conformance/catalog/history-v1.json": {
+      "sha256": "e09f2870cb267d4c9f74da6072dc84c42271913b7f3a7cd7ab5155a040102724",
+      "bytes": 28954
+    },
+    "inputs/contract2/source/D3a/packages/conformance/catalog/numeric-model-v1.json": {
+      "sha256": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+      "bytes": 6508
+    },
+    "inputs/contract2/source/D3a/packages/conformance/catalog/owned-wildcard-v1.json": {
+      "sha256": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd",
+      "bytes": 9966
+    },
+    "inputs/contract2/source/D3a/packages/conformance/catalog/read-update-v1.json": {
+      "sha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+      "bytes": 85899
+    },
+    "inputs/contract2/source/D3a/packages/conformance/catalog/read-v1.json": {
+      "sha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "bytes": 39021
+    },
+    "inputs/contract2/source/D3a/packages/conformance/catalog/transactional-v1.json": {
+      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+      "bytes": 94826
+    },
+    "inputs/contract2/source/D3a/packages/conformance/src/artifact-bundle.ts": {
+      "sha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+      "bytes": 21853
+    },
+    "inputs/contract2/source/D3a/packages/conformance/src/http-executor.ts": {
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "bytes": 50611
+    },
+    "inputs/contract2/source/D3a/packages/conformance/src/profile-contract-selection.ts": {
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "bytes": 5113
+    },
+    "inputs/contract2/source/D3a/packages/conformance/src/runner.ts": {
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 133683
+    },
+    "inputs/contract2/source/D3a/packages/conformance/src/selection.ts": {
+      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+      "bytes": 3255
+    },
+    "inputs/contract2/source/D3a/packages/conformance/src/transactional-observation.ts": {
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "bytes": 14289
+    },
+    "inputs/contract2/source/D3a/packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "inputs/contract2/source/D3a/packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "bytes": 133364
+    },
+    "inputs/contract2/source/D3a/packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "inputs/contract2/source/D3a/packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "bytes": 867804
+    },
+    "inputs/contract2/source/D3a/packages/server/src/installed-payload.ts": {
+      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+      "bytes": 3594
+    },
+    "inputs/contract2/source/D3a/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "inputs/contract2/source/D3a/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "inputs/contract2/source/D3a/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "inputs/contract2/source/D3a/scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264
+    },
+    "inputs/contract2/source/carrier-source3/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "bytes": 191181
+    },
+    "inputs/contract2/source-basis.json": {
+      "sha256": "c3211bebee1d7db6eab205577691bc60ea6b4b2c5268ffbdfb70039b73198e18",
+      "bytes": 2174
+    },
+    "inputs/contract2/source-gaps.json": {
+      "sha256": "2d4f45d0628716f1cb1caa0fcc22bff9114dc2682ef10a1d9f99612ab3577ba8",
+      "bytes": 6401
+    },
+    "inputs/contract2/source-seams.json": {
+      "sha256": "25a6397edfede3fe6db244435b720e7edfa2c1a6e62a4452a6162742a7b2c49e",
+      "bytes": 2146
+    },
+    "inputs/contract2/verification.json": {
+      "sha256": "27b55ead5795f058900f07cfe7601337f9f45a959faa119fa04ccf8b0af31c9b",
+      "bytes": 1208
+    },
+    "report.md": {
+      "sha256": "9c4a17511151d3266acdf7dce25f88f134d64690013c96e21b4329104bdb3e8d",
+      "bytes": 4810
+    },
+    "review-process-notes.json": {
+      "sha256": "ea8f32e5e04ea27e02874ce6985c963bae61c5e1e5443f32fb38fd5447303449",
+      "bytes": 1065
+    },
+    "semantic-assessment.json": {
+      "sha256": "e58e636ad230e4311ad9191403707ff49915f62410490021ad6eda1beb886de8",
+      "bytes": 2960
+    },
+    "static-verification.json": {
+      "sha256": "579b44d990dfc3fbf6ae65cafb59e5f20ff9baa77c867c39afb0532b1f81b47d",
+      "bytes": 2625
+    }
+  }
+}

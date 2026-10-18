@@ -1,0 +1,97 @@
+{
+  "historicalMaps": [
+    {
+      "lane": "D1",
+      "mapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+      "verifiedFiles": 679,
+      "mapPath": "inputs/contract1/context/D5-boundary/maps/D1.json",
+      "meaning": "frozen dated historical source verification; not final assembly/current candidate requirement",
+      "freshComparisonToSameHistoricalCheckoutDifferences": []
+    },
+    {
+      "lane": "pure-loader",
+      "mapSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+      "verifiedFiles": 682,
+      "mapPath": "inputs/contract1/context/D5-boundary/maps/pure-loader.json",
+      "meaning": "frozen dated historical source verification; not final assembly/current candidate requirement",
+      "freshComparisonToSameHistoricalCheckoutDifferences": []
+    },
+    {
+      "lane": "D3a",
+      "mapSha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "verifiedFiles": 679,
+      "mapPath": "inputs/contract1/context/D5-boundary/maps/D3a.json",
+      "meaning": "frozen dated historical source verification; not final assembly/current candidate requirement",
+      "freshComparisonToSameHistoricalCheckoutDifferences": [
+        {
+          "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+          "historicalSha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+          "observedCurrentSha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20"
+        }
+      ]
+    },
+    {
+      "lane": "lifecycle-source3",
+      "mapSha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
+      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-correction-minimum",
+      "verifiedFiles": 686,
+      "mapPath": "inputs/contract1/context/D5-boundary/maps/lifecycle-source3.json",
+      "meaning": "frozen dated historical source verification; not final assembly/current candidate requirement",
+      "freshComparisonToSameHistoricalCheckoutDifferences": []
+    },
+    {
+      "lane": "D4",
+      "mapSha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "verifiedFiles": 679,
+      "mapPath": "inputs/contract1/context/D5-boundary/maps/D4.json",
+      "meaning": "frozen dated historical source verification; not final assembly/current candidate requirement",
+      "freshComparisonToSameHistoricalCheckoutDifferences": []
+    },
+    {
+      "lane": "carrier-source3",
+      "mapSha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-minimum",
+      "verifiedFiles": 681,
+      "mapPath": "inputs/contract1/context/D5-boundary/maps/carrier-source3.json",
+      "meaning": "frozen dated historical source verification; not final assembly/current candidate requirement",
+      "freshComparisonToSameHistoricalCheckoutDifferences": []
+    }
+  ],
+  "historicalMapEntries": 4086,
+  "oneExpectedLaterD3aCall": "manifest.id query allowance only, old9b7\u2192a61; original old679 snapshot stays intact",
+  "laterD3aCanonical": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "laterD3aBinary": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+  "laterCarrier4Changes": [
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "historicalSource3Sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "laterSource4Sha256": "cf9ba0c7cb9331826ac42303ca9de70c80af70e1066d8a4948ad3b27df37b06f"
+    },
+    {
+      "path": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "historicalSource3Sha256": "cfdf5e4d7f3518531cd9a0e753ef45f8866da18abf19def225190a7b28a7f797",
+      "laterSource4Sha256": "4102e1d1f0e2d35f2a23d5a090b06131ddbd12c71a8d756940e6b40bd6e158ca"
+    },
+    {
+      "path": "packages/conformance/test-support/profile-evidence.test.ts",
+      "historicalSource3Sha256": "55d7546935587afaf11599af824c2bd588b7d4fa9ed3ce4961fc952bdcdc5ee4",
+      "laterSource4Sha256": "566e3c8b8d2c939611ac0a40b55e184b2cb3d6acdbd8dfe47155dcb06fa77ba2"
+    },
+    {
+      "path": "packages/conformance/test-support/profile-evidence.ts",
+      "historicalSource3Sha256": "0b457dfbd74fbf53fca0dfa0e93507fd0051792de4df54f5ddc4931823a52bfc",
+      "laterSource4Sha256": "c8cb626093c21fd14326071d10a11eefac979176aacdd8e585f491187201bfb3"
+    }
+  ],
+  "laterCarrier4SeparateCheckout": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+  "laterCarrier4AfterMapSha256": "919829b131a0521c455a4fba968ae25edcda55c27c371b354e2af1c84a7fb096",
+  "laterCarrier4SemanticAcceptanceNotAssessed": true,
+  "allOriginalContractCopiesOriginsRemainExact": true,
+  "incomingSourceAdopted": false,
+  "finalCombinedSourceConfiguration": "UNKNOWN",
+  "D5MutableSolePlanSnapshot": "historical4aa563 retained and explicitly excepted; no equality asserted to current design.md"
+}

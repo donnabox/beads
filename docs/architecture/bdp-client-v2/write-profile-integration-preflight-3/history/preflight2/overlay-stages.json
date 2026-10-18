@@ -1,0 +1,62 @@
+[
+  {
+    "lane": "D1",
+    "basisLane": "base",
+    "basisFiles": 679,
+    "candidateFiles": 679,
+    "ownedDeltaPaths": 6,
+    "addedPaths": 0,
+    "deletedPaths": 0,
+    "prospectiveFilesAfterScopedOverlay": 679
+  },
+  {
+    "lane": "pureLoader",
+    "basisLane": "base",
+    "basisFiles": 679,
+    "candidateFiles": 682,
+    "ownedDeltaPaths": 12,
+    "addedPaths": 3,
+    "deletedPaths": 0,
+    "prospectiveFilesAfterScopedOverlay": 682
+  },
+  {
+    "lane": "D3a",
+    "basisLane": "D1",
+    "basisFiles": 679,
+    "candidateFiles": 679,
+    "ownedDeltaPaths": 6,
+    "addedPaths": 0,
+    "deletedPaths": 0,
+    "prospectiveFilesAfterScopedOverlay": 682
+  },
+  {
+    "lane": "startup",
+    "basisLane": "pureLoader",
+    "basisFiles": 682,
+    "candidateFiles": 686,
+    "ownedDeltaPaths": 9,
+    "addedPaths": 4,
+    "deletedPaths": 0,
+    "prospectiveFilesAfterScopedOverlay": 686
+  },
+  {
+    "lane": "D4",
+    "basisLane": "D1",
+    "basisFiles": 679,
+    "candidateFiles": 679,
+    "ownedDeltaPaths": 1,
+    "addedPaths": 0,
+    "deletedPaths": 0,
+    "prospectiveFilesAfterScopedOverlay": 686
+  },
+  {
+    "lane": "carrier",
+    "basisLane": "D1",
+    "basisFiles": 679,
+    "candidateFiles": 681,
+    "ownedDeltaPaths": 4,
+    "addedPaths": 2,
+    "deletedPaths": 0,
+    "prospectiveFilesAfterScopedOverlay": 688
+  }
+]

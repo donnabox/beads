@@ -1,0 +1,85 @@
+{
+  "state": "FULL independent static DATA precision, no project helper/schema evaluation",
+  "packetFiles": 510,
+  "packetOriginRowsVerified": 498,
+  "mirrorExact": true,
+  "historicalContractFiles": 156,
+  "historicalNativeFiles": 190,
+  "changedMachineLeaves": [
+    "/stages/0/required",
+    "/stages/1/required",
+    "/stages/2/required",
+    "/stages/2/stop",
+    "/stages/6/required"
+  ],
+  "exactFiveLeafReversal": true,
+  "genuinePairsRegenerated": 2,
+  "tenStageIdsOrderUnchanged": true,
+  "selectedLaws": 251,
+  "profileCounts": {
+    "read": 43,
+    "read-update": 75,
+    "transactional": 133
+  },
+  "citations": 479,
+  "governingSections": 81,
+  "sectionSources": {
+    "docs/specs/bdp.md": 80,
+    "docs/design/requirements.md": 1
+  },
+  "retirements": 13,
+  "planningOwnershipExactlyOnce": 251,
+  "historicalMapEntries": 4086,
+  "historicalMaps": [
+    {
+      "lane": "D1",
+      "entries": 679,
+      "historicalMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "freshDifferences": [],
+      "historicalOnlyNotAdopted": true
+    },
+    {
+      "lane": "pure-loader",
+      "entries": 682,
+      "historicalMapSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "freshDifferences": [],
+      "historicalOnlyNotAdopted": true
+    },
+    {
+      "lane": "D3a",
+      "entries": 679,
+      "historicalMapSha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "freshDifferences": [
+        {
+          "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+          "historicalSha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+          "currentSha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20"
+        }
+      ],
+      "historicalOnlyNotAdopted": true
+    },
+    {
+      "lane": "lifecycle-source3",
+      "entries": 686,
+      "historicalMapSha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
+      "freshDifferences": [],
+      "historicalOnlyNotAdopted": true
+    },
+    {
+      "lane": "D4",
+      "entries": 679,
+      "historicalMapSha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+      "freshDifferences": [],
+      "historicalOnlyNotAdopted": true
+    },
+    {
+      "lane": "carrier-source3",
+      "entries": 681,
+      "historicalMapSha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+      "freshDifferences": [],
+      "historicalOnlyNotAdopted": true
+    }
+  ],
+  "finalCombinedSource": "UNKNOWN",
+  "allRuntimeAndSourceAuthoringFlagsRemainFalse": true
+}

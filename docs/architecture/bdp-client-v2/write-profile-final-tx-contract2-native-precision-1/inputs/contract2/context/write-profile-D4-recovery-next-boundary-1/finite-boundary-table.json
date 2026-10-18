@@ -1,0 +1,72 @@
+{
+  "state": "CLOSED DATA-only next-recovery inventory; no adopted implementation/test proposal",
+  "rows": [
+    {
+      "id": "NEXT-TX-PENDING",
+      "priority": 1,
+      "law": "transactional.idempotency.pending-recovery; ordinary same-history restart epoch continuity",
+      "spec": [
+        "bdp.md3953-3972",
+        "bdp.md3674-3689",
+        "bdp.md6970"
+      ],
+      "status": "Required law implemented/source-tested; fresh final installed same-source/config-bound crash witness unproved here",
+      "supportedSeam": "Existing private emitted openTransactionStore.admit / executeObserved / receipt / inspect / recoveredPending; ordinary create:false reopen. No fault/clock/cache hook needed for admission-only boundary.",
+      "trigger": "A real owner returns a durably pending receipt for a new key, then its actual process dies before execute is ever called.",
+      "observables": "Committed baseline receipt/resource/group retained; pending admission has no new resource/group before kill; first legitimate reopen reports recoveredPending1 and same epoch; abandoned receipt absent/key unknown, pending effect absent/no autonomous execution; exact retry completes once and subsequent retry replays.",
+      "credit": "Finite private installed ordinary crash boundary only; no hot-journal/powerloss/logicalrestore/erasure coverage."
+    },
+    {
+      "id": "COPY-REFUSAL",
+      "priority": 2,
+      "law": "Installation/capture validation precedes BDP retraction/sweep",
+      "spec": [
+        "transaction-store.ts361-363/593-637"
+      ],
+      "status": "Supported source-tested controlled-copy seam; future installed exact copy not executed",
+      "supportedSeam": "Only after actual owner death+stdio closure/absence, inventory and copy complete post-crash SQLite image plus every extant journal sidecar to a new isolated path; never copy a live owner or overwrite a serving target. Existing transaction-recovery.test.ts69-117 is precedent.",
+      "observables": "Mismatched receiptMaximumItems refuses; SQLite may recover/remove a hot journal before refusing, so no blanket byte-unchanged claim. Later correct opener of copied image retains baseline and still performs the pending retraction rather than a refused opener doing BDP cleanup.",
+      "credit": "Offline test-owned physical crash-image copy with identical committed history, not rollback/logical restore, production backup API or two concurrently serving Scopes."
+    },
+    {
+      "id": "TX-RESTORE",
+      "priority": 3,
+      "law": "History-changing restore keeps canonical URLs/surviving version addresses but rotates epoch/fences old token and key classes",
+      "spec": [
+        "bdp.md3674-3689",
+        "bdp.md7029-7030"
+      ],
+      "status": "Unresolved supported administration boundary; not N/A",
+      "supportedSeam": null,
+      "observables": "Current owner reads stored epoch and only mints on new-store provisioning. No supported restore/epoch-rotation acquisition route; raw metadata edit/newstore-at-oldURL is not a lawful substitute.",
+      "laterDecision": "Authority-owned controlled restore route, assurance/copy set and format/migration behavior must be explicitly designed before this claim."
+    },
+    {
+      "id": "TX-ERASURE-LEDGER",
+      "priority": 4,
+      "law": "Committed erasure ledger survives restore/epoch/view rotation and is published before other new-epoch groups",
+      "spec": [
+        "bdp.md6582-6608"
+      ],
+      "status": "Triggered applicability/admin route unresolved; not N/A even with Historyfalse",
+      "supportedSeam": null,
+      "observables": "No erase/ledger methods or ledger schema in current owner; empty group/snapshot erasures framing proves no committed records only. Never manufacture a record with SQL or call authorization empty policy erasure.",
+      "laterDecision": "Existing administration scope decision remains; no new semantic/API/protocol choice adopted here."
+    },
+    {
+      "id": "RU-CONTINUITY",
+      "priority": 5,
+      "law": "RU clears abandoned claims and preserves durable member dispositions/committed sequence prefix; loss of continuity means new canonicalScope",
+      "spec": [
+        "bdp.md3367-3403",
+        "recovery-store.ts115-128/169-188/269-280"
+      ],
+      "status": "Separate recovery law and source seam; not established by this TX candidate",
+      "supportedSeam": "Existing private RecoveryStore.admit/executeMember/abandonAttempt and ordinary startup claim cleanup; logical import/export absent.",
+      "observables": "Retained dispositions/identity history/tombstones/claim resolution are indivisible; do not expose or borrow TXepoch, assume atomic RU sequences, or qualify old Read/RU evidence with TX receipts.",
+      "credit": "Separate future scope only; no new test/action selected."
+    }
+  ],
+  "firstCandidate": "NEXT-TX-PENDING",
+  "allExecutionAndSourceAuthoringClosed": true
+}

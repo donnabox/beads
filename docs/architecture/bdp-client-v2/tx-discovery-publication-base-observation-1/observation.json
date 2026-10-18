@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-18T12:53:26.420605+00:00",
+  "productOrigin": "https://github.com/gastownhall/bdp.git",
+  "remoteEventAdmissionBranch": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "currentD3BaseHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "remoteD3Branch": "ABSENT",
+  "existingD3PRs": [],
+  "observation": "Do not assume event-admission branch equals cce current-changefeed. Read PR168 exact head branch and verify remote cce before choosing stacked PR base. No source commit or push while validation pending."
+}

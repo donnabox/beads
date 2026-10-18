@@ -1,0 +1,39 @@
+{
+  "state": "FROZEN independent FULL native contract precision; one Low requires root disposition",
+  "reviewComplete": true,
+  "accepted": false,
+  "findingCount": 1,
+  "findings": [
+    {
+      "id": "TX-CONTRACT-N1",
+      "severity": "Low",
+      "file": "execution-contract.json",
+      "line": 180
+    }
+  ],
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdAt": "2026-10-18T12:39:53.959157+00:00",
+  "contractIndexSha256": "5463d75611513bf9711bb38757c5e234420df7df4e2f974e60e0669929e2124b",
+  "executionContractSha256": "a64f91838982b6481fc6e17f44123167ae4f2f9729a86bdcc49ac23a12794c06",
+  "reportSha256": "62d22481ba34ab1ee53d9d2983e0977bf487757cb6f7cecd1700104dc61f27b2",
+  "findingsSha256": "95e2d7a0f4e62e6be0459270c307c4db2deb79a686ed1ebfaed516b4ecfe5334",
+  "copiedInputs": 180,
+  "selectedLaws": 251,
+  "citations": 479,
+  "fullSections": 81,
+  "retirements": 13,
+  "partialOwners": 17,
+  "missingOwners": 234,
+  "establishedWholeLaws": 0,
+  "historicalSourceMaps": 6,
+  "historicalMapEntries": 4086,
+  "currentSourceDriftNotClaimed": true,
+  "sourceAuthoringReleased": false,
+  "helpersOrSchemasExecuted": false,
+  "runtimeReleased": false,
+  "reviewerLaunched": false,
+  "gitInvoked": false,
+  "publicAdmissionReleased": false,
+  "wholeWriteQualified": false,
+  "rootDisposition": "PENDING; no same-packet edit/second actual review required by this report"
+}

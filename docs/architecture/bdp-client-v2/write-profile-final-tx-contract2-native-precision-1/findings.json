@@ -1,0 +1,15 @@
+{
+  "reviewComplete": true,
+  "acceptedForClosedDataPrecision": true,
+  "resolved": [
+    {
+      "id": "TX-CONTRACT-N1",
+      "status": "RESOLVED_STATIC",
+      "basis": "Stage1 authors/reviews executable owners;stage2 freezes exact manifest/fixture/owner input bytes;stage3 final source/artifact freeze includes reviewed owners;stage7 executes already-frozen reviewed owners;any late source/artifact/owner/fixture change returns through same stages3\u20135. All ten stages preserved, no new gate."
+    }
+  ],
+  "newFindings": [],
+  "runtimeReleased": false,
+  "sourceAuthoringReleased": false,
+  "wholeWriteQualified": false
+}
