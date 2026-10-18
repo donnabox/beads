@@ -1,0 +1,61 @@
+{
+  "utc": "2026-10-18T15:51:27.842603+00:00",
+  "accepted": true,
+  "scope": "ONE FIRST actual configured-default Claude PLAN for final discovery owner effectiveP1+fourP2overlays; no previousD3a/startup/carrier retry",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "nativeMechanicsIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review1-native-mechanics-1/index.json",
+    "sha256": "fb362e582419126cdbfbc4e8aff309c04d0e0ace6324db16a3adb965d083655b"
+  },
+  "nativeMechanicsClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review1-native-mechanics-1/closure.json",
+    "sha256": "0bfd8264ae2612be2a98f3c8bf6401393ec8e90234331c2ea3b81a79c7ba3b42"
+  },
+  "nativeMechanicsReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review1-native-mechanics-1/report.md",
+    "sha256": "147761762757aff2dc9d88c110d9ab35cd8010e05d27034763b58946cbea9b36"
+  },
+  "rootSourceInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-root-release-1/source-inspection.json",
+    "sha256": "68efe6128cca8130f4bac50f60e18618833c1b2546f091093bbe159f9e8d1c8c"
+  },
+  "preparedIndexNeverRepaired": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/preparation-index.json",
+    "sha256": "080f9329a1cd396aaa4887c22d9388e4c867803edb6add3270692ff3a642e2d5"
+  },
+  "exactTwoFlagOnlyChanges": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/claude-plan-review/binding.json",
+      "beforeSha256": "7619e2bf9238cd2a3e6c1f2534f6e2780305147da118cac65dad8a7c8c1ba8e2",
+      "afterSha256": "c1458e39b62e5b60766049003ad4087218792814686e22af9fdb484537401718",
+      "onlyChangedField": "rootLaunchReleased false\u2192true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/launch-supervision/control.json",
+      "beforeSha256": "27928ffdcaea31591e5c60384ce7031478cfd82832ae243a1eec5b0196cda97e",
+      "afterSha256": "6f1f76657b566d42d724372378988f06bfd990ffb4baadd932206410ee49c5c8",
+      "onlyChangedField": "rootLaunchReleased false\u2192true"
+    }
+  ],
+  "noOtherPreparedSourceContextToolByteChanged": true,
+  "oneActualAttemptOnly": true,
+  "actualReviewDispatched": false,
+  "futureInvocation": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/launch-supervision/supervise.py"
+  ],
+  "supervisorBounds": {
+    "total": 1800,
+    "TERM": 1790,
+    "KILL": 1798
+  },
+  "noRetry": true,
+  "noModelAgentOrTurnOverride": true,
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "DSLAdopted": false,
+  "requiresDurablePublicationReadbackBeforeActualInvocation": true,
+  "afterActual": "Independent full actual terminal/raw/CLI/supervisor/source/context/tool/ownership audit and root findings disposition BEFOREsource/DSL release. FAILEDsupervision/UNKNOWN/MISSINGreceipts never relabelled or retried."
+}
