@@ -1,0 +1,265 @@
+[
+  {
+    "actualPhaseFilesExtracted": false,
+    "bytes": 28569,
+    "innerStageByteEquivalentToExistingCommand": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "id": "typecheck",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "lateSourceBindings": "UNRESOLVED; no concrete hash rendering or actual toolIDs supplied",
+    "output": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/typecheck",
+    "parentCreatorDiscriminator": "typecheck",
+    "path": "proposals/typecheck.capture.txt",
+    "placeholderSectionHashesOnly": {
+      "A": {
+        "bytes": 15003,
+        "sha256": "22c25d1010285f27e0974152d0b5912c92b1c45060929d91bcf1950b71e88174"
+      },
+      "B": {
+        "bytes": 6694,
+        "sha256": "66674a8e0f3ffe0dddd23e54567fabe0fd23c6fa623537c7d38c45db9fee6544"
+      },
+      "C": {
+        "bytes": 1775,
+        "sha256": "c26cf591ffcca6ce4e6388978d42fcce9a19890a2c9992489c84b56d321a1eab"
+      }
+    },
+    "placeholderTemplateSha256": "6d1e09a60095e8b964c3c459d4d8353cfef1775aa5ef84132838db849b04b07b",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "typecheck"
+    ],
+    "stage": "typecheck"
+  },
+  {
+    "actualPhaseFilesExtracted": false,
+    "bytes": 28596,
+    "innerStageByteEquivalentToExistingCommand": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "packages/server/src/transaction-schema-http.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-service.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "id": "format-check",
+      "kind": "supervised-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "lateSourceBindings": "UNRESOLVED; no concrete hash rendering or actual toolIDs supplied",
+    "output": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check",
+    "parentCreatorDiscriminator": "typecheck",
+    "path": "proposals/format-check.capture.txt",
+    "placeholderSectionHashesOnly": {
+      "A": {
+        "bytes": 15012,
+        "sha256": "b4567b982eb7989d626db7a716700823c4e57410a29047903c2cdde68153acc8"
+      },
+      "B": {
+        "bytes": 6703,
+        "sha256": "2c6e3244f69a00d0e5ebf6083c095cd63bbf00c4c6f9c5250d2b6805a498d377"
+      },
+      "C": {
+        "bytes": 1784,
+        "sha256": "c85578e40de16dfe7fe654ae6e6f1587033ab5e48aea4e04358734d150b01ef6"
+      }
+    },
+    "placeholderTemplateSha256": "690c9ed622baaa18cb58e02b0ecdd6e96eb74e34256f76fae980f522b4a03038",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "format-check"
+    ],
+    "stage": "format-check"
+  },
+  {
+    "actualPhaseFilesExtracted": false,
+    "bytes": 28524,
+    "innerStageByteEquivalentToExistingCommand": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "packages/server/src/transaction-schema-http.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-service.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "id": "lint",
+      "kind": "supervised-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "lateSourceBindings": "UNRESOLVED; no concrete hash rendering or actual toolIDs supplied",
+    "output": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint",
+    "parentCreatorDiscriminator": "typecheck",
+    "path": "proposals/lint.capture.txt",
+    "placeholderSectionHashesOnly": {
+      "A": {
+        "bytes": 14988,
+        "sha256": "0604cf17182e2d69785a5ebdad1d09d426b4f8b4c1b0c0ef66e169c8332016db"
+      },
+      "B": {
+        "bytes": 6679,
+        "sha256": "9b6e6f7ece10fcffa27b16e0d61ce8ff049ebf3fe6f26ace7a15fdff7afc1185"
+      },
+      "C": {
+        "bytes": 1760,
+        "sha256": "4311da95e62a2217cc2605f92cb8afd9b2ee1f66fb40edbde04de8d19251dddb"
+      }
+    },
+    "placeholderTemplateSha256": "815af1db1afa389933d756f82556470c2597e1c3eb341bff1a95c57274b2e787",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "lint"
+    ],
+    "stage": "lint"
+  },
+  {
+    "actualPhaseFilesExtracted": false,
+    "bytes": 28587,
+    "innerStageByteEquivalentToExistingCommand": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "id": "fresh-build",
+      "kind": "supervised-command",
+      "mustPrecede": "Any source test module collection or installed entry resolution; build script cleans then tsc -b",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "lateSourceBindings": "UNRESOLVED; no concrete hash rendering or actual toolIDs supplied",
+    "output": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/fresh-build",
+    "parentCreatorDiscriminator": "typecheck",
+    "path": "proposals/fresh-build.capture.txt",
+    "placeholderSectionHashesOnly": {
+      "A": {
+        "bytes": 15009,
+        "sha256": "530b9e60879409a54bd21199991dadc454418035336799ad53fd0ccfd7d0fe76"
+      },
+      "B": {
+        "bytes": 6700,
+        "sha256": "152ab75000cac68da1c822ac072ab0f4e04d13046c6ff130bd0a3fb277bea139"
+      },
+      "C": {
+        "bytes": 1781,
+        "sha256": "98b1ab72e6bed8b936e8ac3c685c99a1d909212ebbbe52f01099c509f9b3944c"
+      }
+    },
+    "placeholderTemplateSha256": "c25f4bd4e2e187c60e8ce4dc6436c4d53a5fe60d04b4f6e000991769a02d941f",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "fresh-build"
+    ],
+    "stage": "fresh-build"
+  },
+  {
+    "actualPhaseFilesExtracted": false,
+    "bytes": 28632,
+    "innerStageByteEquivalentToExistingCommand": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/audit.py",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "contract": "Fresh dist/map/package inventory binds authored source+actual build log/exit and tools; include full required dist exports and schema bytes. No old build/filecount/hash inference.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "id": "bind-fresh-build",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "lateSourceBindings": "UNRESOLVED; no concrete hash rendering or actual toolIDs supplied",
+    "output": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/bind-fresh-build",
+    "parentCreatorDiscriminator": "typecheck",
+    "path": "proposals/bind-fresh-build.capture.txt",
+    "placeholderSectionHashesOnly": {
+      "A": {
+        "bytes": 15024,
+        "sha256": "94d85935affd2a5c52a1b8de6fac14705e098e34ee93c3013dffde58df46e5ed"
+      },
+      "B": {
+        "bytes": 6715,
+        "sha256": "b3678945496036a37db01480d643b12a95bf9dcf80c0950064ab4397dc531133"
+      },
+      "C": {
+        "bytes": 1796,
+        "sha256": "29baef8bef13febc9acfcb274ee676fea12930dcf4b1384aa7e2b17b2f3c60f4"
+      }
+    },
+    "placeholderTemplateSha256": "ee0bf4fd7b89b532e7cb5828a0cdf94bcff4b2e8debb3d09df6560691f5d4cf0",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "bind-fresh-build"
+    ],
+    "stage": "bind-fresh-build"
+  }
+]
