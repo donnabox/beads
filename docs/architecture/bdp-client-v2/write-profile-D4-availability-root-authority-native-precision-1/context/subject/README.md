@@ -1,0 +1,7 @@
+# CLOSED D4 availability root authority and caller preparation
+
+This packet prepares only exact10-key availability authority DATA and a literal ROOT capture caller for ONE future zero-product AVAIL native invocation. Nothing has run. The direct native acceptance pin is C H4 closureac43d3bf; durableRootRelease pins root static acceptance633eee1e, without invented clock proof. H4 implementation9ae8, controls/source/gates remain unchanged.
+
+Read report.md, capture.py, native-command.json, caller-command.json, capture-contract.json and execution-release-schema.json. The separate future root execution-release is ABSENT; caller refuses it before invocation. FULL OTHER-native exact authority/caller precision, root acceptance, durable publication/readback and separate release are required before ANY caller/native/helper evaluation. No commands in this packet are authorized now.
+
+H492/native100/prior full history remains INPLACE under exact complete inventories and pins; bounded active copies only. Original synthetic/product/reviewer flags are false and both attempts absent. Actual availability, clock domain, masks/signals/pipes/capacity/timing/closure are UNKNOWN. One successful availability probe would still require independent actual terminal/raw/source/tools/fresh ALL recorded PID+PGID audit and measured root acceptance before any separate finite-control release. No product/profile/public-admission credit.

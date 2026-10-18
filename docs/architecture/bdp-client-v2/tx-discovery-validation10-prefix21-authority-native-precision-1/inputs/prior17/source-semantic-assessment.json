@@ -1,0 +1,371 @@
+{
+  "all21FailureCountZero": true,
+  "all21SettledCleanupKnownWithin4000ms": true,
+  "counts": {
+    "constructionBaselines": 20,
+    "rawWire": 14,
+    "retainedReturned": 90,
+    "startedDirect": 96,
+    "zeroWireClones": 9
+  },
+  "rawBodyAndWireMeaning": "Only saved body/wire digests+octets/finite actual metadata available for raw reports; no fabricated full raw body or network reconstruction",
+  "reports": [
+    {
+      "callback": "D3 source projection scope",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 38.616457999999966,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 7,
+      "startedDirect": 7,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source receiving scope",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 7.538499999999999,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 8,
+      "startedDirect": 8,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source minimum order scope",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 59.593417000000045,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 10,
+      "startedDirect": 10,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source catch-up scope",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 4.541000000000054,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 1,
+      "startedDirect": 2,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source abort scope",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.27699999999993,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 0,
+      "startedDirect": 1,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source close-drain scope",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.41112499999997,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 1,
+      "startedDirect": 1,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source projection descriptor",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 3.2664589999999407,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 6,
+      "startedDirect": 6,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source receiving descriptor",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.8643330000001015,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 8,
+      "startedDirect": 8,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source minimum order descriptor",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 5.862292000000025,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 9,
+      "startedDirect": 9,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source catch-up descriptor",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 4.0604170000000295,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 1,
+      "startedDirect": 2,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source abort descriptor",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 1.9039999999999964,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 0,
+      "startedDirect": 1,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source close-drain descriptor",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.0504999999999427,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 1,
+      "startedDirect": 1,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source projection directory",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.439041999999972,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 6,
+      "startedDirect": 6,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source receiving directory",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.7410829999998896,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 8,
+      "startedDirect": 8,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source minimum order directory",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 4.227540999999974,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 9,
+      "startedDirect": 9,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source catch-up directory",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 4.031791000000112,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 1,
+      "startedDirect": 2,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source abort directory",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 1.5869169999998576,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 0,
+      "startedDirect": 1,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source close-drain directory",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 1.7283330000000205,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 1,
+      "startedDirect": 1,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source raw receiving",
+      "cleanupKnown": true,
+      "constructionBaselines": 0,
+      "elapsedMs": 20.991665999999896,
+      "failureCount": 0,
+      "observationKinds": [
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw",
+        "raw"
+      ],
+      "rawWire": 12,
+      "retainedReturned": 0,
+      "startedDirect": 0,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source target transport boundary",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 6.651625000000195,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "raw",
+        "raw",
+        "counters"
+      ],
+      "rawWire": 2,
+      "retainedReturned": 10,
+      "startedDirect": 10,
+      "workSettled": true,
+      "zeroWireClones": 0
+    },
+    {
+      "callback": "D3 source cold oracle counterfactual",
+      "cleanupKnown": true,
+      "constructionBaselines": 1,
+      "elapsedMs": 2.8241250000000946,
+      "failureCount": 0,
+      "observationKinds": [
+        "baseline",
+        "clone",
+        "clone",
+        "clone",
+        "clone",
+        "clone",
+        "clone",
+        "clone",
+        "clone",
+        "clone",
+        "counters"
+      ],
+      "rawWire": 0,
+      "retainedReturned": 3,
+      "startedDirect": 3,
+      "workSettled": true,
+      "zeroWireClones": 9
+    }
+  ]
+}

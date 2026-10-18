@@ -1,0 +1,3 @@
+# Independent availability caller/authority precision
+
+Read report.md, review-matrix.json, closure.json and findings.json. Static mechanics accepted with zero new findings; this is not actual availability or invocation authority. Exact52-file subject packet and current D4 owned source anchor are copied with origins. Full histories remain INPLACE under pinned original inventories. No subject/native/helper/Perl/schema evaluation or product/Git/gate action occurred. Root must separately accept/publish/release exact ONE availability invocation; actual full terminal/raw/source/tool/fresh-process audit remains mandatory. All controls/product remain CLOSED.

@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-18T16:16:54.057641+00:00",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-root-acceptance-1/acceptance.json",
+    "sha256": "fde3a0514132e77c689fea5d43c8ddf0e64b42dae910d11e19674b7db94e3dc6"
+  },
+  "gateSha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "dispatchOnlyNext4": [
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "noRetry": true,
+  "preconditions": [
+    "Publish/readback exact candidate+native+erratum+root before activation",
+    "Byteexact activate reviewedf539 then publish/readback activation BEFORE dispatch",
+    "Only4 sequential fresh wrappers, no prior17rerun; raw0/wholeelapsed<120, first failure/late/unknown STOP no retry",
+    "Root independently inspect actual archive regular safe members/source/build metadata/provenance and full native actual21 audit before new prefix23 authority/consumer"
+  ],
+  "activationPerformed": false,
+  "executionDispatched": false
+}

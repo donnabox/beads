@@ -1,0 +1,27 @@
+{
+  "state": "FROZEN additive native prose-label erratum only",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "originalNativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-1/index.json",
+    "sha256": "0481c68c029f0bc38e05ef2b9cf3e6e07344acfdb85b95d440f2c35da661d822"
+  },
+  "origin": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-1/gate-26-key-assessment.json",
+    "sha256": "8370ba32ff3134f800817273e8f9f6b0513f302e202012cffd852c0c08e34753"
+  },
+  "exactChange": {
+    "key": "approvedStages",
+    "field": "assessment",
+    "before": "prospective17 only",
+    "after": "prospective21 only"
+  },
+  "inverse": {
+    "before": "prospective21 only",
+    "after": "prospective17 only"
+  },
+  "reason": "Final reread found inherited descriptive label. The actual approvedStages array already contains exact21 and report/closure/26key count/59predicates/current source proof are correct. Original85-file packet remains immutable. Read original review together with this additive label correction.",
+  "candidateGateSha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429",
+  "acceptedForExactProposedAuthorityData": true,
+  "executionAuthorized": false,
+  "candidateOrGateOrSourceChanged": false
+}
