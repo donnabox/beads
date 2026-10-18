@@ -1,0 +1,67 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "ROOT_FACTS_INSPECTION_ONLY_PENDING_OTHER_NATIVE_AND_DISPOSITION",
+  "time": "2026-10-18T23:24:30.224682+00:00",
+  "subjectIndexSha256": "833d6888307c13cf12abf7c43efdf24dcfae4a663b7358bda492ce5aa2cc589f",
+  "subjectFilesVerified": 54,
+  "mirrorAndModesVerified": true,
+  "localOriginsVerified": 12,
+  "primaryCopiesPinned": 36,
+  "primarySelectedRemoteRawReadback": [
+    {
+      "path": "crates/biome_cli/src/cli_options.rs",
+      "bytes": 9302,
+      "sha256": "5f14d9c0d9088031cdc3b7f264fb65940f85ae6a2cd124c7ae9b069bbca9bb23"
+    },
+    {
+      "path": "crates/biome_service/src/file_handlers/javascript.rs",
+      "bytes": 63014,
+      "sha256": "630f07ad690a600f23e2621640cf95c684ef3475d75c266278554d4f37402332"
+    },
+    {
+      "path": "crates/biome_service/src/file_handlers/mod.rs",
+      "bytes": 101985,
+      "sha256": "727afffe497270959b3ae2072387f96ef1e2aa1298b1611e1208a196a6be5535"
+    },
+    {
+      "path": "crates/biome_cli/src/runner/execution.rs",
+      "bytes": 6212,
+      "sha256": "b6f723f97771f75aeb3398810c5b2f0dea987458f0c898476eeae2fb8e700bbf"
+    },
+    {
+      "path": "crates/biome_cli/src/runner/impls/collectors/default.rs",
+      "bytes": 15427,
+      "sha256": "67061729ab7533d70fdbba60a7ef7985e1ed40a770b1332138d688194aa64d2c"
+    },
+    {
+      "path": "crates/biome_cli/src/runner/impls/finalizers/default.rs",
+      "bytes": 15303,
+      "sha256": "b79b28db7801b2ebca056372bc7f1bddf29a200130b5397e36be96f475198b38"
+    }
+  ],
+  "releaseTagDirectReadback": "191d051335821e804e7ffe484240ca326af86f7c",
+  "source679Identity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "elevenToolsUnchanged": true,
+  "liveGateClosedSha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655",
+  "onlyArgumentDelta": "--diagnostic-level=error",
+  "defaultDisplayCap": 20,
+  "configuredRuleAndTenFileSelectionUnchanged": true,
+  "warningInfoReportedCountersPreserved": false,
+  "exactError": "UNKNOWN_NOT_SHOWN",
+  "executionAuthorized": false,
+  "helperAuthoringAuthorized": false,
+  "qualityPass": false,
+  "originalP3NeverResumable": true,
+  "limitations": [
+    "No reproducible native binary build attestation inferred from package identity",
+    "Same rule selection is supported by exact JavaScript AnalysisFilter code; lower severity reporting is filtered before counters",
+    "Error/Fatal counters precede per-file capacity check; aggregate failure persists but MessageFailure can lack printable diagnostic",
+    "Parse count initializes before filtering; future exact output/status remains unobserved"
+  ],
+  "nativeAll25IntegrityModesMirrorVerified": true,
+  "native16OriginsExact": true,
+  "nativeReportReadInFull": true,
+  "nativeClosureSha256": "a73620f01201e9616bb8434c4ce279e2d66a350844f902f86071c592b4adbd1d",
+  "rootRecomputed22RustGitBlobDirectoryRelations": 22,
+  "nativeFindings": []
+}
