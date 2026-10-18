@@ -1,0 +1,57 @@
+{
+  "utc": "2026-10-18T11:55:51.996761+00:00",
+  "accepted": true,
+  "diagnosis": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-actual-prefix-audit-1/observation-004-installed03-target-confinement/diagnosis.json",
+    "sha256": "e4589be3b2115d2eea736a1a54f82b9e4d557d86788a2ed0c670e9939751a697"
+  },
+  "independentClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-actual-prefix-audit-1/observation-004-installed03-target-confinement/closure.json",
+    "sha256": "64b4baafc7a26d9de7e104b509b2eb09b2d1c7886f73caf0f6a055f4a7bfb943"
+  },
+  "independentIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-actual-prefix-audit-1/observation-004-installed03-target-confinement/index.json",
+    "sha256": "c6dc56af00376d574634ed8d2efde08228048fb15e52b9eefe88fd95a60afa6b"
+  },
+  "classification": "Source-derived Snapshot assertion incompatibility, not product query violation; actual manifest value/body UNKNOWN",
+  "sourceOnlyRelease": {
+    "owner": "root",
+    "afterDurablePushOnly": true,
+    "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+    "exactOnePath": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "exactOneReplacement": {
+      "before": "d3Safe(manifest.id);",
+      "after": "d3Safe(manifest.id, scope, true);"
+    },
+    "preserveAllOther678SourceBytes": true,
+    "preserveValidatorOriginScopePathUserinfoFragment8192Bound": true,
+    "extraRequestsOrCallbacks": 0,
+    "deadlinesChanged": false,
+    "optionalFormatter": "ONE exact already-pinned Biome2.5.7 format-only invocation on sole named owned file; no checks/compiler/tests/runtime/Git/reviewer/flags during authoring",
+    "freeze": "tx-discovery-snapshot-target-source-correction-1",
+    "independentPrecisionRequiredBeforeFurtherSourceAcceptance": true
+  },
+  "dataOnlySuccessorPreparation": {
+    "source": "tx-discovery-validation-preparation-6 remains immutable CLOSED738a281d",
+    "successor": "tx-discovery-validation-preparation-7",
+    "exactEightArrays": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-actual-prefix-audit-1/observation-004-installed03-target-confinement/neighboring-occurrence-inventory.json",
+      "sha256": "b16aa29df14a92760e84380c26c4d666171c5ef99e75916044b9976c75236795"
+    },
+    "allowed": "Only exact8 source-derived field arrays plus source binding to independently accepted one-line successor/necessary namespace/provenance/history/index bindings. Preserve prior11installed02 corrections.",
+    "unchanged": [
+      "all five helper bytes/AST",
+      "strict recursive/equality audit",
+      "schemas and selections otherwise",
+      "52 stages16 immediate audits",
+      "all workload/deadlines/no retries"
+    ],
+    "sourceAcceptanceRequiredBeforeFinalFreezeAndExecution": true,
+    "independentMechanicsAndRootRequired": true,
+    "freshPipelineRequired": true
+  },
+  "productRuntimeExecutionReleased": false,
+  "reviewerRetryReleased": false,
+  "oldActualFailureRelabelled": false,
+  "wholeWriteQualification": false
+}
