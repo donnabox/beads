@@ -1,0 +1,49 @@
+{
+  "F2": {
+    "actualExecuted": false,
+    "extraDirectCalls": 1,
+    "extraWire": 0,
+    "initialActualContext": "fixture actual owner initial pos0; supplied original epoch/view/minimumPositionpos-1",
+    "location": "ExistingS01, fourthschemaObserved call only",
+    "ordering": [
+      "Keep original no-min/preaborted, suppliedpos0 andgenesis calls/assertions before this control.",
+      "Use existing injected finite policy budgetMs2, now()=>tick++; satisfied earlier calls consume two starts; fourthcall starts2/deadline4/firstbehindcurrent3 then enterswait.",
+      "Set activefixture and originaltuple variables before fourthinvoke. Invoke once; immediately AFTERinvoke returns mutate originaltuple scopeEpoch/authorizationView toforeign and minimumPosition toopaque. Do not assert before first synchronous return or await an entry promise that a defective deferred capture might never resolve.",
+      "wait increments once, verifies !inEntry and actual owner.withRead(()=>true) read result (releaseprobe), awaits Promise.resolve() so invocation has returned and mutation is visible, then executes original trustedowner execute(owned(owner,batch([create(\"g09-capture\")],\"g09-capture\"))) once. Require actualreceipt.status completed and owner.inspect().position \"1\"; no service.submit and no synthetic returned context.",
+      "Retry returns real schemaObserved.context pos-1 with original epoch/view; require totalcalls4/entries5 and contexts[pos0,pos0,pos0,pos0,pos1], waits1/tick4. Mutation remains foreign/opaque, proving success did not use mutable caller object."
+    ],
+    "regressionOracle": [
+      "Snapshot moved after an initial async yield sees mutatedforeign and rejects before wait; await originalpending rejects, not a hung entry promise.",
+      "Snapshot repeated inside retry sees mutatedforeign/opaque and rejects/never yields expectedactualpos1.",
+      "No real advance causes finite timeout under unchanged mocked2-unit policy; no fake success or ownercontext stub."
+    ]
+  },
+  "F3-handler": {
+    "actualExecuted": false,
+    "existingSignalQualification": "OriginalS05 already detects dropped HTTP signal; newcall tests rethrow/mapping only, not a newly discovered dropbug.",
+    "extraDirectCalls": 1,
+    "extraWire": 0,
+    "location": "ExistingS05 SAME originalg09Bound(...,3000) body AFTER original8rows",
+    "ordering": [
+      "Preserve original8requests/statuses/forwardedtuple+EXACTrequest.signal assertions; original rowcalls remains8 and rowslength8.",
+      "Bind compile() result once in existingS05 setup and reuse for originalselector+extra abortselector; no secondcontractcompile.",
+      "Inside SAMEworkbound, use cached module import await import(\"./read-request.js\") to obtain actual ScopeServerOperationAbortedError without modifying protected legacy importprefix. Construct oneerror; separatecreateTransactionSchemaHttp observer records exactsuppliedtuple+request.signal, incrementsabortCalls once and throws that exacterror. This is a declared handler-routing counterfactual, not an actual owner/runtime abort observation.",
+      "Invoke abortselector ONCE with exactmemberGET and validcomplete minimum/request.signal. Capture rejection, require identity===originalerror and instanceclass; a returned503/500/undefined or replacementerror fails. Require observerforwarded exactrequest.signal.",
+      "Report originalcalls8/8rows plus computedabortCalls1/abortPropagatedtrue/abortSignalForwardedtrue; totaldirect9. All extra work stays inside existing3s, no freshbound/reset."
+    ]
+  },
+  "F3-service": {
+    "actualExecuted": false,
+    "extraDirectCalls": 1,
+    "extraWire": 0,
+    "location": "ExistingS03 AFTER both unchanged oldtimeoutcases+their calls2/entries4/waits2/tick6/probes2 assertions",
+    "ordering": [
+      "Declare controller, abortMode=false and optional closing Promise before invocation; switchabortMode=true only for thirdcall.",
+      "ThirdschemaObserved uses actual epoch/view pluspos-999 and controller.signal; attach rejection handling immediately. Existingwait probe remains realowner.withRead + !inEntry and increments thirdreleaseprobe.",
+      "Only abort-mode wait yields one Promise.resolve(), then aborts controller while still pending and captures active.service.close() once. Assert ownerclosedfalse/!inEntry, yield another microtask and assert close stillnotfinished while this very wait remains pending. Old two wait branches remain original Promise.resolve() only.",
+      "Return fromwait; next loop must throw original ScopeServerOperationAbortedError BEFORE another ownerentry/now. Require rejection class, totalscalls3/entries5/waits3/tick8/probes3.",
+      "Await capturedclosing plus service.closed; require closeCalls1/closedtrue and actualowner.inspect throwsclosed. Wrapper finally reuses cached closePromise then removesstore; it must not acquire another owner or call schemaObserved afterclose."
+    ],
+    "whyFinite": "No externally unresolved wait resolver or gated promise that can survive a failed assertion; any thrown wait assertion rejects pending task and standard finally closes. Promise microtask checks are ordering oracles, not elapsed-time/host scheduling measurements."
+  }
+}
