@@ -10,8 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -168,9 +170,9 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				oldStderr, oldJSON := os.Stderr, jsonOutput
-				os.Stderr, jsonOutput = stderr, true
-				defer func() { os.Stderr, jsonOutput = oldStderr, oldJSON; _ = stderr.Close() }()
+				oldStderr, oldJSON, oldOutput := os.Stderr, jsonOutput, graphFailureOutput
+				os.Stderr, jsonOutput, graphFailureOutput = stderr, true, nil
+				defer func() { os.Stderr, jsonOutput, graphFailureOutput = oldStderr, oldJSON, oldOutput; _ = stderr.Close() }()
 				input := cancellation
 				if test.wrap != nil {
 					input = errors.Join(test.wrap, cancellation)
@@ -244,53 +246,71 @@ func TestGraphPreviewOutcomeUnknownPrecedence(t *testing.T) {
 func TestGraphPreviewDefiniteErrorShortcuts(t *testing.T) {
 	candidateIDs := []string{"https://example.invalid/work/links/a", "https://example.invalid/work/links/b"}
 	reported := &exitError{Code: 2}
-	for _, test := range []struct {
+	for _, mapper := range []struct {
 		name  string
-		input error
+		apply func(error) error
 	}{
-		{"reported", reported},
-		{"ambiguous", &graphstore.ErrAmbiguousLink{CandidateIDs: candidateIDs}},
+		{"ordinary", graphStorageError}, {"import", graphLegacyImportError},
 	} {
-		t.Run(test.name, func(t *testing.T) {
-			stderr, err := os.CreateTemp(t.TempDir(), "stderr")
-			if err != nil {
-				t.Fatal(err)
-			}
-			oldStderr, oldJSON, oldOutput := os.Stderr, jsonOutput, graphFailureOutput
-			os.Stderr, jsonOutput, graphFailureOutput = stderr, true, nil
-			defer func() { os.Stderr, jsonOutput, graphFailureOutput = oldStderr, oldJSON, oldOutput; _ = stderr.Close() }()
-			result := graphStorageError(test.input)
-			raw, err := os.ReadFile(stderr.Name())
-			if err != nil {
-				t.Fatal(err)
-			}
-			if test.name == "reported" {
-				if result != reported || len(raw) != 0 {
-					t.Fatalf("reported error changed or emitted a second diagnostic: result=%v raw=%q", result, raw)
+		for _, test := range []struct {
+			name  string
+			input error
+			code  string
+			exit  int
+		}{
+			{"reported", reported, "", 2},
+			{"ambiguous", &graphstore.ErrAmbiguousLink{CandidateIDs: candidateIDs}, "ambiguous_link", 4},
+			{"validation", storage.ErrValidation, "invalid_properties", 2},
+			{"invalid-store", graphstore.ErrInvalidStore, "invalid_store", 5},
+		} {
+			t.Run(mapper.name+"/"+test.name, func(t *testing.T) {
+				stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+				if err != nil {
+					t.Fatal(err)
 				}
-				return
-			}
-			var failure *exitError
-			if !errors.As(result, &failure) || failure.Code != 4 {
-				t.Fatalf("definite ambiguity exit changed: %v", result)
-			}
-			var envelope struct {
-				Code         string   `json:"code"`
-				Retryable    bool     `json:"retryable"`
-				CandidateIDs []string `json:"candidateIDs"`
-			}
-			if err := json.Unmarshal(raw, &envelope); err != nil || envelope.Code != "ambiguous_link" || envelope.Retryable || len(envelope.CandidateIDs) != len(candidateIDs) {
-				t.Fatalf("definite ambiguity diagnostic changed: %q (%v)", raw, err)
-			}
-			for i, want := range candidateIDs {
-				if envelope.CandidateIDs[i] != want {
-					t.Fatalf("ambiguity candidates changed: %v", envelope.CandidateIDs)
+				oldStderr, oldJSON, oldOutput := os.Stderr, jsonOutput, graphFailureOutput
+				os.Stderr, jsonOutput, graphFailureOutput = stderr, true, nil
+				defer func() { os.Stderr, jsonOutput, graphFailureOutput = oldStderr, oldJSON, oldOutput; _ = stderr.Close() }()
+				result := mapper.apply(test.input)
+				raw, err := os.ReadFile(stderr.Name())
+				if err != nil {
+					t.Fatal(err)
 				}
-			}
-		})
+				if test.name == "reported" {
+					if result != reported || len(raw) != 0 {
+						t.Fatalf("reported error changed or emitted a second diagnostic: result=%v raw=%q", result, raw)
+					}
+					return
+				}
+				var failure *exitError
+				if !errors.As(result, &failure) || failure.Code != test.exit {
+					t.Fatalf("definite refusal exit changed: %v want%d", result, test.exit)
+				}
+				var envelope struct {
+					Code         string   `json:"code"`
+					Retryable    bool     `json:"retryable"`
+					CandidateIDs []string `json:"candidateIDs"`
+				}
+				if err := json.Unmarshal(raw, &envelope); err != nil || envelope.Code != test.code || envelope.Retryable {
+					t.Fatalf("definite refusal diagnostic changed: %q (%v)", raw, err)
+				}
+				if test.name == "ambiguous" {
+					if len(envelope.CandidateIDs) != len(candidateIDs) {
+						t.Fatalf("ambiguity candidates changed: %v", envelope.CandidateIDs)
+					}
+					for i, want := range candidateIDs {
+						if envelope.CandidateIDs[i] != want {
+							t.Fatalf("ambiguity candidates changed: %v", envelope.CandidateIDs)
+						}
+					}
+				}
+			})
+		}
 	}
 }
 
+// Preserve the inherited non-import default category pending a separate CLI
+// category/retry decision; it is not a new description of cancellation semantics.
 func TestGraphPreviewNonImportCancellationDisposition(t *testing.T) {
 	for _, cancellation := range []error{context.DeadlineExceeded, context.Canceled} {
 		for _, test := range []struct {
@@ -347,6 +367,88 @@ func TestGraphPreviewImportPreservesReportedError(t *testing.T) {
 	result := graphLegacyImportError(errors.Join(reported, context.Canceled))
 	if result != reported || diagnostic.Len() != 0 {
 		t.Fatalf("reported import refusal changed or was printed twice: result=%v diagnostic=%q", result, diagnostic.String())
+	}
+}
+
+// Exercise the actual reader route and raw open-error boundary without a live
+// engine. database/sql rejects the completed context before dialing the owned,
+// nonexistent socket; no production endpoint or initialized store is involved.
+func TestGraphPreviewImportCanceledOpenDisposition(t *testing.T) {
+	for _, expired := range []bool{false, true} {
+		name := "canceled"
+		if expired {
+			name = "deadline"
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			cancel()
+			if expired {
+				ctx, cancel = context.WithDeadline(context.Background(), time.Unix(1, 0))
+				defer cancel()
+			}
+			work, err := filepath.EvalSymlinks(t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			oldRoot, oldCommand := rootCtx, cmdCtx
+			oldConfig, oldDir, oldGeneration := graphPreviewConfig, graphPreviewDir, graphPreviewTypeGeneration
+			oldJSON, oldOutput := jsonOutput, graphFailureOutput
+			t.Cleanup(func() {
+				rootCtx, cmdCtx = oldRoot, oldCommand
+				graphPreviewConfig, graphPreviewDir, graphPreviewTypeGeneration = oldConfig, oldDir, oldGeneration
+				jsonOutput, graphFailureOutput = oldJSON, oldOutput
+			})
+			t.Setenv("BEADS_DOLT_PASSWORD", "disposable-test-password")
+			rootCtx, cmdCtx = ctx, nil
+			graphPreviewDir, graphPreviewTypeGeneration = work, 0
+			graphPreviewConfig = &configfile.Config{
+				DoltMode: configfile.DoltModeServer, DoltDatabase: "iris_canceled_open",
+				DoltServerSocket: filepath.Join(work, "absent.sock"), DoltServerUser: "root",
+				GraphWorkspace: work, GraphScopeURL: "https://example.invalid/import-cancellation/",
+				GraphAuthorityID: strings.Repeat("0", 32), GraphSchemaVersion: graphstore.SchemaVersion,
+			}
+			var diagnostic bytes.Buffer
+			jsonOutput, graphFailureOutput = true, &diagnostic
+			result := runGraphPreviewImportReader(strings.NewReader(`{"id":"legacy-a","title":"disposable"}`), "stdin")
+			var failure *exitError
+			if !errors.As(result, &failure) || failure.Code != 5 {
+				t.Fatalf("import interruption=%v want exit5", result)
+			}
+			var envelope struct {
+				Code      string `json:"code"`
+				Message   string `json:"message"`
+				Retryable bool   `json:"retryable"`
+			}
+			if err := json.Unmarshal(diagnostic.Bytes(), &envelope); err != nil || envelope.Code != "capability_unavailable" || envelope.Retryable || !strings.Contains(envelope.Message, ctx.Err().Error()) {
+				t.Fatalf("import route did not classify one raw cancellation: %q (%v)", diagnostic.String(), err)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewStoreOpenUsesRawErrorMapper(t *testing.T) {
+	oldConfig, oldJSON, oldOutput := graphPreviewConfig, jsonOutput, graphFailureOutput
+	t.Cleanup(func() { graphPreviewConfig, jsonOutput, graphFailureOutput = oldConfig, oldJSON, oldOutput })
+	graphPreviewConfig = &configfile.Config{} // Refused by option validation, before any connector.
+	var diagnostic bytes.Buffer
+	jsonOutput, graphFailureOutput = true, &diagnostic
+	calls := 0
+	mapped := errors.New("mapper result")
+	result := withGraphStoreErrorMapper(time.Second, func(context.Context, *graphstore.Store) (any, string, error) {
+		t.Fatal("operation ran after failed open")
+		return nil, "", nil
+	}, func(any, string) error {
+		t.Fatal("success output ran after failed open")
+		return nil
+	}, func(raw error) error {
+		calls++
+		if !errors.Is(raw, graphstore.ErrInvalidStore) || diagnostic.Len() != 0 {
+			t.Fatalf("mapper received reported/replaced error: %v diagnostic=%q", raw, diagnostic.String())
+		}
+		return mapped
+	})
+	if result != mapped || calls != 1 || diagnostic.Len() != 0 {
+		t.Fatalf("mapper boundary: result=%v calls=%d diagnostic=%q", result, calls, diagnostic.String())
 	}
 }
 
