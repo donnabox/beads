@@ -1,0 +1,46 @@
+[
+  {
+    "id": "D4-P2-N1",
+    "severity": "Medium",
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/gate.py",
+    "line": 107,
+    "title": "Read the actual flat implementation index",
+    "evidence": "implementation-hashes.json is the exact flat290 path\u2192SHA object, no files member. load_gate verifies its hash then accesses read(idx)[\"files\"].items(). Every released stage raises KeyError before source/tools/selection.",
+    "impact": "All21 validation stages are blocked even with a valid future root release; product and synthetic gate-interface validation cannot reach intended predicates.",
+    "fix": "Consume the exact flat indexed mapping (or deliberately version/rebind a wrapper, unnecessary here); preserve290 exact members/six explicit self-reference-control exclusions and every hash check. Add a static/finite P01 interface subcase, no product or new framework.",
+    "verification": "Static actual JSON key inventory and AST/text control-flow only; no load_gate/helper imported/evaluated."
+  },
+  {
+    "id": "D4-P2-N2",
+    "severity": "Medium",
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/run.py",
+    "line": 226,
+    "relatedLines": [
+      175,
+      179,
+      215
+    ],
+    "title": "Recheck the relative drain deadline at final acceptance",
+    "evidence": "The loop checks now>=min(flush+10,begin+145) before census and observe/reap. Tentative215/final226 use only current time<begin+term, not flush+10. A census/closure finishing across the earlier relative boundary can return0 before145. complete() only verifies root wholeParentElapsed<145, not the relative drain predicate.",
+    "impact": "A successful normal terminal can exceed the fixed10-second post-verified drain window while remaining below absolute145; phase contract is not enforced on acceptance. This is an acceptance predicate defect, not a claim of an OS hard-real-time guarantee.",
+    "fix": "At both tentative publication and final return, use actual current monotonic time against the existing effective product phase deadline, including min(flush+10,begin+145); refuse sticky on crossing. Preserve ordinary115/119/120, all fixed product10/120/5/10/145/149/150, no queries/retry/widening. Add boundary-straddling final census/publisher subcase within existing P12/P11 controls.",
+    "verification": "Static symbolic acceptance path in acceptance-path-witness.json; no clock/helper/control execution."
+  },
+  {
+    "id": "D4-P2-N3",
+    "severity": "Low",
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/audit.py",
+    "line": 100,
+    "relatedSourceLines": [
+      487,
+      492,
+      494,
+      498
+    ],
+    "title": "Reject a null category for a settled transport rejection",
+    "evidence": "Failed observation schema permits null errorCategory for unsettled rows. The unreceived branch checks only null response fields; when settled=true, received=false and validated=false, null errorCategory is accepted. Actual source catch assigns fixed transport category or unavailable before finally marks settled=true.",
+    "impact": "An impossible mutated failed row can be classified CONFORMING_FAILED_PARTIAL_NO_CREDIT. No positive promotion occurs, but failed evidence conformance is inaccurate and violates the frozen wire/row contract.",
+    "fix": "In the failed unreceived branch, require a nonnull existing allowed error category when settled=true; preserve null for genuinely unsettled rows and all complete raw evidence/no-credit classifications. Extend existing D03 finite mutations, no product calls or schema weakening.",
+    "verification": "Static comparison of actual source assignment, schema null allowance and audit branch; no schema/partial evaluator executed."
+  }
+]

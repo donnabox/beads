@@ -1,0 +1,34 @@
+--- control-namespace-delta.json
++++ predecessor2/control-namespace-delta.json
+@@ -1,15 +1,21 @@
+ {
+-  "beforeNamespace": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2",
+-  "afterNamespace": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3",
++  "afterNamespace": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2",
+   "approvedStages": [],
++  "beforeNamespace": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1",
+   "bootstrapReuse": [],
+-  "soleActiveNamespaceChanges": [
+-    "commands.json10 exacthelper/output/consumer literals",
+-    "execution-gate.json baseTools.path/sourceBinding.path",
+-    "execution-gate.closed.json sameclosed snapshot"
++  "implementationIndexSha256": "Final new value binds new implementation; exact read in preparation-binding and indexed gate bytes. Not manufactured an inverse hash fixed point.",
++  "nativeHelperAcceptance": "UNRESOLVED",
++  "paths": [
++    "baseTools.path",
++    "sourceBinding.path"
+   ],
+-  "historicalAbsoluteReferencesUnchanged": true,
+-  "implementationIndexSha256": "computed after complete source/data inventory; controls excluded to avoid hash cycle",
+-  "sourceBindingBytesUnchanged": true,
+-  "allReleaseBooleansRemainFalse": true
++  "rootMechanicsAcceptance": "UNRESOLVED",
++  "unchangedFalseFields": [
++    "released",
++    "actualClaudeReviewDisposed",
++    "nativeCodeReviewDisposed",
++    "rootPlanAccepted",
++    "rootExactSourceAccepted",
++    "staticValidationAuthorized"
++  ]
+ }

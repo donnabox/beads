@@ -1,0 +1,42 @@
+{
+  "state": "AUTHOR static AST/JSON/hash only; NOT independent mechanics/execution acceptance",
+  "helpersParsedAsDataOnly": [
+    "run.py",
+    "worker.py",
+    "audit.py",
+    "gate.py",
+    "scanner.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "protectedProcessSignalClockQueryCallSequenceUnchanged": true,
+  "allowedPureCallDeltas": {
+    "run.py": "two min expressions at existing acceptance sites",
+    "gate.py": "single intentional flatmapping items receiver",
+    "audit.py": "one additional need predicate"
+  },
+  "unchangedHelpers": [
+    "worker.py",
+    "scanner.py",
+    "packages.py",
+    "schema-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "all48IdsAndOtherCaseFieldsUnchanged": true,
+  "subcaseOnlyIds": [
+    "P01",
+    "P12",
+    "P11",
+    "D03"
+  ],
+  "commandsEquivalentAfterNamespaceInverse": true,
+  "stages": 21,
+  "source679Owned1Protected678Exact": true,
+  "samePoliciesAndBudgets": true,
+  "schemaOrControlsExecuted": false,
+  "futureHarnessApproved": false,
+  "preservedStaticInspectionFailures": [
+    "preparation-failure-1.json",
+    "preparation-failure-2.json"
+  ]
+}

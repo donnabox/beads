@@ -1,0 +1,93 @@
+{
+  "preservedFiveLocalOracles": [
+    {
+      "id": "O1",
+      "lines": [
+        253,
+        264
+      ],
+      "mutant": "omit last receipt result",
+      "failure": "exact ordered 33-entry oracle"
+    },
+    {
+      "id": "O2",
+      "lines": [
+        273,
+        276
+      ],
+      "mutant": "omit first delete Event",
+      "failure": "exact96fact sequence"
+    },
+    {
+      "id": "O3",
+      "lines": [
+        277,
+        283
+      ],
+      "mutant": "swap first two complete 3-Event Link groups",
+      "failure": "exact canonical Link fact order"
+    },
+    {
+      "id": "O4",
+      "lines": [
+        355,
+        369
+      ],
+      "mutant": "mutually consistent actual n0 prestate, stale receipt/source/live Link",
+      "failure": "labeled requested owned Link properties literal n1 assertion"
+    },
+    {
+      "id": "O5",
+      "lines": [
+        370,
+        372
+      ],
+      "mutant": "wrong sourceRevision",
+      "failure": "sourceRevision equals actual live owner revision"
+    }
+  ],
+  "mechanicsStaticReviewCases": [
+    {
+      "id": "M1",
+      "counterfactual": "non200 or wrong200 header response",
+      "must": "Record actual response before assertion and only derive nullable observed body counts from captured data; expected33/96/1 never appear as actual when absent."
+    },
+    {
+      "id": "M2",
+      "counterfactual": "execute rejects/aborts before response",
+      "must": "attempted1/settled1/received0 with unavailable response fields, pending0 when settled; no fabricated bytes/body/status/completewrite"
+    },
+    {
+      "id": "M3",
+      "counterfactual": "close promise resolves on exit before stdio close",
+      "must": "Actual clean exit0/signalnull proves shutdown/SQLite-lock release; actual clean close event separately records stdio/IPC drain. Require BOTH plus settled close Promise/pending0 before reopen/removal; do not misattribute lock release to close."
+    },
+    {
+      "id": "M4",
+      "counterfactual": "first child shutdown unknown or nonzero",
+      "must": "second launch forbidden, store retained, failure report survives"
+    },
+    {
+      "id": "M5",
+      "counterfactual": "launch rejects before handle returns",
+      "must": "attempt true; fixed prelaunch-rejected versus prelaunch-cleanup-unsettled error-shape label and reopen-refused-pre-ready phase where applicable; acquisition/closure UNKNOWN regardless; preserve owned directory, no PID or clean-child guess, root audit required."
+    },
+    {
+      "id": "M6",
+      "counterfactual": "cleanup wait timeout or removal throws",
+      "must": "Fixed cleanup/removal failure aggregates; directory disposition separate from unknown store-file presence, literal expected inventory separate from nullable observed fields; retain pending/unresolved facts, no success/clean claim."
+    },
+    {
+      "id": "M7",
+      "counterfactual": "cached source/diff/entry metadata capture unavailable",
+      "must": "Capture executes INSIDE callback before launch; workspace bounded Git timeout1000–2000ms/maxBuffer<=1048576 failure gives fixed nullReason and no launch. Explicit-env externally bound mode does NO Git and uses not-applicable-externally-bound disposition with actual external proof. Local metadata unavailable still fails. No throwing IO or Git in finally."
+    }
+  ],
+  "execution": "none; these are finite review predicates, no additional product requests/tests/mutant runtime authorized",
+  "precisionControlsWithoutNewCases": {
+    "F1": "M1/M2/M6 partial reports cannot inherit literal33/96/1 as observations; five clone oracles stay static inventory until genuinely reached.",
+    "F7": "Independent dispatch-cap-exceeded before request33, separate from unchanged12-page guards and expected32; tripping cap does not create32 observed.",
+    "F8": "Keep full actual returned wire under1179648 per response and32 dispatches, with duplicate body/header/request fields; future full collector capacity remains required.",
+    "F10": "Retained directory does not certify store-file existence; no extra finally stat."
+  }
+}
