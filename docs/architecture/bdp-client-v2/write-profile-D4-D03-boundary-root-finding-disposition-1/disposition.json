@@ -1,0 +1,37 @@
+{
+  "approvedInvocations": [],
+  "captureBridgeCandidateOrControlReleased": false,
+  "executionReleased": false,
+  "failedNativeLifetime": "Separate N+120 native session may outlive failed root; retain UNKNOWN/no whole-tree absence inference or historical-ID signals. No failed-path scope waiver or invented new requirement.",
+  "findings": [
+    {
+      "accepted": true,
+      "disposition": "R is sampled BEFORE arming A. Choosing R alone does not independently enforce R..A if A is never reached. Keep the entire O..A, including R..A, explicitly UNPREPARED absent separately reviewed actual upstream coverage; later remaining-time arming/refusal cannot retroactively enforce it. This additive clarification preserves the frozen plan and native finding.",
+      "id": "D03-BOUNDARY-N1",
+      "severity": "Low"
+    }
+  ],
+  "fixedPostArmDesign": "DATA analysis only, not accepted source/mechanism. Exact source/FD/receipt/known-domain closure and allowed independent mechanism remain unresolved.",
+  "kind": "ROOT_ADDITIVE_DATA_CLARIFICATION_WITH_UNCHANGED_MECHANISM_GAP",
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-D03-fixed-boundary-plan-native-precision-1/closure.json",
+    "sha256": "97b784f80452d8781cc3b3e54dc0259b0c1b147dce684aaae0018c7f0e5e4367"
+  },
+  "nativeTuple": [
+    120,
+    115,
+    119
+  ],
+  "noFaultDomainOrDeadlineRelaxation": true,
+  "noInitializationExclusionAdopted": true,
+  "noRetry": true,
+  "noRorAAdopted": true,
+  "normalO115": "REQUIRED_UNCHANGED",
+  "oldM02D02STOPPreserved": true,
+  "remainingRequiredUnattempted": 58,
+  "rootInspectionSha256": "d87e102d49dfe6d6e20b6b8fb06973953bab43f88c71c0d803129c475944e4bf",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAuthoringReleased": false,
+  "strongerOInclusive120": "UNPREPARED_UNCHANGED",
+  "wholeWriteCredit": false
+}

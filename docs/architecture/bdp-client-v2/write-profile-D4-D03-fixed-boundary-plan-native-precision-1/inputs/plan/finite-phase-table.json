@@ -1,0 +1,50 @@
+[
+  {
+    "id": "P0",
+    "phase": "Minimal independent timer primitive initialization",
+    "required": "No D03 task work; O-inclusive independent enforcement gap remains explicit",
+    "executed": false
+  },
+  {
+    "id": "P1",
+    "phase": "Record adopted origin and arm independent absolute timer",
+    "required": "No fork/import/hash/authority/file work below task before arm; do not assume startup already bounded",
+    "executed": false
+  },
+  {
+    "id": "P2",
+    "phase": "Fork one fixed collector and retain unreaped direct creation ownership",
+    "required": "Fresh session; only still-unreaped child/creation group safe signals",
+    "executed": false
+  },
+  {
+    "id": "P3",
+    "phase": "Collector imports, exact role/source/tool/release preflight and exclusive attempt",
+    "required": "Independently covered after arm; no arbitrary argv/case/loop",
+    "executed": false
+  },
+  {
+    "id": "P4",
+    "phase": "Exactly unchanged D03 native argv; both captured native PIPE streams",
+    "required": "Native N-based120/115/119 remains separately armed; collect actual raw prefix/EOF/exit",
+    "executed": false
+  },
+  {
+    "id": "P5",
+    "phase": "Post-native parser/hashes/closes/final receipt",
+    "required": "Ancestor remains alive and armed, so collector blocking IO is not merely self-polled",
+    "executed": false
+  },
+  {
+    "id": "P6",
+    "phase": "Collector true terminal; ancestor true terminal and actual tool terminal",
+    "required": "No normal force/late/UNKNOWN; nonblocking root metadata distinct from native3events",
+    "executed": false
+  },
+  {
+    "id": "P7",
+    "phase": "Explicit separately authorized finite postterminal census",
+    "required": "Actual both EOF/raw0/reap and all recorded task IDs/groups absence; completed-origin<115, no selfabsence",
+    "executed": false
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "gateOnlyDifferencesFromPriorRootCandidate": [
+    "baseTools actualP3 path",
+    "sourceBinding actualP3 path",
+    "actualP3implementationhash",
+    "three new actual root bridge path+SHA pins"
+  ],
+  "genuineRootBridgePairs": [
+    {
+      "afterSha256": "8ca2417110927f97a4b505945b44e005ad9a808da024da9639f0c7d5d04ccf57",
+      "before": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/root-disposition.json",
+        "sha256": "5c94a560caaa8a74d3e5018e52e0b9145dee443ce1793aa6ece00846e49b0249"
+      },
+      "forward": "root-disposition.json.patch",
+      "inverse": "root-disposition.json.inverse.patch",
+      "nonempty": true,
+      "path": "root-disposition.json"
+    },
+    {
+      "afterSha256": "09898f77cedf52190ec16271c9bb12705d50b1227f690d4a4c0c8abb02ad3f0c",
+      "before": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/native-code-disposition.json",
+        "sha256": "a72619384a1443e44022d81d957aa1056be1fb7ee6bc086f5fd9d5f78cf60faa"
+      },
+      "forward": "native-code-disposition.json.patch",
+      "inverse": "native-code-disposition.json.inverse.patch",
+      "nonempty": true,
+      "path": "native-code-disposition.json"
+    },
+    {
+      "afterSha256": "7efd6023295c82b84ec63114f48796dbf340f28a7d5fe1337024c78fd9fe4aa4",
+      "before": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json",
+        "sha256": "a5e5d44e46e16af38ae19ed1bed0366c678b20f7b49036c821e17af64657b910"
+      },
+      "forward": "actual-code-disposition.json.patch",
+      "inverse": "actual-code-disposition.json.inverse.patch",
+      "nonempty": true,
+      "path": "actual-code-disposition.json"
+    }
+  ],
+  "historicalSourceReviewAndCorrectiveSourceFactsProtected": true,
+  "newActualReviewPerformed": false,
+  "oldAttemptRetry": false
+}
