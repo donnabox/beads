@@ -1,0 +1,139 @@
+{
+  "actualAuditStillPending": false,
+  "actualToolExits": [
+    0,
+    0,
+    0
+  ],
+  "actualToolIds": [
+    "e94720",
+    "34c296",
+    "86a7d5"
+  ],
+  "allLater30Unattempted": true,
+  "baseToolFilesRealpathsChecked": 3,
+  "boundToolsVerified": 11,
+  "exactActualSourceHashes": {
+    "A": "79576945b1c354041b43a78fea4b4a37f3d977bc5ec78a77b321988bf7f6ce63",
+    "B": "36520eb760e284067fb4f3b90eab9231f0baa419333b418937333d1f3b93a18f",
+    "C": "6980d577b5fdba63e47d6c321e767d5cb27579fa49abe1e198192e89df34470a"
+  },
+  "implementation121Unchanged": true,
+  "innerElapsedSeconds": 9.146728250198066,
+  "innerLogBytes": 0,
+  "installReceiptBindingVerified": true,
+  "kind": "ROOT_ACTUAL_BIND_WORKSPACE_TOOLS_FULL_CONJUNCTION_INSPECTION_BEFORE_NATIVE_DISPOSITION",
+  "matchingRowsIndependentlyRecomputed": [],
+  "nativePacket": {
+    "closureSha256": "5ae13f0d630b268ded61df14a41334c6a01b0d533fa21df8e57123e3880f0705",
+    "indexSha256": "d6596422832d23aa299d24f2475e3dca5e852943a558cc28f00199eed2b20548",
+    "indexed": 71,
+    "origins": 54,
+    "physical": 72
+  },
+  "noCleanupTakenOrGlobalAbsenceClaim": true,
+  "phaseCorrectReferenceCounts": [
+    2278,
+    2571
+  ],
+  "rawToolReceiptIndependentlyDecoded": false,
+  "recordedTaskPGIDs": [
+    75713,
+    75717,
+    76429
+  ],
+  "recordedTaskPIDs": [
+    75716,
+    75717,
+    76429,
+    76431,
+    76445,
+    76461,
+    76478,
+    76496,
+    76514,
+    76548,
+    76564,
+    76584,
+    76602,
+    76617,
+    76633,
+    76646,
+    76659,
+    76672,
+    76699,
+    76712,
+    76729,
+    76741,
+    76756,
+    76773,
+    76788,
+    76806,
+    76822,
+    76841,
+    76859,
+    76877,
+    76892,
+    76911,
+    76927,
+    76944,
+    76978,
+    76994,
+    77010,
+    77045,
+    77064,
+    77082,
+    77099,
+    77131,
+    77148,
+    77165,
+    77169,
+    77170
+  ],
+  "rootDataInspectionErrors": [
+    {
+      "exit": 1,
+      "purpose": "Read-only proposed source relation assumed global stage replacement; approvedStages list is unchanged. Full literal diff corrected; actual source untouched.",
+      "toolId": "01e486"
+    },
+    {
+      "exit": 1,
+      "purpose": "Read-only native origin verifier assumed wrapper; actual shape is list. Inventoried b57e21 and verified all54 with corrected f6725d. No subject runtime/retry.",
+      "toolId": "a21e8a"
+    }
+  ],
+  "rootStreamsVerified": [
+    {
+      "bytes": 785,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/bind-workspace-tools.stdout",
+      "sha256": "c0f406cde67ef121ac42ceca9d76c2ba8ef8d17ce63ef458932904ec2234e970"
+    },
+    {
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/bind-workspace-tools.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 205655,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/postterminal-census.stdout",
+      "sha256": "078a3f169a3c46c13a342b756bf2e5a0407278515a77e821bd853fdecdaa488d"
+    },
+    {
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "selectedCensusRawRows": 1384,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679AndBinaryDiffUnchanged": true,
+  "temporaryRootEntries": [],
+  "temporaryRootExists": true,
+  "witnessSeconds": 14.918462708126754,
+  "workspacePackageVersionsVerified": {
+    "@biomejs/biome": "2.5.7",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  },
+  "workspaceToolsSha256": "30468c88674a41a54f8a366ca78c84dffc07f3e035a0d9bf32430300b6503552"
+}

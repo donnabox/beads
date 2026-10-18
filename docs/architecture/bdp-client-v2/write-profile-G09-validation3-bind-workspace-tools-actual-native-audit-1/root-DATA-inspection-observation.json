@@ -1,0 +1,10 @@
+{
+  "independentNativeCheck": "Exact complete A body normalizes only STAGE/ARGV/OWNED_ROOT_OUTPUT assignments to Node baseline; every other byte including approvedStages matches. No native DATA checker failure occurred in this audit.",
+  "rootReportedDataComparisonError": {
+    "description": "Naive comparison replacing all stage-name occurrences in A did not preserve unchanged approvedStages list. Root reports subsequent full diff confirmed only the three actual stage assignments differ.",
+    "rawRootErrorArtifact": "UNRETAINED in subject at native capture; report is root-message attribution only.",
+    "subjectRetry": false,
+    "targetSourceChanged": false,
+    "tool": "01e486"
+  }
+}
