@@ -1,0 +1,67 @@
+{
+  "utc": "2026-10-18T18:14:26.394182+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptedActualCleanTerminal": true,
+  "sourceAccepted": false,
+  "nativeTerminalIndexSha256": "ec1411e3b39ef6a631158f18eefd3564291ce2036134951aec61059b5b151576",
+  "nativeTerminalClosureSha256": "440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057",
+  "originalFinalReviewSha256": "a49746f6608cb88fd411afe3294dc8269c7aa0eef0d010f033f77925e37fe2a2",
+  "rootVerifiedNativeIndexed": 236,
+  "rootVerifiedActualSource": 679,
+  "rootVerifiedOrigins": 221,
+  "findings": {
+    "F1": {
+      "decision": "ACCEPT static High; no observed compiler result",
+      "correction": "Both new service fixture policy parameters become NonNullable<TransactionServiceOptions[minimumReads]> = {}, matching existing fixture pattern; no production option widening."
+    },
+    "F2": {
+      "decision": "ACCEPT non-discriminating synchronous capture witness",
+      "correction": "Preserve existing no-min synchronous/preaborted and genesis/pos0 obligations. Correction DATA plan must specify a discriminating capture control across a real pending/retry boundary or equivalent data-only capture counterfactual, proving it would fail deferred recapture. No prose-only mutation assertion. Explicitly enumerate any extra direct unit calls and honest counts before authoring; preserve original23 direct calls/8callbacks/9sourcewire/30installed exchanges."
+    },
+    "F3": {
+      "decision": "ACCEPT missing service minimum-wait abort witness; qualify HTTP-drop claim",
+      "correction": "Add bounded source unit abort during a pending minimum wait, proving ScopeServerOperationAbortedError and released owner entry/drain. Existing S05 already asserts exact forwarded request.signal, so dropping HTTP signal is already discriminated. Add abort-to-handler propagation counterfactual with no extra wire if needed; declare any new direct calls. Preserve both S03 timeout cases and S05 all8 existing rows."
+    },
+    "F4": {
+      "decision": "ACCEPT/corroborates native G09-CODE-N1",
+      "correction": "All8 allowlisted failed-partial ready projection values use ?? null, preserving present-invalid values, readyValidatedfalse and strict keyset; no positive fallback or report schema weakening."
+    },
+    "F5": {
+      "decision": "ACCEPT Low naming",
+      "correction": "Rename installed repeated local to commaValued in both references; original one-line comma-valued request/row label and14+16 wire budgets unchanged; no repeated-header evidence inferred."
+    },
+    "F6": {
+      "decision": "ACCEPT unmeasured risk; DEFER source budget change",
+      "correction": "Retain original absolute3s work, remaining-time request allowance, cleanup/request/callback caps. Do not adopt suggested fresh5s/per-request reset or widen/restart any deadline. Fresh exact-source validation must measure actual completion and fail if it cannot fit; no prior failure or runtime success claimed."
+    },
+    "F7": {
+      "decision": "RECORD informational expected authenticated finite-wait exposure",
+      "correction": "No concurrency mechanism/semantics added; shared existing finite policy/lifecycle remains. Future concurrency work outside this slice."
+    },
+    "F8": {
+      "decision": "RETAIN unreachable defensive throw",
+      "correction": "No demonstrated reachable500; matches existing defensive idiom. No source change required."
+    },
+    "F9": {
+      "decision": "RECORD informational cosmetic escapes/tautological constant component",
+      "correction": "No required production correction; substantive epoch/view/position assertions preserved. Avoid unrelated cosmetic sweep."
+    }
+  },
+  "reviewerScopeLimitations": "Reviewer expressly omitted spec, several plan/case/grammar/root/native contexts, maps/cumulative diffs and historical final-owner evidence; no full288context/read-all/hash approval inferred. Original omissions are preserved. Full independent native/source maps and prior root accepted-plan/input inspection remain distinct evidence; corrective source requires FULL other-native closure and root exact-source acceptance. G09 does not repair incomplete final-owner PLAN or establish final251 owners.",
+  "approvedNextStep": "DATA-only exact correction plan with finite three-path footprint and explicit source-oracle/count/grammar/prefix/preservation changes; independent precision/root durable before source authoring. No second actual CODE or PLAN.",
+  "proposedCorrectionPaths": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "productionPathsUnchanged": true,
+  "maxExtraSourceDirectCallsForPlanConsideration": 3,
+  "callbackCount8Unchanged": true,
+  "sourceWire9Unchanged": true,
+  "installed14And16Unchanged": true,
+  "sourceAuthoredByThisDisposition": false,
+  "compilerTestBuildInstallRuntimeValidationReleased": false,
+  "noRetry": true,
+  "mainSpecAbsorptionOrLanding": false,
+  "wholeWriteQualification": false
+}

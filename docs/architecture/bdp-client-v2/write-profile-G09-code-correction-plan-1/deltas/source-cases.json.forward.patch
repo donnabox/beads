@@ -1,0 +1,371 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-authoring-1/source-cases.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-correction-plan-1/source-cases.proposed.json
+@@ -1,177 +1,219 @@
+ {
+   "callbacks": [
+     {
++      "authoredDirectCalls": 4,
++      "authoredWireRequests": 0,
++      "basisSelection": {
++        "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
++        "id": "G09-S01",
++        "kind": "source",
++        "line": 4405,
++        "name": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-service.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S01",
+       "proposedFullName": "schemaObserved zero-min/current and captured supplied tuple",
+-      "workload": "3 direct service calls; receiving capture/mutation control, original zero-min timing and close/drain",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S01",
+-        "name": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+-        "path": "packages/server/src/transaction-service.test.ts",
+-        "line": 4405,
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "Original3 calls unchanged plus one real pos1 pending/retry snapshot call; genuine owner.admit+execute once, no service.submit/wire"
++    },
++    {
++      "authoredDirectCalls": 2,
++      "authoredWireRequests": 0,
++      "basisSelection": {
+         "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
+-      "authoredDirectCalls": 3,
+-      "authoredWireRequests": 0
+-    },
+-    {
++        "id": "G09-S02",
++        "kind": "source",
++        "line": 4426,
++        "name": "G09-S02 schemaObserved epoch and view errors",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-service.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S02",
+       "proposedFullName": "schemaObserved epoch and view errors",
+-      "workload": "2 direct service calls; actual context, zero waits",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S02",
+-        "name": "G09-S02 schemaObserved epoch and view errors",
+-        "path": "packages/server/src/transaction-service.test.ts",
+-        "line": 4426,
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "2 direct service calls; actual context, zero waits"
++    },
++    {
++      "authoredDirectCalls": 3,
++      "authoredWireRequests": 0,
++      "basisSelection": {
+         "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
+-      "authoredDirectCalls": 2,
+-      "authoredWireRequests": 0
+-    },
+-    {
++        "id": "G09-S03",
++        "kind": "source",
++        "line": 4455,
++        "name": "G09-S03 schemaObserved ahead and opaque bounded attempts",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-service.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S03",
+       "proposedFullName": "schemaObserved ahead and opaque bounded attempts",
+-      "workload": "2 calls with existing source-injected finite clock;2 attempts+1 wait each; no await inside entry; source unit not real timing",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S03",
+-        "name": "G09-S03 schemaObserved ahead and opaque bounded attempts",
+-        "path": "packages/server/src/transaction-service.test.ts",
+-        "line": 4455,
+-        "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
+-      "authoredDirectCalls": 2,
+-      "authoredWireRequests": 0
+-    },
+-    {
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "Original2 timeoutcases unchanged first, then one pending abort/owner-release/cached-close-drain call; no post-close observation invocation"
++    },
++    {
++      "authoredDirectCalls": 8,
++      "authoredWireRequests": 0,
++      "basisSelection": {
++        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
++        "id": "G09-S04",
++        "kind": "source",
++        "line": 455,
++        "name": "G09-S04 schema selector receiving and exact identity",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-schema-http.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S04",
+       "proposedFullName": "schema selector receiving and exact identity",
+-      "workload": "8 direct excluded calls; no observe; exact retrieval not$id/query/foreign/local Resource alias; no getter invocation",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S04",
+-        "name": "G09-S04 schema selector receiving and exact identity",
+-        "path": "packages/server/src/transaction-schema-http.test.ts",
+-        "line": 455,
+-        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
+-      "authoredDirectCalls": 8,
+-      "authoredWireRequests": 0
+-    },
+-    {
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "8 direct excluded calls; no observe; exact retrieval not$id/query/foreign/local Resource alias; no getter invocation"
++    },
++    {
++      "authoredDirectCalls": 9,
++      "authoredWireRequests": 0,
++      "basisSelection": {
++        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
++        "id": "G09-S05",
++        "kind": "source",
++        "line": 508,
++        "name": "G09-S05 schema selector HTTP/min failure order",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-schema-http.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S05",
+       "proposedFullName": "schema selector HTTP/min failure order",
+-      "workload": "8 direct calls:200GET,200HEAD,304,412,406,410,409,503; no stale body or leaked metadata",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S05",
+-        "name": "G09-S05 schema selector HTTP/min failure order",
+-        "path": "packages/server/src/transaction-schema-http.test.ts",
+-        "line": 508,
+-        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
+-      "authoredDirectCalls": 8,
+-      "authoredWireRequests": 0
+-    },
+-    {
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "Original8 rows+exact forwarded request.signal assertions unchanged; one same-clock direct handler abort error identity counterfactual, no response/wire"
++    },
++    {
++      "authoredDirectCalls": 0,
++      "authoredWireRequests": 5,
++      "basisSelection": {
++        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
++        "id": "G09-S06",
++        "kind": "source",
++        "line": 756,
++        "name": "G09-S06 schema runtime satisfied and context errors",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-schema-http.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S06",
+       "proposedFullName": "schema runtime satisfied and context errors",
+-      "workload": "5 real source wire requests: baselineGET, knownGET, knownHEAD, epochGET, viewHEAD; canonical Host, same captured bytes",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S06",
+-        "name": "G09-S06 schema runtime satisfied and context errors",
+-        "path": "packages/server/src/transaction-schema-http.test.ts",
+-        "line": 756,
+-        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "5 real source wire requests: baselineGET, knownGET, knownHEAD, epochGET, viewHEAD; canonical Host, same captured bytes"
++    },
++    {
+       "authoredDirectCalls": 0,
+-      "authoredWireRequests": 5
+-    },
+-    {
++      "authoredWireRequests": 2,
++      "basisSelection": {
++        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
++        "id": "G09-S07",
++        "kind": "source",
++        "line": 781,
++        "name": "G09-S07 schema runtime ahead before conditional",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-schema-http.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S07",
+       "proposedFullName": "schema runtime ahead before conditional",
+-      "workload": "2 real source wire requests: baseline then aheadGET+If-None-Match:* ->503",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S07",
+-        "name": "G09-S07 schema runtime ahead before conditional",
+-        "path": "packages/server/src/transaction-schema-http.test.ts",
+-        "line": 781,
+-        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "2 real source wire requests: baseline then aheadGET+If-None-Match:* ->503"
++    },
++    {
+       "authoredDirectCalls": 0,
+-      "authoredWireRequests": 2
+-    },
+-    {
++      "authoredWireRequests": 2,
++      "basisSelection": {
++        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
++        "id": "G09-S08",
++        "kind": "source",
++        "line": 799,
++        "name": "G09-S08 schema runtime unknown before HEAD/media",
++        "observedExecution": false,
++        "path": "packages/server/src/transaction-schema-http.test.ts"
++      },
++      "callbackSeconds": 5,
++      "cleanupInclusive": true,
++      "cleanupSeconds": 1,
++      "finalSelectionBinding": {
++        "fileSha256": "UNKNOWN",
++        "line": "UNKNOWN",
++        "requiresNewAuthorFreeze": true
++      },
+       "id": "G09-S08",
+       "proposedFullName": "schema runtime unknown before HEAD/media",
+-      "workload": "2 real source wire requests: baseline then opaqueHEAD+conditional/media ->503",
+-      "callbackSeconds": 5,
+-      "workSeconds": 3,
+-      "cleanupSeconds": 1,
+-      "cleanupInclusive": true,
+-      "status": "AUTHORED_NOT_EXECUTED",
+-      "actualSelection": {
+-        "id": "G09-S08",
+-        "name": "G09-S08 schema runtime unknown before HEAD/media",
+-        "path": "packages/server/src/transaction-schema-http.test.ts",
+-        "line": 799,
+-        "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+-        "kind": "source",
+-        "observedExecution": false
+-      },
+-      "authoredDirectCalls": 0,
+-      "authoredWireRequests": 2
++      "status": "PROPOSED_NOT_AUTHORED",
++      "workSeconds": 3,
++      "workload": "2 real source wire requests: baseline then opaqueHEAD+conditional/media ->503"
+     }
+   ],
++  "extraDirectCalls": 3,
++  "measurement": "Static authored call inventory only, no execution or qualification result",
+   "newCallbacks": 8,
+-  "prospectiveDirectCalls": 23,
++  "oldCallbacks": "preserve all except narrow supersession of known-schema min-refusal expectations in same existing source file; retain former hardcoded foreign tuple as410 control instead of deleting it",
++  "prospectiveDirectCalls": 26,
+   "prospectiveSourceWireRequests": 9,
+-  "measurement": "Static authored call inventory only, no execution or qualification result",
+-  "oldCallbacks": "preserve all except narrow supersession of known-schema min-refusal expectations in same existing source file; retain former hardcoded foreign tuple as410 control instead of deleting it"
++  "status": "CLOSED PROPOSED CORRECTION, no source authored/evaluated"
+ }

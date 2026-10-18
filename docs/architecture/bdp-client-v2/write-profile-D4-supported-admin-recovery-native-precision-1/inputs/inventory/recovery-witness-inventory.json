@@ -1,0 +1,172 @@
+{
+  "mode": "Existing source programs inspected, NOT executed or accepted on current installed basis",
+  "witnesses": [
+    {
+      "id": "W-RU-CRASH",
+      "path": "packages/server/src/recovery-store.test.ts",
+      "lines": [
+        759,
+        790,
+        900,
+        948
+      ],
+      "finiteVariants": [
+        "claims",
+        "staged",
+        "committed"
+      ],
+      "actualProgram": "source-module child/SQLite barrier then SIGKILL, reopen same store; two abandoned claims except committed keeps first and clears tail; retry first evaluates0 if committed else1, tail not resumed",
+      "supportLevel": "INTERNAL_SOURCE_STORAGE_CONTROL",
+      "notProof": [
+        "ordinary installed RU route",
+        "logical restore",
+        "physical power loss",
+        "erasure cleanup"
+      ]
+    },
+    {
+      "id": "W-RU-SEQUENCE",
+      "path": "packages/server/src/sequence-executor.test.ts",
+      "lines": [
+        2108,
+        2176
+      ],
+      "finiteVariants": [
+        "actual-adapter2-of5 crash"
+      ],
+      "actualProgram": "two real committed members, third dispatched at observed barrier, SIGKILL; reopen recovers3claims, retained first2/resources unchanged, tailunknown; resubmission2existing+3realcompletions",
+      "supportLevel": "SOURCE_OWNER_WITH_TEST_BARRIER",
+      "notProof": [
+        "whole-sequence atomic transaction",
+        "operator logical restore",
+        "same final installed Write listener"
+      ]
+    },
+    {
+      "id": "W-RU-REFUSAL",
+      "path": "packages/server/src/recovery-store.test.ts",
+      "lines": [
+        694,
+        711,
+        1682,
+        1712
+      ],
+      "finiteVariants": [
+        "Scope mismatch",
+        "installation mismatch",
+        "lineage mismatch",
+        "capture mismatch after real hot journal"
+      ],
+      "actualProgram": "refuse incompatible/incomplete image before claim sweeping/reseed; correct actual opener later recovers claims",
+      "supportLevel": "SOURCE_STARTUP_INTEGRITY_CONTROL",
+      "notProof": [
+        "coherent full-store rollback detection",
+        "complete recovery state certification",
+        "logical backup/import support"
+      ]
+    },
+    {
+      "id": "W-TX-CRASH",
+      "path": "packages/server/src/transaction-store.test.ts",
+      "lines": [
+        353,
+        377,
+        1231,
+        1255
+      ],
+      "finiteVariants": [
+        "after-admission",
+        "after-effects",
+        "after-terminal"
+      ],
+      "actualProgram": "direct emitted owner import; process exits79 before transaction commit, reopen retracts1pending, graph/groups/identity empty; explicit retry commits1group; separate committed-before-abrupt-exit replay keeps originalreceipt and orderedprefix",
+      "supportLevel": "SOURCE_PRIVATE_FAULT_CONTROL",
+      "notProof": [
+        "fault hook available in installed config",
+        "same listener observed admission before crash",
+        "restore/new epoch",
+        "full profile"
+      ]
+    },
+    {
+      "id": "W-TX-HOT",
+      "path": "packages/server/src/transaction-recovery.test.ts",
+      "lines": [
+        18,
+        124
+      ],
+      "finiteVariants": [
+        "before-maintenance-commit",
+        "after-terminal"
+      ],
+      "actualProgram": "actual SIGKILL/hot rollback journal,60priorreceipts/180resources/pages retained; after-terminal pending1 vs maintenance0; copied wrong-config image recovers physical journal before refusing BDP cleanup",
+      "supportLevel": "SOURCE_STORAGE_HOT_JOURNAL_CONTROL",
+      "notProof": [
+        "logical restore API",
+        "epoch rotation",
+        "ledger reemission",
+        "whole-system power loss"
+      ]
+    },
+    {
+      "id": "W-TX-CORRUPT",
+      "path": "packages/server/src/transaction-store.test.ts",
+      "lines": [
+        2993,
+        3028
+      ],
+      "finiteVariants": [
+        "receipt requiredPosition ahead of stored head",
+        "receipt.scopeEpoch another-epoch"
+      ],
+      "actualProgram": "offline SQL receipt corruption produces integrity refusal or prior-epoch nondisclosure",
+      "supportLevel": "TEST_CORRUPTION_COUNTERFACTUAL",
+      "notProof": [
+        "supported authority restore",
+        "changing actual owner epoch",
+        "new namespace key execution",
+        "erasure"
+      ]
+    },
+    {
+      "id": "W-READ-CONTROLLED",
+      "path": "apps/bdptest/src/read-matrix.test.ts",
+      "lines": [
+        577,
+        602
+      ],
+      "finiteVariants": [
+        "same canonicalScope fixture rebuild with deleted IDs and changed internal epoch string"
+      ],
+      "actualProgram": "portable controlled Read fixture/session creation, not durable write owner",
+      "supportLevel": "CONFORMANCE_TEST_CAPABILITY_ONLY",
+      "notProof": [
+        "operator-supported durable restore",
+        "RUdispositions",
+        "TXreceipts/ledger",
+        "oldRead89Writecredit"
+      ]
+    },
+    {
+      "id": "W-D4-GRACEFUL",
+      "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+      "lines": [
+        65,
+        913
+      ],
+      "finiteVariants": [
+        "two graceful child sessions same transaction.sqlite"
+      ],
+      "actualProgram": "existing32HTTP/11POST21GET, two normal acquired children,33receipt entries/96deletionEvents/5clones; actual prospective proof through same credential/config",
+      "supportLevel": "PRIVATE_INSTALLED_PROGRAM_AUTHORED_UNEXECUTED_BY_THIS_INVENTORY",
+      "notProof": [
+        "crash",
+        "logicalrestore",
+        "administrative erasure",
+        "coldnavigation",
+        "fullWrite"
+      ]
+    }
+  ],
+  "budgets": "Preserve each existing source callback/child timeout as authored; no execution or widening. D4 one callback retains90swork/5srequest/10scleanup/120scallback and separately CLOSED150/145/149 outer mechanics. Source/installed administrative witnesses require separate reviewed finite preparation, not extra work inside the32-row callback."
+}

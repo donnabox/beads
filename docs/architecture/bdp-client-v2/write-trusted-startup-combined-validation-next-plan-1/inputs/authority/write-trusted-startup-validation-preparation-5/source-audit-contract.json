@@ -1,0 +1,44 @@
+{
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "callbacks": 44,
+  "selector": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/selection.json",
+  "defaultCallbackMs": 5000,
+  "files": {
+    "apps/bdptest/src/installed-reference-startup.test.ts": "db93a0de4e13cf7330ba311435a3ea3af6877d4f6707f652875cba1b4364e0f2",
+    "packages/config/src/index.test.ts": "075bfa623cf5f5b5cee97084b3f534a1649539afdc7d9f8539652c1678ef4a26",
+    "packages/server/src/read-sequence-lifecycle.test.ts": "83f93562c4742d6a5f7f04ebd5772908a1cf716c99f794c3a2078d416046f497",
+    "packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+    "packages/server/src/transaction-installed.test.ts": "d664779fd64d50eb4736961472538473b2969fb9ce36e4fd39b6efe40c2d0327",
+    "packages/server/src/transaction-runtime-configuration.test.ts": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+    "packages/server/src/transaction-snapshot.test.ts": "d4b338ec53db6a14d4a469a70a70dfb908eb0898cd1d4a2bb2797d62429ceb9e",
+    "scripts/smoke-safety.test.mjs": "3fea7a011388bdcba9d5a4ab93f2395c9b5f85295bf847be44e66c6aca539b86"
+  },
+  "requiredResultKeys": [
+    "testResults",
+    "numFailedTests",
+    "numFailedTestSuites",
+    "numPassedTests",
+    "success"
+  ],
+  "perSuite": [
+    "name",
+    "assertionResults"
+  ],
+  "perAssertion": [
+    "fullName",
+    "status"
+  ],
+  "exactNamesAndFiles": true,
+  "noExtraExecutedCallbacks": true,
+  "failuresRuntimeAndUnhandledErrorsMustBeZero": true,
+  "claims": {
+    "configuration": "Path/default/environment precedence/role isolation/non-echo assertions only; config does not read deployment files",
+    "sourceFD": "real one-selected-open success plus mocked close-count failures, stale-stat overflow/read-error/non-file; no process-wide FD census",
+    "sourceNoListener": "forbidden createServer/netServer/store/runtime candidate mocks + owned store paths unchanged/absent; instrumented attempt boundary",
+    "captures": "inert deeply frozen handles/private registry; no-reread and original pre-await Read tuple; actual existing capture/compile delegation",
+    "publicPrivacy": "exact package exports/private Snapshot and json-value-equality public-entry scans; lifecycle facet freeze/keys/privacy",
+    "credential": "Tokens remain private captures; direct opaque provenance identities commit to contents, not entropy proof"
+  },
+  "observations": "Assertion-only callbacks emit no new structured observation schema. Auditing must not invent per-request/FD/HTTP telemetry from passing titles. In-callback table iterations are source-derived, not separate Vitest callbacks.",
+  "collectorBarrier": "fresh-build and root accepted actual build inventory BEFORE ANY test collection/import"
+}

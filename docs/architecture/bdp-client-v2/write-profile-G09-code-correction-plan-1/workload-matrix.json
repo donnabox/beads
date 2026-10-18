@@ -1,0 +1,69 @@
+{
+  "actualMeasuredFit": "UNKNOWN; no source execution",
+  "beforeDirect": [
+    3,
+    2,
+    2,
+    8,
+    8,
+    0,
+    0,
+    0
+  ],
+  "bounds": {
+    "futureOuterMs": 120000,
+    "futureTERMms": 115000,
+    "installedCallbackMs": 60000,
+    "installedCleanupMs": 10000,
+    "installedRequestMs": 5000,
+    "installedWorkMs": 45000,
+    "retries": 0,
+    "sourceCallbackMs": 5000,
+    "sourceCleanupMs": 1000,
+    "sourceRequestCeilingMs": 5000,
+    "sourceWorkMs": 3000
+  },
+  "exactExtra3": [
+    {
+      "call": "4thschemaObserved pos1 capture/retry",
+      "id": "S01"
+    },
+    {
+      "call": "3rdschemaObserved pendingabort",
+      "id": "S03"
+    },
+    {
+      "call": "9thselector rethrows exactaborterror",
+      "id": "S05"
+    }
+  ],
+  "installed": [
+    14,
+    16
+  ],
+  "installedLegacy14": "byteexact separate",
+  "noNewCallbacksWireChildrenOrRunnerCalls": true,
+  "normalInstalledChildren": [
+    1,
+    1
+  ],
+  "proposedDirect": [
+    4,
+    2,
+    3,
+    8,
+    9,
+    0,
+    0,
+    0
+  ],
+  "sourceCallbacks": 8,
+  "sourceWire": [
+    5,
+    2,
+    2
+  ],
+  "sourceWireTotal": 9,
+  "totalBefore": 23,
+  "totalProposed": 26
+}

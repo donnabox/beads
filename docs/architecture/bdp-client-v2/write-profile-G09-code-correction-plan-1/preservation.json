@@ -1,0 +1,47 @@
+{
+  "allEightCallbackNamesUnchanged": true,
+  "basisCanonical679": "eeb78c7d5c97f45b18f3c0465926d905915c302dae4da25a24f887e3e9247227",
+  "correctionOwned3": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "futureSourceHashes": "UNKNOWN until separately released author freeze",
+  "installedOriginal14CallbackByteExact": true,
+  "legacyPrefixes": {
+    "apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18590,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    },
+    "packages/server/src/transaction-schema-http.test.ts": {
+      "bytes": 16866,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "082c17775d42960a7a0ea1f6091c274c51f2bd71ee38eb19bd49b97b70613d21"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "bytes": 156516,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "e2fc3121bb92e5378ed41b4ea904f04451b2c474072d08c31a0891f51ba70210"
+    }
+  },
+  "otherFourCumulativeDirtyFilesUnchanged": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "productionAllUnchanged": true,
+  "protectedOther676": true,
+  "sourceAuthoringReleased": false,
+  "wireCounts": {
+    "installed": [
+      14,
+      16
+    ],
+    "source": 9
+  }
+}
