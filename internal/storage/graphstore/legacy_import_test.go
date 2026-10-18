@@ -116,10 +116,37 @@ func TestLegacyImportCommentBudgetAndOriginalUTF8(t *testing.T) {
 		{ID: "old-a", Title: "Imported", Labels: []string{"bad\xff"}},
 		{ID: "old-a", Title: "Imported", Comments: []*types.Comment{{Text: "bad\xff"}}},
 		{ID: "old-a", Title: "Imported", Dependencies: []*types.Dependency{{DependsOnID: "bad\xff"}}},
+		{ID: "old-a", Title: "Imported", Metadata: json.RawMessage("{\"text\":\"bad\xff\"}")},
+		{ID: "old-a", Title: "Imported", Metadata: json.RawMessage("{\"bad\xff\":true}")},
 	} {
-		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{invalid}}, "importer"); err == nil {
-			t.Fatal("invalid original UTF-8 was normalized instead of refused")
+		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{invalid}}, "importer"); !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), "UTF-8") {
+			t.Fatalf("invalid original UTF-8 was normalized instead of refused: %v", err)
 		}
+	}
+}
+
+func TestLegacyImportUnsupportedRecordState(t *testing.T) {
+	if _, err := prepareLegacyImport(parseLegacyFixture(t, `{"id":"old-a","title":"Control"}`), "importer"); err != nil {
+		t.Fatalf("valid prefixed control: %v", err)
+	}
+	for _, test := range []struct {
+		name, fields, message string
+	}{
+		{"ephemeral", `"ephemeral":true`, "unsupported ephemeral, no-history, explicit storage-class or live lease data"},
+		{"no-history", `"no_history":true`, "unsupported ephemeral, no-history, explicit storage-class or live lease data"},
+		{"lease-expiry", `"lease_expires_at":"2099-01-01T00:00:00Z"`, "unsupported ephemeral, no-history, explicit storage-class or live lease data"},
+		{"heartbeat", `"heartbeat_at":"2026-01-01T00:00:00Z"`, "unsupported ephemeral, no-history, explicit storage-class or live lease data"},
+		{"lease-node", `"lease_granted_node":"previous-node"`, "unsupported ephemeral, no-history, explicit storage-class or live lease data"},
+		{"tombstone", `"status":"tombstone"`, "tombstone old-a is unsupported"},
+		{"absent-local-target", `"dependencies":[{"depends_on_id":"old-missing","type":"blocks"}]`, "dependency old-a -> old-missing does not name an Issue in this import"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			input := `{"id":"old-a","title":"Refused",` + test.fields + `}`
+			_, err := prepareLegacyImport(parseLegacyFixture(t, input), "importer")
+			if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), test.message) {
+				t.Fatalf("wrong refusal for %s: %v", test.name, err)
+			}
+		})
 	}
 }
 
@@ -246,7 +273,7 @@ func parseLegacyFixture(t *testing.T, input string) legacyimport.Batch {
 func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]string {
 	t.Helper()
 	state := reopenState(t, ctx, s)
-	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "config"} {
+	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "epoch_minted_addresses", "store_epoch", "interactions", "config"} {
 		rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			t.Fatal(err)
@@ -334,6 +361,18 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 				}
 			})
 			batch := parseLegacyFixture(t, legacyImportFixture)
+			var epochSeed int
+			if err := s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM store_epoch").Scan(&epochSeed); err != nil {
+				t.Fatal(err)
+			}
+			var changedEpoch int
+			if err := s.db.QueryRowContext(ctx, legacyFreshnessChangedEpochQuery).Scan(&changedEpoch); err != nil || changedEpoch != 0 {
+				t.Fatalf("fresh Init has nonpristine epoch state: count=%d err=%v", changedEpoch, err)
+			}
+			restoreEpoch := "DELETE FROM store_epoch WHERE id=1"
+			if epochSeed != 0 {
+				restoreEpoch = "UPDATE store_epoch SET epoch=1,bumped_at=NULL,bumped_reason=NULL WHERE id=1"
+			}
 			cases := []struct {
 				name, insert, remove, message string
 				orphan                        bool
@@ -352,6 +391,7 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 				{"wisp-dependency", "INSERT INTO wisp_dependencies(id,issue_id,depends_on_external) VALUES('orphan-dep','absent','external:target')", "DELETE FROM wisp_dependencies WHERE id='orphan-dep'", "wisp_dependencies", true},
 				{"wisp-comment", "INSERT INTO wisp_comments(id,issue_id,text) VALUES('orphan-comment','absent','retained')", "DELETE FROM wisp_comments WHERE id='orphan-comment'", "wisp_comments", true},
 				{"wisp-label", "INSERT INTO wisp_labels(issue_id,label) VALUES('absent','retained')", "DELETE FROM wisp_labels WHERE issue_id='absent'", "wisp_labels", true},
+				{"interaction", "INSERT INTO interactions(id,kind,created_at,issue_id,actor) VALUES('orphan-interaction','tool','2026-01-01','old-b','previous-author')", "DELETE FROM interactions WHERE id='orphan-interaction'", "interactions", false},
 				{"event", "INSERT INTO events(id,issue_id,event_type,actor) VALUES('orphan-event','old-b','created','previous-author')", "DELETE FROM events WHERE id='orphan-event'", "events", true},
 				{"provenance", "INSERT INTO provenance_events(id,issue_id,kind,source) VALUES('orphan-provenance','old-b','commit','previous-source')", "DELETE FROM provenance_events WHERE id='orphan-provenance'", "provenance_events", true},
 				{"counter", "INSERT INTO child_counters(parent_id,last_child) VALUES('old-b',42)", "DELETE FROM child_counters WHERE parent_id='old-b'", "child_counters", true},
@@ -363,6 +403,10 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 				{"lease", "INSERT INTO leases(issue_id,holder,granted_at,lease_expires_at,heartbeat_at) VALUES('absent','previous-holder','2026-01-01','2099-01-01','2026-01-01')", "DELETE FROM leases WHERE issue_id='absent'", "leases", false},
 				{"allocator", "INSERT INTO issue_counter(prefix,last_id) VALUES('old',42)", "DELETE FROM issue_counter WHERE prefix='old'", "issue_counter", false},
 				{"journal-sequence", "UPDATE bd_events_seq SET next_seq=42 WHERE id=0", "UPDATE bd_events_seq SET next_seq=0 WHERE id=0", "bd_events_seq", false},
+				{"epoch-address", "INSERT INTO epoch_minted_addresses(address,store_id,minted_id,minted_epoch,minted_at) VALUES('previous-address','previous-store','old-b',1,'2026-01-01')", "DELETE FROM epoch_minted_addresses WHERE address='previous-address'", "epoch_minted_addresses", false},
+				{"epoch-generation", "INSERT INTO store_epoch(id,epoch) VALUES(1,2) ON DUPLICATE KEY UPDATE epoch=2", restoreEpoch, "store_epoch", false},
+				{"epoch-bump-time", "INSERT INTO store_epoch(id,epoch,bumped_at) VALUES(1,1,'2026-01-01') ON DUPLICATE KEY UPDATE bumped_at='2026-01-01'", restoreEpoch, "store_epoch", false},
+				{"epoch-bump-reason", "INSERT INTO store_epoch(id,epoch,bumped_reason) VALUES(1,1,'') ON DUPLICATE KEY UPDATE bumped_reason=''", restoreEpoch, "store_epoch", false},
 				{"kv-memory", "INSERT INTO config (`key`,value) VALUES('kv.memory.retained','original')", "DELETE FROM config WHERE `key`='kv.memory.retained'", "legacy KV Memories", false},
 				{"empty-kv-memory", "INSERT INTO config (`key`,value) VALUES('kv.memory.retained','')", "DELETE FROM config WHERE `key`='kv.memory.retained'", "legacy KV Memories", false},
 			}
@@ -401,6 +445,27 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 					}
 				})
 			}
+			t.Run("pristine-epoch-seed", func(t *testing.T) {
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				t.Cleanup(func() {
+					cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer stop()
+					if _, err := s.db.ExecContext(cleanup, restoreEpoch); err != nil {
+						t.Error(err)
+					}
+				})
+				if _, err := s.db.ExecContext(operation, "INSERT IGNORE INTO store_epoch(id,epoch) VALUES(1,1)"); err != nil {
+					t.Fatal(err)
+				}
+				before := legacyImportState(t, operation, s)
+				if _, err := s.ImportLegacy(operation, batch, "importer", true); err != nil {
+					t.Fatalf("pristine epoch seed disqualified fresh destination: %v", err)
+				}
+				if !reflect.DeepEqual(before, legacyImportState(t, operation, s)) {
+					t.Fatal("dry-run changed pristine epoch seed")
+				}
+			})
 			// Similar configuration keys are not Memories. Ordinary config does
 			// not disqualify the fresh destination or get overwritten by dry-run.
 			t.Run("ordinary-config", func(t *testing.T) {
@@ -474,6 +539,29 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 			if !reflect.DeepEqual(before, state(t)) {
 				t.Fatal("same-prefix dry-run changed configuration")
 			}
+			for _, dry := range []bool{false, true} {
+				t.Run(fmt.Sprintf("missing-prefix/dry=%t", dry), func(t *testing.T) {
+					restorePrefix := func() {
+						if _, err := s.db.ExecContext(operationContext(t), "INSERT INTO config (`key`,value) VALUES ('issue_prefix',?) ON DUPLICATE KEY UPDATE value=VALUES(value)", before["issue_prefix"]); err != nil {
+							t.Fatal(err)
+						}
+					}
+					t.Cleanup(restorePrefix)
+					if _, err := s.db.ExecContext(operationContext(t), "DELETE FROM config WHERE `key`='issue_prefix'"); err != nil {
+						t.Fatal(err)
+					}
+					result, err := s.ImportLegacy(operationContext(t), batch, "importer", dry)
+					if !errors.Is(err, ErrInvalidStore) || !errors.Is(err, sql.ErrNoRows) || !reflect.DeepEqual(result, LegacyImportResult{}) {
+						t.Fatalf("missing prefix lost invalid-store/cause or leaked a result: result=%+v err=%v", result, err)
+					}
+					// Restore the deliberately removed prerequisite before comparing
+					// all other planes, including transaction coordination writes.
+					restorePrefix()
+					if !reflect.DeepEqual(before, state(t)) {
+						t.Fatal("missing-prefix refusal left database changes")
+					}
+				})
+			}
 			for _, stage := range []string{"coordination", "import-prefix", "import-native", "import-issues", "import-links", "source-catalog", "source-retained", "allocation", "payload", "retained", "import-retained"} {
 				t.Run(stage, func(t *testing.T) {
 					fault := errors.New("injected late import failure")
@@ -495,46 +583,51 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					}
 				})
 			}
-			for _, deadline := range []bool{false, true} {
-				t.Run(fmt.Sprintf("late-context-deadline=%t", deadline), func(t *testing.T) {
-					var operation context.Context
-					var cancel context.CancelFunc
-					var expected error
-					if deadline {
-						operation, cancel = context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
-						expected = context.DeadlineExceeded
-					} else {
-						operation, cancel = context.WithCancel(operationContext(t))
-						expected = context.Canceled
-					}
-					defer cancel()
-					reached := false
-					previousHook := s.afterWrite
-					t.Cleanup(func() { s.afterWrite = previousHook })
-					s.afterWrite = func(stage string) error {
-						if stage == "import-retained" {
-							reached = true
-							if deadline {
-								<-operation.Done()
-							} else {
-								cancel()
-							}
+			for _, dry := range []bool{false, true} {
+				for _, deadline := range []bool{false, true} {
+					t.Run(fmt.Sprintf("dry=%t/late-context-deadline=%t", dry, deadline), func(t *testing.T) {
+						var operation context.Context
+						var cancel context.CancelFunc
+						var expected error
+						if deadline {
+							operation, cancel = context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
+							expected = context.DeadlineExceeded
+						} else {
+							operation, cancel = context.WithCancel(operationContext(t))
+							expected = context.Canceled
 						}
-						return nil
-					}
-					_, err := s.ImportLegacy(operation, batch, "importer", false)
-					s.afterWrite = previousHook
-					// Inspect through the independent live context, after driver
-					// cancellation and transaction cleanup have completed.
-					// A driver watcher may already have rolled back the transaction.
-					// ErrTxDone cleanup must keep outcome_unknown precedence;
-					// other driver cleanup errors may also be uncertain.
-					unknown := errors.Is(err, ErrOutcomeUnknown)
-					alreadyDone := errors.Is(err, sql.ErrTxDone)
-					if !reached || !errors.Is(err, expected) || (alreadyDone && !unknown) || !reflect.DeepEqual(before, state(t)) {
-						t.Fatalf("late context classification or rollback failed: reached=%v unknown=%v alreadyDone=%v err=%v", reached, unknown, alreadyDone, err)
-					}
-				})
+						defer cancel()
+						reached := false
+						previousHook := s.afterWrite
+						t.Cleanup(func() { s.afterWrite = previousHook })
+						s.afterWrite = func(stage string) error {
+							if stage == "import-retained" {
+								reached = true
+								if deadline {
+									<-operation.Done()
+								} else {
+									cancel()
+								}
+							}
+							return nil
+						}
+						failed, err := s.ImportLegacy(operation, batch, "importer", dry)
+						s.afterWrite = previousHook
+						// Inspect through the independent live context, after driver
+						// cancellation and transaction cleanup have completed.
+						// A driver watcher may already have rolled back the transaction.
+						// ErrTxDone cleanup must keep outcome_unknown precedence;
+						// other driver cleanup errors may also be uncertain.
+						if err != nil && strings.Contains(err.Error(), "exceeds the current-read budget") {
+							t.Fatalf("cancellation was mislabeled as a size overflow: %v", err)
+						}
+						unknown := errors.Is(err, ErrOutcomeUnknown)
+						alreadyDone := errors.Is(err, sql.ErrTxDone)
+						if !reached || !errors.Is(err, expected) || (alreadyDone && !unknown) || !reflect.DeepEqual(failed, LegacyImportResult{}) || !reflect.DeepEqual(before, state(t)) {
+							t.Fatalf("late context classification or rollback failed: reached=%v unknown=%v alreadyDone=%v err=%v", reached, unknown, alreadyDone, err)
+						}
+					})
+				}
 			}
 			preview, err := s.ImportLegacy(operationContext(t), batch, "importer", true)
 			if err != nil || !preview.DryRun {
@@ -600,7 +693,13 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, o)
+			operationContext := func(t *testing.T) context.Context {
+				t.Helper()
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				return operation
+			}
+			s, err := OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -609,17 +708,19 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 					t.Error(err)
 				}
 			})
-			before := legacyImportState(t, ctx, s)
+			before := legacyImportState(t, operationContext(t), s)
 			for _, input := range []string{
 				strings.Replace(legacyImportFixture, `"type":"blocks"`, `"type":"parent-child"`, 1),
-				strings.Replace(legacyImportFixture, `"depends_on_id":"old-a"`, `"depends_on_id":"missing"`, 1),
+				strings.Replace(legacyImportFixture, `"depends_on_id":"old-a"`, `"depends_on_id":"old-missing"`, 1),
 				strings.Replace(legacyImportFixture, `"metadata":{"custom":{"flag":true}}`, `"metadata":[1]`, 1),
 				strings.Replace(legacyImportFixture, `"closed_at":"2026-01-02T00:00:00Z"`, `"closed_at":"2026-01-02T00:00:00.123Z"`, 1),
 				legacyImportFixture + `{"id":"old-a","title":"duplicate"}`,
-				`{"id":"x","title":"x","ephemeral":true}`,
-				`{"id":"x","title":"x","no_history":true}`,
-				`{"id":"x","title":"x","lease_expires_at":"2099-01-01T00:00:00Z"}`,
-				`{"id":"x","title":"x","status":"tombstone"}`,
+				`{"id":"old-a","title":"x","ephemeral":true}`,
+				`{"id":"old-a","title":"x","no_history":true}`,
+				`{"id":"old-a","title":"x","lease_expires_at":"2099-01-01T00:00:00Z"}`,
+				`{"id":"old-a","title":"x","heartbeat_at":"2026-01-01T00:00:00Z"}`,
+				`{"id":"old-a","title":"x","lease_granted_node":"previous-node"}`,
+				`{"id":"old-a","title":"x","status":"tombstone"}`,
 				`{"id":"old-a","title":"a","dependencies":[{"depends_on_id":"old-b","type":"blocks"}]}
 {"id":"old-b","title":"b","dependencies":[{"depends_on_id":"old-a","type":"blocks"}]}`,
 				`{"id":"one-a","title":"a"}` + "\n" + `{"id":"two-b","title":"b"}`,
@@ -630,10 +731,10 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 				"",
 				`{"_schema":"beads-jsonl/1"}`,
 			} {
-				if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, input), "importer", false); err == nil {
-					t.Fatalf("accepted %s", input)
+				if _, err := s.ImportLegacy(operationContext(t), parseLegacyFixture(t, input), "importer", false); !errors.Is(err, storage.ErrValidation) {
+					t.Fatalf("wrong validation refusal for %s: %v", input, err)
 				}
-				if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+				if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 					t.Fatal("invalid import changed graph")
 				}
 			}
@@ -757,7 +858,13 @@ func TestLegacyImportCommentFeedPersistence(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, o)
+			operationContext := func(t *testing.T) context.Context {
+				t.Helper()
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				return operation
+			}
+			s, err := OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -767,15 +874,15 @@ func TestLegacyImportCommentFeedPersistence(t *testing.T) {
 				}
 			})
 			stamp := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-			before := legacyImportState(t, ctx, s)
+			before := legacyImportState(t, operationContext(t), s)
 			collapsed := &types.Issue{ID: "comments-a1b", Title: "Distinct source comments", Comments: []*types.Comment{
 				{ID: "first", Author: "author", Text: "same", CreatedAt: stamp},
 				{ID: "second", Author: "author", Text: "same", CreatedAt: stamp},
 			}}
-			if _, err := s.ImportLegacy(ctx, legacyimport.Batch{Issues: []*types.Issue{collapsed}}, "importer", false); err == nil {
+			if _, err := s.ImportLegacy(operationContext(t), legacyimport.Batch{Issues: []*types.Issue{collapsed}}, "importer", false); err == nil {
 				t.Fatal("native duplicate-content collapse was silently accepted")
 			}
-			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+			if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 				t.Fatal("late comment refusal changed the database")
 			}
 			issue := &types.Issue{ID: "comments-a1b", Title: "Comment-heavy import"}
@@ -787,18 +894,18 @@ func TestLegacyImportCommentFeedPersistence(t *testing.T) {
 				}
 				issue.Comments = append(issue.Comments, comment)
 			}
-			result, err := s.ImportLegacy(ctx, legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer", false)
+			result, err := s.ImportLegacy(operationContext(t), legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer", false)
 			if err != nil || result.Comments != 80 {
 				t.Fatalf("comment-heavy import: %+v %v", result, err)
 			}
 			if err := s.Close(); err != nil {
 				t.Fatal(err)
 			}
-			s, err = OpenExisting(ctx, o)
+			s, err = OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
-			feed, err := s.IssueComments(ctx, "beads/comments-a1b")
+			feed, err := s.IssueComments(operationContext(t), "beads/comments-a1b")
 			if err != nil || len(feed) != 80 {
 				t.Fatalf("reopened comment feed: %d %v", len(feed), err)
 			}

@@ -84,6 +84,7 @@ go_test(
     # under CI contention; the required gate still runs every shard.
     timeout = "eternal",
     srcs = [
+        "backend_transaction_policy_test.go",
         "bead_list_store_test.go",
         "bead_list_test.go",
         "collection_read_bounds_test.go",
@@ -167,6 +168,7 @@ go_test(
         "//internal/types",
         "//internal/workapi",
         "//issueops",
+        "@com_github_data_dog_go_sqlmock//:go-sqlmock",
         "@com_github_go_sql_driver_mysql//:mysql",
     ],
 )

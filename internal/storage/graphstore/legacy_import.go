@@ -59,7 +59,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 	result := LegacyImportResult{IssuePrefix: prepared.prefix, Issues: len(batch.Issues), Memories: len(batch.Memories),
 		IDs: map[string]string{}, MemoryIDs: map[string]string{}, DependencyIDs: map[string]string{},
 		DryRun: dryRun, History: "current data only; new initial graph versions; source history is not present in legacy export"}
-	err = s.withTx(ctx, !dryRun, func(tx *sql.Tx) error {
+	err = s.withTxPolicy(ctx, txPolicy{mayWrite: true, commit: !dryRun}, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -197,7 +197,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 			return err
 		}
 		if err := checkCurrentReadBytes(ctx, tx); err != nil {
-			return fmt.Errorf("legacy input's stored representation exceeds the current-read budget: %w", err)
+			return fmt.Errorf("validate imported current-read representation: %w", err)
 		}
 		return nil
 	})
@@ -210,7 +210,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Include reserved/deleted allocations and unmapped native rows: deleting
 	// everything or bypassing graph writers never makes a workspace fresh again.
-	tables := []string{"graph_preview_catalog", "graph_preview_payloads", "graph_preview_links", "issue_versions", "graph_preview_versions", "graph_preview_issue_versions", "bd_events_journal", "leases", "issue_counter"}
+	tables := []string{"graph_preview_catalog", "graph_preview_payloads", "graph_preview_links", "issue_versions", "graph_preview_versions", "graph_preview_issue_versions", "bd_events_journal", "leases", "issue_counter", "epoch_minted_addresses", "interactions"}
 	// Init installs both main and ignored migration lanes, including the wisp
 	// counters. Missing tables fail closed; import never repairs the schema.
 	// Reuse the native ownership inventory so orphan history and counters cannot
@@ -240,6 +240,15 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	}
 	if usedSequence != 0 {
 		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; bd_events_seq is occupied (prior journal sequence allocation)", storage.ErrValidation)
+	}
+	// The epoch singleton may be absent or lazily seeded at epoch 1. A bump
+	// or its durable markers records prior use even after resource deletion.
+	var changedEpoch int
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM store_epoch WHERE id<>1 OR epoch<>1 OR bumped_at IS NOT NULL OR bumped_reason IS NOT NULL").Scan(&changedEpoch); err != nil {
+		return fmt.Errorf("%w: cannot establish workspace freshness from store_epoch; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, err)
+	}
+	if changedEpoch != 0 {
+		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; store_epoch is occupied (prior epoch transition)", storage.ErrValidation)
 	}
 	// Classic Memories are config-backed live data, including empty values.
 	// Infrastructure configuration alone does not make a destination occupied.
@@ -280,6 +289,11 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
 	for _, issue := range input.Issues {
 		if issue == nil {
 			continue
+		}
+		// RawMessage bypasses the string walk. Validate the original metadata
+		// bytes before cloning or canonicalization can obscure their origin.
+		if !utf8.Valid(issue.Metadata) {
+			return invalid("Issue %q metadata must be UTF-8", issue.ID)
 		}
 		for _, field := range []struct {
 			name string

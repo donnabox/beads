@@ -1960,6 +1960,14 @@ exports_files(
     ],
     visibility = ["//:__pkg__"],
 )
+# Synthetic legacy export fixtures linked from the qualification report.
+exports_files(
+    [
+        "testdata/legacy-import/ordinary.jsonl",
+        "testdata/legacy-import/producer.json",
+    ],
+    visibility = ["//:__pkg__"],
+)
 
 # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
 
@@ -2034,12 +2042,3 @@ filegroup(
 )
 
 # --- end repo_files ---
-
-# Synthetic legacy export fixtures linked from the qualification report.
-exports_files(
-    [
-        "testdata/legacy-import/ordinary.jsonl",
-        "testdata/legacy-import/producer.json",
-    ],
-    visibility = ["//:__pkg__"],
-)
