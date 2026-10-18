@@ -1,0 +1,33 @@
+{
+  "base": "c67855b4f7c1e4fb24409eb22d142a52d19ab92f",
+  "baseTree": "c3e6ad67d31e92a30ee5f88691ffcfc895e21e4c",
+  "sourceStage": "671e8eb5e87055debbe2e12f042b067d823c63da",
+  "sourcePaths": {
+    "engdocs/design/graph-export-milestone.md": "49bf5e834a741efde27a1d6bf832758f6454bd277616b659607e7c84ebc1f74d",
+    "internal/graphoutput/BUILD.bazel": "090807913fc52a26a91ac82c81eb5a82952a463bafcd4e1740b6f16563244467",
+    "internal/graphoutput/publish.go": "7fbfc663c2e831e4ef01e0c97c801a9bef590707d2051d3c66bdaf2cd947f047",
+    "internal/graphoutput/publish_test.go": "5677d63a5de84cce9998688a9cf6d7cc6075fcaa2d8c5cff8929ef58cbd0f345",
+    "internal/storage/graphstore/BUILD.bazel": "6617bd6374dae6ddc2b57cad100b37e2cb35a59b51bf519435b664d5767356d7",
+    "internal/storage/graphstore/export_cleanup_pure_test.go": "8b96ad83c57e18b089b10c9019f170aa0919734d2e4c7648e05c2b593f6920d3",
+    "internal/storage/graphstore/export_current.go": "ca1ac4bcbe0c423f483fb9dc0e52e6927639ca7b3cd52e3778854f590c5d1177",
+    "internal/storage/graphstore/export_current_pure_test.go": "e909e67ef940c624520055a78595864ad914d9ea7c7c7b47a5603fc15a7f89ee",
+    "internal/storage/graphstore/export_current_test.go": "f6898ee1d931bbd6e9ea88534f2b89c6ab49c98972427b9116185d84c450c57c",
+    "BUILD.bazel": "3a54300953e4e273af347165d4d59afa74f73a1f0059d259897876793f107bf9",
+    "tools/bazel/BUILD.bazel": "36e8ce802595d8cc058a173f0398a46e1cb6a6316820833293c591c5b0c70d85"
+  },
+  "originalExport": "1304d1498638989ab50f1781c91747f81ec61b88",
+  "originalTransferPaths": 70,
+  "byteIdenticalOriginalPathsNow": 68,
+  "adaptedOriginalBUILDPaths": [
+    "internal/storage/graphstore/BUILD.bazel",
+    "internal/graphoutput/BUILD.bazel"
+  ],
+  "additionalCoreBUILDPaths": [
+    "BUILD.bazel",
+    "tools/bazel/BUILD.bazel"
+  ],
+  "history": "17 original export commits accounted,61 historical evidence files remain unchanged; first70-path freeze evidence is historical preparation state, not current BUILD claim",
+  "manualRepair": "Follow selected-core generator source rules without invoking it: graphoutput gets4 repo filegroups from identical analogous atomicfile block; rootadds4partitionrefs; tools/bazel release_cross adds graphoutput target. No extra go_srcs block owed outside PACKAGES/TREES.",
+  "checks": "Static text/whitespace only; generator/check/build/lint/test/CLI/DB allUNRUN; fresh native+actual review follows freeze",
+  "runtimeOwner": "Janet; no Iris slot"
+}

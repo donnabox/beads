@@ -1,0 +1,9 @@
+# Selected-core BUILD registration follow-up
+
+The first adapted preparation atbdc40f997 copied the older new-package BUILD verbatim. Static comparison with the selected core's tools/bazel/go_srcs.py found that every package now needs repository-file partitions and root aggregation, and every visible production Go library needs a release-cross entry. This is a concrete BUILD completeness gap, repaired before starting fresh source council; no generated guard is removed or weakened.
+
+Three BUILD files change: internal/graphoutput gets the four repo_files groups exactly matching the analogous selected-core atomicfile block; root adds the four graphoutput partition references; tools/bazel adds the graphoutput library to release_cross. All previous selected-core targets remain. No standalone go_srcs block is required because graphoutput is neither in PACKAGES nor under TREES. This follows inspected source rules manually; neither generator nor its check mode ran, and full BUILD consistency remains an owner gate.
+
+[Current source manifest](manifest.json) supersedes the initial preparation counts:11 nonhistorical source/doc/BUILD paths now differ from selected c678;68 original transferred paths remain byte-identical, two original BUILD paths are adapted, and two additional core BUILD paths carry registrations. All61 historical export evidence files and six transferred Go files are unchanged. Original seventeen commits remain accounted. Earlier first-freeze evidence accurately records that earlier state and is not silently rewritten.
+
+No build/test/lint/generator/bd/engine/DB/CLI activation ran. The source-only owner allocation remains in force; all runtime and integration are Janet-owned. Fresh exact-source native plus actual direct council follows the repaired freeze. Old PASS does not qualify this head. No import ancestry, protocol adoption, new serializer/public format or release/default change.
