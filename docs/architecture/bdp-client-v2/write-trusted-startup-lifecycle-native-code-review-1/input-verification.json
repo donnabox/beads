@@ -1,0 +1,39 @@
+{
+  "state": "STATIC verified; no reviewed helper or product executed",
+  "authorPacket": {
+    "sha256": "73094cccf789f92d5b68101f94b09c2a5eba5586f43d79ab634fd4e0ec319204",
+    "bytes": 28885
+  },
+  "authorPacketPhysical": 156,
+  "authorPacketIndexed": 155,
+  "allAuthorBytesAndMirrorExact": true,
+  "parentPlanFilesVerified": 343,
+  "parentNativeFilesVerified": 7,
+  "externalInventoryRows": 506,
+  "liveSourceFilesHashed": 686,
+  "baseKnownFiles": 682,
+  "ownedPaths": [
+    "packages/server/src/development-authority.ts",
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "packages/server/src/reference-deployment-process.ts",
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "scripts/smoke-executables.mjs",
+    "docs/design/startup-configuration.md"
+  ],
+  "modifiedExisting": 5,
+  "new": 4,
+  "protectedUnownedExact": 677,
+  "allNineLiveAndFrozenCopiesExact": true,
+  "actualSourceSpecOriginsVerified": 42,
+  "directAuthorOriginsVerified": 20,
+  "cumulativeInverseGenuine": true,
+  "historicalCorrectionPatchesGenuine": 34,
+  "gitMetadataAttribution": "Root frozen source-release49b1; no Git invoked by this reviewer",
+  "compilerOrTestOrRuntimeExecuted": false,
+  "formatFinalBytes": "UNRUN; original one formatter and four later manual corrections preserved",
+  "ordinaryAdmission": "CLOSED; not granted",
+  "D3aCombinedBasis": "UNRESOLVED; all six TX cold prefixes blocked on accepted combined receiver"
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "static data/witness precision; no execution",
+  "corrections": [
+    "Source before-cleanup snapshot is emitted even if body assertions fail; separate terminal records actual cleanup/directory facts. Two finite observation records per51callbacks, not extra callbacks.",
+    "Missing create:false compares actual directory existence/content as well as absent store file.",
+    "Occupied-port source witness retains committed store file; nested actual Error causes remain checked without raw diagnostic echo."
+  ],
+  "paths": [
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts"
+  ]
+}

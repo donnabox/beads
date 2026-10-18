@@ -1,0 +1,375 @@
+--- template/audit.py
++++ candidate/audit.py
+@@ -1,20 +1,11 @@
+-"""Strict current-changefeed observation auditor; no product imports.
+-Copied Event tools/build inventory modes; report grammar bound to actual source.
+-All invocation requires the current source/session/root gate and supervised stage.
+-"""
++"""D3a exact private callback/report audit; source-only preparation, root gate required."""
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+-import re, math
++import re,math
+ from collections import Counter
+-from urllib.parse import urlsplit, parse_qsl
+ mode=sys.argv[1]
+-stages={'source':'focused-source','history':'historical-context-external',
+-        'finite':'finite-start-now-external','current':'current-changefeed-external'}
+-stage=stages.get(mode)
+-audit_stages={'tools':'bind-workspace-tools','build':'bind-fresh-build',
+-              **{k:'audit-'+v for k,v in stages.items()}}
+-g,_=load_gate(audit_stages[mode],child=True)
++g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build'}.get(mode,'audit-'+mode),child=True)
+ if mode=='tools':
+  require((E/'node-version.log').read_text().strip()=='v24.16.0' and (E/'pnpm-version.log').read_text().strip()=='11.20.0','Actual runtime/package-manager versions differ')
+  tools=dict(document(g['baseTools'])['tools'])
+@@ -28,221 +19,137 @@
+ elif mode=='build':
+  write('build-artifacts.json',{'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'artifacts':inventory(),**{key:{'path':str(E/('fresh-build.'+suffix)),'sha256':sha((E/('fresh-build.'+suffix)).read_bytes())} for key,suffix in [('start','started.json'),('exit','exit.json'),('log','log')]}})
+ else:
+- config=read(P/'commands.json')['commands'][stage];result=read(E/(stage+'.results.json'))
+- ex=read(P/'audit-expectations.json')
+- require(ex['finalized'] is True and sha((P/'report-schemas.json').read_bytes())==ex['reportSchemasSha256'],'Authored grammar changed')
++ stage=mode;cfg=read(P/'commands.json')['commands'][stage];sel=read(P/'selection.json')[stage]
++ result=read(E/(stage+'.results.json'));complete(stage,g)
++ def keys(o,required,optional=()):
++  require(type(o) is dict and set(required)<=set(o)<=set(required)|set(optional),'Missing/extra report key '+str(required))
++ def exact(o,want):
++  for k,v in want.items():require(k in o and type(o[k]) is type(v) and o[k]==v,'Typed actual field '+k)
++ def integer(v):require(type(v) is int and v>=0,'Actual nonnegative integer')
++ def finite(v,limit=None):require(type(v) in [int,float] and math.isfinite(v) and v>=0 and (limit is None or v<limit),'Actual finite bounded value')
++ def digest(v):require(type(v) is str and re.fullmatch('[a-f0-9]{64}',v),'Actual SHA256')
++ def strings(o):require(type(o) is dict and all(type(k) is str and type(v) is str for k,v in o.items()),'Header map')
++ def absent_pid(pid):
++  require(type(pid) is int and pid>0,'Actual child PID')
++  try:os.kill(pid,0)
++  except ProcessLookupError:return
++  except OSError:raise RuntimeError('PID absence unknown')
++  raise RuntimeError('Child remains')
++ def absent_dir(value,prefix):
++  tmp=Path(read(E/(stage+'.started.json'))['temporaryDirectory']);p=Path(value)
++  require(p.is_absolute() and p.is_relative_to(tmp) and p.name.startswith(prefix) and not p.exists(),'Owned BDP directory absence')
+  chosen=[]
+  for suite in result['testResults']:
+   for case in suite['assertionResults']:
+-   if case['fullName'] in config['selectedFullNames']:
+-    require(Path(suite['name']).resolve()==(W/config['selectedFilesByFullName'][case['fullName']]).resolve(),'Selected callback file differs')
++   if case['fullName'] in cfg['selectedFullNames']:
++    require(Path(suite['name']).resolve()==(W/cfg['selectedFilesByFullName'][case['fullName']]).resolve(),'Selected callback file')
+     chosen.append(case)
+    else:require(case['status'] in ['pending','skipped','todo'],'Unselected callback executed')
+- require(len(chosen)==len(config['selectedFullNames']) and Counter(x['fullName'] for x in chosen)==Counter(config['selectedFullNames']) and all(x['status']=='passed' for x in chosen) and result.get('success') is True,'Exact callbacks did not pass')
+- for key in ['numFailedTests','numFailedTestSuites']:
+-  require(type(result[key]) is int and result[key]==0,'Failed test result '+key)
+- require(type(result['numPassedTests']) is int and result['numPassedTests']==len(chosen),'Exact passed callback count')
+- if 'numRuntimeErrorTestSuites' in result:require(type(result['numRuntimeErrorTestSuites']) is int and result['numRuntimeErrorTestSuites']==0,'Runtime suite errors')
+- execution=complete(stage,g);observations=[]
+- log_text=(E/(stage+'.log')).read_text()
+- require(not re.search(r'Unhandled Errors|Unhandled Rejection|Uncaught Exception|Worker exited unexpectedly',log_text),'Unhandled/runtime diagnostic')
+- for line in log_text.splitlines():
+-  try:value=json.loads(line.strip())
+-  except json.JSONDecodeError:continue
+-  if isinstance(value,dict) and 'observation' in value:observations.append(value)
+- report={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],
+-         'qualification':False,'selectedCallbacks':config['selectedFullNames'],
+-         'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),
+-         'logSha256':sha((E/(stage+'.log')).read_bytes())}
+- names=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']
+- def typed_equal(a,b):
+-  if type(a) is not type(b):return False
+-  if isinstance(b,dict):return set(a)==set(b) and all(typed_equal(a[k],v) for k,v in b.items())
+-  if isinstance(b,list):return len(a)==len(b) and all(typed_equal(x,y) for x,y in zip(a,b))
+-  return a==b
+- def scalars(o,want):
+-  require(isinstance(o,dict) and all(k in o and typed_equal(o[k],v) for k,v in want.items()),'Typed scalar mismatch '+str(want))
+- def rows(o,key,n):
+-  rr=o.get(key);require(isinstance(rr,list) and len(rr)==n,'Array count '+key);return rr
+- def fingerprint(value):require(isinstance(value,str) and re.fullmatch('[a-f0-9]{64}',value),'SHA256 grammar')
+- def count(value):require(type(value) is int and value>=0,'Nonnegative actual integer')
+- def context(c,position):
+-  require(isinstance(c,dict) and set(c)=={'scopeEpoch','authorizationView','scopePosition'},'Owner context shape')
+-  require(all(isinstance(v,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',v) for v in c.values()) and c['scopePosition']==position,'Actual owner context')
+- def wire(h,position):
+-  c={k:h[k] for k in names};context(dict(zip(['scopeEpoch','authorizationView','scopePosition'],c.values())),position);return c
+- def directory_absent(value,prefix):
+-  tmp=Path(read(E/(stage+'.started.json'))['temporaryDirectory']);d=Path(value)
+-  require(tmp.parent==Path('/private/tmp') and d.is_absolute() and d.is_relative_to(tmp) and d.name.startswith(prefix) and not d.exists(),'Actual store ownership/absence')
+- def cleanup(state,prefix):
+-  scalars(state,{'closed':True,'stopUnknown':False,'directoryAbsent':True});directory_absent(state['directory'],prefix)
+- def frame(stream,scope,source=False):
+-  scalars(stream,{'request':30 if source else 10,'status':200,'readyObserved':True,'liveBeforeClose':True,'afterDrain':True})
+-  if source:scalars(stream,{'destroyed':True})
+-  rr=rows(stream,'frames',1);lines=rr[0].split('\n')
+-  require(len(lines)==3 and lines[0].startswith('id: ') and lines[1]=='event: change-group' and lines[2].startswith('data: '),'One exact change-group frame')
+-  group=json.loads(lines[2][6:]);require(group==stream['group'] and group['checkpoint']==stream['checkpoint']==lines[0][4:],'Full actual group/frame/checkpoint equality')
+-  scalars(group,{'position':'pos-2','previousPosition':'pos-1','projectionAdvance':False})
+-  require(re.fullmatch(r'cg_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_2',stream['checkpoint']),'Actual CP2')
+-  changes=rows(group,'changes',1);require(changes[0]['resource']['id']==scope+'beads/b','No first-group replay')
+-  require(type(group['eventCount']) is int and group['eventCount']==len(group['events']) and group['eventCount']>0,'Whole group Events')
+-  h=stream['headers'];wire(h,'pos-2');require(h['content-type']=='text/event-stream' and h['cache-control']=='no-store, no-transform' and h.get('etag') is None and h.get('content-length') is None,'SSE metadata')
+-  return group
+- def response_rows(rr,statuses,scope):
+-  for i,(r,status) in enumerate(zip(rr,statuses)):
+-   require(r['status']==status and r['url'].startswith(scope),'Response status/Scope')
+-   count(r['bodyOctets']);fingerprint(r['bodySha256']);fingerprint(r['wireSha256'])
+-   require(r['headers']['x-bdp-development']=='non-attesting','Private marker')
+- if mode=='source':
+-  require(Counter(o['observation'] for o in observations)==Counter(ex['sourceLabels']),'Exactly nine new plus two selected historical reports')
+-  grouped={label:[o for o in observations if o['observation']==label] for label in set(ex['sourceLabels'])}
+-  new=[o for o in observations if o['observation'].startswith('current-changefeed-minimum-')]
+-  for o in new:scalars(o,{'outcome':'passed','failureCount':0,'claimEligible':False})
+-  a=grouped['current-changefeed-minimum-owner'][0];scalars(a,{'commits':2,'ownerLifetimes':2,'offlineDeletes':1})
+-  rr=rows(a,'records',18);current=rr[0]['context'];context(current,'pos-2')
+-  require([r['role'] for r in rr]==['baseline','baseline']+['table-'+str(i) for i in range(1,17)],'Owner ordered actual calls')
+-  expected=['page','page','TransactionMinimumUnproved','TransactionMinimumUnproved','page','page',
+-            'TransactionMinimumFailure','TransactionMinimumFailure','TransactionMinimumFailure',
+-            'TransactionMinimumFailure','TransactionMinimumFailure','TransactionChangefeedParameterError',
+-            'TransactionChangefeedParameterError','unsupported','TransactionMinimumUnproved','TypeError','Error','Error']
+-  require([r['outcome'] for r in rr]==expected and [r['ordinal'] for r in rr]==list(range(1,19)),'Owner outcome/ordinal table')
+-  for i,r in enumerate(rr):
+-   require(r['context']==(None if i in [13,15,16,17] else current),'Owner no invented context')
+-   if i>=2:require(r['admission']==('finite-start-now' if i==14 else 'current-changefeed'),'Owner tag preservation')
+-  require([rr[i]['reason'] for i in [6,7,8,9,10]]==['cursor-expired','foreign-view','cursor-expired','cursor-expired','foreign-view'],'Cursor/minimum precedence')
+-  captures=grouped['current-changefeed-minimum-capture']
+-  require(sorted(o['label'] for o in captures)==sorted(['start-now-unknown','genesis-unknown','retained-unknown','retained-pos-01']),'Capture cases')
+-  for o in captures:
+-   scalars(o,{'commits':2,'waits':1,'clocks':4,'closes':1,'captures':1 if o['label'].startswith('start') else 0})
+-   rr=rows(o,'reads',4);context(rr[0]['context'],'pos-1');context(rr[1]['context'],'pos-1');context(rr[2]['context'],'pos-2');context(rr[3]['context'],'pos-2')
+-   require(rr[0]['after']=='genesis' and rr[0]['minimum'] is None and rr[0]['admission'] is None,'Baseline traverses actual recording delegate')
+-   for r in rr[1:3]:
+-    scalars(r,{'admission':'current-changefeed','tupleFrozen':True,'outcome':'TransactionMinimumUnproved','after':o['originalAfter']})
+-   require(rr[1]['minimum']==rr[2]['minimum'] and rr[1]['minimum']['minimumPosition']==('pos-01' if o['label'].endswith('pos-01') else 'unknown'),'One immutable tuple')
+-   require(rr[3]['after']==o['originalAfter'] and rr[3]['minimum']['minimumPosition']=='pos-2' and rr[3]['outcome']=='page','Known positive same anchor')
+-   require(o['anchors']==([o['originalAfter']] if o['label'].startswith('start') else []),'Once-only start anchor')
+-   positive=o['positiveGroup'];position=1 if o['originalAfter']=='genesis' else 2
+-   scalars(positive,{'position':'pos-'+str(position),'previousPosition':'pos-'+str(position-1),'projectionAdvance':False})
+-   require(rows(positive,'changes',1)[0]['resource']['id']=='https://example.test/feed/beads/'+('a' if position==1 else 'b') and type(positive['eventCount']) is int and positive['eventCount']==len(positive['events']) and positive['eventCount']>0,'Actual whole positive capture group')
+-   cleanup(o['cleanupState'],'bdp-current-feed-')
+-  drains=grouped['current-changefeed-minimum-drain'];require(sorted(o['label'] for o in drains)==['retained','start-now'],'Drain cases')
+-  for o in drains:
+-   scalars(o,{'readsBeforeClosedProbe':2,'rawClosedProbes':1,'serviceClosedProbes':1,'waits':1,'clocks':2,'closes':1,'commits':1,'closeSettled':True,'captures':1 if o['label']=='start-now' else 0})
+-   rr=rows(o,'reads',2);require(rr[0]['after']=='genesis' and rr[0]['minimum'] is None and rr[1]['outcome']=='TransactionMinimumUnproved','Actual drain calls')
+-   require(o['order']==['wait-entered','abort','wait-released','owner-close','close-resolved'],'Drain/owner closure order')
+-   cleanup(o['cleanupState'],'bdp-current-feed-')
+-  f=grouped['current-changefeed-minimum-preflight'][0]
+-  for r,label in zip(rows(f,'rows',4),['already-aborted','invalid-policy','throwing-clock','nonfinite-clock']):
+-   scalars(r,{'label':label,'initialized':True,'attempted':True,'closed':True,'captures':1,'reads':0,'waits':0,'clocks':0 if label=='invalid-policy' else 1,'closes':1,'commits':1,'outcome':'passed','failureCount':0})
+-   require(r['errorClass']==('ScopeServerOperationAbortedError' if label=='already-aborted' else 'Error' if label=='throwing-clock' else 'TypeError'),'Preflight actual error class')
+-   cleanup(r,'bdp-current-feed-')
+-  d=grouped['current-changefeed-minimum-http'][0]
+-  scalars(d,{'attempted':32,'observedResponses':32,'completed':32,'runtimeClosed':True,'stopUnknown':False,'workDeadlineFired':False,'pendingOperationsAtReport':0,'directoryAbsent':True})
+-  require(type(d['elapsedMs']) in [int,float] and math.isfinite(d['elapsedMs']) and 0<=d['elapsedMs']<4000,'Absolute cleanup-inclusive D budget')
+-  directory_absent(d['directory'],'bdp-current-feed-http-');rr=rows(d,'records',32)
+-  wants=ex['workload']['DRequests'];scope='https://sse.invalid/acme/'
+-  cp1=dict(parse_qsl(urlsplit(rr[3]['url']).query))['after'];require(re.fullmatch(r'cg_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_1',cp1),'Actual followed CP1')
+-  stale=cp1[:3]+('B' if cp1[3]=='A' else 'A')+cp1[4:];foreign=cp1[:47]+('B' if cp1[47]=='A' else 'A')+cp1[48:];future=cp1[:91]+'3'
+-  current=wire(rr[2]['headers'],'pos-2')
+-  k=[['bdp-scope-epoch',current[names[0]]],['bdp-authorization-view',current[names[1]]],['bdp-minimum-scope-position','pos-2']]
+-  u=[[n,'unknown' if n=='bdp-minimum-scope-position' else v] for n,v in k]
+-  p=[[n,'pos-01' if n=='bdp-minimum-scope-position' else v] for n,v in k]
+-  js=['Accept','application/json'];ss=['Accept','text/event-stream'];plain=['Accept','text/plain']
+-  lid=lambda value:['Last-Event-ID',value]
+-  modify=lambda h,field:[[n,'foreign' if n==field else v] for n,v in h]
+-  expected_headers=[
+-   [['accept','application/json'],['content-type','application/json'],['idempotency-key','current-feed-a']],
+-   [['accept','application/json'],['content-type','application/json'],['idempotency-key','current-feed-b']],
+-   [js,*k],[js,*k],[js,*k],[js,*u,['If-None-Match','*']],[js,*u,['If-None-Match','*']],
+-   [js,*p,['If-Match','"missing"']],[js,*p,['If-Match','"missing"']],
+-   [ss,*u],[ss,*u],[ss,*u,lid(cp1)],[ss,*u,lid(cp1)],
+-   [js,*u,lid('bad'),lid('also-bad')],[js,*u,lid(foreign)],[plain,*u],[plain,*k],
+-   [js,*k,['If-None-Match','*']],[js,*k,['If-Match','"missing"']],
+-   [js,['bdp-minimum-scope-position','unknown']],[ss,*u,lid(cp1)],[ss,*u,lid(cp1),lid(cp1)],
+-   [ss,*u,lid('bad')],[ss,*modify(u,'bdp-authorization-view'),lid(stale)],
+-   [ss,*modify(u,'bdp-scope-epoch'),lid(foreign)],[ss,*u,lid(future)],
+-   [js,*modify(u,'bdp-scope-epoch')],[js,*modify(u,'bdp-authorization-view')],
+-   [js,*modify(modify(u,'bdp-scope-epoch'),'bdp-authorization-view')],[ss,*k,lid(cp1)],[ss,*u],[ss,*u]]
+-  require(len(expected_headers)==32,'Complete D request header oracle')
+-  for r,want in zip(rr,wants):
+-   i=want['ordinal'];scalars(r,{'ordinal':i,'method':want['method'],'status':want['expectedStatus']})
+-   scalars(r,{'readyObserved':True,'drained':True,'bodyState':'drained',
+-    'transportClosedObserved':None if i<=2 else True,
+-    'drainKind':'seed-body' if i<=2 else 'intentional-live' if i==30 else 'finite-body',
+-    'availability':{'status':True,'headers':True,'body':True,'wire':i>2}})
+-   require(r['requestHeaders']==expected_headers[i-1],'Exact literal D header multiplicity/control tuple')
+-   suffix=want['suffix'].replace('CP1',cp1).replace('STALE',stale).replace('FOREIGN_VIEW',foreign).replace('FUTURE',future)
+-   require(r['url']==scope+suffix,'Exact D canonical target sequence');count(r['bodyOctets']);fingerprint(r['bodySha256'])
+-   if i<=2:require(r['wireSha256'] is None,'No fabricated fetch wire')
+-   else:fingerprint(r['wireSha256'])
+-   h=r['headers'];require(h['x-bdp-development']=='non-attesting','D marker')
+-   if i in [20,21,22,32]:require([h[k] for k in names]==[None,None,None],'Early receiving/auth no context')
+-   elif i==1:wire(h,'pos-1')
+-   else:require(wire(h,'pos-2')==current,'D same current context')
+-   if want['method']=='HEAD' or want['expectedStatus'] in [406,304,412]:require(r['bodyOctets']==0,'HEAD/empty shortcut bytes')
+-   if r['status']==503:require(h['retry-after']=='1' and h['content-type']=='application/problem+json' and h['cache-control']=='private, no-store' and h['etag'] is None and h['x-bdp-development-limit'] is None,'D normative timeout metadata')
+-  for get,head in [(6,7),(8,9),(4,5)]:require(rr[get-1]['headers']['content-length']==str(rr[get-1]['bodyOctets'])==rr[head-1]['headers']['content-length'],'GET/HEAD represented length')
+-  frame(d['stream'],scope,True)
+-  legacy=grouped['changefeed-opaque-boundaries'][0];scalars(legacy,{'outcome':'passed','failureCount':0,'captures':2,'reads':4,'waits':0,'clocks':2})
+-  require(legacy['outcomes']==['default-owner-TypeError','default-service-TypeError','after-TypeError','malformed-TypeError','unsupported-sentinel','foreign-cursor-expired','valid-closed','malformed-before-closed','owner-closed'],'Unchanged old/default strict contract')
+-  legacy=grouped['changefeed-opaque-http'][0];scalars(legacy,{'outcome':'passed','failureCount':0,'attempted':10,'exchanges':10,'deadlineExceeded':False,'cleanupDeadlineExceeded':False,'closed':True,'directoryAbsent':True})
+-  require([r['status'] for r in rows(legacy,'records',10)]==[200,200,200,503,503,503,503,503,503,400],'Only accepted legacy status successor')
+-  directory_absent(legacy['directory'],'bdp-feed-opaque-http-')
+-  report.update({'actualInstrumentedObservations':observations,'newObservationRecords':9,'legacyObservationRecords':2,
+-                'limitations':'Fifteen actual passed callbacks and eleven actual reports. Remaining18 selected legacy HTTP exchanges remain source-derived, not telemetry. Full receipt/page/Problem body validation and typed-error identity assertions run inside pinned passing callbacks; hashes alone do not revalidate bodies. Local ownership checks are not socket census.'})
++ require(Counter(x['fullName'] for x in chosen)==Counter(cfg['selectedFullNames']) and all(x['status']=='passed' for x in chosen),'Exact callbacks pass once')
++ exact(result,{'success':True,'numFailedTests':0,'numFailedTestSuites':0,'numPassedTests':len(chosen)})
++ if 'numRuntimeErrorTestSuites' in result:exact(result,{'numRuntimeErrorTestSuites':0})
++ log=(E/(stage+'.log')).read_text();require(not re.search('Unhandled Errors|Unhandled Rejection|Uncaught Exception|Worker exited unexpectedly',log),'Unhandled runtime diagnostic')
++ reports=[]
++ for line in log.splitlines():
++  try:o=json.loads(line.strip(),object_pairs_hook=unique_object,parse_constant=invalid_constant)
++  except json.JSONDecodeError:
++   require('\"observation\"' not in line,'Malformed observation JSON')
++   continue
++  if type(o) is dict and 'observation' in o:reports.append(o)
++ schemas=read(P/'report-schemas.json');kind=sel['kind']
++ def named_fields(fields):
++  require(type(fields) is list,'Field occurrence array')
++  for item in fields:
++   keys(item,['name','value']);require(type(item['name']) is str and type(item['value']) is str,'Actual field values')
++ def headers_record(r):
++  strings(r['headers']);integer(r['status']);require(100<=r['status']<=599,'HTTP status')
++ def source_report(o):
++  keys(o,['observation','callback','elapsedMs','workSettled','cleanupKnown','directories','observations','failureCount']);exact(o,{'observation':'D3-source','workSettled':True,'cleanupKnown':True,'failureCount':0});finite(o['elapsedMs'],4000)
++  require(o['callback'] in cfg['selectedFullNames'],'Report callback identity')
++  for d in o['directories']:
++   keys(d,['directory','absent']);exact(d,{'absent':True});absent_dir(d['directory'],'bdp-d3-')
++  counters=[];raw=[];clones=[]
++  for r in o['observations']:
++   if 'baseline' in r:
++    keys(r,['baseline']);keys(r['baseline'],['calls','entries','assemblies']);integer(r['baseline']['entries']);integer(r['baseline']['assemblies']);require(type(r['baseline']['calls']) is list and all(x=='readConfiguration' for x in r['baseline']['calls']),'Construction evidence')
++   elif 'counters' in r:
++    keys(r,['counters','records']);keys(r['counters'],['direct','discovery','entries','assemblies','waits','clocks','commits'])
++    for v in r['counters'].values():integer(v)
++    for rr in r['records']:
++     keys(rr,['method','url','credential','status','headers'],['body']);headers_record(rr)
++    counters.append(r['counters'])
++   elif 'counterfactual' in r:
++    keys(r,['counterfactual','rejected','wireRequests']);exact(r,{'rejected':True,'wireRequests':0});clones.append(r['counterfactual'])
++   else:
++    keys(r,['transport','method','target','credential','fieldOccurrences','status','headers','bodyOctets','bodySha256','wireSha256']);exact(r,{'transport':'source-local-raw'});headers_record(r);integer(r['bodyOctets']);digest(r['bodySha256']);digest(r['wireSha256']);require(r['bodyOctets']<=131072,'Raw body bound');raw.append(r)
++  want=schemas['sourceExpected'][o['callback']]
++  require(len(raw)==want['wire'] and len(clones)==want.get('clones',0),'Exact source raw/clone counts')
++  require([r['status'] for r in raw]==want['rawStatuses'],'Exact actual raw status order')
++  if clones:require(Counter(clones)==Counter(schemas['sourceCounterfactuals']),'Exact counterfactual identities')
++  require(len(counters)==(0 if want['direct']==0 else 1),'Actual source counter census')
++  if counters:exact(counters[0],want['counters'])
++ if kind=='D3-source':
++  require(Counter(o.get('callback') for o in reports)==Counter(cfg['selectedFullNames']) and all(o.get('observation')=='D3-source' for o in reports),'Exactly21 source reports')
++  for o in reports:source_report(o)
++ elif kind in ['legacy-installed-contracts-suite','schema-zero-wire']:
++  require(reports==[],'Unexpected observation from no-report suite')
++ elif kind=='legacy-changefeed-suite':
++  require(Counter(o['observation'] for o in reports)==Counter(schemas['legacyChangefeedExpectedLabels']),'Exact historical report census')
++  for o in reports:
++   shape=schemas['legacyChangefeedShapes'][o['observation']];keys(o,shape['required'],shape.get('optional',[]))
++   if 'outcome' in o:exact(o,{'outcome':'passed'})
++   for field in ['failureCount','hardFailureCount']:
++    if field in o:exact(o,{field:0})
++   if 'claimEligible' in o:exact(o,{'claimEligible':False})
++   if 'directoryAbsent' in o:exact(o,{'directoryAbsent':True})
++   for field in ['deadlineExceeded','cleanupDeadlineExceeded']:
++    if field in o:exact(o,{field:False})
++   if 'cleanupState' in o:
++    state=o['cleanupState'];exact(state,{'closed':True,'stopUnknown':False,'directoryAbsent':True});absent_dir(state['directory'],'bdp-current-feed-')
++   if 'directory' in o and o['directory'] is not None:absent_dir(o['directory'],'bdp-')
++   if 'contextFailures' in o:require(o['contextFailures']==[],'Actual context failures')
+  else:
+-  require(len(observations)==1,'One installed callback/report')
+-  o=observations[0];expected=config['expectedObservation'];scalars(o,{'observation':expected,'outcome':'passed','claimEligible':False,'declaredSourceCommit':g['finalHead'],'workspaceDirty':True})
+-  proof=verify_consumer(g);binding=o['binding'];served=binding['served'];scope='https://reference.invalid/acme/'
+-  require(served['sourceCommit']==g['finalHead'] and served['scope']==scope and served['profile']=='transactional' and served['history'] is False and binding['authorityMode']=='canonical','Actual served binding')
+-  for key in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:fingerprint(served[key])
+-  fingerprint(binding['runtimeConfigurationIdentity'])
+-  require(Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Actual external entry/payload')
+-  fixture=W/'packages/conformance/test-support/transactional/fixture-v1.json';fj=read(fixture)
+-  require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==fj['id'] and served['capabilities']==sorted(fj['capabilities']),'Fixture binding')
+-  pid=o['childPid'] if mode!='finite' else o['lifecycleAtReport']['pid']
+-  require(type(pid) is int and pid in execution['sampledPids'],'Actual sampled installed child')
+-  if mode=='history':
+-   scalars(o,{'attempted':10,'exchanges':10,'closed':True,'startupCompleted':True,'childExitCode':0,'childSignalCode':None,'deadlineExceeded':False,'directoryAbsent':True,'failureCount':0})
+-   rr=rows(o,'completedResponses',10);response_rows(rr,[200,200,400,400,400,400,400,400,401,400],scope)
+-   require([r['ordinal'] for r in rr]==list(range(1,11)) and [r['method'] for r in rr]==['POST','GET','GET','HEAD','GET','HEAD','GET','HEAD','GET','GET'],'Historical exact ordered methods')
+-   for i,r in enumerate(rr):
+-    if i in [8,9]:require([r['headers'][k] for k in names]==[None,None,None],'Historical receiving context')
+-    else:wire(r['headers'],'pos-1')
+-   directory_absent(o['directory'],'bdp-changefeed-context-installed-')
+-  elif mode=='finite':
+-   scalars(o,{'attempted':4,'exchanges':4,'assertionsCompleted':True,'deadlineFired':False,'failureCategories':[]})
+-   rr=rows(o,'completedResponses',4);response_rows(rr,[200,200,503,503],scope)
+-   require([r['method'] for r in rr]==['POST','GET','GET','HEAD'],'Finite historical methods')
+-   life=o['lifecycleAtReport'];scalars(life,{'launchAttempted':True,'returnedChild':True,'exitCode':0,'signalCode':None,'observedExit':{'code':0,'signal':None},'observedClose':{'code':0,'signal':None},'childStdioDrainObserved':True,'closure':'clean','cleanClose':True,'cleanupDeadlineExceeded':False,'pendingExchanges':0,'pendingDrained':True,'settledExchanges':4,'socketCloseCensusAvailable':False,'lateCleanupRejectionObserved':False,'directoryRemoved':True,'directoryPresent':False})
+-   directory_absent(life['directory'],'bdp-changefeed-opaque-installed-')
+-  else:
+-   scalars(o,{'attempted':10,'settledFiniteExchanges':9,'cleanClose':True,'closed':True,'stopUnknown':False,'lateCleanupRejectionObserved':False,'pendingDrained':True,'streamDrained':True,'pendingOperationsAtReport':0,'directoryRemoved':True,'directoryAbsent':True,'launchAttempted':True,'assertionsCompleted':True,'deadlineFired':False,'failureCategories':[],'failureCount':0})
+-   scalars(o,{'trackedDiffUnavailableReason':None});fingerprint(o['trackedDiffSha256'])
+-   require(o['entryLiteral']==proof['entryRealpath'] and o['witnessSourceSha256']==g['_sourceBinding']['trackedSourceFiles']['apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts'] and o['trackedDiffSha256']==sha(git('diff','--binary','HEAD')),'New actual entry literal/witness')
+-   scalars(o['processEvents'],{'exit':{'code':0,'signal':None},'close':{'code':0,'signal':None}})
+-   require(o['ready']['payloadIdentity']==proof['payloadIdentity'] and o['ready']['runtimeConfigurationIdentity']==binding['runtimeConfigurationIdentity'],'Actual ready identity')
+-   rr=rows(o,'responses',9);response_rows(rr,[200,200,200,200,503,503,503,503,503],scope)
+-   require([r['ordinal'] for r in rr]==list(range(1,10)) and [r['method'] for r in rr]==['POST','POST']+['GET']*7,'New finite order')
+-   require([h['value'] for h in rr[8]['requestHeaders'] if h['name'].lower()=='last-event-id']==['bad','also-bad'],'Literal duplicate finite reconnect fields')
+-   cp1=dict(parse_qsl(urlsplit(rr[3]['url']).query))['after']
+-   require(re.fullmatch(r'cg_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_1',cp1),'Actual installed CP1')
+-   require([r['url'] for r in rr]==[scope+'operations/batch',scope+'operations/batch',
+-     scope+'changes/?after=genesis',scope+'changes/?after='+cp1,scope+'changes/?after=genesis',
+-     scope+'changes/?after='+cp1,scope+'changes/?start=now',scope+'changes/?start=now',scope+'changes/?after=genesis'],'Exact E finite target table')
+-   current=wire(rr[3]['headers'],'pos-2')
+-   for i,r in enumerate(rr):
+-    hh=r['requestHeaders']
+-    values=lambda name:[h['value'] for h in hh if h['name'].lower()==name]
+-    require(values('accept')==['text/event-stream' if i in [6,7] else 'application/json'],'E actual Accept')
+-    if i<2:require(values('idempotency-key')==['current-feed-'+('a' if i==0 else 'b')],'Distinct real seed keys')
++  require(len(reports)==1,'Exactly one installed observation');o=reports[0]
++  require(o['observation']==cfg['expectedObservation'],'Installed observation identity');exact(o,{'outcome':'passed','claimEligible':False,'workspaceDirty':True,'declaredSourceCommit':g['finalHead']})
++  proof=verify_consumer(g);require(Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'],'Actual external entry bytes')
++  if kind=='D3-installed':
++   keys(o,schemas['installedD3Required']);exact(o,{'failureCount':0,'workSettled':True,'cleanupKnown':True,'pending':0,'directoryAbsent':True,'entryLiteral':proof['entryRealpath']});finite(o['elapsedMs'],60000);absent_dir(o['directory'],'bdp-d3-installed-')
++   keys(o['counts'],['scheduled','completed','aborts','exact','raw']);exact(o['counts'],cfg['expectedCounts'])
++   keys(o['child'],['pid','exitSeen','closeSeen','code','signal']);exact(o['child'],{'exitSeen':True,'closeSeen':True,'code':0,'signal':None});absent_pid(o['child']['pid'])
++   keys(o['metadata'],schemas['metadataKeys']);exact(o['metadata'],{'profile':'transactional','history':False,'claimEligible':False,'authorityMode':'canonical'});require(o['metadata']['payloadIdentity']==proof['payloadIdentity'],'Actual child payload identity')
++   for k in ['payloadIdentity','policyIdentity','authenticationIdentity','runtimeConfigurationIdentity']:digest(o['metadata'][k])
++   require(type(o['metadata']['artifactIdentity']) is str and re.fullmatch('development-schema5-[a-f0-9]{64}',o['metadata']['artifactIdentity']),'Versioned actual artifact identity')
++   require(len(o['records'])==cfg['expectedCounts']['scheduled'],'One actual terminal per scheduled request')
++   exact_records=[];raw_records=[]
++   for r in o['records']:
++    if r.get('transport')=='public-exact':
++     keys(r,['id','transport','method','url','credential','fieldOccurrences','status','headers','bodyOctets','bodySha256','wireSha256','requestWriteState']);headers_record(r);exact(r,{'requestWriteState':'complete'});digest(r['bodySha256']);digest(r['wireSha256']);integer(r['bodyOctets']);require(r['bodyOctets']<=131072,'Body cap');named_fields(r['fieldOccurrences']);exact_records.append(r)
+     else:
+-     require(values('bdp-scope-epoch')==[current[names[0]]] and values('bdp-authorization-view')==[current[names[1]]] and values('bdp-minimum-scope-position')==['pos-2' if i<4 else 'pos-01' if i==5 else 'unknown'],'E actual original tuple')
+-     require(values('last-event-id')==([cp1] if i==7 else ['bad','also-bad'] if i==8 else []),'E exact reconnect multiplicity')
+-   require([v for n,v in o['stream']['requestHeaders'] if n.lower()=='last-event-id']==[cp1],'Effective positive CP1 reconnect')
+-   for r in rr[4:]:
+-    h=r['headers'];wire(h,'pos-2');require(h['content-type']=='application/problem+json' and h['retry-after']=='1' and h['cache-control']=='private, no-store' and h['etag'] is None and h['x-bdp-development-limit'] is None,'Installed normative opaque refusal')
+-   frame(o['stream'],scope);directory_absent(o['directory'],'bdp-current-feed-installed-')
+-  report.update({'observation':o,'attribution':'Reviewed dirty source/fresh build/archive/root-accepted actual consumer lock and proof/actual child payload.',
+-                'limitations':'Historical10 has no entryLiteral/closeEvent requirement; historical4 retains its lifecycleAtReport schema. New10 requires actual exit+close and drained live full group. Callback body/schema/control assertions stay in passing source; process/promise counts are not socket census. No public qualification.'})
+- write(stage+'.accepted-observation.json',report)
++     keys(r,['id','transport','method','url','credential','state','terminal','partialWireAvailable','actualWireOctets'],['partialStatus','actualWireSha256']);exact(r,{'transport':'callback-local-raw','method':'GET'});integer(r['actualWireOctets']);require(r['actualWireOctets']<=163840,'Actual raw wire bound');require(type(r['partialWireAvailable']) is bool and r['partialWireAvailable']==(r['actualWireOctets']>0),'Honest raw availability')
++     require(('actualWireSha256' in r)==r['partialWireAvailable'],'No invented wire fingerprint')
++     if r['partialWireAvailable']:digest(r['actualWireSha256'])
++     keys(r['state'],['settled','responseStarted','written','closeRequested'],['writeAtMs','closeRequestedAtMs','responseAtMs']);exact(r['state'],{'settled':True,'written':True})
++     if cfg['expectedCounts']['aborts']:
++      exact(r,{'terminal':'abort','partialWireAvailable':False,'actualWireOctets':0});exact(r['state'],{'closeRequested':True,'responseStarted':False});require('partialStatus' not in r,'No invented close status');finite(r['state']['writeAtMs']);finite(r['state']['closeRequestedAtMs']);require(r['state']['writeAtMs']<=r['state']['closeRequestedAtMs'],'Actual close chronology')
++     else:require(r['terminal']=='response' and r['partialStatus']==400 and r['state']['responseStarted'] is True,'Actual Host refusal response')
++     raw_records.append(r)
++   require(len(exact_records)==cfg['expectedCounts']['exact'] and len(raw_records)==cfg['expectedCounts']['raw'],'Actual exact/raw census')
++  elif kind=='legacy-owner-installed':
++   keys(o,schemas['legacyOwnerRequired']);exact(o,{'cleanupKnown':True,'directoryAbsent':True,'exchanges':12});absent_dir(o['directory'],'bdp-discovery-installed-');keys(o['session'],['pid','exit']);exact(o['session'],{'exit':0});absent_pid(o['session']['pid']);keys(o['childTerminal'],['exitSeen','closeSeen','code','signal']);exact(o['childTerminal'],{'exitSeen':True,'closeSeen':True,'code':0,'signal':None});require(len(o['completedResponses'])==12,'Legacy12 actual responses')
++   for r in o['completedResponses']:
++    keys(r,['method','url','status','bodyOctets','bodySha256','wireSha256']);integer(r['bodyOctets']);digest(r['bodySha256']);digest(r['wireSha256'])
++   require([r['status'] for r in o['completedResponses']]==[204,200,200,204,200,200,401,401,401,200,200,200],'Actual legacy12 statuses')
++   require(o['binding']['served']['installedPayloadDigest']==proof['payloadIdentity'],'Legacy child payload')
++  elif kind=='legacy-schema-installed':
++   keys(o,schemas['legacySchemaRequired']);exact(o,{'attemptedRequests':14,'directoryAbsent':True});require(len(o['completedResponses'])==14 and len(o['sessions'])==1,'Schema14 exchanges/one child lifetime')
++   require([r['label'] for r in o['completedResponses']]==schemas['schemaLabels'],'Schema request order')
++   for session in o['sessions']:
++    keys(session,['pid','exit','signal']);exact(session,{'exit':0,'signal':None});absent_pid(session['pid'])
++   for r in o['completedResponses']:
++    keys(r,['label','method','url','status','requestBodyBytes','requestBodySha256','responseBodyBytes','responseBodySha256','wireSha256','context']);integer(r['requestBodyBytes']);integer(r['responseBodyBytes']);digest(r['requestBodySha256']);digest(r['responseBodySha256']);digest(r['wireSha256'])
++   require([r['status'] for r in o['completedResponses']]==[200,200,200,200,200,406,304,412,404,401,405,204,200,200],'Actual schema14 status order')
++   for r in o['completedResponses']:
++    keys(r['context'],[],['epoch','view','position']);strings(r['context'])
++   require(o['binding']['served']['installedPayloadDigest']==proof['payloadIdentity'],'Schema child payload')
++  else:raise RuntimeError('Unknown observation grammar')
++ write(stage+'.accepted-observation.json',{'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes()),'selectedFullNames':cfg['selectedFullNames'],'reports':reports,'claimEligible':False,'limitations':'Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim.'})

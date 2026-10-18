@@ -1,0 +1,36 @@
+{
+  "state": "CLOSED proposed exact source/helper marker contract; no authoring or execution",
+  "observation": "transactional-set-validation-phase",
+  "version": 1,
+  "closedKeys": [
+    "observation",
+    "version",
+    "attemptId",
+    "phase",
+    "sourceElapsedMilliseconds"
+  ],
+  "phaseOrder": [
+    "callback-start",
+    "callback-end"
+  ],
+  "sourceElapsedMilliseconds": "finite nonnegative actual performance.now()-existing started measured at emission; end>=start and end<=120000; not a sum of work/cleanup fields",
+  "attemptId": {
+    "environment": "BDP_D4_VALIDATION_ATTEMPT_ID",
+    "rootValue": "fresh cryptographic32lowerhex per fresh wx-created attempt; fixed by supervised worker before product launch",
+    "sourceValue": "exact environment value only if primitive32lowerhex, otherwise null; never echo malformed text",
+    "ordinaryUninstrumentedRuns": "null allowed in emitted diagnostic record without changing existing callback pass/fail",
+    "acceptance": "both records MUST equal the current nonnull fresh root value; absent/null/malformed/different/stale refuses; no fallback"
+  },
+  "sourcePlacement": {
+    "start": "FIRST protected statement in existing try, before any throwing metadata IO. This is the immediate try-entry seam; moving just inside protects the existing cleanup/failure flow from marker-only exceptions. No owner/listener/product IO precedes it beyond existing local initialization.",
+    "end": "immediately after existing console.log(JSON.stringify(report)) returns, before original failures throw; measure elapsed at that actual point",
+    "emission": "one complete JSON.stringify(record)+newline through process.stdout.write per phase; <=4096 byte threshold. Narrow try/catch ONLY around marker construction/write makes markers observational; missing/incomplete emission is independently refused by collector, never fabricated or repaired. Preserve original report/failure/cleanup path. No stdout drain or flush claim."
+  },
+  "parentAcceptance": [
+    "exactly2 complete closed-schema records, correct order, freshattempt binding; retain exact UTF8 bytes/offsets/hash",
+    "direct stdout may interleave or precede intercepted report RPC: malformed/interleaved/split-unreconstructed records refuse; chunk scanner can reassemble consecutive bytes only",
+    "parent receipt<=10s start; end<=min(startReceipt+120,130) and sourceelapsed<=120000",
+    "report version/workload/selection/request/body/header/children/lifecycle/120callback limits unchanged"
+  ],
+  "next": "independent precision of this exact data; root durable author-only release before source3/helper authoring; source/native mechanics/root then separately synthetic execution release"
+}

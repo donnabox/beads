@@ -1,0 +1,47 @@
+[
+  {
+    "path": "packages/server/src/development-authority.ts",
+    "kind": "modify",
+    "purpose": "Add private owner readConfiguration using store.scope, actual visitInstalledTypes, the same epoch/readLimits/bounds/capturedConfiguration already used by the lifecycle; no second metadata compiler or persisted authpolicy equality. Label RU epoch process-generated lifecycle token, not independently persisted installation/equality fact."
+  },
+  {
+    "path": "packages/server/src/development-runtime.ts",
+    "kind": "modify",
+    "purpose": "Factor internal core; add startPreparedDevelopmentReferenceRuntime(handle), strict registered RU handle, all owner/principal/read-route preparation before intended bind; old entry order/return/close semantics remain. Trusted-only persistent error/completion mode; legacy attach/remove observer/result keys exact. Build exact installed-reference four-tuple from frozen state.installed with first-token required-unused, intentionally parallel unchanged installed-reference.ts without recapture/compiler; small source-private pure assemblePreparedDevelopmentArguments(installed,composition) tuple assembler in same module for S02 equality, no package/public export."
+  },
+  {
+    "path": "packages/server/src/transaction-runtime.ts",
+    "kind": "modify",
+    "purpose": "Factor capture-taking core; add startPreparedTransactionRuntime(handle), reuse registered preflight, validate owner readConfiguration and existing metadata before intended bind; preserve old entry and seams. Trusted bind host/port ONLY genuine handle.listener, never frozen private preflight.port0. Explicit owner snapshot/limits/metadata complete BEFORE createTransactionService; constructor throw leaves caller owner/directclose1/serviceclose0. Trusted-only persistent observer/completion; old result/order unchanged."
+  },
+  {
+    "path": "packages/server/src/reference-deployment-runtime.ts",
+    "kind": "new",
+    "purpose": "Private startPreparedReferenceDeployment(handle) dispatches only after WeakMap lookup; no caller admission bool/options, no package export; returns non-attesting lifecycle handle, private checked facts and completion. Result history forwarded from existing profile capture/checked metadata constant; Scope/listen separate facts, no minted capability/fixture alignment invariant."
+  },
+  {
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "kind": "new",
+    "purpose": "Finite source-only real-store/delegating-mock ordering and failure callbacks from source-witnesses.json. Same51callbacks5s, S02 pure tuple comparison without another compiler, S03 two explicit fresh-owner subphases, S11 explicit additional legacy starts2 total; source2HTTP unchanged."
+  },
+  {
+    "path": "packages/server/src/reference-deployment-process.ts",
+    "kind": "new",
+    "purpose": "Private installed inherited-IPC bootstrap loads real file in same process, then prepared runtime, bounded stop/disconnect and fixed safe failures; no targets or secret-committing digests in ready/diagnostics. Inert import/missingIPC/invalidconfig guards, fixed diagnostic reference deployment startup failed newline/exit2, history forwarded, no store-directory provisioning."
+  },
+  {
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "kind": "new",
+    "purpose": "Finite installed callbacks in installed-witnesses.json; real emitted private process and credentialed cold HTTP/reopen/cleanup; does not import source to impersonate installed entry. Same21callbacks126HTTP+2CONNECT;32 original generations+4 guard helpers=36owned children. Callback-local bounded shared-config IPC and TX directory0700 fixture provisioning, no shared-launcher edit; all six TXcold callbacks depend D3a rows1–3."
+  },
+  {
+    "path": "scripts/smoke-executables.mjs",
+    "kind": "modify",
+    "purpose": "Closed emitted inventory adds exactly two new non-test module families (8 emitted files); refuse subpath/dist imports of both new private modules."
+  },
+  {
+    "path": "docs/design/startup-configuration.md",
+    "kind": "modify",
+    "purpose": "Document private intended-listener ordering, actual owner facts, errors/cleanup and absence of public activation; retain deployment bounds and redaction rules."
+  }
+]

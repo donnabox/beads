@@ -1,0 +1,549 @@
+async function d3Bounded(name: string, work: (budget: D3Budget) => Promise<void>) {
+  const started = performance.now(),
+    controller = new AbortController();
+  const actions: (() => Promise<void> | void)[] = [],
+    releases: (() => void)[] = [];
+  const directories: string[] = [],
+    observations: unknown[] = [],
+    failures: unknown[] = [];
+  let workSettled = false,
+    cleanupKnown = true;
+  const timeout = setTimeout(() => controller.abort(new Error("D3 source work deadline")), 3000);
+  const task = Promise.resolve().then(() =>
+    work({
+      signal: controller.signal,
+      release: releases,
+      own: (action) => actions.push(action),
+      retain: (directory) => directories.push(directory),
+      record: (value) => observations.push(value),
+    }),
+  );
+  void task.then(
+    () => {
+      workSettled = true;
+    },
+    () => {
+      workSettled = true;
+    },
+  );
+  try {
+    const cancelled = new Promise<never>((_, reject) => {
+      controller.signal.addEventListener("abort", () => reject(controller.signal.reason), {
+        once: true,
+      });
+    });
+    await Promise.race([task, cancelled]);
+  } catch (error) {
+    failures.push(error);
+  } finally {
+    clearTimeout(timeout);
+    controller.abort(new Error("D3 source cleanup"));
+    for (const release of releases) {
+      try {
+        release();
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    const cleanupEnd = performance.now() + 1000;
+    async function remaining<T>(promise: Promise<T>): Promise<T> {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        return await Promise.race([
+          promise,
+          new Promise<never>((_, reject) => {
+            const left = cleanupEnd - performance.now();
+            if (left <= 0) {
+              reject(new Error("D3 source cleanup deadline"));
+              return;
+            }
+            timer = setTimeout(() => reject(new Error("D3 source cleanup deadline")), left);
+          }),
+        ]);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    try {
+      await remaining(task.catch(() => {}));
+    } catch (error) {
+      failures.push(error);
+      cleanupKnown = false;
+    }
+    for (const action of actions.reverse()) {
+      if (performance.now() >= cleanupEnd) {
+        failures.push(new Error("D3 source cleanup deadline"));
+        cleanupKnown = false;
+        break;
+      }
+      try {
+        await remaining(Promise.resolve().then(action));
+      } catch (error) {
+        failures.push(error);
+        cleanupKnown = false;
+      }
+    }
+    if (!workSettled) cleanupKnown = false;
+    if (cleanupKnown)
+      for (const directory of directories) {
+        try {
+          rmSync(directory, { recursive: true, force: true });
+        } catch (error) {
+          failures.push(error);
+          cleanupKnown = false;
+        }
+      }
+    console.log(
+      JSON.stringify({
+        observation: "D3-source",
+        callback: name,
+        elapsedMs: performance.now() - started,
+        workSettled,
+        cleanupKnown,
+        directories: directories.map((directory) => ({
+          directory,
+          absent: !existsSync(directory),
+        })),
+        observations,
+        failureCount: failures.length,
+      }),
+    );
+  }
+  if (failures.length) throw new AggregateError(failures, "D3 source witness or cleanup failed");
+}
+async function d3Source(budget: D3Budget, mode: "ordinary" | "order" | "latch" = "ordinary") {
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-d3-source-"));
+  budget.retain(directory);
+  const owner = openTransactionStore({
+    file: path.join(directory, "transaction.sqlite"),
+    scope: d3Scope,
+    create: true,
+    types,
+  });
+  let tick = 0,
+    measure = false,
+    measuringConstruction = true,
+    constructionEntries = 0,
+    inOwner = false;
+  const counters = {
+    direct: 0,
+    discovery: 0,
+    entries: 0,
+    assemblies: 0,
+    waits: 0,
+    clocks: 0,
+    commits: 0,
+  };
+  const traffic: string[] = [];
+  const facade = {
+    ...owner,
+    withRead: ((...args: Parameters<typeof owner.withRead>) => {
+      if (measure) counters.entries++;
+      else if (measuringConstruction) constructionEntries++;
+      inOwner = true;
+      try {
+        return owner.withRead(...args);
+      } finally {
+        inOwner = false;
+      }
+    }) as typeof owner.withRead,
+    readConfiguration: () => {
+      traffic.push("readConfiguration");
+      return owner.readConfiguration();
+    },
+  };
+  const entered = Promise.withResolvers<void>(),
+    release = Promise.withResolvers<void>();
+  budget.release.push(() => release.resolve());
+  const assembly = discoveryAssembly.assembleTransactionDiscovery;
+  const spy = vi
+    .spyOn(discoveryAssembly, "assembleTransactionDiscovery")
+    .mockImplementation((...args) => {
+      expect(inOwner, "assembly after owner release").toBe(false);
+      counters.assemblies++;
+      return assembly(...args);
+    });
+  budget.own(() => {
+    spy.mockRestore();
+  });
+  let service: ReturnType<typeof createTransactionService>;
+  try {
+    service = createTransactionService(facade, {
+      ownerLifetime: "service",
+      minimumReads: {
+        budgetMs: 2,
+        now: () => {
+          counters.clocks++;
+          return mode === "order" ? tick++ : tick;
+        },
+        wait: async () => {
+          counters.waits++;
+          if (mode === "latch") {
+            entered.resolve();
+            await release.promise;
+          }
+        },
+      },
+      read: {
+        selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
+        advertisedLimits: {
+          page: { defaultItems: 2, maximumItems: 32 },
+          selector: { bytes: 4096, depth: 32, nodes: 256 },
+          cursorTtlMilliseconds: 1000,
+        },
+        pagination: {
+          scope: d3Scope,
+          defaultPageItems: 2,
+          maxPageItems: 32,
+          cursorTtlMs: 1000,
+          retainedStateCapacity: 100,
+          maxRetainedCursorPositionsPerSnapshot: 20,
+          retainedSnapshotByteCapacity: 100000,
+          retainedSnapshotNodeCapacity: 10000,
+          maxOpaqueTokenLength: 64,
+          tokenGenerationAttempts: 3,
+          idleCleanup: "on-demand",
+          clock: Date.now,
+          generateOpaqueToken: () => randomD3Token(),
+        },
+      },
+    });
+  } catch (error) {
+    owner.close();
+    throw error;
+  }
+  budget.own(async () => {
+    await service.close();
+    await service.closed;
+  });
+  const captured = facade.readConfiguration();
+  const baseline = {
+    calls: [...traffic],
+    entries: constructionEntries,
+    assemblies: counters.assemblies,
+  };
+  traffic.length = 0;
+  measuringConstruction = false;
+  measure = true;
+  counters.assemblies = 0;
+  const handler = createTransactionHttpHandler(
+    {
+      ...service,
+      discoveryObserved: (...args) => {
+        counters.discovery++;
+        return service.discoveryObserved(...args);
+      },
+    },
+    d3Scope,
+  );
+  const tuple = (position = "pos-0") => ({
+    "bdp-minimum-scope-position": position,
+    "bdp-scope-epoch": captured.scopeEpoch,
+    "bdp-authorization-view": captured.authorizationView,
+  });
+  const records: unknown[] = [];
+  async function call(
+    url: string,
+    method = "GET",
+    headers: HeadersInit = {},
+    role = "writer",
+    signal = budget.signal,
+  ) {
+    counters.direct++;
+    const request = new Request(url, { method, headers, signal });
+    const authorization =
+      role === "anonymous"
+        ? { kind: "unauthenticated" as const }
+        : { kind: "authenticated" as const, principal: role, canMutate: role === "writer" };
+    const promise = handler.handle(request, authorization);
+    void promise.catch(() => {});
+    const response = await promise;
+    records.push({
+      method,
+      url,
+      credential: role,
+      status: response.status,
+      headers: Object.fromEntries(response.headers),
+      body: response.body,
+    });
+    return response;
+  }
+  async function commit(name = "a") {
+    const previous = measure;
+    measure = false;
+    try {
+      const result = await service.submit({
+        carrier: { kind: "batch" },
+        body: batch([create(name)]),
+        key: `d3_${name}`,
+        authorization: { kind: "authorized", principal: "writer" },
+        receiving: { acceptsJson: true, maximumOperations: 32 },
+      });
+      expect(result.kind).toBe("receipt");
+      counters.commits++;
+    } finally {
+      measure = previous;
+    }
+  }
+  budget.record({ baseline });
+  budget.own(() => budget.record({ counters, records }));
+  return {
+    owner,
+    service,
+    handler,
+    counters,
+    baseline,
+    records,
+    tuple,
+    call,
+    commit,
+    entered: entered.promise,
+    release: () => release.resolve(),
+    now: (value: number) => {
+      tick = value;
+    },
+    reset: () => {
+      tick = 0;
+      for (const k of ["direct", "discovery", "entries", "assemblies", "waits", "clocks"] as const)
+        counters[k] = 0;
+    },
+  };
+}
+let d3Token = 0;
+function randomD3Token() {
+  return `d3_token_${++d3Token}`;
+}
+function d3Response(response: HttpResponse, status: number, expectedPosition?: string) {
+  expect(response.status).toBe(status);
+  expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+  if (expectedPosition !== undefined) {
+    expect(response.headers.get("bdp-scope-position")).toBe(expectedPosition);
+    expect(response.headers.get("bdp-scope-epoch")).toMatch(/\S+/);
+    expect(response.headers.get("bdp-authorization-view")).toMatch(/\S+/);
+  }
+}
+function d3NoDisclosure(response: HttpResponse) {
+  for (const header of [
+    "link",
+    "etag",
+    "location",
+    "bdp-scope-epoch",
+    "bdp-authorization-view",
+    "bdp-scope-position",
+  ])
+    expect(response.headers.has(header)).toBe(false);
+}
+for (const route of d3Routes) {
+  it(`D3 source projection ${route}`, async () =>
+    d3Bounded(`D3 source projection ${route}`, async (budget) => {
+      const f = await d3Source(budget),
+        target = d3Target(route);
+      const rows: [string, Record<string, string>, number, string?][] = [
+        ["GET", {}, route === "scope" ? 204 : 200],
+        ["HEAD", {}, route === "scope" ? 204 : 200],
+        ["GET", { accept: "text/plain" }, route === "scope" ? 204 : 406],
+        ["GET", { "if-none-match": "*" }, 304],
+        ["GET", { "if-match": '"absent"' }, 412],
+        ["GET", { "if-match": "*" }, route === "scope" ? 204 : 200],
+      ];
+      if (route === "scope") rows.push(["GET", {}, 204, target + "?x=1"]);
+      let jsonLength = 0;
+      for (const [method, headers, status, url] of rows) {
+        const response = await f.call(url ?? target, method, headers);
+        d3Response(response, status, "pos-0");
+        if (route === "scope") {
+          expect(response.headers.get("link")).toBe(d3Link);
+          expect(response.headers.get("cache-control")).toBe("private, no-store");
+        }
+        if (method === "HEAD" || status !== 200) expect(response.body).toBeUndefined();
+        if (method === "GET" && status === 200) {
+          if (route === "descriptor") parseTransactionalDiscovery(response.body);
+          else parseTransactionalOperationDirectory(response.body);
+          jsonLength = Buffer.byteLength(JSON.stringify(response.body));
+        }
+        if (method === "HEAD" && route !== "scope")
+          expect(Number(response.headers.get("content-length"))).toBe(jsonLength);
+      }
+      expect(f.counters).toMatchObject({
+        direct: rows.length,
+        discovery: rows.length,
+        entries: rows.length,
+        assemblies: rows.length,
+        waits: 0,
+        clocks: 0,
+      });
+    }));
+  it(`D3 source receiving ${route}`, async () =>
+    d3Bounded(`D3 source receiving ${route}`, async (budget) => {
+      const f = await d3Source(budget),
+        target = d3Target(route),
+        tuple = f.tuple("genesis");
+      const rows: [string, HeadersInit, string, number][] = [
+        ["GET", { "bdp-minimum-scope-position": "genesis" }, "anonymous", 401],
+        ["GET", {}, "reader", route === "scope" ? 204 : 200],
+        ["GET", { "bdp-minimum-scope-position": "genesis" }, "writer", 400],
+        ...Object.keys(tuple).map(
+          (field) =>
+            [
+              "GET",
+              {
+                ...tuple,
+                [field]: `${tuple[field as keyof typeof tuple]}, ${tuple[field as keyof typeof tuple]}`,
+              },
+              "writer",
+              400,
+            ] as [string, HeadersInit, string, number],
+        ),
+        ["GET", { ...tuple, "bdp-minimum-scope-position": "genesis,genesis" }, "writer", 400],
+        ["HEAD", { "bdp-minimum-scope-position": "genesis" }, "writer", 400],
+      ];
+      let partialLength = 0;
+      for (const [method, headers, role, status] of rows) {
+        const response = await f.call(target, method, headers, role);
+        d3Response(response, status, status < 400 ? "pos-0" : undefined);
+        if (status >= 400) {
+          d3NoDisclosure(response);
+          if (method === "GET") {
+            checkedProblem(record(response.body));
+            partialLength = Buffer.byteLength(JSON.stringify(response.body));
+          } else {
+            expect(response.body).toBeUndefined();
+            expect(Number(response.headers.get("content-length"))).toBe(partialLength);
+          }
+        }
+      }
+      expect(f.counters).toMatchObject({
+        direct: 8,
+        discovery: 1,
+        entries: 1,
+        assemblies: 1,
+        clocks: 0,
+        waits: 0,
+      });
+    }));
+  it(`D3 source minimum order ${route}`, async () =>
+    d3Bounded(`D3 source minimum order ${route}`, async (budget) => {
+      const f = await d3Source(budget, "order");
+      await f.commit();
+      f.reset();
+      const rows: [string, Record<string, string>, number, string?][] = [
+        ["pos-1", {}, route === "scope" ? 204 : 200],
+        ["genesis", {}, route === "scope" ? 204 : 200],
+        ["opaque-unknown", {}, 503],
+        ["pos-2", {}, 503],
+        ["opaque-unknown", { "bdp-scope-epoch": "foreign" }, 410],
+        ["opaque-unknown", { "bdp-authorization-view": "foreign" }, 409],
+        ["opaque-unknown", { accept: "text/plain" }, 503],
+        ["opaque-unknown", { "if-none-match": "*" }, 503],
+        ["opaque-unknown", { "if-match": '"absent"' }, 503],
+      ];
+      if (route === "scope") rows.push(["opaque-unknown", {}, 503, d3Scope + "?x=1"]);
+      for (const [position, extra, status, url] of rows) {
+        f.now(0);
+        const response = await f.call(url ?? d3Target(route), "GET", {
+          ...f.tuple(position),
+          ...extra,
+        });
+        d3Response(response, status, "pos-1");
+        if (status >= 400) {
+          expect(record(response.body).code).toBe(
+            status === 503
+              ? "catch-up-timeout"
+              : status === 410
+                ? "cursor-expired"
+                : "foreign-view",
+          );
+          checkedProblem(record(response.body));
+          if (status === 503) expect(response.headers.get("retry-after")).toBe("1");
+        }
+      }
+      expect(f.counters).toMatchObject({
+        direct: route === "scope" ? 10 : 9,
+        discovery: route === "scope" ? 10 : 9,
+        entries: route === "scope" ? 16 : 14,
+        assemblies: 2,
+        waits: route === "scope" ? 6 : 5,
+        clocks: route === "scope" ? 22 : 19,
+      });
+    }));
+  it(`D3 source catch-up ${route}`, async () =>
+    d3Bounded(`D3 source catch-up ${route}`, async (budget) => {
+      const f = await d3Source(budget, "latch"),
+        headers = new Headers(f.tuple("pos-1"));
+      // Retain the actual Request so caller mutation occurs after its owner entry.
+      const request = new Request(d3Target(route), { headers, signal: budget.signal });
+      f.counters.direct++;
+      const pending = f.handler.handle(request, {
+        kind: "authenticated",
+        principal: "writer",
+        canMutate: true,
+      });
+      void pending.catch(() => {});
+      await f.entered;
+      request.headers.set("bdp-minimum-scope-position", "pos-999");
+      request.headers.set("bdp-scope-epoch", "foreign");
+      const independent = await f.call(d3Target(route));
+      d3Response(independent, route === "scope" ? 204 : 200, "pos-0");
+      await f.commit();
+      f.release();
+      const result = await pending;
+      d3Response(result, route === "scope" ? 204 : 200, "pos-1");
+      expect(f.counters).toMatchObject({
+        direct: 2,
+        discovery: 2,
+        entries: 3,
+        assemblies: 2,
+        waits: 1,
+        clocks: 2,
+        commits: 1,
+      });
+    }));
+  it(`D3 source abort ${route}`, async () =>
+    d3Bounded(`D3 source abort ${route}`, async (budget) => {
+      const f = await d3Source(budget, "latch"),
+        controller = new AbortController();
+      const pending = f.call(d3Target(route), "GET", f.tuple("pos-1"), "writer", controller.signal);
+      void pending.catch(() => {});
+      await f.entered;
+      controller.abort();
+      f.release();
+      await expect(pending).rejects.toBeInstanceOf(ScopeServerOperationAbortedError);
+      expect(f.counters).toMatchObject({
+        direct: 1,
+        discovery: 1,
+        entries: 1,
+        assemblies: 0,
+        waits: 1,
+        clocks: 2,
+      });
+    }));
+  it(`D3 source close-drain ${route}`, async () =>
+    d3Bounded(`D3 source close-drain ${route}`, async (budget) => {
+      const f = await d3Source(budget, "latch");
+      const pending = f.call(d3Target(route), "GET", f.tuple("pos-1"));
+      void pending.catch(() => {});
+      await f.entered;
+      let settled = false;
+      const closing = f.service.close();
+      void closing.then(
+        () => {
+          settled = true;
+        },
+        () => {
+          settled = true;
+        },
+      );
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(settled).toBe(false);
+      expect(() => f.owner.inspect()).not.toThrow();
+      f.now(2);
+      f.release();
+      d3Response(await pending, 503, "pos-0");
+      await closing;
+      await f.service.closed;
+      expect(() => f.owner.inspect()).toThrow();
+      expect(() => f.service.discoveryObserved()).toThrow();
+      await f.service.close();
+      expect(f.counters).toMatchObject({
+        direct: 1,
