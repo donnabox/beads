@@ -98,6 +98,11 @@ func TestRejectMalformedJSON(t *testing.T) {
 		if err := ValidateProperties(Memory, json.RawMessage(raw)); err == nil {
 			t.Errorf("accepted %q", raw)
 		}
+		for _, kind := range []LinkKind{Association, Guidance, AppliesTo, Supports, Challenges, MemorySupersedes} {
+			if err := ValidateLinkProperties(kind, json.RawMessage(raw)); err == nil {
+				t.Errorf("link kind %d accepted malformed payload %q", kind, raw)
+			}
+		}
 	}
 }
 
@@ -127,6 +132,7 @@ func TestCandidateProvenance(t *testing.T) {
 	var manifest struct {
 		Commit string `json:"commit"`
 		Files  []struct {
+			Path   string `json:"path"`
 			File   string `json:"file"`
 			SHA256 string `json:"sha256"`
 		} `json:"files"`
@@ -135,7 +141,29 @@ func TestCandidateProvenance(t *testing.T) {
 	if manifest.Commit != "c064cc33274d1a88532ef6d135d7446b9b64b039" {
 		t.Fatal("unexpected candidate commit", manifest.Commit)
 	}
+	expected := map[string]bool{
+		"schema-cases.json": false, "definitions.json": false, "memory.properties.schema.json": false,
+		"memory-observation.local-properties.schema.json": false, "memory-decision.local-properties.schema.json": false,
+		"memory-procedure.local-properties.schema.json": false, "memory-policy.local-properties.schema.json": false,
+		"memory-lesson.local-properties.schema.json": false, "memory-requirement.local-properties.schema.json": false,
+		"memory-link.properties.schema.json": false,
+	}
+	if len(manifest.Files) != len(expected) {
+		t.Fatalf("manifest has %d inputs, expected %d", len(manifest.Files), len(expected))
+	}
 	for _, file := range manifest.Files {
+		seen, known := expected[file.File]
+		if !known || seen {
+			t.Fatalf("unexpected or duplicate manifest entry %q", file.File)
+		}
+		expected[file.File] = true
+		sourcePath := "specs/types/memory/" + file.File
+		if file.File == "schema-cases.json" {
+			sourcePath = "fixtures/specs/memory/schema-cases.json"
+		}
+		if file.Path != sourcePath {
+			t.Fatalf("incorrect source path for %s: %s", file.File, file.Path)
+		}
 		data, err := os.ReadFile(filepath.Join("testdata/candidate", file.File))
 		if err != nil {
 			t.Fatal(err)
@@ -143,6 +171,25 @@ func TestCandidateProvenance(t *testing.T) {
 		digest := sha256.Sum256(data)
 		if hex.EncodeToString(digest[:]) != file.SHA256 {
 			t.Errorf("changed candidate fixture: %s", file.File)
+		}
+	}
+	entries, err := os.ReadDir("testdata/candidate")
+	if err != nil {
+		t.Fatal(err)
+	}
+	actual := map[string]bool{}
+	for _, entry := range entries {
+		if entry.Name() == "provenance.json" {
+			continue
+		}
+		if entry.IsDir() || !expected[entry.Name()] {
+			t.Fatalf("unlisted candidate input: %s", entry.Name())
+		}
+		actual[entry.Name()] = true
+	}
+	for name := range expected {
+		if !actual[name] {
+			t.Errorf("manifest input missing from directory: %s", name)
 		}
 	}
 }
@@ -168,5 +215,12 @@ func TestStatusDoesNotSelectIssueContract(t *testing.T) {
 	}
 	if Decision.ConformsTo(Issue) || Issue.ConformsTo(Decision) {
 		t.Fatal("distinct decision identities collapsed into one family")
+	}
+}
+
+func TestViolationErrorText(t *testing.T) {
+	err := ValidateProperties(Memory, json.RawMessage(`{"title":"  ","body":""}`))
+	if err == nil || err.Error() != "/properties/title: expected a nonblank string" {
+		t.Fatalf("unexpected diagnostic: %v", err)
 	}
 }

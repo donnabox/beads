@@ -2,6 +2,7 @@ package memorytypes
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 )
@@ -37,22 +38,25 @@ func TestProductEndpointPairs(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			for _, source := range variants {
 				for _, target := range variants {
-					source.CanonicalIdentity = "source"
-					target.CanonicalIdentity = "target"
-					target.Pinned = true
-					explorationAllows := false
-					for _, pair := range definition.Properties.LinkConstraints.Pairs {
-						if pair.Source.matches(t, source) && pair.Target.matches(t, target) {
-							explorationAllows = true
+					for _, pinned := range []bool{false, true} {
+						source.CanonicalIdentity = "source"
+						target.CanonicalIdentity = "target"
+						target.Pinned = pinned
+						explorationAllows := false
+						for _, pair := range definition.Properties.LinkConstraints.Pairs {
+							if pair.Source.matches(t, source) && pair.Target.matches(t, target) {
+								explorationAllows = true
+							}
 						}
-					}
-					want := productPair(kind, source, target)
-					if want && !explorationAllows {
-						t.Fatal("product pair absent from exploration", source, target)
-					}
-					err := ValidateEndpoints(kind, source, target)
-					if (err == nil) != want {
-						t.Errorf("source=%+v target=%+v: %v, expected acceptance=%v", source, target, err, want)
+						pairAllowed := productPair(kind, source, target)
+						if pairAllowed && !explorationAllows {
+							t.Fatal("product pair absent from exploration", source, target)
+						}
+						want := pairAllowed && (pinned || kind != Supports && kind != Challenges)
+						err := ValidateEndpoints(kind, source, target)
+						if (err == nil) != want {
+							t.Errorf("source=%+v target=%+v: %v, expected acceptance=%v", source, target, err, want)
+						}
 					}
 				}
 			}
@@ -300,12 +304,23 @@ func TestNoEntirelyExternalPair(t *testing.T) {
 	}
 }
 
-func TestClassificationDoesNotChangeIdentity(t *testing.T) {
+func TestLocalSelfIdentityAndIndependentExternalRefusal(t *testing.T) {
 	memory := EndpointFacts{Class: LocalBead, Kind: Memory, CanonicalIdentity: "same"}
+	local := EndpointFacts{Class: LocalBead, Kind: Requirement, CanonicalIdentity: "same", Pinned: true}
+	var violation *Violation
+	err := ValidateEndpoints(Association, memory, local)
+	if !errors.As(err, &violation) || violation.Path != "/target" || violation.Expected != "an identity different from source, regardless of revision pins" {
+		t.Fatalf("local identity across kinds/pins did not produce self-link refusal: %v", err)
+	}
+	// External classification is refused before identity is compared. These
+	// checks prove independent release exclusion, not a cross-class identity path.
 	for _, class := range []EndpointClass{CrossScopeBead, ExternalResource} {
-		other := EndpointFacts{Class: class, CanonicalIdentity: "same", Pinned: true}
-		if err := ValidateEndpoints(Association, memory, other); err == nil {
-			t.Errorf("class %d created a new identity namespace", class)
+		for _, identity := range []string{"same", "different"} {
+			other := EndpointFacts{Class: class, CanonicalIdentity: identity, Pinned: true}
+			err := ValidateEndpoints(Association, memory, other)
+			if !errors.As(err, &violation) || violation.Path != "/target" || violation.Expected != "a same-scope Issue or Memory; external endpoints are outside this release" {
+				t.Fatalf("external class=%d identity=%s did not produce release exclusion: %v", class, identity, err)
+			}
 		}
 	}
 }

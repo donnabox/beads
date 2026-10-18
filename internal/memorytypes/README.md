@@ -86,6 +86,10 @@ state and its proven contract membership. `Pinned` means an explicit nonempty
 revision was supplied, not a revision silently chosen by this helper. The caller
 must prove local liveness/retention, visibility, canonical identity, and the
 correct contract revision. Passing these predicates does not prove those facts.
+The executed identity-branch tests use local endpoints. External classifications
+are refused before identity comparison, so their refusal does not demonstrate a
+cross-class identity branch. The common identity namespace remains a caller
+invariant for any future external admission.
 
 Cross-scope Beads and other external resources remain distinct categories for
 explicit refusal. No fetch, import, availability, or immutability claim is made.
@@ -128,8 +132,8 @@ silent qualification skip. Wiring this entrypoint into repository CI remains an
 explicit runtime-adoption follow-up outside F0's package-only scope.
 
 Go tests cover all 102 active pinned property cases, inherited requirements,
-nonmutation, diagnostics, extra format, open-status and uninterpreted-extension cases, and all 726 combinations of
-the eleven endpoint classifications over six product pair sets. Every common Link
+nonmutation, diagnostics, extra format, open-status and uninterpreted-extension cases, and all 1452 combinations of
+the eleven endpoint classifications over six product pair sets and both target pin modes. Every common Link
 property case exercises all six Link kinds. The independent Python oracle asserts
 Draft 2020-12 formats and forbids remote schema lookup. Exact versions of
 `jsonschema`, `rfc3987`, and `rfc3339-validator` are pinned and checked. Its
@@ -138,3 +142,9 @@ from schema shape.
 
 This is pure helper evidence. It does not qualify a CLI, database, installed
 catalog, shared server, BDP profile, or the complete Memory workflow.
+
+Known schema-level limitation: an unpaired surrogate escape such as `\ud800` is
+accepted by both the current JSON Schema checker and Go decoding (which produces
+a replacement character when interpreting that string). Raw-byte UTF-8 validation
+does not reject that escape. This remains a spec-owner question; F0 does not add an
+unreviewed stricter Unicode policy or claim Unicode-scalar validation.

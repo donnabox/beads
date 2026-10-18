@@ -40,7 +40,7 @@ not expand this package's scope. Memory remains a proposed specification.
 | 2. Oracle is only a remembered command | Added explicit `check.sh` acceptance entrypoint for package tests plus the offline oracle. It fails on missing cached dependencies; ordinary Go tests do not invoke `uv`, fetch dependencies, or skip the gate. CI wiring is an explicit later integration task, not claimed here. |
 | 3. Unpinned format dependencies | `oracle-requirements.txt` pins jsonschema 4.25.1, rfc3987 1.3.8, and rfc3339-validator 0.1.4; the checker asserts all three installed versions. |
 | 4. Link identities as endpoints | Caller contract now explicitly requires proving Bead categories refer to Beads, never Links. This pure helper does not resolve resource identity. |
-| 5. Compare class plus canonical identity | Rejected. Classification and locality must not create identity namespaces or let self-links bypass the rule. Clarified the common canonical identity contract and tested same-identity cross-class refusals. |
+| 5. Compare class plus canonical identity | Rejected. Classification and locality must not create identity namespaces or let self-links bypass the rule. Clarified the common canonical identity contract. The original cross-class test observed external-category refusal, not the identity branch; the final closure section corrects that evidence claim. |
 | 6. Coupled family oracle | Replaced production `IsMemory` use in the fixture oracle with an independent explicit test inventory. Candidate conformance declarations remain separately checked. |
 | 7. Empty additional cases silently pass | Both Go and Python checks now reject empty additional cases. No brittle exact local-case count is imposed. |
 | 8. Common properties exercise only Association | Every Link property case now runs against all six Link kinds. |
@@ -137,7 +137,7 @@ No Bazel execution, full-repository suite, engine, installed binary or shared-se
 qualification is claimed. Parent retains final review/publication authority. The
 package still has no runtime callers.
 
-## Current Memory V1 status and Requirement reconciliation
+## Historical Memory V1 reconciliation at implementation 54be1474f
 
 This normal follow-up preserves implementation
 `d22db0cd661196f4bf85450556f469de220ebebd` and pins public `gastownhall/bdp`
@@ -198,3 +198,48 @@ Current verification:
 No new Go dependency, engine call, shared database access, full-repository suite,
 Bazel execution, CLI/storage integration, publication or release action is included.
 Final review and publication remain with the parent.
+
+## Final review closure following implementation 54be1474f
+
+Native final review reported no findings. Claude's final review of
+`54be1474f66c5f0a010a063208e133e2054a10e9` found no production-verdict defects;
+it identified regression gaps and diagnostic/evidence limitations. Its proposed
+mutation-survival scenarios were analytical rather than executed mutations, and
+its Go-side format probing was source reasoning rather than differential fuzzing.
+The new cases below were actually executed against Go and the independent oracle.
+
+This closure changes tests and documentation only. Production validators and
+candidate pin `c064cc33274d1a88532ef6d135d7446b9b64b039` remain unchanged.
+Parent reports later candidate `aeda0b9cb21eb1ade18eceb8e389359da58b129d` changes
+three Markdown files only, with JSON/checker inputs unchanged; its CLI/query follow-up
+is outside F0. No input pin was advanced merely to follow prose edits.
+
+| Finding | Closure |
+|---|---|
+| 1. Cross-class test did not reach identity comparison | Renamed/reframed it as local self-identity plus independent external refusal. Assert exact diagnostic paths/expectations for each. External categories still refuse first; production diagnostics were not reordered. README and the older review evidence now explicitly distinguish the caller's canonical-identity invariant from the branch exercised. |
+| 2. Matrix omitted floating targets | All 1452 combinations now cover both pin modes. Only Supports/Challenges require exact targets, including when both endpoint roles otherwise match. AppliesTo current-target acceptance is covered. |
+| 3. Authority-object URI validation untested | Added missing, non-string and relative uri cases with `/properties/authority/uri` diagnostic assertions. |
+| 4. URI query/userinfo paths untested | Added ordinary valid query/userinfo cases and malformed opening/closing bracket negatives, checked by Go and the pinned schema oracle. |
+| 5. Year/month/day zero guards untested | Added all three invalid observedAt cases with field-path assertions. |
+| 6. Malformed Link payloads untested | The malformed JSON/UTF-8/null/array cases now exercise every Link property entrypoint as well as Memory. |
+| 7. Error text untested | Added one exact `Violation.Error()` assertion for a nonblank title refusal. No nil-receiver behavior is promised. |
+| 8. Missing versus wrong-type diagnostic | Deferred nonblocking polish. Both already produce a typed refusal at the correct field; no missing-field code or distinct expectation is promised. Avoid changing production diagnostics solely for this closure. |
+| 9. Manifest could omit an input | Added the complete expected ten-file set, unique-entry checks, exact source-path checks, and directory/manifest set equality, retaining every hash check. Missing, duplicate and unlisted copied inputs now fail. |
+| 10. Requirement/negative diagnostic gaps | Added Requirement null-body refusal and filled missing Requirement, authority, and whitespace diagnostic paths. |
+| 11. Unpaired surrogate acceptance | Recorded as a schema-level limitation for the parent/spec owner. Both current schema checking and Go decoding accept the escape; no stricter policy, normalization or new generic JSON validation was invented. |
+
+Executed closure checks:
+
+- `internal/memorytypes/check.sh -race -cover`: passed; 98.4% Go statement coverage,
+  no race report. Offline oracle passed 290 property cases (102 source + 188 local).
+  The product endpoint matrix covers 1452 combinations. This is direct execution,
+  not an assertion that hypothetical reviewer mutations were applied.
+- `make ci-pr-lint`: passed zero issues on native, Windows non-CGO and Darwin
+  non-CGO; formatting passed.
+- `python3 tools/bazel/go_srcs.py --check`, `bash -n internal/memorytypes/check.sh`,
+  and `git diff --check`: passed. Go source inventory and BUILD metadata are unchanged.
+
+The upstream default-example check remains evidence from the earlier exact-pin run
+above; it was not rerun or relabelled as new closure evidence. No full-repository,
+engine, shared database, installed runtime or Bazel qualification was performed.
+No publishing or runtime activation is included.
