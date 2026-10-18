@@ -1,0 +1,88 @@
+{
+  "createdUtc": "2026-10-18T05:37:10.891563+00:00",
+  "accepted": true,
+  "preparationIndexSha256": "2485cd0b80aeff71277c94e1789f2df4a4cf99f79db32285ffc1bf9441fdb930",
+  "bindingSha256": "fb2ac0c7be0b61c9e135b2f18486f23ada8551731ae658d1425a2d1fe0bf72af",
+  "controlSha256": "dfe65683c14ac98691dcf0c33b5159d6049a69b795fc62aadf3de1b491cd93b4",
+  "runnerSha256": "c974716e74cf89c822e72a9b2ef038aae69374ed304354e4cf8d83a7ca338a29",
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "indexedArtifactsVerified": 110,
+  "mirroredFilesVerified": 111,
+  "sourceFilesVerified": 679,
+  "contextsVerified": 71,
+  "artifactsAndToolsVerified": 26,
+  "frozenInnerFilesVerified": 82,
+  "originCopyBindingsVerified": 89,
+  "sourceSpecCopiesVerified": 47,
+  "runnerExactlyThreeLiteralSubstitutions": true,
+  "runnerParserArgvGuardPredicateChanges": false,
+  "supervisor5ByteIdentical": true,
+  "controlDataChangedKeysOnly": [
+    "authority",
+    "packet",
+    "predecessorIndexSha256",
+    "sourceRoot"
+  ],
+  "codeAndControlDeltaInverseGenuine": true,
+  "safeDefaultArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "localHeadMetadata": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "looseCommitTreeParent": {
+    "tree": [
+      "6757829bd5b700faf28df39071190a272add90c9"
+    ],
+    "parent": [
+      "a56254d682cf4623cab22a552e3d2f695f691795"
+    ]
+  },
+  "liveGitStatusRecomputed": false,
+  "runtimeRunnerFreshGitCleanTreeParentChecksPreserved": true,
+  "currentPathLookups": {
+    "git": "/opt/homebrew/bin/git",
+    "ps": "/bin/ps",
+    "gh": "/opt/homebrew/bin/gh"
+  },
+  "pathLimitation": "Future launch PATH must remain accepted; unqualified git/ps/gh resolution is inherited proven behavior. Actual path realpaths/hashes verified now; not a guarantee after environment changes.",
+  "externalPrerequisitesResolvedByNamedRootEvidence": {
+    "rootMechanics": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan-root-mechanics-1/inspection.json",
+      "sha256": "586ffe221e7f6aab07eafce1c65daa133749a1cd9c818c5ed9c55a5620b29bf2"
+    },
+    "generic5Root": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/future-review-supervisor5-root-acceptance-1/acceptance.json",
+      "sha256": "09bab140c237fb9caa545c8a9380ffb44d2b9f62a9f694517084bc51bd6af683"
+    },
+    "sourceBasis": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-source-basis-acceptance-1/acceptance.json",
+      "sha256": "b1cf937281ce082fe2f50866c7e91e900b3cbfd8b257f4cec9eedf8f679f17e3"
+    },
+    "exactCI": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-exact-ci-1/root-final-acceptance-1/acceptance.json",
+      "sha256": "0c550825a6da468344d3bb4c3cae4d24c30bc27099a68fcea5e361ea52e2fc92"
+    }
+  },
+  "bothFlagsFalse": true,
+  "sourceBindingFinalized": true,
+  "attemptExists": false,
+  "allNineRunnerOutputsAbsent": true,
+  "newReviewLaunched": false,
+  "helperOrProductOrGitExecution": false,
+  "sourceAuthoringReleased": false,
+  "actualReviewLaunchReleased": false
+}

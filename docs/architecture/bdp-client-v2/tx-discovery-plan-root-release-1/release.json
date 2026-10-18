@@ -1,0 +1,39 @@
+{
+  "kind": "root-single-first-D3a-actual-PLAN-two-flag-release",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "releasedUtc": "2026-10-18T05:39:53.280640+00:00",
+  "accepted": true,
+  "preparationIndexSha256": "2485cd0b80aeff71277c94e1789f2df4a4cf99f79db32285ffc1bf9441fdb930",
+  "releasedBindingSha256": "9c80a0b8e462c48360791c786e91d7399b8535c3d1cba614fd789815008266a2",
+  "releasedControlSha256": "656be2150e6abd95aa7916bf6a33d090ec5b0da36794bc009fe9ba68f98ea086",
+  "sourceHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceFiles": 679,
+  "nativePacketMechanics": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan-review-1/native-mechanics-closure-1/closure.json",
+    "sha256": "af8c0091a608295cdb63060cef30933e9a620230198064e9ee95a678eec2473c"
+  },
+  "rootPacketMechanics": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan-root-mechanics-1/inspection.json",
+    "sha256": "586ffe221e7f6aab07eafce1c65daa133749a1cd9c818c5ed9c55a5620b29bf2"
+  },
+  "genericSupervisorFinalRoot": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/future-review-supervisor5-root-acceptance-1/acceptance.json",
+    "sha256": "09bab140c237fb9caa545c8a9380ffb44d2b9f62a9f694517084bc51bd6af683"
+  },
+  "exactCIAndSharedHTTPBasis": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-source-basis-acceptance-1/acceptance.json",
+    "sha256": "b1cf937281ce082fe2f50866c7e91e900b3cbfd8b257f4cec9eedf8f679f17e3"
+  },
+  "onlyChanges": "Exactly two rootLaunchReleased false\u2192true literal replacements; all source/context/runner/supervisor/arguments/prompt/closed snapshots unchanged.",
+  "oneInvocation": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan-review-1/launch-supervision/supervise.py"
+  ],
+  "deadlineSeconds": 1800,
+  "termAt": 1790,
+  "killAt": 1798,
+  "retries": 0,
+  "sourceAuthoringReleased": false,
+  "requiresAfterTerminal": "Independent actual terminal/process/source audit and root findings disposition before any source authoring. Preserve any failed supervision/unknown CLI/missing outputs honestly; no automatic retry."
+}
