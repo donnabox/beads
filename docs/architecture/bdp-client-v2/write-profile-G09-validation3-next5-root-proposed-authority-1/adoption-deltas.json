@@ -1,0 +1,220 @@
+{
+  "existingHelperProgramsSchemaSelectionCommandsImmutable": true,
+  "gateExactlyFiveChangedFields": [
+    "actualCodeDisposition",
+    "approvedStages",
+    "nativeCodeDisposition",
+    "rootDisposition",
+    "workspaceTools"
+  ],
+  "gateProtectedOther21Keys": true,
+  "newStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "pairs": [
+    {
+      "afterSha256": "0320697ad97ad0c0478ee2bbed1e039ad9f22de3450dce0a3695350686418c39",
+      "beforeSha256": "7efd6023295c82b84ec63114f48796dbf340f28a7d5fe1337024c78fd9fe4aa4",
+      "bothCompleteRestorationsVerified": true,
+      "forward": "actual-code-disposition.json.forward.ndiff",
+      "inverse": "actual-code-disposition.json.inverse.ndiff",
+      "name": "actual-code-disposition.json",
+      "wholeStructuredInverseVerified": true
+    },
+    {
+      "afterSha256": "182dd0ea09e001bc42c61e90c6369e11c4e7f9a99c3364800d08d3a20661f966",
+      "beforeSha256": "09898f77cedf52190ec16271c9bb12705d50b1227f690d4a4c0c8abb02ad3f0c",
+      "bothCompleteRestorationsVerified": true,
+      "forward": "native-code-disposition.json.forward.ndiff",
+      "inverse": "native-code-disposition.json.inverse.ndiff",
+      "name": "native-code-disposition.json",
+      "wholeStructuredInverseVerified": true
+    },
+    {
+      "afterSha256": "01e1db2619271c5e667d915701268da5e372b279da53a63d0d55032f49488033",
+      "beforeSha256": "8ca2417110927f97a4b505945b44e005ad9a808da024da9639f0c7d5d04ccf57",
+      "bothCompleteRestorationsVerified": true,
+      "forward": "root-disposition.json.forward.ndiff",
+      "inverse": "root-disposition.json.inverse.ndiff",
+      "name": "root-disposition.json",
+      "wholeStructuredInverseVerified": true
+    }
+  ],
+  "prefix9": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "scopeDocumentKeyProjections": [
+    {
+      "addedKeys": [
+        "acceptedWorkspaceTools",
+        "candidateInactiveAtAuthoring",
+        "effectiveRuntimeAuthorityNow",
+        "first4ActualAcceptedEvidence",
+        "later25Closed",
+        "newActualReviewPerformed",
+        "newUnattemptedStagesOnly",
+        "predecessorFirst4Disposition",
+        "prior4ReceiptMeaning",
+        "sourceOnlyAuthorRelease",
+        "sourceOnlyAuthorReleasePublication"
+      ],
+      "modifiedKeys": [
+        "actualRootApproval",
+        "approvedStages",
+        "runtimeAuthorizationMeaning"
+      ],
+      "name": "actual-code-disposition.json",
+      "protectedKeys": [
+        "accepted",
+        "actualOriginalReview",
+        "bootstrapReuse",
+        "currentRootCandidateNeverActivated",
+        "dispositionMeaning",
+        "executionAuthorityRequiresExternalActivation",
+        "freshP3Only",
+        "freshPipelineRequired",
+        "helper3ImplementationSha256",
+        "helper3PreparationIndex",
+        "helper3RootStaticAcceptance",
+        "helper3StaticNative",
+        "laterCorrectedSource",
+        "laterStagesAuthorized",
+        "noExistingAttemptReuse",
+        "noRetry",
+        "noSecondReviewOrRetry",
+        "originalScopeOmissions",
+        "predecessorRootCandidate",
+        "priorAttemptRemainsFailedStopped",
+        "priorFailedAttemptDisposition",
+        "publicProfileOrWholeWriteCredit",
+        "reviewerDidNotReadCorrectedBytes",
+        "role",
+        "runtimeValidationAuthorized",
+        "session",
+        "sourceBindingSha256",
+        "sourceIdentity",
+        "staticValidationAuthorized",
+        "validationMustMeasureUnobservedCompilerAndTiming"
+      ]
+    },
+    {
+      "addedKeys": [
+        "acceptedWorkspaceTools",
+        "candidateInactiveAtAuthoring",
+        "effectiveRuntimeAuthorityNow",
+        "first4ActualAcceptedEvidence",
+        "later25Closed",
+        "newActualReviewPerformed",
+        "newUnattemptedStagesOnly",
+        "predecessorFirst4Disposition",
+        "prior4ReceiptMeaning",
+        "sourceOnlyAuthorRelease",
+        "sourceOnlyAuthorReleasePublication"
+      ],
+      "modifiedKeys": [
+        "actualRootApproval",
+        "approvedStages",
+        "runtimeAuthorizationMeaning"
+      ],
+      "name": "native-code-disposition.json",
+      "protectedKeys": [
+        "F7F8F9",
+        "accepted",
+        "bootstrapReuse",
+        "closedNativeFindings",
+        "currentRootCandidateNeverActivated",
+        "executionAuthorityRequiresExternalActivation",
+        "freshP3Only",
+        "freshPipelineRequired",
+        "helper3ImplementationSha256",
+        "helper3PreparationIndex",
+        "helper3RootStaticAcceptance",
+        "helper3StaticNative",
+        "laterStagesAuthorized",
+        "nativeReviewAcceptedExistingScope",
+        "nativeSourceReview",
+        "noExistingAttemptReuse",
+        "noRetry",
+        "predecessorRootCandidate",
+        "priorAttemptRemainsFailedStopped",
+        "priorFailedAttemptDisposition",
+        "publicProfileOrWholeWriteCredit",
+        "role",
+        "rootStaticSourceAcceptance",
+        "runtimeValidationAuthorized",
+        "session",
+        "sourceBindingSha256",
+        "sourceIdentity",
+        "staticValidationAuthorized",
+        "thisDocumentIsNotNativeAuthorsOwnAcceptance",
+        "unmeasuredFitRisk"
+      ]
+    },
+    {
+      "addedKeys": [
+        "acceptedWorkspaceTools",
+        "candidateInactiveAtAuthoring",
+        "effectiveRuntimeAuthorityNow",
+        "first4ActualAcceptedEvidence",
+        "later25Closed",
+        "newActualReviewPerformed",
+        "newUnattemptedStagesOnly",
+        "predecessorFirst4Disposition",
+        "prior4ReceiptMeaning",
+        "sourceOnlyAuthorRelease",
+        "sourceOnlyAuthorReleasePublication"
+      ],
+      "modifiedKeys": [
+        "activationPrerequisites",
+        "actualRootApproval",
+        "actualToolVersionsInstallAndTools",
+        "approvedStages",
+        "captureProtocol3",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "name": "root-disposition.json",
+      "protectedKeys": [
+        "accepted",
+        "bootstrapReuse",
+        "currentRootCandidateNeverActivated",
+        "executionAuthorityRequiresExternalActivation",
+        "existingActualCodeScopeAndCorrections",
+        "freshP3Only",
+        "freshPipelineRequired",
+        "helper2SourceOnlyCorrection",
+        "helper3ImplementationSha256",
+        "helper3PreparationIndex",
+        "helper3RootStaticAcceptance",
+        "helper3StaticNative",
+        "laterStagesAuthorized",
+        "noExistingAttemptReuse",
+        "noRetry",
+        "observationRules",
+        "predecessorRootCandidate",
+        "priorAttemptRemainsFailedStopped",
+        "priorFailedAttemptDisposition",
+        "publicProfileOrWholeWriteCredit",
+        "runtimeValidationAuthorized",
+        "session",
+        "sourceBindingSha256",
+        "sourceExactStaticBasis",
+        "sourceIdentity",
+        "staticValidationAuthorized"
+      ]
+    }
+  ],
+  "source679AndBinaryUnchanged": true
+}
