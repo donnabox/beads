@@ -1,0 +1,104 @@
+[
+  {
+    "path": "docs/specs/bdp.md",
+    "cceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "fddSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "byteIdentical": true
+  },
+  {
+    "path": "schemas/bdp-v0.schema.json",
+    "cceSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "fddSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/package.json",
+    "cceSha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "fddSha256": "1419ae0988d25cc5d5f7caed5b52016de9ee6f6fdf6bfd5cfbc3d91bfdb42814",
+    "byteIdentical": false
+  },
+  {
+    "path": "packages/server/src/recovery-store.ts",
+    "cceSha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "fddSha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "cceSha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "fddSha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002",
+    "byteIdentical": false
+  },
+  {
+    "path": "packages/server/src/transaction-snapshot.ts",
+    "cceSha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "fddSha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-runtime.ts",
+    "cceSha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "fddSha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-runtime-configuration.ts",
+    "cceSha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "fddSha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-service.ts",
+    "cceSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+    "fddSha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487",
+    "byteIdentical": false
+  },
+  {
+    "path": "packages/server/src/transaction-installed-configuration.ts",
+    "cceSha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+    "fddSha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-installed-process.ts",
+    "cceSha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "fddSha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-recovery.test.ts",
+    "cceSha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+    "fddSha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/transaction-authorization.ts",
+    "cceSha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "fddSha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/installed-reference.ts",
+    "cceSha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "fddSha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/installed-reference-configuration.ts",
+    "cceSha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+    "fddSha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/development-runtime.ts",
+    "cceSha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "fddSha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "byteIdentical": true
+  },
+  {
+    "path": "packages/server/src/development.ts",
+    "cceSha256": "a3f994bd610f17821c7d51189104308abef6196bb12b565b268a0ffc96b04f39",
+    "fddSha256": "a3f994bd610f17821c7d51189104308abef6196bb12b565b268a0ffc96b04f39",
+    "byteIdentical": true
+  }
+]

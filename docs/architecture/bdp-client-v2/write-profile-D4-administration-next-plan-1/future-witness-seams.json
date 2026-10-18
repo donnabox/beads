@@ -1,0 +1,66 @@
+{
+  "state": "DESIGN INPUT ONLY; no executable callback selection/count/footprint or release exists",
+  "witnesses": [
+    {
+      "id": "W1",
+      "scope": "TX historical-only erasure",
+      "setup": "Commit a version that later has retained representations; erase non-live version through approved owner boundary.",
+      "oracle": "Same-epoch ordinary visible admin group; one record per subject/version, empty changes/events, no MutationReceipt. Compare original record JCS digest incl metadata/provenance/ownedLinks, exclude links aggregate; retain original pre-metadata form when used.",
+      "lawIds": "C1,C2"
+    },
+    {
+      "id": "W2",
+      "scope": "TX live/owned closure",
+      "setup": "Erase live direct-object version with changed successor and separate tombstone/control; erase owned-Link version that is embedded in retained sources.",
+      "oracle": "Same atomic group holds required successor/tombstone and every containing-version record; exact root replacements vs exclusive ownedLink deltas; deletion safety and complete owned-set/first-class agreement. Negative mismatches cannot partially commit.",
+      "lawIds": "C3"
+    },
+    {
+      "id": "W3",
+      "scope": "controlled retained copy cleanup",
+      "setup": "Retain actual affected group/Event/receipt page/snapshot artifacts and controlled consumer generation before erasure.",
+      "oracle": "Before further visibility no erased content in all controlled carriers; permitted lineage/digest remains; authorized erased vs other withheld/404; surviving Event cursors and withheld gaps/eventCount correct; no fabricated resolver.",
+      "lawIds": "C4,C6"
+    },
+    {
+      "id": "W4",
+      "scope": "receiving/nonreceiving publication",
+      "setup": "Use actual admitted caught-up and lagging/backpressured receiving streams plus nonreceiving view and finite/reconnect reads.",
+      "oracle": "P floor/complete group/eligibility serialized; lagging closes and pre-P finite/snapshot 410; nonreceiving projection advance keeps checkpoints. Measure complete frame boundary and durable receiver checkpoint independently, including disconnect race; socket write not application.",
+      "lawIds": "C5"
+    },
+    {
+      "id": "W5",
+      "scope": "TX controlled logical restore after committed erasure",
+      "setup": "Via the separately approved route replace committed history, preserve logical identity/ledger, recover under new epoch.",
+      "oracle": "Old token classes fenced including keys/new namespace; ledger permanent/reemitted first, no old-epoch group served new; retained addresses not rebound; unknown-erasure-status content discarded before visibility. Ordinary identical-history restart keeps epoch as distinct control.",
+      "lawIds": "C6,C7,C9"
+    },
+    {
+      "id": "W6",
+      "scope": "RU continuity loss and partial sequence control",
+      "setup": "Via approved RU restore route demonstrate preserved complete state or lost recovery/identity continuity; keep ordinary sequence restart control distinct.",
+      "oracle": "Preserved state retains key dispositions/tombstones; lost continuity uses different canonicalScope, no exposed epoch. Ordinary restart retains committed sequence prefix, clears abandoned claim and never resumes unstarted members. No TX batch inference.",
+      "lawIds": "U1,U2,C8"
+    },
+    {
+      "id": "W7",
+      "scope": "reviewable acquisition refusal",
+      "setup": "Attempt controlled admission/recovery of a retained copy with provable and unestablishable authoritative origin/version/erasure status where claimed.",
+      "oracle": "Known obligations applied before publication; unknown rejected/discarded, not permanent unmanaged quarantine or identity laundering; no generic downstream download assurance.",
+      "lawIds": "C9"
+    }
+  ],
+  "lifecycleRequirements": [
+    "Future concrete callbacks must predeclare finite per-action/work/cleanup/callback/outer deadlines and exclusive attempt outputs; no inherited D4 owned-set 150s or reviewer1800s budget assumed for this different product task.",
+    "Retain every started child and pending action before fallible assertions, record actual responses/processes, stop on unknown cleanup/ownership, settle children and actual close before destructive directory cleanup.",
+    "A future failure is preserved and dispositions must precede a separately frozen successor; no retry authorization here."
+  ],
+  "unresolved": [
+    "Exact changed source paths and integration basis",
+    "Authoritative administration input/authorization and retained-copy provenance boundary",
+    "Persistent ledger/version migration/old-format handling decision consistent with current fail-closed stores",
+    "Finite callback/request tables and exact expected wire/source counters",
+    "All source/build/package/consumer/runtime identities and actual outcome evidence"
+  ]
+}

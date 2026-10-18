@@ -1,0 +1,209 @@
+{
+  "state": "exact copied input bytes; source/map integrity independently checked",
+  "files": [
+    {
+      "path": "basis/cce-source-map.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-retarget-plan-1/source-map.json",
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874,
+      "kind": "complete frozen source map"
+    },
+    {
+      "path": "basis/fdd-source-map.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-publication-1/tested-source-map.before-commit.json",
+      "sha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "bytes": 88236,
+      "kind": "complete frozen source map"
+    },
+    {
+      "path": "basis/cce-publication.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-publication-1/publication.json",
+      "sha256": "e3318cb8ecae14d77c73b42fde686eaa118cb2f86877323c4cb336ca8531b0b0",
+      "bytes": 908,
+      "kind": "historical provenance/context; not a new release"
+    },
+    {
+      "path": "basis/fdd-publication.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-publication-1/publication.json",
+      "sha256": "d1734b6ef5199e77db869519c9aba0c2fe638b5601bcc3fa4e4d52efdd2c77c1",
+      "bytes": 1132,
+      "kind": "historical provenance/context; not a new release"
+    },
+    {
+      "path": "context/applicability-audit-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-applicability-audit-1/index.json",
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522,
+      "kind": "historical provenance/context; not a new release"
+    },
+    {
+      "path": "context/applicability-table.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-applicability-audit-1/applicability-table.json",
+      "sha256": "d416aadaa89ff00df205b1c2fbaafbebd0e9173f7c2ae22cab5e50b3136c05b2",
+      "bytes": 10872,
+      "kind": "historical provenance/context; not a new release"
+    },
+    {
+      "path": "context/owned-set-plan-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-retarget-plan-1/index.json",
+      "sha256": "e2dc915f645a9c0dabd194d49f6a3b9b4949689d1971aacfb3d7fd33e04e2baf",
+      "bytes": 6129,
+      "kind": "historical provenance/context; not a new release"
+    },
+    {
+      "path": "sources/cce/docs/specs/bdp.md",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/schemas/bdp-v0.schema.json",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/package.json",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/package.json",
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/recovery-store.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/recovery-store.ts",
+      "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+      "bytes": 40784,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-store.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-snapshot.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-snapshot.ts",
+      "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+      "bytes": 33346,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-runtime.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-runtime.ts",
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-runtime-configuration.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-runtime-configuration.ts",
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-service.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-service.ts",
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-installed-configuration.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-installed-configuration.ts",
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-installed-process.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-installed-process.ts",
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-recovery.test.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-recovery.test.ts",
+      "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+      "bytes": 5728,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/transaction-authorization.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-authorization.ts",
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/installed-reference.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/installed-reference.ts",
+      "sha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "bytes": 1585,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/installed-reference-configuration.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/installed-reference-configuration.ts",
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/development-runtime.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/development-runtime.ts",
+      "sha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+      "bytes": 24799,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/cce/packages/server/src/development.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/development.ts",
+      "sha256": "a3f994bd610f17821c7d51189104308abef6196bb12b565b268a0ffc96b04f39",
+      "bytes": 501,
+      "kind": "pinned current cce source"
+    },
+    {
+      "path": "sources/fdd/packages/server/package.json",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/package.json",
+      "sha256": "1419ae0988d25cc5d5f7caed5b52016de9ee6f6fdf6bfd5cfbc3d91bfdb42814",
+      "bytes": 638,
+      "kind": "pinned current fdd startup boundary"
+    },
+    {
+      "path": "sources/fdd/packages/server/src/reference-deployment.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.ts",
+      "sha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+      "bytes": 13758,
+      "kind": "pinned current fdd startup boundary"
+    },
+    {
+      "path": "sources/fdd/packages/server/src/reference-deployment-state.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment-state.ts",
+      "sha256": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+      "bytes": 1613,
+      "kind": "pinned current fdd startup boundary"
+    },
+    {
+      "path": "sources/fdd/packages/server/src/installed-reference-configuration.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/installed-reference-configuration.ts",
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815,
+      "kind": "pinned current fdd startup boundary"
+    },
+    {
+      "path": "sources/fdd/packages/server/src/transaction-installed-configuration.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/transaction-installed-configuration.ts",
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942,
+      "kind": "pinned current fdd startup boundary"
+    }
+  ],
+  "count": 29
+}

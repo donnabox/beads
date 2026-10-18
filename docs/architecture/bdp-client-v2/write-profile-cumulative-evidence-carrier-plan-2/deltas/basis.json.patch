@@ -1,0 +1,23 @@
+--- plan1/basis.json
++++ plan2/basis.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "CLOSED concrete private cumulative evidence carrier PLAN",
++  "state": "CLOSED PLAN2 minimal N1–N3 precision successor",
+   "session": "2026-10-18T02:16:24Z-549f",
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+   "sourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+@@ -17,8 +17,11 @@
+     "apps/bdptest/src/transactional-matrix.test.ts"
+   ],
+   "currentStartupD3aAdopted": false,
+-  "finalCombinedBasisRebind": "UNRESOLVED",
++  "finalCombinedBasisRebind": "UNRESOLVED; unchanged cce679/spec677 planning basis, no startup/D3a adoption",
+   "sourceAuthoringReleased": false,
+   "reviewLaunchReleased": false,
+-  "runtimeReleased": false
++  "runtimeReleased": false,
++  "predecessorIndexSha256": "92f4b0c0b0fbe1fbdc1ff4d42b50db4d2b35c7088a0de8acae7d1cdcde4f41ad",
++  "nativeFindingsClosureSha256": "727b809d74d6a507c6b1951ad98b6758c7cf764ba939d92c9689c260befef5b9",
++  "rootDispositionSha256": "710297a3b6a04dc186b0f40315f827460d934e70e5ed145b8f20cd24eff02dcf"
+ }
