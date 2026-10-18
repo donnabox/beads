@@ -1,0 +1,415 @@
+[
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 27,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(type(record) is dict and set(record)=={'path','sha256'},'Unknown/missing document pin key')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 28,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " p=Path(record['path']);require(p.is_absolute() and p.is_file() and not p.is_symlink() and sha(p.read_bytes())==record['sha256'],'Document absent/changed '+str(p));return read(p)"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 30,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(b['worktree']==str(W) and b['head']==INTEGRATION and git('branch','--show-current').decode().strip()==b['branch'],'Wrong source binding')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 31,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Git identity changed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 33,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(actual==b['trackedSourceFiles'],'Source files changed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 34,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(sorted(git('diff','--name-only','HEAD').decode().splitlines())==b['dirtyPaths']==sorted(b['ownedFiles']) and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 35,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(all(actual[p]==v['afterSha256'] and sha(git('show','HEAD:'+p))==v['beforeSha256'] for p,v in b['ownedFiles'].items()),'Owned source binding differs')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 36,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(not git('diff','--cached','--binary').strip(),'Staged source is forbidden')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 37,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(len(actual)==679 and len(b['ownedFiles'])==10,'Exact tracked/owned counts')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 38,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Source patch changed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 39,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(all(sha(git('show','HEAD:'+f))==v for f,v in actual.items() if f not in b['ownedFiles']),'Other tracked source differs from HEAD')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 43,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  p=Path(name);require(str(p.resolve(strict=True))==binding['realpath'] and sha(p.read_bytes())==binding['sha256'],'Tool changed '+name)"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 49,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "   dist=package/'dist';require(dist.is_dir(),'Missing dist '+str(dist))"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 51,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "    require(not p.is_symlink(),'Linked build output')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 54,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(not p.is_symlink(),'Linked artifact')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 56,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(result,'Empty build inventory');return result"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 63,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "    q=p.resolve(strict=True);require(q.is_relative_to(C.resolve()),'Consumer link escapes');links[r]={'link':os.readlink(p),'target':q.relative_to(C.resolve()).as_posix()}"
+  },
+  {
+    "first4Applicability": "Sequential prior-stage actual completion/source/log check; no priors for node-version; require1/2/3 prior stages before stages2/3/4. Future actual evidence required.",
+    "line": 68,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(v['accepted'] and v['exit'] in read(P/'commands.json')['commands'][name].get('acceptedRawExitCodes',[0]) and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)"
+  },
+  {
+    "first4Applicability": "Sequential prior-stage actual completion/source/log check; no priors for node-version; require1/2/3 prior stages before stages2/3/4. Future actual evidence required.",
+    "line": 69,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)"
+  },
+  {
+    "first4Applicability": "Sequential prior-stage actual completion/source/log check; no priors for node-version; require1/2/3 prior stages before stages2/3/4. Future actual evidence required.",
+    "line": 70,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(sha((E/(name+'.log')).read_bytes())==v['logSha256'],'Prior log changed '+name)"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 74,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(b['head']==g['finalHead'] and b['tree']==g['finalTree'] and b['sourceIdentity']==g['_sourceIdentity'],'Build source differs')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 75,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(b['artifacts']==inventory(),'Build outputs changed')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 77,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  item=b[key];require(sha(Path(item['path']).read_bytes())==item['sha256'],'Build record changed')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 80,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(expected==consumer_inventory(),'Consumer changed')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 81,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'] and proof['sourceIdentity']==g['_sourceIdentity'] and proof['sourceBindingSha256']==g['sourceBinding']['sha256'],'Consumer source differs')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 82,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==proof['consumerLockSha256'],'Consumer lock changed')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 83,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " tar=read(E/'tar-source-provenance.json');require(sha((E/'tar-source-provenance.json').read_bytes())==proof['tarProvenanceSha256'],'Tar provenance changed')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 84,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 85,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 88,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(__debug__,'Assertions required')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 90,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(set(g)=={'rootExactSourceAccepted', 'session', 'rootArchiveAcceptance', 'knownOriginalActualCodeTerminal', 'consumerInventory', 'consumerLockSha256', 'workspaceTools', 'implementationIndexSha256', 'approvedStages', 'sourceBinding', 'actualClaudeReviewDisposed', 'installedProvenance', 'actualCodeDisposition', 'staticValidationAuthorized', 'released', 'baseTools', 'rootConsumerProofAcceptance', 'mode', 'bootstrapReuse', 'rootConsumerLockAcceptance', 'nativeCodeDisposition', 'rootPlanAccepted', 'rootDisposition', 'rootBuildAcceptance', 'knownCorrectedSourceFreeze', 'nativeCodeReviewDisposed'},'Unknown/missing gate key')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 91,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(all(type(g[k]) is bool for k in ['released','rootPlanAccepted','rootExactSourceAccepted','actualClaudeReviewDisposed','nativeCodeReviewDisposed','staticValidationAuthorized']),'Gate boolean type')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 92,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(read(P/'commands.json').get('configurationFinalized') is True,'Authored current changefeed source/selection not finalized')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 93,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(read(P/'audit-expectations.json').get('finalized') is True,'Actual current changefeed observation contracts not finalized')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 94,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 95,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(g['mode']==MODE,'Wrong phase')"
+  },
+  {
+    "first4Applicability": "Child-helper supervised-attempt/source-gate hash binding, reached by bind-workspace-tools audit tools; no new report/test callback selected.",
+    "line": 98,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(os.environ.get('TX_DISCOVERY_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('TX_DISCOVERY_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')"
+  },
+  {
+    "first4Applicability": "Child-helper supervised-attempt/source-gate hash binding, reached by bind-workspace-tools audit tools; no new report/test callback selected.",
+    "line": 99,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 100,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 101,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 102,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " for f,h in read(P/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 104,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 106,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(type(approved) is list and all(type(n) is str for n in approved),'Approved stage list type')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 107,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(approved==order[:len(approved)] and name in approved,'Stage not released')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 108,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec.get('termAtSeconds')==115 and spec['automaticRetries']==0,'Limits changed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 109,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(not any('UNRESOLVED' in arg or ('$'+'{') in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')"
+  },
+  {
+    "first4Applicability": "Callback selection/workload branch absent for first4; remains unchanged for later selected callbacks.",
+    "line": 110,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 112,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 115,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool binding differs')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 116,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 117,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both CODE review dispositions remain required before validation')"
+  },
+  {
+    "first4Applicability": "Common required for each proposed first4; field/source relationship inspected only, executable checks remain future.",
+    "line": 119,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  d=document(g[label]);require(d.get('accepted') is True and d.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'CODE disposition differs '+label)"
+  },
+  {
+    "first4Applicability": "Each first4 needs runtimeValidationAuthorized true because none is typecheck/format-check/lint. Exact approvedStages still restrictive; draft booleans do not release later stages.",
+    "line": 120,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": " require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 124,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root actual build acceptance missing')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 127,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance missing')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 130,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(lock.get('accepted') is True and lock.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual lock acceptance missing')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 131,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==lock['consumerLockSha256'],'Consumer lock not root-pinned')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 132,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  require(lock.get('consumerManifestSha256')==sha((E/'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256')==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Root actual consumer manifest/settings acceptance missing')"
+  },
+  {
+    "first4Applicability": "Deferred exact build/consumer inventory, fresh workspace tool or later root proof predicate; condition false for first4, unchanged for later stages.",
+    "line": 135,
+    "predicateExecutedByReviewer": false,
+    "requireCallOccurrences": 1,
+    "text": "  accepted=document(g['rootConsumerProofAcceptance']);require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('installedProvenance')==g['installedProvenance'] and accepted.get('consumerInventory')==g['consumerInventory'],'Root actual proof acceptance missing')"
+  }
+]

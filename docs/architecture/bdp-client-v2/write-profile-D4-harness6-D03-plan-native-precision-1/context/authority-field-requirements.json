@@ -1,0 +1,69 @@
+{
+  "currentRootSyntheticDisposition": "UNPREPARED; no accepted record issued here",
+  "documentPinExactKeys": [
+    "path",
+    "sha256"
+  ],
+  "documentPinRules": "Absolute ordinary nonsymlink existing exact SHA JSON; strict duplicate/nonfinite parsing. No fallback to generic missing-field record or old implementation. All gate/source/tool/external pins and exact role still required on actual harness entry.",
+  "exactKeyCount": 11,
+  "fields": [
+    {
+      "name": "session",
+      "proposedFixedValueOrUnresolvedPin": "2026-10-18T02:16:24Z-549f"
+    },
+    {
+      "name": "scope",
+      "proposedFixedValueOrUnresolvedPin": "D4 zero-product synthetic controls only"
+    },
+    {
+      "name": "syntheticOnly",
+      "proposedFixedValueOrUnresolvedPin": true
+    },
+    {
+      "name": "productReleased",
+      "proposedFixedValueOrUnresolvedPin": false
+    },
+    {
+      "name": "harnessImplementationSha256",
+      "proposedFixedValueOrUnresolvedPin": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
+    },
+    {
+      "name": "subjectImplementationSha256",
+      "proposedFixedValueOrUnresolvedPin": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e"
+    },
+    {
+      "name": "approvedInvocations",
+      "proposedFixedValueOrUnresolvedPin": [
+        "D03--unit"
+      ]
+    },
+    {
+      "name": "nativeHarnessAcceptance",
+      "proposedFixedValueOrUnresolvedPin": "UNKNOWN_FUTURE_OTHER_NATIVE_STATIC_BRIDGE_PIN"
+    },
+    {
+      "name": "availabilityAcceptance",
+      "proposedFixedValueOrUnresolvedPin": "UNKNOWN_FUTURE_ROOT_OBSERVED_BRIDGE_PIN"
+    },
+    {
+      "name": "durableRootRelease",
+      "proposedFixedValueOrUnresolvedPin": "UNKNOWN_FUTURE_EXACT_ROOT_D03_ONLY_DISPOSITION_PIN"
+    },
+    {
+      "name": "noRetry",
+      "proposedFixedValueOrUnresolvedPin": true
+    }
+  ],
+  "originalClosedGatesUnchanged": true,
+  "otherInvocationsNotSelected": 59,
+  "remainingRequiredUnattemptedBeforeActual": 58,
+  "rootBridgeAuthorityBeforeAnyCandidateFreeze": true,
+  "rootDispositionRequiredFields": [
+    "accepted true",
+    "syntheticOnly true",
+    "productReleased false",
+    "exact current harnessImplementationSha256"
+  ],
+  "state": "INTERFACE_TABLE_NOT_RELEASE_DOCUMENT_OR_CANDIDATE",
+  "twoPublicationReadbacks": "Complete reviewed/adopted authority then separate byteexact activation before ONE attempt; no root authority or activation authored here"
+}

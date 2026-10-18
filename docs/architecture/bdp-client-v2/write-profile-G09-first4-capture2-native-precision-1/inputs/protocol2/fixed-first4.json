@@ -1,0 +1,151 @@
+{
+  "commands": [
+    {
+      "automaticRetries": 0,
+      "executableHelper": false,
+      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+      "innerStage": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "--version"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "expectedStdout": "v24.16.0",
+        "id": "node-version",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "phase": "final",
+      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/node-version",
+      "prospectiveSourceText": "proposals/node-version.capture.txt",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
+        "final",
+        "node-version"
+      ],
+      "rootWrapperCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "stage": "node-version"
+    },
+    {
+      "automaticRetries": 0,
+      "executableHelper": false,
+      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+      "innerStage": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--version"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "expectedStdout": "11.20.0",
+        "id": "pnpm-version",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "phase": "final",
+      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/pnpm-version",
+      "prospectiveSourceText": "proposals/pnpm-version.capture.txt",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
+        "final",
+        "pnpm-version"
+      ],
+      "rootWrapperCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "stage": "pnpm-version"
+    },
+    {
+      "automaticRetries": 0,
+      "executableHelper": false,
+      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+      "innerStage": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--frozen-lockfile"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "expectedSourceChange": "none; install outputs/tool maps separately measured",
+        "id": "workspace-install",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "phase": "final",
+      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/workspace-install",
+      "prospectiveSourceText": "proposals/workspace-install.capture.txt",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
+        "final",
+        "workspace-install"
+      ],
+      "rootWrapperCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "stage": "workspace-install"
+    },
+    {
+      "automaticRetries": 0,
+      "executableHelper": false,
+      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+      "innerStage": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+          "tools"
+        ],
+        "automaticRetries": 0,
+        "contract": "Bind actual completed install log/exit plus Biome/TypeScript/Vitest/package-manager tool identities and full dependency input invariance. Failure/timeout means stop, no online retry.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "id": "bind-workspace-tools",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "phase": "final",
+      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/bind-workspace-tools",
+      "prospectiveSourceText": "proposals/bind-workspace-tools.capture.txt",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
+        "final",
+        "bind-workspace-tools"
+      ],
+      "rootWrapperCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "stage": "bind-workspace-tools"
+    }
+  ],
+  "futureExactRootAuthorityStillRequired": true,
+  "literalDataSnippets": 4,
+  "noArbitraryCommandInterface": true,
+  "order": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "stopFirstNonzeroUnknownLateOrIncomplete": true
+}

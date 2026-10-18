@@ -1,0 +1,21 @@
+[
+  {
+    "action": "own read-only directory inventory",
+    "cause": "Matched root .paths ordinary file then attempted iterdir; real acceptance record had already been read. Corrected is_dir filter in708074. No subject/probe evaluation.",
+    "exit": 1,
+    "toolChunk": "8e2aa5"
+  },
+  {
+    "action": "own DATA generation script",
+    "cause": "Stray andz token in an assertion caused full-script SyntaxError before any body/source/artifact creation. Corrected script a13042 created addendum. No subject/helper/schema evaluation.",
+    "exit": 1,
+    "toolChunk": "404986"
+  },
+  {
+    "action": "own DATA report/index/mirror finalization",
+    "cause": "Missing shutil import after allchecks/report/index had beenwritten; no mirrordirectory wascreated and no freeze reported. Addendum source4 unchanged. Corrected finalization records this error and rebuilds index before immutable mirror freeze.",
+    "exit": 1,
+    "subjectExecuted": false,
+    "toolChunk": "a0e0f6"
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "afterSha256": "3a3143f26cb95008dd1df87ecf303ef8a583a30282437cd7ee2b471a5264f8a3",
+    "beforeSha256": "ae5e93a2e6949ee3d12b13bb56623a03e9ae067f6dcfb1f76edc69df91dd0dbb",
+    "forward": "deltas/node-version.forward.patch",
+    "insertedBlockSha256": "02a93715c8ea9e7e028e710f724af746ee9e652fa0d88059d9fba14a2c29338c",
+    "insertionBeforeFirstCreationAndPopen": true,
+    "inverse": "deltas/node-version.inverse.patch",
+    "originalA_B_CPreserved": true,
+    "path": "proposals/node-version.capture.txt",
+    "removedInsertionRestoresEveryOriginalByte": true
+  },
+  {
+    "afterSha256": "f6795df448646e22b3cadc9e5fe23cd374072d90c970a88c043a9fd8b45cbe8b",
+    "beforeSha256": "a40180d63b149adc25f224e320419f46ff8e495cd8db43e736e440b9ceff9365",
+    "forward": "deltas/pnpm-version.forward.patch",
+    "insertedBlockSha256": "02a93715c8ea9e7e028e710f724af746ee9e652fa0d88059d9fba14a2c29338c",
+    "insertionBeforeFirstCreationAndPopen": true,
+    "inverse": "deltas/pnpm-version.inverse.patch",
+    "originalA_B_CPreserved": true,
+    "path": "proposals/pnpm-version.capture.txt",
+    "removedInsertionRestoresEveryOriginalByte": true
+  },
+  {
+    "afterSha256": "1963bedee54d82494835719c4322237086b7d521ddf47c8c023575013fbb7072",
+    "beforeSha256": "5f7baa8003292602bc06e5b431fd8c4792c5efe1ad1aaac3b5c61877dccbff9a",
+    "forward": "deltas/workspace-install.forward.patch",
+    "insertedBlockSha256": "02a93715c8ea9e7e028e710f724af746ee9e652fa0d88059d9fba14a2c29338c",
+    "insertionBeforeFirstCreationAndPopen": true,
+    "inverse": "deltas/workspace-install.inverse.patch",
+    "originalA_B_CPreserved": true,
+    "path": "proposals/workspace-install.capture.txt",
+    "removedInsertionRestoresEveryOriginalByte": true
+  },
+  {
+    "afterSha256": "37dc321c32914819e325aaa18e76ad7d9e2d3937e6c5a4da2e61209e339a0b9b",
+    "beforeSha256": "fe5956313104939d9f75f2dedc56b30f8c8e2bff22696223428195aaf3dd2dcf",
+    "forward": "deltas/bind-workspace-tools.forward.patch",
+    "insertedBlockSha256": "02a93715c8ea9e7e028e710f724af746ee9e652fa0d88059d9fba14a2c29338c",
+    "insertionBeforeFirstCreationAndPopen": true,
+    "inverse": "deltas/bind-workspace-tools.inverse.patch",
+    "originalA_B_CPreserved": true,
+    "path": "proposals/bind-workspace-tools.capture.txt",
+    "removedInsertionRestoresEveryOriginalByte": true
+  }
+]

@@ -1,0 +1,415 @@
+{
+  "actualCode": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/report_controls.py",
+    "sha256": "1ea691e5d601c8f676a89e9d6e73ccfe388b73ac299a62366a4ad3253b955098"
+  },
+  "actualSubjects": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "sha256": "f29b7ad8a89ca85f022f494e77f59f62dcffcab29e1915931d62c0c15addd854"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "sha256": "e86cee2b4fd5b8a1723040971dad77ebf00c2894fdd95dbad0084f7bee5fa47f"
+    }
+  ],
+  "catalogCase": {
+    "declaredSubcases": [
+      {
+        "id": "D03-declared-1",
+        "input": "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+        "scope": "actual-subject unit or listed host variant, not executed",
+        "status": "UNEXECUTED"
+      },
+      {
+        "id": "D03-declared-2",
+        "input": "positive32 body/wire/postimage counterfactuals unchanged",
+        "scope": "actual-subject unit or listed host variant, not executed",
+        "status": "UNEXECUTED"
+      },
+      {
+        "id": "D03-declared-3",
+        "input": "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull",
+        "scope": "actual-subject unit or listed host variant, not executed",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "eligible for remaining unchanged failed-only checks",
+        "id": "D03-M01",
+        "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse source-impossible state",
+        "id": "D03-M02",
+        "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse source-impossible state",
+        "id": "D03-M03",
+        "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse source-impossible state",
+        "id": "D03-M04",
+        "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "eligible for remaining unchanged failed-only checks",
+        "id": "D03-M05",
+        "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse source-impossible state",
+        "id": "D03-M06",
+        "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "eligible for remaining unchanged failed-only checks",
+        "id": "D03-M07",
+        "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "eligible for remaining unchanged failed-only checks",
+        "id": "D03-M08",
+        "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C01",
+        "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C02",
+        "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C03",
+        "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C04",
+        "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C05",
+        "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C06",
+        "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C07",
+        "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C08",
+        "mutation": "000 with errorCategory=network; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-C09",
+        "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-W01",
+        "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-W02",
+        "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+        "status": "UNEXECUTED"
+      },
+      {
+        "executed": false,
+        "expected": "refuse initial-state contradiction",
+        "id": "D03-W03",
+        "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+        "status": "UNEXECUTED"
+      }
+    ],
+    "entry": "report_controls.py:run",
+    "expectedOracle": "refuse actual crossrow evidence",
+    "noRetry": true,
+    "original": {
+      "finiteSubcases": [
+        "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+        "positive32 body/wire/postimage counterfactuals unchanged",
+        "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull"
+      ],
+      "id": "D03",
+      "input": "counts32 but missing wire/changed body/incorrect owned postimage",
+      "predicate": "refuse actual crossrow evidence",
+      "productCalls": 0,
+      "sourceStateSubcases": [
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M01",
+          "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M02",
+          "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M03",
+          "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M04",
+          "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M05",
+          "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M06",
+          "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M07",
+          "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M08",
+          "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C01",
+          "mutation": "000 with errorCategory=abort; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C02",
+          "mutation": "000 with errorCategory=configuration; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C03",
+          "mutation": "000 with errorCategory=timeout; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C04",
+          "mutation": "000 with errorCategory=disconnect; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C05",
+          "mutation": "000 with errorCategory=header-limit; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C06",
+          "mutation": "000 with errorCategory=body-limit; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C07",
+          "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C08",
+          "mutation": "000 with errorCategory=network; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C09",
+          "mutation": "000 with errorCategory=unavailable; writeState null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-W01",
+          "mutation": "000 with writeState=not-started; errorCategory null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-W02",
+          "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-W03",
+          "mutation": "000 with writeState=complete; errorCategory null; response fields null"
+        }
+      ],
+      "status": "UNEXECUTED"
+    },
+    "productCalls": 0,
+    "remainingUnsupported": [],
+    "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+    "status": "UNEXECUTED",
+    "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+    "variants": [
+      "unit"
+    ]
+  },
+  "emittedTriadOracle": [
+    {
+      "bits": "000",
+      "expected": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+      "reason": null
+    },
+    {
+      "bits": "001",
+      "expected": "Refusal",
+      "reason": "failed-validation-implies-response"
+    },
+    {
+      "bits": "010",
+      "expected": "Refusal",
+      "reason": "failed-response-implies-settled"
+    },
+    {
+      "bits": "011",
+      "expected": "Refusal",
+      "reason": "failed-validation-implies-response"
+    },
+    {
+      "bits": "100",
+      "expected": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+      "reason": null
+    },
+    {
+      "bits": "101",
+      "expected": "Refusal",
+      "reason": "failed-validation-implies-response"
+    },
+    {
+      "bits": "110",
+      "expected": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+      "reason": null
+    },
+    {
+      "bits": "111",
+      "expected": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+      "reason": null
+    }
+  ],
+  "fullMutationReasons": {
+    "body": "wire-body",
+    "postimage": "owned-inline-metadata",
+    "wire": "wire-base64-type"
+  },
+  "limitations": [
+    "synthetic32 bodies/fakeproof/unitPID1001,1002 are authored data, not installed responses or owned runtime children",
+    "No AJV/protocol positive or source env-to-null claim; other source/runtime domains stay required",
+    "Every eligible partial is failed-only/no positive credit;20 counts are proposed not observed",
+    "Non-emitted29 source calls rely on actual normal completion and source identity, not fabricated per-call telemetry"
+  ],
+  "pendingCategories": [
+    "abort",
+    "configuration",
+    "timeout",
+    "disconnect",
+    "header-limit",
+    "body-limit",
+    "invalid-body",
+    "network",
+    "unavailable"
+  ],
+  "pendingCategoryAndWriteReason": "pending-category-write-state-null",
+  "pendingWriteStates": [
+    "not-started",
+    "started-completion-unestablished",
+    "complete"
+  ],
+  "settledNullCategoryReason": "settled-rejection-category",
+  "sourceCallInventoryProspectiveOnly": {
+    "audit_d4": 4,
+    "audit_partial": 45,
+    "explanation": "8 triads +9 pending-category refusals+9 settled-category controls+3 pending-write refusals+1 settled-null refusal+8 derived-count mutants+1 pending-count mutant+6 traversal mutants =45 partial calls. One synthetic full baseline plus3 full mutations =4. Only20 named triad/category/write rows are emitted; no49 invented subreports.",
+    "notReportedAsIndividualRows": 29,
+    "reportedNamedRows": 20,
+    "total": 49
+  },
+  "sourceSpecificExpectedRefusalClass": "Refusal (scanner.Refusal subclasses RuntimeError; catch supertype does not rename concrete type)",
+  "successMustBeActual": {
+    "case": "D03",
+    "executed": true,
+    "hostContainmentCredit": false,
+    "productCalls": 0,
+    "profileCredit": false,
+    "status": "UNIT_CONTROL_PASSED",
+    "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+    "syntheticAcceptance": false,
+    "unresolved": [],
+    "variant": "unit"
+  }
+}

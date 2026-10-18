@@ -1,0 +1,265 @@
+{
+  "actualLimiter": {
+    "elapsedSeconds": 0.137755499687046,
+    "event": "availability-native-limiter-terminal",
+    "forced": false,
+    "limiterPid": 90226,
+    "localStatus": "SETTLED_PENDING_ROOT_AUDIT",
+    "ownerPid": 90227,
+    "rawOwnerExit": 0,
+    "requiresFreshRootGroupAudit": true,
+    "syntheticAcceptance": false
+  },
+  "actualNativeStdoutSha256": "61e2f1262fe0c14e56bcea6addfbf4197d7891b0c15b872387e2af00991a6ba3",
+  "actualOwner": {
+    "allDirectChildrenReaped": true,
+    "clockDomainVerified": false,
+    "event": "availability-owner-terminal",
+    "harnessImplementationSha256": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1",
+    "limiterPid": 90226,
+    "nativeOrigin": 2237492.71795792,
+    "peers": [
+      {
+        "atSeconds": 0.09780399594455957,
+        "bootstrapAck": true,
+        "peer": {
+          "event": "availability-peer",
+          "firstMonotonic": 2237492.808209208,
+          "lastMonotonic": 2237492.809131708,
+          "nativeOrigin": 2237492.71795792,
+          "nonce": "bf5b0c82d4f0873a3e8453dd7f739484",
+          "observedSignals": [
+            15
+          ],
+          "parent": 90227,
+          "pgid": 90227,
+          "pid": 90228,
+          "productCalls": 0,
+          "role": "term",
+          "termIntUnblocked": true
+        },
+        "pgid": 90227,
+        "pid": 90228,
+        "rawExit": 0,
+        "role": "term",
+        "stderrBytes": 0,
+        "stderrEof": true,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 292,
+        "stdoutEof": true,
+        "stdoutSha256": "788e5a59fc6689ff7f08b7ddeaab007f7072ab042149ca461c1558cbc683cf11"
+      },
+      {
+        "atSeconds": 0.13366258004680276,
+        "bootstrapAck": true,
+        "peer": null,
+        "pgid": 90227,
+        "pid": 90229,
+        "rawExit": -9,
+        "role": "kill",
+        "stderrBytes": 0,
+        "stderrEof": true,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 0,
+        "stdoutEof": true,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "pgid": 90227,
+    "pid": 90227,
+    "productCalls": 0,
+    "pythonClockInfo": {
+      "adjustable": false,
+      "implementation": "mach_absolute_time()",
+      "monotonic": true,
+      "resolution": 4.166666666666666e-08
+    },
+    "pythonFirst": 2237492.742243125,
+    "pythonLast": 2237492.851852875,
+    "status": "OBSERVED_PENDING_NATIVE_LIMITER_AND_FRESH_ROOT_AUDIT",
+    "syntheticReleased": false
+  },
+  "allPGIDs": [
+    90217,
+    90221,
+    90222,
+    90226,
+    90227
+  ],
+  "allPIDs": [
+    90220,
+    90221,
+    90222,
+    90226,
+    90227,
+    90228,
+    90229
+  ],
+  "callerActualTerminal": {
+    "availabilityAccepted": false,
+    "callerPgid": 90221,
+    "callerPid": 90221,
+    "captures": [
+      {
+        "completeCapture": true,
+        "createdAtSeconds": 0.3065313342958689,
+        "creationPGIDBasis": "direct Popen start_new_session",
+        "parentPid": 90221,
+        "pgid": 90222,
+        "pid": 90222,
+        "rawExitIfObserved": 0,
+        "role": "guard",
+        "streams": [
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792351763384707143,
+              "device": 16777232,
+              "inode": 95960108,
+              "mode": 33152,
+              "mtimeNs": 1792351763384707143,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/attempt/guard.stdout",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          },
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792351763384753477,
+              "device": 16777232,
+              "inode": 95960109,
+              "mode": 33152,
+              "mtimeNs": 1792351763384753477,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/attempt/guard.stderr",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          }
+        ],
+        "termRequested": false
+      },
+      {
+        "completeCapture": true,
+        "createdAtSeconds": 0.7151544592343271,
+        "creationPGIDBasis": "direct Popen start_new_session",
+        "parentPid": 90221,
+        "pgid": 90226,
+        "pid": 90226,
+        "rawExitIfObserved": 0,
+        "role": "native",
+        "streams": [
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 1825,
+              "ctimeNs": 1792351763958556338,
+              "device": 16777232,
+              "inode": 95960110,
+              "mode": 33152,
+              "mtimeNs": 1792351763958556338,
+              "uid": 501
+            },
+            "fullStreamSha256": "61e2f1262fe0c14e56bcea6addfbf4197d7891b0c15b872387e2af00991a6ba3",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 1825,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/attempt/native.stdout",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 1825,
+            "savedBytes": 1825,
+            "savedPrefixSha256": "61e2f1262fe0c14e56bcea6addfbf4197d7891b0c15b872387e2af00991a6ba3",
+            "writeError": null
+          },
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792351763793360483,
+              "device": 16777232,
+              "inode": 95960111,
+              "mode": 33152,
+              "mtimeNs": 1792351763793360483,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/attempt/native.stderr",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          }
+        ],
+        "termRequested": false
+      }
+    ],
+    "clockDomainVerified": false,
+    "elapsedSeconds": 0.8833200843073428,
+    "event": "D4-root-availability-capture",
+    "failure": null,
+    "nativeInvocations": 1,
+    "normalCaptureCandidate": true,
+    "productReleased": false,
+    "reason": "root-terminal-provisional",
+    "requiresActualRootTerminalAndFreshAllRecordedAbsence": true,
+    "syntheticReleased": false,
+    "wholeCallerTerminalStillRequiresRootReceipt": true
+  },
+  "callerJournalRecords": 13,
+  "censusCompletedMonotonic": 2237559.297582375,
+  "independentPostterminalUpperBoundSeconds": 67.3485374590382,
+  "normalOneAvailabilityOnly": true,
+  "peerJournalRecords": {
+    "kill": 7,
+    "term": 8
+  },
+  "publicationAttribution": "Root owns Git/remote readback verification. Actual started/activation/external records and trusted root handoff bind prior sourcead4183 and secondactivationb46f BEFORE dispatch; auditor ran no Git.",
+  "rootActualExit": {
+    "callerPgid": 90221,
+    "callerPid": 90221,
+    "clockDomainVerified": false,
+    "elapsedSeconds": 0.9187437919899821,
+    "failure": null,
+    "finishMonotonic": 2237492.8677915,
+    "measuredAvailabilityAccepted": false,
+    "normalTerminalCandidate": true,
+    "oneActualAttemptNoRetry": true,
+    "originMonotonic": 2237491.949044916,
+    "productReleased": false,
+    "rawCallerExit": 0,
+    "requiresIndependentFullActualAuditAndPostterminalAllRecordedProcessCensus": true,
+    "rootPid": 90220,
+    "stderrBytes": 0,
+    "stderrEof": true,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 0,
+    "stdoutEof": true,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "syntheticReleased": false
+  },
+  "rootOriginMonotonic": 2237491.949044916,
+  "rootToolExitAttribution": "Parent root consumed tool15113 terminal exit0 via write_stdin chunk6fa906. No independent raw root-tool receipt available; owned caller PIPE EOF/exit retained in actual root files. Auditor did not reconstruct one.",
+  "wholeCallerPlusFreshCensusBelow115": true
+}

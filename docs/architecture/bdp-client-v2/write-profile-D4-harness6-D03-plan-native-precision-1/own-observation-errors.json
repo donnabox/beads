@@ -1,0 +1,17 @@
+[
+  {
+    "action": "static JSON display",
+    "command": "e7b148",
+    "issue": "Unbounded nested sample printed excessive DATA; tool output truncated",
+    "recovered": "bounded named reads and full hash census",
+    "subjectMutation": false
+  },
+  {
+    "action": "static filename read",
+    "command": "1c7a24",
+    "exit": 1,
+    "issue": "tools.json absent; actual inventoried filename tool-identity-read.json",
+    "recovered": "147f1a actual listing;fe3d3f exact13 tool/realpath checks",
+    "subjectMutation": false
+  }
+]

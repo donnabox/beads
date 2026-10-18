@@ -1,0 +1,210 @@
+{
+  "clockJoin": [
+    "Root first monotonic beforeimports/setup/guards/hash/launch; same pinned actual clock domain must be recorded.",
+    "rootOrigin<=registry.clockOrigin<=registry.lastCensusAt<=registry.freezeAt; generation/probe/root-task sources consistent.",
+    "owner.elapsedSeconds>=freezeAt-clockOrigin; native.elapsedSeconds>=owner.elapsedSeconds; correspondingrootterminal actual at/after native endpoint, all normal endpoints and complete rootfinalization strictly<115 from earliestroot origin.",
+    "Native hard120/TERM115/KILL119 is intact, not widened to compensate root setup or final checks. Root every timeout=min(original allowance,remaining earliestclock); never reset deadline or add grace.",
+    "Fullactual registry, source/raw/counter/pin/hash checks and known-domain census/finalreceipt must complete onoriginal whole-root clock; unmeasured futurefit may honestly fail."
+  ],
+  "diagnosticExactAvailableKeys": {
+    "firstMismatch": [
+      "status",
+      "pid",
+      "ppid",
+      "old",
+      "current",
+      "subpredicates",
+      "generation",
+      "lastAt",
+      "censusAt",
+      "failureAt",
+      "clockOrigin",
+      "directHandle",
+      "firstMatchingRegistration"
+    ],
+    "firstSignalError": [
+      "status",
+      "exceptionClass",
+      "errno",
+      "pgid",
+      "signal",
+      "at",
+      "attempted",
+      "successful",
+      "directAnchor",
+      "currentCensus",
+      "freshAnchor",
+      "livePids",
+      "lastAt",
+      "generation",
+      "failureAt",
+      "clockOrigin",
+      "directHandle",
+      "groupObserved",
+      "groupClosed"
+    ]
+  },
+  "diagnosticNestedBounds": {
+    "birthUTF8Bytes": 64,
+    "commUTF8Bytes": 1024,
+    "exceptionClassUTF8Bytes": 128,
+    "livePids": 4096,
+    "mismatchEncodedBytes": 32768,
+    "permittedCommCount": 2,
+    "signalEncodedBytes": 65536,
+    "stateUTF8Bytes": 16,
+    "unavailableExactObject": {
+      "reason": "diagnostic-capacity-or-projection",
+      "status": "unavailable"
+    }
+  },
+  "eventOrder": [
+    "outer-owner-final-registry",
+    "outer-owner-terminal",
+    "native-limiter-terminal"
+  ],
+  "exactRootStdout": "Exactly3 complete ASCII JSONL records and finalnewline, no duplicate key/nonfinite number/extra record/unparsed tail; retain actual full bytes before interpreting. No2event fallback.",
+  "nativeLimiterTerminalExactKeys": [
+    "event",
+    "limiterPid",
+    "ownerPid",
+    "rawOwnerExit",
+    "elapsedSeconds",
+    "forced",
+    "localStatus",
+    "syntheticAcceptance",
+    "requiresFreshRootGroupAudit"
+  ],
+  "notEstablished": [
+    "Actual3eventpipe fit, parser execution/resource fit or D03 result",
+    "Forced115119 behavior from peer selfsignals",
+    "Raw nonce/ACK socket trace or complete current identity lifetime from projections",
+    "Alltransient descendants, host-global absence or hard-realtime guarantees"
+  ],
+  "outerOwnerTerminalExactKeys": [
+    "event",
+    "case",
+    "variant",
+    "rawControlExit",
+    "ownerSettled",
+    "elapsedSeconds",
+    "allKnownGroupsAbsent",
+    "ownershipUnknown",
+    "ownerFailure",
+    "requiresLimiterExitAndRootAudit",
+    "syntheticAcceptance",
+    "productCalls"
+  ],
+  "registry": {
+    "banks": {
+      "completedCensusProbes": {
+        "max": 2048,
+        "order": "original complete probe receipts through LAST census",
+        "row": [
+          "pid",
+          "pgid",
+          "rawExit",
+          "stdoutEof",
+          "stderrEof"
+        ]
+      },
+      "knownGroups": {
+        "entry": "scalar pgid",
+        "max": 256,
+        "order": "numeric PGID"
+      },
+      "observedIdentities": {
+        "max": 4096,
+        "order": "numeric PID",
+        "row": [
+          "pid",
+          "pgid"
+        ]
+      },
+      "registrations": {
+        "max": 4096,
+        "order": "original; duplicates preserved",
+        "row": [
+          "pid",
+          "parent",
+          "pgid",
+          "roleCode",
+          "authenticated",
+          "direct"
+        ]
+      }
+    },
+    "encoding": {
+      "allow_nan": false,
+      "ascii": true,
+      "bankOuterBracketsAndNewlineWithinFixedReserve": true,
+      "diagnosticMismatchMaxBytes": 32768,
+      "diagnosticSignalMaxBytes": 65536,
+      "finiteClockRepresentationMax": 32,
+      "positiveIdsDecimalMax": 10,
+      "registryJsonlMaxBytes": 600832,
+      "signedRawExitMax": 11,
+      "totalProspectiveThreeEventCeiling": 618240
+    },
+    "event": "outer-owner-final-registry",
+    "eventExactKeys": [
+      "event",
+      "schemaVersion",
+      "case",
+      "variant",
+      "session",
+      "ownerPid",
+      "limiterPid",
+      "clockOrigin",
+      "freezeAt",
+      "lastCensusAt",
+      "lastCensusGeneration",
+      "registrations",
+      "observedIdentities",
+      "knownGroups",
+      "completedCensusProbes",
+      "firstMismatch",
+      "firstSignalError",
+      "syntheticAcceptance",
+      "productCalls"
+    ],
+    "finality": "existing settled all-groups-closed/census-None branch; no further registry-bearing operations; original finally/local getpgrp/descriptor cleanup preserved",
+    "firstMismatch": "null if never captured; available exact closed projected data or unavailable fixed capacity-or-projection marker; no exception text",
+    "firstSignalError": "same states; class+errno and held actual anchor booleans/live list; never fabricated chosen anchor",
+    "futureAuditRequired": [
+      "complete strict3event parsing",
+      "actual owner/native/root exits and BOTH root EOF",
+      "original clocks/source/tool/nonce/authority checks",
+      "fresh absence union of ALL final recorded IDs/groups plus root records",
+      "all original specific oracles/residual/UNKNOWN/no-credit conditions"
+    ],
+    "order": [
+      "outer-owner-final-registry",
+      "outer-owner-terminal",
+      "native-limiter-terminal"
+    ],
+    "ownerIdentity": "derived from two held direct io/control registration parents, exact agreement required; no ownerPgid field",
+    "roleCodes": {
+      "control": 1,
+      "io": 0,
+      "nested-zero-product": 2
+    },
+    "scope": "PRIVATE TOOL CONTRACT NOT PRODUCT REPORT SCHEMA; unexecuted and no caller prepared",
+    "version": 1,
+    "write": "ONE nonblocking exact-count registry os.write; short/EAGAIN/error returns failure, no loop/retry/flush/grace"
+  },
+  "sourceContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/observability-wire-contract.json",
+    "sha256": "33781588f3bfab997082d33b77af52b3cc09a836602970533d7e13c5884fdbe7"
+  },
+  "state": "UNIMPLEMENTED_UNVALIDATED_DATA_REQUIREMENTS_NOT_EXECUTABLE_PARSER",
+  "typedRules": [
+    "Exactly typed integers/booleans (bool not int); PID/PGID positive decimal<=10digits, signedrawexit<=11chars, finiteclock numeric representations<=32chars; sourcebankrowwidths and cardinalities exact.",
+    "Registry exactly19keys/schemaVersion1/caseD03/variantunit/session549f/syntheticAcceptancefalse/productCalls0. banks preserve sourceorder/duplicates; each encoded ASCII compact bank obeys its sourcebudget+3; complete line<=600832.",
+    "Registration rows width6; role0 io and1 control exactly two direct rows, same parent agrees registryownerPid; require authenticated/direct true for actual direct roles. Nestedrole2 typedsource registration evidence only. No invented ownerPgid.",
+    "observedIdentities width2 numericPIDorder, knownGroups scalar numericPGIDorder, completedCensusProbes width5 original complete order through lastcensus. Every normal probe actualraw0/stdoutEOFtrue/stderrEOFtrue. Do not silently deduplicate conflicting reuse.",
+    "firstMismatch and firstSignalError each null OR source exactavailable-key/type projection OR fixed unavailable capacity marker. Retain fullactual failed diagnostics. Any nonnull/ownershipunknown/ownerFailure fails normal acceptance, even fresh absence later.",
+    "Normalowner rawControlExit0/ownerSettledtrue/allKnownGroupsAbsenttrue/ownershipUnknown[]/ownerFailurenull/requiresLimiterExitAndRootAudittrue/syntheticAcceptancefalse/productCalls0. Normalnative ownerPID and limiterPID agree registry/root-process identities/rawOwnerExit0/forcedfalse/localStatusSETTLED_PENDING_ROOT_AUDIT/requiresFreshRootGroupAudittrue/syntheticAcceptancefalse.",
+    "All typed schema/bank limits and actual raw-status/owner/native/root receipt joins must hold. A malformed/oversize/incomplete/shortwrite record stays raw FAILED/UNKNOWN, never reconstructed from tentative snapshot or predicted final event."
+  ]
+}

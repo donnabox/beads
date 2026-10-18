@@ -1,0 +1,9 @@
+# Root first4 evidence disposition and inactive gate candidate2
+
+Root accepts the existing original actual CODE findings disposition and corrected-source native/static continuity for the exact current G09 source. This is not a second actual review or a claim that the original reviewer read correctedf6. Root also accepts FULL helper2 static mechanics b98034f7/bf55f088. No compiler/runtime success is asserted.
+
+The original A44 proposal remains immutable. Its three proposalOnly/effectiveAuthority=false records must not become active authority by copying a gate that points to them. These separate ROOT-authored bridge records replace those prospective labels with a precise root evidence disposition and conditional first4 scope. All original source provenance/unknowns/omissions and F6 timing risk remain. The gate candidate differs from A solely in three path/hash bridge pins; exact26 keys and exact four-stage approved prefix are preserved.
+
+This candidate is INACTIVE: actual helper2 gates stay false, approved empty and run absent. Its three root bridge records are accepted static evidence dispositions, with actual execution conditional on concrete protocol2 acceptance, independent review/root acceptance, publication/readback BEFORE activation, and a separately published/readback root-only exact gate activation. Cprotocol2 is UNBOUND here; no hash or fit is guessed. A later exact root execution-acceptance artifact must bind it and its independent review before any active gate write. No evaluator/runtime/reviewer/flag/source action occurred.
+
+All30 later stages remain unauthorized. workspaceTools/build/archives/consumer lock/settings/inventory/entry proof stay unresolved. Base tool filesystem pins do not prove executed versions or fresh install. No bootstrap reuse, retries, widened deadlines/schema/selection or whole-profile qualification. Incomplete combined CODE and all other Write gaps remain untouched.

@@ -1,0 +1,83 @@
+{
+  "accepted": true,
+  "actualOriginalReview": {
+    "ClaudeReadCorrectedF6": false,
+    "actualCLIAndSupervisorExit": 0,
+    "completeFindings": 9,
+    "findings": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/actual-review-terminal-1/finding-inventory.json",
+      "sha256": "a9ab99e48fb7c478cb7127bc70eaf3db7229f4266aa7eb9875447da0392aa1cd"
+    },
+    "rootNineFindingDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-code-findings-disposition-1/disposition.json",
+      "sha256": "8c7820151b5caed422fb3ef687bc8baf4d7b62625e8349d4f6df50cca10bb17c"
+    },
+    "scope": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/actual-review-terminal-1/scope-limitation.json",
+      "sha256": "def436da172e0228fceb082c769afb882f176605398791a5a4a9bcdea146f72c"
+    },
+    "scopeOmissionsPreserved": true,
+    "sourceCanonical": "eeb78c7d5c97f45b18f3c0465926d905915c302dae4da25a24f887e3e9247227",
+    "terminal": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/actual-review-terminal-1/closure.json",
+      "sha256": "440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057"
+    }
+  },
+  "actualRootApproval": "NOT_GRANTED_BY_THIS_AUTHOR",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "bootstrapReuse": [],
+  "dispositionMeaning": "Original complete eeb nine-finding review is disposed by existing8c782; later f6 corrective tests are separately native138/roota9cf static accepted. Source continuity binds current712c; no assertion Claude readf6 or all contexts/spec.",
+  "effectiveAuthority": false,
+  "freshPipelineRequired": true,
+  "laterCorrectedSource": {
+    "actualCurrentFiles": 679,
+    "canonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+    "compilerRuntimePassClaim": false,
+    "index": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/index.json",
+      "sha256": "784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-native-code-review-2/closure.json",
+      "sha256": "55c270e44ca306510135516911ae09712a8d9aa43dfefd769f4f12f1799e0f5b"
+    },
+    "onlyThreeTestPathsCorrectedAgainstEEB": true,
+    "ownedAgainstCCE": 10,
+    "protectedAgainstCCE": 669,
+    "protectedAgainstEEB": 676,
+    "rootGitObservation": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-corrected-source-inspection-2/inspection.json",
+      "sha256": "7541f44c72df29c3f9ba9f48246ecd25231cf7629e34c2a67f02334973570cb2"
+    },
+    "rootStatic": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-source-root-acceptance-2/acceptance.json",
+      "sha256": "a9cf24e1c322318e73bf43d8a29fc773a57dae22abe5320fd8ca89277edf356c"
+    },
+    "secondActualReviewPerformed": false,
+    "sourceAuthorBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/source-binding.json",
+      "sha256": "96451d5d1946a46adbe2add092691284048836c787723fe2c9ca5a02de0bc24e"
+    }
+  },
+  "laterStagesAuthorized": false,
+  "noExistingAttemptReuse": true,
+  "noRetry": true,
+  "noSecondReviewOrRetry": true,
+  "originalScopeOmissions": "Spec, several plans/cases/grammars/maps/diffs/root-native-final-owner contexts not read by original reviewer; no full read-all or wholeWrite approval inferred",
+  "proposalOnly": true,
+  "publicProfileOrWholeWriteCredit": false,
+  "reviewerDidNotReadCorrectedBytes": true,
+  "role": "Proposed ROOT disposition of original actual CODE plus separately corrected-source continuity; no new actual review approval",
+  "runtimeAuthorizationMeaning": "PROPOSED four tool/install stages ONLY, not product callbacks or all34 stages; gate exact approved prefix remains restrictive",
+  "runtimeValidationAuthorized": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "staticValidationAuthorized": true,
+  "validationMustMeasureUnobservedCompilerAndTiming": true
+}

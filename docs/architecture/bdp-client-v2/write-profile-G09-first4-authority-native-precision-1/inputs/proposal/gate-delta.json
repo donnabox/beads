@@ -1,0 +1,82 @@
+{
+  "actualGateStillFalseSha256": "ec0d956a5fc29b9f90414b0b4031e6fda6267cd77e3b43f18c704fb73eb682a7",
+  "changedFields": {
+    "actualClaudeReviewDisposed": {
+      "closed": false,
+      "proposed": true
+    },
+    "actualCodeDisposition": {
+      "closed": {
+        "path": "UNRESOLVED",
+        "sha256": "UNRESOLVED"
+      },
+      "proposed": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/actual-code-disposition.proposed.json",
+        "sha256": "376cfc90ca44d8e4a94243b57e967872a0dc52992f8c93504e5deb47a1b7e3ed"
+      }
+    },
+    "approvedStages": {
+      "closed": [],
+      "proposed": [
+        "node-version",
+        "pnpm-version",
+        "workspace-install",
+        "bind-workspace-tools"
+      ]
+    },
+    "nativeCodeDisposition": {
+      "closed": {
+        "path": "UNRESOLVED",
+        "sha256": "UNRESOLVED"
+      },
+      "proposed": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/native-code-disposition.proposed.json",
+        "sha256": "1bcbc58eb5f417f6ae20dd8070faf6118f9474696d375c2874ed9e82d1694ad6"
+      }
+    },
+    "nativeCodeReviewDisposed": {
+      "closed": false,
+      "proposed": true
+    },
+    "released": {
+      "closed": false,
+      "proposed": true
+    },
+    "rootDisposition": {
+      "closed": {
+        "path": "UNRESOLVED",
+        "sha256": "UNRESOLVED"
+      },
+      "proposed": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/root-disposition.proposed.json",
+        "sha256": "5b6cbaca92233ffd26d21e3631c739828da918bd758a3c10afbd93895ed09a24"
+      }
+    },
+    "rootExactSourceAccepted": {
+      "closed": false,
+      "proposed": true
+    },
+    "rootPlanAccepted": {
+      "closed": false,
+      "proposed": true
+    },
+    "staticValidationAuthorized": {
+      "closed": false,
+      "proposed": true
+    }
+  },
+  "closedSnapshotByteEqual": true,
+  "keySetExact26": true,
+  "proposalFileNeverCopiedToActiveGate": true,
+  "proposedGateSha256": "5da4652343dba5ab3341624e1fa55ab6d999821b432f67b566ec0207fa98e010",
+  "unchangedUnknownDownstreamFields": [
+    "workspaceTools",
+    "rootBuildAcceptance",
+    "rootArchiveAcceptance",
+    "rootConsumerLockAcceptance",
+    "rootConsumerProofAcceptance",
+    "installedProvenance",
+    "consumerInventory",
+    "consumerLockSha256"
+  ]
+}

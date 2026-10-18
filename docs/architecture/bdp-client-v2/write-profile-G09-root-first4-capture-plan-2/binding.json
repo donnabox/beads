@@ -1,0 +1,39 @@
+{
+  "actualHelper2NativeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-native-mechanics-1/closure.json",
+    "scope": "static mechanics only",
+    "sha256": "b98034f7ed46d67c89d7724b909b5f37f69114191a8bdc2d6f68528ede516bec"
+  },
+  "actualHelper2RootStaticAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-static-acceptance-1/acceptance.json",
+    "scope": "NO execution",
+    "sha256": "bf55f088e036446eaa039644fbc981d50dcf8e009ab605afa0930a59c579774e"
+  },
+  "automaticRetries": 0,
+  "exactSourceBindingPrepared": true,
+  "first4Authorized": false,
+  "first4Order": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "futureActivationPin": "The current CLOSED gate ec0d is prepared evidence only. Future exact activated gate bytes must match the actual root external acceptance/activation pin after independent candidate review and both publication/readbacks; approved gate hash replacement must be checked against that external pin, not guessed or pinned circularly by the gate itself.",
+  "futureActiveGateSha256": "UNRESOLVED root must propose/review/publish/activate separately; never substitute closedfalse gate or guessedhash",
+  "futureOutputRootProposed": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1",
+  "futureOutputsCreated": false,
+  "helper2ClosedGateSha256": "ec0d956a5fc29b9f90414b0b4031e6fda6267cd77e3b43f18c704fb73eb682a7",
+  "helper2CommandsSha256": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135",
+  "helper2ImplementationSha256": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413",
+  "helper2PreparationIndexSha256": "56e68b20a4a273611e8828cc944c7bad9613decbaeee854736a16880764f8c0f",
+  "helper2Root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2",
+  "helper2SourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+  "helper2SourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "newExecutableHelpers": 0,
+  "normalStrictSeconds": 115,
+  "outerFailureSeconds": 120,
+  "runtimeProof": "UNKNOWN",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "stageCountUnchanged": 34,
+  "state": "CLOSED_DATA_ONLY"
+}

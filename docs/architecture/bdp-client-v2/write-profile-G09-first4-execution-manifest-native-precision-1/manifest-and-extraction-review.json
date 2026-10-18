@@ -1,0 +1,37 @@
+{
+  "activeGateExactKeys": [
+    "path",
+    "sha256"
+  ],
+  "activeGateExpectedAfterFutureActivation": "b931ef2c3f9cdee4c40f0bae3f26fd2747840a8f4111895ff77a140653ada12b",
+  "actualCurrentClosedGate": "ec0d956a5fc29b9f90414b0b4031e6fda6267cd77e3b43f18c704fb73eb682a7",
+  "actualRuntimeFit": "UNMEASURED",
+  "acyclic": "Manifest pins placeholder templates/contract and upstream authority. Instantiated A source may consume its rawdigest only downstream; this manifest stores neither its ownSHA nor any instantiated sourcehash containing it. Later actual root receipt may pin that source externally.",
+  "allEightExactManifestFieldsMatch": true,
+  "allFourInsertionBlocksSame2246Bytes": true,
+  "allFourOriginalABCBytesRestoredByRemoval": true,
+  "allSubsequentStaticConjunctionRequired": true,
+  "beforeAnyOutputOrPopenAfterOriginalClock": true,
+  "noSubjectOrTemplateEvaluation": true,
+  "permittedSubstitutionsOnly": [
+    "One approved activated-gate literal equals exactb931 after both required publications",
+    "One raw external-manifest digest literal supplied AFTER exactmanifestfreeze/review/publication; no selfhash inmanifest",
+    "Only ACTUAL_A_TOOL_ID/RAW_EXIT assignment values from actualAtoolterminal, not blind replacement of the unresolved-sentinel guard assertion",
+    "Only ACTUAL_B_TOOL_ID/RAW_EXIT assignment values from actualBtoolterminal, with the same truth constraint"
+  ],
+  "requiredInsertionFields": [
+    "accepted",
+    "session",
+    "mode",
+    "sourceBindingSha256",
+    "implementationIndexSha256",
+    "commandsSha256",
+    "approvedStages",
+    "activeGate"
+  ],
+  "sections": {
+    "A": "Exact text before DATA phaseB delimiter; never entire .txt",
+    "B": "Only source after PHASE B FIXED ORDINARY-TOOL SOURCE label, before The actual ordinary-tool exit narrative",
+    "C": "Only source after PHASE C FIXED ORDINARY DATA CLOCK OBSERVATION label, before The witness file narrative; not earlier illustrative clock snippet"
+  }
+}

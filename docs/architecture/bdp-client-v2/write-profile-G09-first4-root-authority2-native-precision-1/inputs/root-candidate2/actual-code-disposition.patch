@@ -1,0 +1,48 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/actual-code-disposition.proposed.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json
+@@ -23,17 +23,29 @@
+       "sha256": "440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057"
+     }
+   },
+-  "actualRootApproval": "NOT_GRANTED_BY_THIS_AUTHOR",
++  "actualRootApproval": "ROOT_STATIC_EVIDENCE_DISPOSITION_ACCEPTED; execution conditional on separate exact protocol/native/root/publication/activation barriers",
+   "approvedStages": [
+     "node-version",
+     "pnpm-version",
+     "workspace-install",
+     "bind-workspace-tools"
+   ],
++  "authoritySourceDraft": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/actual-code-disposition.proposed.json",
++    "sha256": "376cfc90ca44d8e4a94243b57e967872a0dc52992f8c93504e5deb47a1b7e3ed"
++  },
+   "bootstrapReuse": [],
+   "dispositionMeaning": "Original complete eeb nine-finding review is disposed by existing8c782; later f6 corrective tests are separately native138/roota9cf static accepted. Source continuity binds current712c; no assertion Claude readf6 or all contexts/spec.",
+-  "effectiveAuthority": false,
++  "executionAuthorityRequiresExternalActivation": true,
+   "freshPipelineRequired": true,
++  "helper2RootStaticAcceptance": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-static-acceptance-1/acceptance.json",
++    "sha256": "bf55f088e036446eaa039644fbc981d50dcf8e009ab605afa0930a59c579774e"
++  },
++  "helper2StaticNative": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-native-mechanics-1/closure.json",
++    "sha256": "b98034f7ed46d67c89d7724b909b5f37f69114191a8bdc2d6f68528ede516bec"
++  },
+   "laterCorrectedSource": {
+     "actualCurrentFiles": 679,
+     "canonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+@@ -69,11 +81,10 @@
+   "noRetry": true,
+   "noSecondReviewOrRetry": true,
+   "originalScopeOmissions": "Spec, several plans/cases/grammars/maps/diffs/root-native-final-owner contexts not read by original reviewer; no full read-all or wholeWrite approval inferred",
+-  "proposalOnly": true,
+   "publicProfileOrWholeWriteCredit": false,
+   "reviewerDidNotReadCorrectedBytes": true,
+-  "role": "Proposed ROOT disposition of original actual CODE plus separately corrected-source continuity; no new actual review approval",
+-  "runtimeAuthorizationMeaning": "PROPOSED four tool/install stages ONLY, not product callbacks or all34 stages; gate exact approved prefix remains restrictive",
++  "role": "ROOT disposition of original actual CODE and separately corrected-source continuity; not a new actual review",
++  "runtimeAuthorizationMeaning": "EXACT four tool/install stages only, conditionally under separately independently accepted protocol and published root activation; no product callback or later30 stage authority",
+   "runtimeValidationAuthorized": true,
+   "session": "2026-10-18T02:16:24Z-549f",
+   "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",

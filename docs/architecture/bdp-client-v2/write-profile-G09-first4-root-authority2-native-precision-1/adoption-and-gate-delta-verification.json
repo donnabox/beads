@@ -1,0 +1,71 @@
+{
+  "actualGateStillClosed": true,
+  "allOther23ValuesExactPriorDraft": true,
+  "bridgeRelations": [
+    {
+      "acceptedScope": "ROOT static evidence disposition; conditional first4 only, no active execution",
+      "actualChanges": [
+        "activationPrerequisites",
+        "actualRootApproval",
+        "authoritySourceDraft",
+        "effectiveAuthority",
+        "executionAuthorityRequiresExternalActivation",
+        "helper2RootStaticAcceptance",
+        "helper2SourceOnlyCorrection",
+        "helper2StaticNative",
+        "proposalOnly",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "from": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/root-disposition.proposed.json",
+      "fullForwardPatchEqual": true,
+      "name": "root-disposition",
+      "sourceAndOldReviewProvenancePreserved": true,
+      "to": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/root-disposition.json"
+    },
+    {
+      "acceptedScope": "ROOT static evidence disposition; conditional first4 only, no active execution",
+      "actualChanges": [
+        "actualRootApproval",
+        "authoritySourceDraft",
+        "effectiveAuthority",
+        "executionAuthorityRequiresExternalActivation",
+        "helper2RootStaticAcceptance",
+        "helper2StaticNative",
+        "proposalOnly",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "from": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/native-code-disposition.proposed.json",
+      "fullForwardPatchEqual": true,
+      "name": "native-code-disposition",
+      "sourceAndOldReviewProvenancePreserved": true,
+      "to": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/native-code-disposition.json"
+    },
+    {
+      "acceptedScope": "ROOT static evidence disposition; conditional first4 only, no active execution",
+      "actualChanges": [
+        "actualRootApproval",
+        "authoritySourceDraft",
+        "effectiveAuthority",
+        "executionAuthorityRequiresExternalActivation",
+        "helper2RootStaticAcceptance",
+        "helper2StaticNative",
+        "proposalOnly",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "from": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/actual-code-disposition.proposed.json",
+      "fullForwardPatchEqual": true,
+      "name": "actual-code-disposition",
+      "sourceAndOldReviewProvenancePreserved": true,
+      "to": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json"
+    }
+  ],
+  "gateChangedKeys": [
+    "actualCodeDisposition",
+    "nativeCodeDisposition",
+    "rootDisposition"
+  ],
+  "protocol2StillUnbound": true
+}

@@ -1,0 +1,12 @@
+{
+  "additionalConcreteFindings": [],
+  "knownRequiredPrecision": {
+    "baseLocation": "proposals/*capture.txt:17,33-38",
+    "id": "KNOWN_EXTERNAL_AUTHORITY_LITERAL_CHECK",
+    "impact": "Base uses supplied activegatehash but does not open and validate future externalroot acceptance itself. Current report therefore conditionally accepts base mechanics only; no effective protocol/activation authority.",
+    "requiredFix": "Read/hash/validate the exact future manifest afterORIGIN and before anycreation/spawn, preserve all other body/clock/cap/ownership/phase semantics; independently review frozen newfourcells and full inverse.",
+    "status": "PENDING_SEPARATE_ROOT_ASSIGNED_ADDENDUM"
+  },
+  "rootAcceptance": false,
+  "runtimeAcceptance": false
+}
