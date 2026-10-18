@@ -1,6 +1,6 @@
 # Legacy-import Preview 3 preparation — October 18, 2026
 
-Current follow-up product: `ffc139a059f3dc166a99760b4dc3112c1222ae3b`; latest83-case evidence and review status are in followup/diagnostics/README.md. The original source snapshot below remains historical.
+Current follow-up product: `c57725789230945a48ae111b75d70e14068c1fa5`; latest83-case evidence and review status are in followup/diagnostics/README.md. The original source snapshot below remains historical.
 
 Preparation source: `89ca1e3124059c9f292fd362b93413b6b683dc8a`, tree `96d4c0ae35c76cc9654497db83716e8822e811e7`. Parent merge `67896392784918326c775e3cae9c4558520062de` preserves original PR86 source `ca4d72a9ea2590925e5876912df54a78559a580d` and Janet-qualified integration source `b9eebc31f8e0f21b9a6154652476ed87027e9cad`. This independent preparation branch does not retarget PR86 or move any integration/release ref. Janet explicitly selected b9e for isolated preparation; her newer candidate owns the engine slot.
 
