@@ -1,0 +1,34 @@
+{
+  "O": "Actual first ordinary-root sample before claimed D03 preparation; exact future value UNKNOWN",
+  "R": "First ready independent ancestor clock sample; minimal timer initialization precedes it",
+  "A": "Independent alarm arm point, before fork or any D03 collector work",
+  "N": "Unchanged H6 native BEGIN clock, after D03 root preflight",
+  "ancestralNativeTuple": [
+    120,
+    115,
+    119
+  ],
+  "rootProposedTuple": [
+    120,
+    115,
+    119
+  ],
+  "normalStrictBefore": 115,
+  "noClockReset": true,
+  "unresolvedStartupGap": "If O<R/A, R-based enforcement or later absolute O-based arm cannot independently cover O..A",
+  "nativeOutlivesFailure": "Separate native session may remain alive until N+120 after root ancestor/collector termination at earlier root deadline; no numeric historical kill or success inference",
+  "requiredDecisions": [
+    {
+      "id": "ROOT-ORIGIN",
+      "question": "Retain independent O-inclusive enforcement (needs presently absent upstream enforcer), or explicitly adopt ready-ancestor R scope with separate O-based observed normal115?",
+      "status": "UNRESOLVED_NO_SCOPE_CHANGE_ADOPTED"
+    },
+    {
+      "id": "FAILURE-DESCENDANTS",
+      "question": "Does root120 require every separate native descendant absent on failure? If yes, later unchanged N+120 and no unsafe historical signaling prevent this fixed-root design from guaranteeing that.",
+      "status": "REQUIRES_ROOT_CONSTRAINT_DISPOSITION"
+    }
+  ],
+  "sameKernelClock": "Pinned Darwin raw-uptime8 / CPython monotonic precedent; future actual clock origins/epoch must be bound, not guessed",
+  "hardRealTimeOrHostLossGuarantee": false
+}

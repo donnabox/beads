@@ -1,0 +1,41 @@
+{
+  "approvedStagesAndBootstrapReuseEmpty": true,
+  "bothGateBytesIdentical": true,
+  "exact26Keys": [
+    "actualClaudeReviewDisposed",
+    "actualCodeDisposition",
+    "approvedStages",
+    "baseTools",
+    "bootstrapReuse",
+    "consumerInventory",
+    "consumerLockSha256",
+    "implementationIndexSha256",
+    "installedProvenance",
+    "knownCorrectedSourceFreeze",
+    "knownOriginalActualCodeTerminal",
+    "mode",
+    "nativeCodeDisposition",
+    "nativeCodeReviewDisposed",
+    "released",
+    "rootArchiveAcceptance",
+    "rootBuildAcceptance",
+    "rootConsumerLockAcceptance",
+    "rootConsumerProofAcceptance",
+    "rootDisposition",
+    "rootExactSourceAccepted",
+    "rootPlanAccepted",
+    "session",
+    "sourceBinding",
+    "staticValidationAuthorized",
+    "workspaceTools"
+  ],
+  "fullActualBeforeAfterForwardInverseGateData": "Embedded in inherited excluded static-final-verification.json to avoid finalImplementationHash -> indexedGateDelta -> implementationHash self-reference; no seventh exclusion.",
+  "noRootActiveAuthority": true,
+  "onlyPermittedDifferences": [
+    "baseTools.path P2toP3",
+    "sourceBinding.path P2toP3",
+    "implementationIndexSha256 exact final new index digest"
+  ],
+  "sameOther23ValuesRequired": true,
+  "sixBooleansAllFalse": true
+}

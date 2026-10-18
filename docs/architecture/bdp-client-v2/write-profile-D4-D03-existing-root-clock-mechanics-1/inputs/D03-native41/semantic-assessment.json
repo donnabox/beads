@@ -1,0 +1,72 @@
+[
+  {
+    "details": "45 audit_partial calls plus4 audit_d4 calls; 8triads+9pendingcategories+3pendingwrites alone emit20 rows. Remaining29 source calls have no invented per-call telemetry.",
+    "domain": "49 calls / 20 rows",
+    "evidence": [
+      "inputs/H6/report_controls.py:84-113",
+      "case-source-contract.json",
+      "control-result-grammar-DATA.json"
+    ],
+    "verdict": "consistent"
+  },
+  {
+    "details": "await is before received=true; synchronous validation/catch/finally then settled=true. Eligible failed-only triads000/100/110/111; source-impossible010 and validation-without-response variants refuse. Initial category/write null; settled rejection finite nonnull category. JSON omission of absent GET requestBody remains distinct.",
+    "domain": "source state machine",
+    "evidence": [
+      "actual-source/transactional-set-installed.test.ts:425-498",
+      "inputs/subject4/audit.py:89-114"
+    ],
+    "verdict": "consistent"
+  },
+  {
+    "details": "Full synthetic32 baseline is authored data/fake proof;3 full mutations expect wire-base64-type,wire-body,owned-inline-metadata; concrete scanner.Refusal retained. No AJV,installed,credential,or child-ownership credit from fabricated unit PIDs1001/1002.",
+    "domain": "genuine subject baseline and refusals",
+    "evidence": [
+      "inputs/H6/report_controls.py:12-113",
+      "inputs/H6/scanner_controls.py:12-17",
+      "inputs/subject4/audit.py:39-179"
+    ],
+    "verdict": "consistent static prediction only"
+  },
+  {
+    "details": "Actual entry requires exact current H6/subject hashes and literal native/observed bridge fields. f204 and9ba remain historical originals; no alias fallback or oldH5 relabel. Candidate,ROOTdisposition,independentadoption,two publication readbacks all future.",
+    "domain": "11-key future authority",
+    "evidence": [
+      "authority-field-requirements.json",
+      "bridge-proof-proposals.json",
+      "inputs/H6/harness.py:28-55"
+    ],
+    "verdict": "unprepared and correctly explicit"
+  },
+  {
+    "details": "19/12/9 exact-key events; finite banks include complete probes through last census. No ownerPgid fabrication. Final registry follows all-groups-closed/censusNone; originalfinally and localgetpgrp retained. One nonblocking exact-count write may short/EAGAIN;618240 retention ceiling is not pipe-fit or measured parser proof.",
+    "domain": "three-event/final registry",
+    "evidence": [
+      "three-event-parser-DATA-contract.json",
+      "inputs/H6/outer_host.py:27-112,344-380",
+      "inputs/H6/hard_limit.pl:1-67"
+    ],
+    "verdict": "consistent prospective DATA"
+  },
+  {
+    "details": "Native120/TERM115/KILL119 unchanged. Earliest-root independent120 mechanism and three-event capture body UNPREPARED. Rootselfpoll/native-laterBEGIN do not supply whole-root hard enforcement. Normal actualtoolterminal+BOTH EOF and postterminal finite recorded-domain census under earliest-root115 required; no selfabsence/globalcontainment/hard-realtime guarantee.",
+    "domain": "clock, ownership and independent observer",
+    "evidence": [
+      "fixed-root-capture-and-audit-DATA-contract.json",
+      "unprepared-boundaries.json",
+      "inputs/H6/outer_host.py:124-380",
+      "inputs/H6/outer_worker.py:1-109"
+    ],
+    "verdict": "necessary boundaries remain unresolved"
+  },
+  {
+    "details": "M02 and failedD02 never retried;D02control0 versus owner/native/root1 preserved with deeper causeUNKNOWN/STOP. P07mockunit included historically, nothostcontainment. C3normal67.348537459s source-bound7PID5groupabsence staysONEsample; rawroottool independentlydecoded receipt unavailable;rawnonceACKunretained. All58 required invocations still unattempted; onlyfutureD03 proposed.",
+    "domain": "historical failed attempts / evidence scope",
+    "evidence": [
+      "scope-and-history-disposition.json",
+      "binding.json",
+      "histories-INPLACE.json"
+    ],
+    "verdict": "preserved"
+  }
+]

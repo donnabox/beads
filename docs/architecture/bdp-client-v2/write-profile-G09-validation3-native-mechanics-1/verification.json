@@ -1,0 +1,97 @@
+{
+  "ASTImportSchemaEvaluations": 0,
+  "GitSourceFlagActions": 0,
+  "P2HistoricalBeforeMapPreserved": true,
+  "P3BeforeAfterActualCurrentEqual": true,
+  "acceptedStaticOnly": true,
+  "allCommandsNamespaceReverseCount": 24,
+  "allSixGateBooleansFalse": true,
+  "allStructuredSchemaBytesReadAndByteExactP2": {
+    "bytes": 149689,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/report-schemas.json",
+    "sha256": "01b4407a1f4a8196fba282d4d269b487f3e0e5040a6c4ae6ae54e87a94fc509c"
+  },
+  "approvedStages": [],
+  "bootstrapReuse": [],
+  "changedPairs": 9,
+  "checksMeaning": "Pure raw-byte/hash/text/JSON and source reading. No compiler, collection, helper invocation or runtime observation.",
+  "currentSourceCanonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "currentSourceFiles": 679,
+  "exactSelfControlExclusions": [
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "closure.json",
+    "static-final-verification.json"
+  ],
+  "excludedGatePairs": 2,
+  "executionAuthorized": false,
+  "findingCount": 0,
+  "fullProgramLinesRead": {
+    "audit.py": 461,
+    "gate.py": 137,
+    "guarded-action-session-20261018-021624-549f.py": 20,
+    "packages.py": 116,
+    "run.py": 80
+  },
+  "gate26ExactKeyset": true,
+  "gatesOnlyChanges": [
+    "baseTools.path",
+    "sourceBinding.path",
+    "implementationIndexSha256"
+  ],
+  "historyMembersVerified": 632,
+  "immediateAuditPairs": 7,
+  "implementationSHAStringFiles": 121,
+  "inPlaceHistoryDomains": {
+    "P2-actual-run4": 4,
+    "P2-original450": 450,
+    "accepted-plan61": 61,
+    "failed-native63": 63,
+    "native-plan38": 38,
+    "root-actual-A4": 4,
+    "root-author-release4": 4,
+    "root-failed2": 2,
+    "root-failure6": 6
+  },
+  "normalRootCapturePrepared": false,
+  "ordinaryPairs": 26,
+  "origins": 56,
+  "programByteEqualityP2": {
+    "audit.py": {
+      "bytes": 46796,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/audit.py",
+      "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+    },
+    "gate.py": {
+      "bytes": 12583,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/gate.py",
+      "sha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168"
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "bytes": 946,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/guarded-action-session-20261018-021624-549f.py",
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    },
+    "packages.py": {
+      "bytes": 8760,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/packages.py",
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+    },
+    "run.py": {
+      "bytes": 5357,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+    }
+  },
+  "protected669": 669,
+  "referencePins": 2215,
+  "runAbsent": true,
+  "sourceCopies": 10,
+  "stageCount": 34,
+  "subjectEvaluations": 0,
+  "subjectIndexed": 126,
+  "subjectPhysical": 127,
+  "totalPairs": 28
+}
