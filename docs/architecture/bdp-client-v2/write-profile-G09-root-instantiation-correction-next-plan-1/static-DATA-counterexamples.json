@@ -1,0 +1,380 @@
+{
+  "actualMismatchPatch": "actual-B-body-deviation.patch",
+  "cases": [
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "node-version-B-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "node-version-B-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "node-version-B-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "node-version-B-assignment-only",
+      "illustrativeRenderedSha256": "d5f872c775981370badeee27f018a134bcf95f5783a21843a3917750f42b7b17",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "1cb94a3e2f63325f3cb131c03ee4ef2fb9783c4bb92677b8fd59231b42bf14b9",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "node-version-B-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "node-version-C-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "node-version-C-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "node-version-C-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "node-version-C-assignment-only",
+      "illustrativeRenderedSha256": "816179ccf70d75d43491f9145ddc462b452057c8c354aba197df49cb1542844f",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "67b6e67a7a3348f52218c30284557577a2604fed7d887536c7344d900b593f2c",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "node-version-C-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "pnpm-version-B-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "pnpm-version-B-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "pnpm-version-B-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "pnpm-version-B-assignment-only",
+      "illustrativeRenderedSha256": "837b2d878613fab754c061cccc8127dea62001ff2a1628f426a8fb68bf46f527",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "c5be178a95b9482e1e20e7e7b56ea916c707f1c80be64828980168022f31c5e8",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "pnpm-version-B-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "pnpm-version-C-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "pnpm-version-C-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "pnpm-version-C-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "pnpm-version-C-assignment-only",
+      "illustrativeRenderedSha256": "ee505dbf6d39a34dbefdcd16523b8152d16f7e774c0ab4db9328e66d76751bf7",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "50791840f643f6f36a83c429c00734b41fd4f0ca0bbd75cf9f3d64ea3c21156f",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "pnpm-version-C-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "workspace-install-B-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "workspace-install-B-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "workspace-install-B-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "workspace-install-B-assignment-only",
+      "illustrativeRenderedSha256": "a3288c98a8d6b4abb0976dec06ee50c4b8b8ac14e5e98cfe79797d1df5d53d34",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "8ae81e65bee4d2bc5864db376dbddcd436d7e3557ef0dcc49c1b9aef4fa586ee",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "workspace-install-B-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "workspace-install-C-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "workspace-install-C-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "workspace-install-C-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "workspace-install-C-assignment-only",
+      "illustrativeRenderedSha256": "310b6a818934a99bba5d3cc64c1926f39374f2bf3dacd0735df219e725d666b0",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "e08ef8bc5fc6f18f4cc2818538b23b027264c133d9fc0ddc53b1802d2f48e7a9",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "workspace-install-C-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "bind-workspace-tools-B-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "bind-workspace-tools-B-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "bind-workspace-tools-B-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "bind-workspace-tools-B-assignment-only",
+      "illustrativeRenderedSha256": "f817dcd9d5e4a5dd5aa085444bc1a45249ae8be90c141c047d53ce77c63eb97a",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "c1933f8a5100f53b8e3b0418cd38da192bc04c245b7ddafee3b12bf54de6c3f4",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "bind-workspace-tools-B-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "bind-workspace-tools-C-missing"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "bind-workspace-tools-C-duplicate"
+    },
+    {
+      "actualTextPredicate": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "id": "bind-workspace-tools-C-already-substituted"
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "ACCEPT_TEXT_RELATION_ONLY",
+      "fullInverseEqual": true,
+      "guardByteExact": true,
+      "id": "bind-workspace-tools-C-assignment-only",
+      "illustrativeRenderedSha256": "d032f7095fd03feae8c931c39671838603ee3882cd208bfa26ef1b27b92f1ee9",
+      "originalAssignmentCount": 1,
+      "preparedSha256": "5162b5b262f04af49510357a9b8d23845cfea71c97f870fcf88a01f1e7a951ab",
+      "syntheticNotActualToolId": true
+    },
+    {
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "guardByteExact": false,
+      "id": "bind-workspace-tools-C-old-global-replacement",
+      "onlyAssignmentNormalizationEqual": false
+    },
+    {
+      "actualPreCensusAssertionLine": 11,
+      "actualSourceHash": "b35ab9b8abf130921079e2e58658eb64a6187ef10148cb37706986580682cbde",
+      "actualToolExitTrustedRoot": 1,
+      "assignmentOnlyExpectedHash": "a1290e627db0df2ff61009af79fd499f673d5f6e1a168693030846f543189f14",
+      "assignmentOnlyNormalizationRecoversPreparedBody": false,
+      "evaluatedSubject": false,
+      "expected": "REFUSE_BEFORE_DISPATCH",
+      "forbiddenGlobalReplacementReproducesAllActualBytes": true,
+      "id": "actual-failed-node-B",
+      "noActualBProbe": true
+    },
+    {
+      "actualToolExitTrustedRoot": 0,
+      "allOtherBytesEqual": true,
+      "evaluatedSubject": false,
+      "id": "actual-node-A",
+      "rootQualification": false,
+      "twoCompleteAssignmentSubstitutionsRecoverAllActualBytes": true
+    }
+  ],
+  "count": 42,
+  "kind": "TEXT_RELATIONS_NOT_EXECUTED_CONTROLS",
+  "limitations": "Text counterexamples prove replacement/refusal relations only, not execution/clock/cleanup or end-to-end product validation.",
+  "sectionFraming": "A is exact prefix before DATA phaseB delimiter including existing trailing blank line. B/C are exact body after their fixed source label, before following narrative, plus one LF; no rstrip, body whitespace normalization, AST or evaluation.",
+  "sections": [
+    {
+      "A": {
+        "bytes": 14938,
+        "sha256": "80a4899c072713f9d83d9aae3e6b48c71d7ad3e96b9458fe9de6848280208fee"
+      },
+      "B": {
+        "bytes": 6707,
+        "sha256": "6d4f52937393e31535a202a736455060fd655b20260050b2eafbd50dfec3d26e"
+      },
+      "C": {
+        "bytes": 1788,
+        "sha256": "e64c501c0062e42396eefe23741bf82a098767d50c3d340fba4de078c7c02464"
+      },
+      "stage": "node-version"
+    },
+    {
+      "A": {
+        "bytes": 14938,
+        "sha256": "97b9835d2efec4d0994b3e8afa7ea5182ee16181b87dadce03dce1c1aa9ae214"
+      },
+      "B": {
+        "bytes": 6707,
+        "sha256": "524fda73aecbae9792e6b7fbdd22fe300500e3a3c73e1d0a263d07c300aa64eb"
+      },
+      "C": {
+        "bytes": 1788,
+        "sha256": "68dc03772a6a48fe203cead46e1fe01ffd8eb0372c2e1567c55abd729d85689e"
+      },
+      "stage": "pnpm-version"
+    },
+    {
+      "A": {
+        "bytes": 14953,
+        "sha256": "ceeb93a0cb3c63999833863a5459793c825d8e6546fe6ade017539823706085e"
+      },
+      "B": {
+        "bytes": 6722,
+        "sha256": "9e8252f92ed57ea9bbbee7711bfc5e349b0680b6e535e800e3cd6ecb3feaa70b"
+      },
+      "C": {
+        "bytes": 1803,
+        "sha256": "3336f3af9315c332a2e21ef13964fbd4aa0f3661d6aceb96536664b09c3f33d7"
+      },
+      "stage": "workspace-install"
+    },
+    {
+      "A": {
+        "bytes": 14962,
+        "sha256": "8797cd3e29024a3d44ee71076c6227379ab3f5f4a624bc6517e6505100799326"
+      },
+      "B": {
+        "bytes": 6731,
+        "sha256": "5a9879dc615b87b99df01365ed4452a668acb635fc3dd34d583ee5ffa6ef0176"
+      },
+      "C": {
+        "bytes": 1812,
+        "sha256": "df93006c227bbdd1b79056f4a4f80899cd598bc73290df4a08c76df06d6d5cc6"
+      },
+      "stage": "bind-workspace-tools"
+    }
+  ],
+  "subjectEvaluations": 0
+}

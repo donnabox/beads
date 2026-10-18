@@ -1,0 +1,15 @@
+{
+  "failure": "Actual root violated assignment scope by global sentinel replacement; no template or product defect established.",
+  "kind": "HISTORICAL_ALLOWED_SUBSTITUTION_INTERFACE",
+  "rules": [
+    "APPROVED_GATE_SHA256: exact activeGate.sha256 after reviewed byteexact activation and both publication/readbacks",
+    "APPROVED_EXECUTION_ACCEPTANCE_SHA256: actual raw digest of THIS frozen acceptance document after exact review/publication; deliberately not stored in itself",
+    "ACTUAL_A_TOOL_ID and ACTUAL_A_TOOL_RAW_EXIT: actual phaseA ordinary-tool terminal facts supplied to phaseB only after A terminal",
+    "ACTUAL_B_TOOL_ID and ACTUAL_B_TOOL_RAW_EXIT: actual phaseB ordinary-tool terminal facts supplied to phaseC only after B terminal"
+  ],
+  "source": {
+    "bytes": 10638,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-execution-acceptance-1/acceptance.json",
+    "sha256": "21256dcf93abcfbbdfd9c2c9325d777508b7b4c55e2ec301236c2fda4b927f07"
+  }
+}

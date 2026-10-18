@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[CLOSED root-instantiation correction DATA plan61](write-profile-G09-root-instantiation-correction-next-plan-1/report.md) index7bc1dc26/plan443182c5/closure606321da is frozen; C FULL OTHER-native precision active. Whole-assignment count1 substitution/fullinverse/guard-bodyidentity and40synthetictext+2actualsourceDATArelations reject the actual globalreplacement error. Future P3 namespace only/fiveprograms-schema-selection-source-limits byteexact, fresh34/no failedP2reuse; P3remainsABSENT. Rootfullplanread/disposition and independentprecision/durableauthorrelease are stillrequired. Its pre-freeze pendingrootdispositionfield is historical; laterfailed-evidenceed89 bindsadditively, no rewrite. No helper/source/actualretry authorized.
+
+
 [FULL actual failed audit63](write-profile-G09-first4-failure-actual-native-audit-1/report.md) index25a4a752/closure92d962a2 auditCompleteTRUE/acceptedFALSE confirms soleMedium G09-ACTUAL-N1: rootB extra guard substitution, not frozenprotocol/product defect. [ROOT failed-evidence dispositioned89eca8](write-profile-G09-first4-root-failed-disposition-1/disposition.json) acceptsFAILED evidence/STOPonly (rootaliasROOT_INST_B_01), no retry/helperauthor/runtimeapproval. ONE separate administrative census raw0/BOTHEOF/directreaped/206723stdout retained: known3PIDs3groupsabsent atthatlaterinstant; Bcollector/unseenescaped domain UNKNOWN, no normalcompletioncredit. Actualemptytemprootretained/no wholecleanupclaim. Source679/helper444/449prepared identities unchanged, P2physical454=450+4; all33laterstagesunattempted/gatesclosed. B DATAcorrectionplan/Cindependentprecision active; P3unmaterialized untilfullplan/native/root/durableauthorrelease.
 
 

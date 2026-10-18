@@ -1,0 +1,32 @@
+--- assignment-policy.proposed.json
++++ assignment-policy.before.json
+@@ -1,17 +1,15 @@
+ {
+-  "failureScope": "Any missing/partial/late/error/nonzero/unknown or failed equality STOPs this attempt. Administrative later census does not resume B/C or restore normal credit. Fresh successor requires separate native/root/durable release.",
+-  "kind": "PROPOSED_ASSIGNMENT_ONLY_TEXT_INSTANTIATION_CONTRACT",
+-  "postTerminalOnlyChange": "Replace one exact complete ACTUAL_A_TOOL_ID or ACTUAL_B_TOOL_ID assignment line after its preceding real terminal, count == 1, with the actual trusted tool ID. No token/global/substring replacement. No RAW_EXIT or body modification after terminal.",
+-  "prePublication": [
+-    "All P3 namespace/path, source/implementation/commands hashes, external gate and manifest bindings, complete A/B/C fixed text bodies and extraction framing reviewed and published before first A. No own-SHA cycle: manifest pins templates; actual rendered source hashes are external receipts.",
+-    "RAW_EXIT = 0 is a fixed conditional success expectation prepared and reviewed before first A. It is not an observed result. Root must actually observe preceding A/B terminal exactly0 before dispatching B/C. Nonzero/missing/unknown/late => STOP without next cell."
++  "failure": "Actual root violated assignment scope by global sentinel replacement; no template or product defect established.",
++  "kind": "HISTORICAL_ALLOWED_SUBSTITUTION_INTERFACE",
++  "rules": [
++    "APPROVED_GATE_SHA256: exact activeGate.sha256 after reviewed byteexact activation and both publication/readbacks",
++    "APPROVED_EXECUTION_ACCEPTANCE_SHA256: actual raw digest of THIS frozen acceptance document after exact review/publication; deliberately not stored in itself",
++    "ACTUAL_A_TOOL_ID and ACTUAL_A_TOOL_RAW_EXIT: actual phaseA ordinary-tool terminal facts supplied to phaseB only after A terminal",
++    "ACTUAL_B_TOOL_ID and ACTUAL_B_TOOL_RAW_EXIT: actual phaseB ordinary-tool terminal facts supplied to phaseC only after B terminal"
+   ],
+-  "singleLineRule": [
+-    "Match one complete LF-terminated assignment line, not a string token occurring elsewhere. Reject zero, duplicate, previously substituted or malformed assignment occurrences.",
+-    "The supplied tool ID must be the actual preceding terminal identifier, not provisional/selfreceipt data. Use an exact single-quoted literal with no quote, backslash, LF or CR; if the actual identifier cannot be represented under this fixed interface STOP for separate DATA disposition rather than escaping/code injection or guessing.",
+-    "Require the new complete line occurs exactly once. Inverse only that complete assignment line. The entire resulting cell bytes MUST equal its prepublished cell, including unresolved comparison sentinel, imports, clocks, guards, body, outputs and final newline. Any other changed byte => refuse dispatch.",
+-    "Record before/after and normalized full-source SHA256 with exact trusted terminal attribution; no original raw toolreceipt is invented when unavailable. Tool terminal facts remain source-attributed.",
+-    "Perform these finite ordinary DATA checks within the existing charged interval; no independent helper/framework/parser or new clock/reset/grace/cap. Actual fit is UNKNOWN."
+-  ],
+-  "state": "CLOSED_NO_AUTHORITY"
++  "source": {
++    "bytes": 10638,
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-execution-acceptance-1/acceptance.json",
++    "sha256": "21256dcf93abcfbbdfd9c2c9325d777508b7b4c55e2ec301236c2fda4b927f07"
++  }
+ }
