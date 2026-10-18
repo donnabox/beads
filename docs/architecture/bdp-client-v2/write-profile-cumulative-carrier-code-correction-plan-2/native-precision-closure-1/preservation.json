@@ -1,0 +1,32 @@
+{
+  "all48CaseIdGroupSetupBudgetWireChildrenFieldsUnchanged": true,
+  "all681LiveSourceHashesExact": true,
+  "callbackMs": 120000,
+  "containerLimit": 10000,
+  "dataBudgetMs": 5000,
+  "depthLimit": 128,
+  "extraChildren": 0,
+  "extraRunnerCalls": 0,
+  "extraWire": 0,
+  "fourFuturePaths": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "nodeLimit": 100000,
+  "originalTXElapsedAssertionMs": 63000,
+  "prepareCleanupMs": 10000,
+  "protectedOtherPaths": 677,
+  "requestMs": 5000,
+  "rootLaunchReleased": false,
+  "scopeExclusion": "Later D3a Snapshot correction is not absorbed; final TX configuration156 remains immutable/no adoption.",
+  "secondActualCODEAllowed": false,
+  "secondActualPLANAllowed": false,
+  "sourceAuthoringReleased": false,
+  "sourceBytes": 4194304,
+  "sourceFiles": 681,
+  "sourceMapSha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+  "summaryBytes": 1048576,
+  "workMs": 90000
+}

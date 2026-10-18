@@ -1,0 +1,7 @@
+{
+  "action": "After successfully reading actual TX manifest, searched only conformance/src for ownData definition and incorrectly fell back to nonexistent test-support/private-source.ts. File read failed with FileNotFoundError; no file was created or source executed.",
+  "candidateMutation": false,
+  "correction": "rg located existing test-support/profile-contract-plan.ts:72; actual body read55-125 and original copied source already indexed in frozen plan.",
+  "kind": "own static inspection path assumption; not candidate/helper/runtime failure",
+  "reviewOutcomeChanged": false
+}
