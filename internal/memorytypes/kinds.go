@@ -15,14 +15,15 @@ const (
 	Procedure
 	Policy
 	Lesson
-	Issue // The selected Issue contract, including its known conformers.
+	Requirement
+	Issue // The selected Issue contract, including Issue decision; distinct from Memory Decision.
 	OtherBead
 )
 
 // IsMemory reports membership in the fixed Memory family.
 func (k BeadKind) IsMemory() bool {
 	switch k {
-	case Memory, Observation, Decision, Procedure, Policy, Lesson:
+	case Memory, Observation, Decision, Procedure, Policy, Lesson, Requirement:
 		return true
 	default:
 		return false
@@ -32,7 +33,7 @@ func (k BeadKind) IsMemory() bool {
 // ConformsTo reports fixed nominal or inherited membership. Unknown values and the OtherBead classification never match, including
 // themselves. Issue and other Beads do not conform to Memory.
 func (k BeadKind) ConformsTo(contract BeadKind) bool {
-	if k < Memory || k > Issue || contract < Memory || contract > Issue {
+	if !(k.IsMemory() || k == Issue) || !(contract.IsMemory() || contract == Issue) {
 		return false
 	}
 	return k == contract || (contract == Memory && k.IsMemory())

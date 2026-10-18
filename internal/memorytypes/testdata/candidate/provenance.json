@@ -1,17 +1,17 @@
 {
   "status": "Candidate product-schema test inputs; definitions.json is a separate nonnormative BDP exploration, not required product representation",
   "repository": "https://github.com/gastownhall/bdp",
-  "commit": "50b13ee08f79a00bf8b135495b3b4d432f811992",
+  "commit": "c064cc33274d1a88532ef6d135d7446b9b64b039",
   "files": [
     {
       "path": "fixtures/specs/memory/schema-cases.json",
       "file": "schema-cases.json",
-      "sha256": "0efa19a8a516700f176a1f5eaf0b472a1e391328e266fc62dfac6b7a04a8ff30"
+      "sha256": "fdd29bb49dca73bf8305f6bb530bf21e32a24b8605caf3bfdea3cbf5895d3483"
     },
     {
       "path": "specs/types/memory/memory.properties.schema.json",
       "file": "memory.properties.schema.json",
-      "sha256": "b8e88d78d51aae0477ce9880b2e5017af13f6510cb28389f31efd2d1f36a8ee8"
+      "sha256": "febc123d9d629e7f7f900480e9d374c5c720e4011c6949485a527a35536664e4"
     },
     {
       "path": "specs/types/memory/memory-observation.local-properties.schema.json",
@@ -41,12 +41,17 @@
     {
       "path": "specs/types/memory/memory-link.properties.schema.json",
       "file": "memory-link.properties.schema.json",
-      "sha256": "2e780693027b0b15c30d634fb2637cc43476acbbfb5455987b303074fd5a391f"
+      "sha256": "9b0381328bc055be6db209819060ffe3ec285e3d1f32878e85c6a150ab1903a0"
     },
     {
       "path": "specs/types/memory/definitions.json",
       "file": "definitions.json",
-      "sha256": "ec37affc04c38066bbdbf30c41cfd0ac177aff454adb5ae3aa506248f1b1faaa"
+      "sha256": "29d9426e2f7740f74e8a93c869da30cca60f6cc3c0acff47f584b858a1ef0e50"
+    },
+    {
+      "path": "specs/types/memory/memory-requirement.local-properties.schema.json",
+      "file": "memory-requirement.local-properties.schema.json",
+      "sha256": "848770742c734f6243984fc7877cee503597ca9487d4ac324271a27c74cf32f2"
     }
   ]
 }

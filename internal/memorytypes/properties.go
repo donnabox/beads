@@ -32,14 +32,12 @@ func ValidateProperties(kind BeadKind, data json.RawMessage) error {
 		return err
 	}
 	for _, field := range []string{"title", "body"} {
-		if err := textField(obj, field, "/properties", true, field == "title"); err != nil {
+		if err := textField(obj, field, true, field == "title"); err != nil {
 			return err
 		}
 	}
-	if raw, ok := obj["applicability"]; ok {
-		if err := applicability(raw); err != nil {
-			return err
-		}
+	if err := textField(obj, "status", false, true); err != nil {
+		return err
 	}
 	switch kind {
 	case Observation:
@@ -68,7 +66,10 @@ func ValidateLinkProperties(kind LinkKind, data json.RawMessage) error {
 	if err != nil {
 		return err
 	}
-	return textField(obj, "note", "/properties", false, true)
+	if err := textField(obj, "note", false, true); err != nil {
+		return err
+	}
+	return textField(obj, "status", false, true)
 }
 
 func object(raw json.RawMessage, path string) (map[string]json.RawMessage, error) {
@@ -94,12 +95,12 @@ func textValue(raw json.RawMessage, path string, nonblank bool) (string, error) 
 	return *text, nil
 }
 
-func textField(obj map[string]json.RawMessage, key, path string, required, nonblank bool) error {
+func textField(obj map[string]json.RawMessage, key string, required, nonblank bool) error {
 	raw, ok := obj[key]
 	if !ok && !required {
 		return nil
 	}
-	_, err := textValue(raw, path+"/"+key, nonblank)
+	_, err := textValue(raw, "/properties/"+key, nonblank)
 	return err
 }
 

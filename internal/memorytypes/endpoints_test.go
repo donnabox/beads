@@ -25,7 +25,7 @@ func TestProductEndpointPairs(t *testing.T) {
 	}
 	readJSON(t, "testdata/candidate/definitions.json", &fixture)
 	links := map[string]LinkKind{"association": Association, "memory-guidance": Guidance, "memory-applies-to": AppliesTo, "memory-supports": Supports, "memory-challenges": Challenges, "memory-supersedes": MemorySupersedes}
-	variants := []EndpointFacts{{Class: LocalBead, Kind: Memory}, {Class: LocalBead, Kind: Observation}, {Class: LocalBead, Kind: Decision}, {Class: LocalBead, Kind: Procedure}, {Class: LocalBead, Kind: Policy}, {Class: LocalBead, Kind: Lesson}, {Class: LocalBead, Kind: Issue}, {Class: LocalBead, Kind: OtherBead}, {Class: CrossScopeBead}, {Class: ExternalResource}}
+	variants := []EndpointFacts{{Class: LocalBead, Kind: Memory}, {Class: LocalBead, Kind: Observation}, {Class: LocalBead, Kind: Decision}, {Class: LocalBead, Kind: Procedure}, {Class: LocalBead, Kind: Policy}, {Class: LocalBead, Kind: Lesson}, {Class: LocalBead, Kind: Requirement}, {Class: LocalBead, Kind: Issue}, {Class: LocalBead, Kind: OtherBead}, {Class: CrossScopeBead}, {Class: ExternalResource}}
 	count := 0
 	for _, definition := range fixture.Definitions {
 		name := definition.ID[strings.LastIndex(definition.ID, "/")+1:]
@@ -65,7 +65,7 @@ func TestProductEndpointPairs(t *testing.T) {
 
 // Independent test-side family inventory; never use production IsMemory here.
 var fixtureMemoryKinds = map[BeadKind]struct{}{
-	Memory: {}, Observation: {}, Decision: {}, Procedure: {}, Policy: {}, Lesson: {},
+	Memory: {}, Observation: {}, Decision: {}, Procedure: {}, Policy: {}, Lesson: {}, Requirement: {},
 }
 
 type candidateEndpoint struct {
@@ -208,8 +208,8 @@ func TestCandidateMembership(t *testing.T) {
 		} `json:"declarations"`
 	}
 	readJSON(t, "testdata/candidate/definitions.json", &fixture)
-	if len(fixture.Declarations) != 10 {
-		t.Fatal("candidate changed ten supplied conformance declarations")
+	if len(fixture.Declarations) != 11 {
+		t.Fatal("candidate changed eleven supplied conformance declarations")
 	}
 	links := map[string]LinkKind{"memory-guidance": Guidance, "memory-applies-to": AppliesTo, "memory-supports": Supports, "memory-challenges": Challenges, "memory-supersedes": MemorySupersedes}
 	seen := map[string]bool{}

@@ -30,18 +30,6 @@ func instant(raw json.RawMessage, path string) error {
 	return nil
 }
 
-func applicability(raw json.RawMessage) error {
-	const path = "/properties/applicability"
-	obj, err := object(raw, path)
-	if err != nil {
-		return err
-	}
-	if err := closed(obj, path, "description"); err != nil {
-		return err
-	}
-	return textField(obj, "description", path, true, true)
-}
-
 func referenceValue(raw json.RawMessage, path string) error {
 	var text string
 	if len(raw) > 0 && json.Unmarshal(raw, &text) == nil && string(raw) != "null" {

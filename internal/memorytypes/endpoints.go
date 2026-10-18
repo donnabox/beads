@@ -60,7 +60,7 @@ func endpointFacts(e EndpointFacts, path string) error {
 	}
 	switch e.Class {
 	case LocalBead:
-		if e.Kind < Memory || e.Kind > Issue {
+		if !(e.Kind.IsMemory() || e.Kind == Issue) {
 			return invalid(path, "a resolved local Issue or Memory family contract")
 		}
 	case CrossScopeBead, ExternalResource:

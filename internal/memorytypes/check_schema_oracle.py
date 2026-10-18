@@ -13,7 +13,7 @@ from referencing.exceptions import NoSuchResource
 ROOT = Path(__file__).resolve().parent / "testdata"
 NAMES = {"memory": "memory.properties.schema.json", "link": "memory-link.properties.schema.json"}
 NAMES.update({name: f"memory-{name}.local-properties.schema.json"
-              for name in ("observation", "decision", "procedure", "policy", "lesson")})
+              for name in ("observation", "decision", "procedure", "policy", "lesson", "requirement")})
 
 
 def unavailable(uri):

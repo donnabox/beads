@@ -19,7 +19,7 @@ type propertyCase struct {
 	Path       string          `json:"path"`
 }
 
-var fixtureKinds = map[string]BeadKind{"memory": Memory, "observation": Observation, "decision": Decision, "procedure": Procedure, "policy": Policy, "lesson": Lesson}
+var fixtureKinds = map[string]BeadKind{"memory": Memory, "observation": Observation, "decision": Decision, "procedure": Procedure, "policy": Policy, "lesson": Lesson, "requirement": Requirement}
 
 func readJSON(t *testing.T, path string, v any) {
 	t.Helper()
@@ -37,8 +37,8 @@ func TestCandidateProperties(t *testing.T) {
 		Cases []propertyCase `json:"cases"`
 	}
 	readJSON(t, "testdata/candidate/schema-cases.json", &fixture)
-	if len(fixture.Cases) != 64 {
-		t.Fatalf("source fixture count = %d, expected 64", len(fixture.Cases))
+	if len(fixture.Cases) != 102 {
+		t.Fatalf("source fixture count = %d, expected 102", len(fixture.Cases))
 	}
 	for _, c := range fixture.Cases {
 		t.Run(c.Label, func(t *testing.T) { checkProperties(t, c) })
@@ -113,7 +113,7 @@ func TestCategorySeparation(t *testing.T) {
 			t.Errorf("accepted unknown/Dependency link %d", kind)
 		}
 	}
-	for kind := Memory; kind <= Lesson; kind++ {
+	for _, kind := range []BeadKind{Memory, Observation, Decision, Procedure, Policy, Lesson, Requirement} {
 		if !kind.ConformsTo(Memory) || !kind.ConformsTo(kind) || kind.ConformsTo(Issue) {
 			t.Errorf("incorrect family membership for %d", kind)
 		}
@@ -132,7 +132,7 @@ func TestCandidateProvenance(t *testing.T) {
 		} `json:"files"`
 	}
 	readJSON(t, "testdata/candidate/provenance.json", &manifest)
-	if manifest.Commit != "50b13ee08f79a00bf8b135495b3b4d432f811992" {
+	if manifest.Commit != "c064cc33274d1a88532ef6d135d7446b9b64b039" {
 		t.Fatal("unexpected candidate commit", manifest.Commit)
 	}
 	for _, file := range manifest.Files {
@@ -155,5 +155,18 @@ func TestAuthorityReferenceDiagnostic(t *testing.T) {
 		if !errors.As(err, &violation) || violation.Expected != "a URI string or {uri, revision} reference" {
 			t.Fatalf("authority %s: wrong expectation: %v", value, err)
 		}
+	}
+}
+
+func TestStatusDoesNotSelectIssueContract(t *testing.T) {
+	data := json.RawMessage(`{"title":"Memory decision","body":"","kind":"decision","status":"closed"}`)
+	if err := ValidateProperties(Decision, data); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateProperties(Issue, data); err == nil {
+		t.Fatal("Memory property shape accepted as an Issue contract")
+	}
+	if Decision.ConformsTo(Issue) || Issue.ConformsTo(Decision) {
+		t.Fatal("distinct decision identities collapsed into one family")
 	}
 }

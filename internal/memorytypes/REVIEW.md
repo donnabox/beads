@@ -71,7 +71,7 @@ full artifact checker (which also needs shared Types artifacts) is distinct from
 this package's property oracle and was not run here. Parent owns final review,
 publication, and release admission.
 
-## Current body-primary and Association-family reconciliation
+## Historical body-primary reconciliation at implementation d22db0cd
 
 This normal follow-up to implementation `499c227fa5d0c208db0bf8d63c27e6fae9927483`
 pins public `gastownhall/bdp` candidate
@@ -136,3 +136,65 @@ Current exact checks:
 No Bazel execution, full-repository suite, engine, installed binary or shared-server
 qualification is claimed. Parent retains final review/publication authority. The
 package still has no runtime callers.
+
+## Current Memory V1 status and Requirement reconciliation
+
+This normal follow-up preserves implementation
+`d22db0cd661196f4bf85450556f469de220ebebd` and pins public `gastownhall/bdp`
+`c064cc33274d1a88532ef6d135d7446b9b64b039`. All copied bytes were fetched from
+that exact public commit and compared before implementation. There are now ten
+pinned files: eight property schemas, cases and the nonnormative definition graph.
+The new Requirement schema and every SHA256 are in the provenance manifest.
+
+The product is now titled Memory V1. This does not claim that F0 is shipped or
+adopt a Type-definition representation. The product endpoint/pin table was
+independently checked and is unchanged: local Issue/Memory family pairs only,
+exact targets required only for Supports/Challenges, Supersedes current or exact.
+The exploratory graph has thirteen definitions and eleven declarations; the new
+Requirement-to-Memory declaration is cross-checked as candidate evidence.
+
+Selected changes implemented:
+
+- Memory and Association now each declare optional nonblank open-string status,
+  inherited by their supplied specializations. All seven Bead kinds and six Link
+  kinds accept arbitrary nonblank values verbatim and refuse null/blank/non-text
+  values. No enum, default, normalization or Issue-workflow admission is used.
+  There are no runtime callers or workflow effects implemented by this package.
+- Requirement is the seventh Memory kind, with the common title/body/status
+  contract and no new required primary field. Membership and endpoint admission
+  now use explicit family predicates rather than incidental enum ranges.
+- Applicability validation is removed entirely. Any JSON applicability value is
+  uninterpreted open-root extension data; tests preserve scalars, nulls, arrays,
+  objects, and former invalid interval/description shapes. No field is silently
+  promoted into a metadata schema or provenance representation.
+- Existing Issue decision and Memory Decision remain separate classifications.
+  A kind/status property cannot select or infer either contract. Type-only
+  semantic revision behavior remains the caller's explicit obligation.
+
+The old closed-applicability cases were retired or moved to still-relevant
+Policy.authority diagnostics. Previous format-edge fixes remain for observedAt
+and authority. The schema oracle includes Requirement, and every common Link
+property case still executes against all six Link kinds.
+
+Current verification:
+
+- `internal/memorytypes/check.sh -race -cover`: passed, 94.3% Go statement coverage,
+  no race report. Offline oracle passed 279 cases (102 source + 177 local), including
+  open status positive/negative cases across every supplied Bead and Link kind.
+- Product pair tests cover 726 combinations (eleven endpoint classifications over
+  six Link kinds), independently checking the product table and only subset
+  compatibility with the broader nonnormative BDP exploration.
+- Exact source default checker run under the package's pinned Python environment
+  from `/tmp/trish-f0-memory-v1-source-check`: passed eight schemas, 102 cases,
+  ten Bead and eight local Link excerpts. No shared BDP inputs were required.
+  Optional exploration mode was not run or claimed as product qualification.
+- Final `make ci-pr-lint`: passed zero issues on native, Windows non-CGO and Darwin
+  non-CGO. An initial unused-argument finding after applicability removal was fixed
+  by removing the now-constant property path argument from the private helper.
+- `python3 tools/bazel/go_srcs.py --check`, `bash -n internal/memorytypes/check.sh`,
+  formatting and `git diff --check`: passed. The new schema is testdata, so no Go
+  source/BUILD inventory change is required.
+
+No new Go dependency, engine call, shared database access, full-repository suite,
+Bazel execution, CLI/storage integration, publication or release action is included.
+Final review and publication remain with the parent.

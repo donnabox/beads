@@ -1,4 +1,4 @@
-# Fixed Memory contract foundation (candidate)
+# Memory V1 fixed contract foundation (candidate)
 
 This package has **no runtime callers**. It is F0 groundwork for Preview 3, not
 installed Memory support, BDP conformance, or adoption of the Memory proposal.
@@ -6,9 +6,10 @@ There is no storage, network access, schema loader, catalog installation, or
 public type ID/selector mapping. It adds no Go dependencies.
 
 The input is Melinda's product proposal at public `gastownhall/bdp` commit
-`50b13ee08f79a00bf8b135495b3b4d432f811992`. Earlier reviewed implementations
+`c064cc33274d1a88532ef6d135d7446b9b64b039`. Earlier reviewed implementations
 `1935d820ba1f8bdd42bb1897438f04e34b486627` and
-`499c227fa5d0c208db0bf8d63c27e6fae9927483` remain historical evidence against their
+`499c227fa5d0c208db0bf8d63c27e6fae9927483`, and
+`d22db0cd661196f4bf85450556f469de220ebebd` remain historical evidence against their
 own exact candidate pins; see [REVIEW.md](REVIEW.md). Copied test inputs and byte
 hashes are listed in `testdata/candidate/provenance.json`.
 
@@ -29,17 +30,22 @@ are neither represented nor altered here.
   allowed without rewriting or dropping them, including uninterpreted `kind`
   and `inception` extensions. Neither selects affiliation nor replaces required
   fields. Inception is no longer a Memory property contract; this package supplies
-  no shared provenance validation. Nested applicability and exact authored
-  authority references remain closed as specified. `Violation` gives a
+  no shared provenance validation. Applicability is also an uninterpreted root
+  extension; every JSON value is accepted without normalization. Only exact authored
+  authority reference objects remain closed as specified. `Violation` gives a
   deterministic JSON Pointer and expectation.
-- Required `title` and `body` supply common content for all six kinds. Empty body
+- Required `title` and `body` supply common content for all seven Bead kinds. Empty body
   is valid with a title, including on specializations. `statement`, `choice`,
   `steps`, `rule`, and `takeaway` are no longer declared primary fields; as open-root
   extensions they receive no special interpretation or validation. Optional
-  `observedAt`, `alternatives`, and `authority` remain type-specific. Applicability
-  has only a required description when present; its closed schema rejects the
-  deferred `validFrom`/`validUntil` fields. No interval-ordering engine is supplied.
-  Shape validation does not establish the meaning or quality of prose.
+  `observedAt`, `alternatives`, and `authority` remain type-specific. Requirement
+  is a Memory specialization with no additional primary field. There is no standard
+  applicability or interval contract. Shape validation does not establish the
+  meaning or quality of prose.
+- Both Memory and Association define optional nonblank open-string `status`,
+  inherited by all their specializations. Values are preserved verbatim, without
+  enum admission, default, normalization or automatic workflow, approval, truth,
+  visibility or readiness effect. Issue workflow status rules are not reused.
 - Format checks target the pinned Python schema checker's asserted `date-time`
   and `uri` behavior, with explicit exceptions below. No timezone or observation
   time is invented. The pinned checker rejects leap-second values
@@ -58,7 +64,7 @@ are neither represented nor altered here.
   Association. This finite table serves the fixed release catalog, not a
   permanently closed definition of future dynamic conformance.
 - `ValidateLinkProperties` applies Association's open property contract, including
-  its optional nonblank `note`, to Association and every supplied specialization.
+  its optional nonblank `note` and `status`, to Association and every supplied specialization.
   These six relationship symbols are not workflow Dependencies.
 - `ValidateEndpoints` applies each whole source/target pair, identity-based
   self-link rejection, and explicit target pins for Supports and Challenges.
@@ -121,9 +127,9 @@ oracle dependencies cause the combined entrypoint to fail; they never produce a
 silent qualification skip. Wiring this entrypoint into repository CI remains an
 explicit runtime-adoption follow-up outside F0's package-only scope.
 
-Go tests cover all 64 active pinned property cases, inherited requirements,
-nonmutation, diagnostics, extra format and deferred-field cases, and all 600 combinations of
-the ten endpoint classifications over six product pair sets. Every common Link
+Go tests cover all 102 active pinned property cases, inherited requirements,
+nonmutation, diagnostics, extra format, open-status and uninterpreted-extension cases, and all 726 combinations of
+the eleven endpoint classifications over six product pair sets. Every common Link
 property case exercises all six Link kinds. The independent Python oracle asserts
 Draft 2020-12 formats and forbids remote schema lookup. Exact versions of
 `jsonschema`, `rfc3987`, and `rfc3339-validator` are pinned and checked. Its
