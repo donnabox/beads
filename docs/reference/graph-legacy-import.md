@@ -93,7 +93,8 @@ deciding what to do next.
 
 During freshness and prefix inspection, cancellation or the import's five-minute
 storage deadline uses `capability_unavailable` (exit 5), with the inspected plane
-in the message. These interrupted inspections do not diagnose a damaged or
+in the message. This classification is specific to the legacy-import route.
+These interrupted inspections do not diagnose a damaged or
 nonempty workspace. Shared binding/schema admission precedes these checks and
 currently hides some underlying error causes: interruption there can still
 report `invalid_store`. This inherited limitation is not a schema-repair verdict
