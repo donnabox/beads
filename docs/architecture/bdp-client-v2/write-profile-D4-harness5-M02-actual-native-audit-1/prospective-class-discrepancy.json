@@ -1,0 +1,35 @@
+{
+  "actualConcreteClass": "Refusal",
+  "actualEqualsSourceDerivedExpected": true,
+  "actualIsRuntimeErrorSubclassByOriginalSourceAST": true,
+  "actualRefusalReason": "marker-attempt",
+  "frozenProspectiveConcreteClass": "RuntimeError",
+  "frozenProspectivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-M02-authority-native-precision-1/prospective-exact-unit-result.json",
+  "frozenProspectiveSha256": "9890a68955518fa25ed0f90d5f9d1ffbdc2f36c0542a78c855af4030b35bd027",
+  "kind": "Auditor prospective DATA expectation error; original source and actual output agree",
+  "matchesFrozenProspectiveClass": false,
+  "onlyResultDifference": [
+    "receipt.exceptionType"
+  ],
+  "originalsPreserved": true,
+  "rootDispositionRequiredBeforeMoreControls": true,
+  "runtimeFailureOrRetry": false,
+  "sourceDerivedExpected": {
+    "case": "M02",
+    "executed": true,
+    "hostContainmentCredit": false,
+    "productCalls": 0,
+    "profileCredit": false,
+    "receipt": {
+      "exceptionType": "Refusal",
+      "reason": "marker-attempt",
+      "refused": true
+    },
+    "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+    "status": "UNIT_CONTROL_PASSED",
+    "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+    "syntheticAcceptance": false,
+    "unresolved": [],
+    "variant": "unit"
+  }
+}

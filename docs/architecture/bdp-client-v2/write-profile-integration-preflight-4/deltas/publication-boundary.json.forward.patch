@@ -1,0 +1,40 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-3/publication-boundary.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/publication-boundary.json
+@@ -1,18 +1,24 @@
+ {
+-  "D3aPublication": "no remote branch/PR/sourcecommit yet per root; future stacking on exact PR168 head requires full current validation plus independent terminal audit and separate root publication",
+-  "PR168": {
+-    "base": "event-admission branch at a562",
++  "state": "Frozen root source/publication receipts, no author Git or live PR query",
++  "D1": {
+     "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++    "PR": 168,
+     "headBranch": "codex/vickie-current-changefeed-minimum",
+-    "meaning": "D1cce is an exact child commit/input; do not infer cce from event-admission branch spelling",
+-    "state": "OPEN/ready per root readback"
++    "baseBranch": "event-admission",
++    "eventAdmissionHead": "a56254d682cf4623cab22a552e3d2f695f691795"
+   },
+-  "actualAssemblyOrPublicationAuthorized": false,
+-  "authorObservedRuntime": false,
+-  "eventAdmissionRemoteBranchHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+-  "productOrigin": "gastownhall/bdp",
+-  "recordedAt": "2026-10-18T12:54:28.143854+00:00",
+-  "recordedCommitEdgesRemain": "a562\u2192cce and a562\u2192fdd; D3a owned candidate is cce-relative regardless of future branch naming",
+-  "rootCurrentP7Status": "installed01\u201309 plus immediate audits PASS, later stages RUNNING; no final D3 proof",
+-  "state": "Root-provided current publication readback snapshot, not an author Git/API query"
++  "D3a": {
++    "head": "fe57ea2942615d5dbe770b9229d0da25f51bf1a7",
++    "tree": "6813c562dc4287bda697c4b7c1d6d94bec342ba4",
++    "soleParent": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++    "PR": 170,
++    "base": "codex/vickie-current-changefeed-minimum",
++    "stateAtPublication": "OPEN/DRAFT",
++    "exactCIAtPublication": "IN_PROGRESS; later outcome UNKNOWN here",
++    "cleanRootReceipt": true,
++    "canonical679Unchanged": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
++    "historicalLocalP10": "Accepted at cce+eed91/a61, not relabelled as fe57 execution"
++  },
++  "G09": "Still separate cce10dirty/eeb source; NOT automatically rebased/stacked/adopted by D3 publication",
++  "assemblyOrMainLandingReleased": false
+ }

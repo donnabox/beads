@@ -1,0 +1,5 @@
+{
+  "error": "Initial DATA parser assumed root census used extended state/start columns; actual original root census is pid/ppid/pgid/comm. AssertionError before output directory or independent ps was created. Corrected only DATA parsing after inspecting exact raw bytes; root census and all subject bytes unchanged. Own extended-column ps is separately parsed by its actual argv.",
+  "helperOrProductExecuted": false,
+  "subjectRetried": false
+}

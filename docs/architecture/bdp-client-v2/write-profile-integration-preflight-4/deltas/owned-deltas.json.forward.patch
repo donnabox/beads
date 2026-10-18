@@ -1,0 +1,70 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-3/owned-deltas.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/owned-deltas.json
+@@ -352,5 +352,67 @@
+       "beforeSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+       "beforeSourceCopy": "source/startup/before/scripts/smoke-executables.mjs"
+     }
++  },
++  "G09": {
++    "packages/server/src/transaction-service.ts": {
++      "afterExists": true,
++      "afterSha256": "972cf3a1e7abbf792f4c69181e2c63cf29d6163881fcab0a5cb768ece18ecadd",
++      "afterSourceCopy": "source/G09/after/packages/server/src/transaction-service.ts",
++      "basisLane": "D3a",
++      "beforeExists": true,
++      "beforeSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
++      "beforeSourceCopy": "source/G09/before/packages/server/src/transaction-service.ts",
++      "sourceQualification": "UNACCEPTED; one Low native finding, actual CODEINPROGRESS/root snapshot only"
++    },
++    "packages/server/src/transaction-schema-http.ts": {
++      "afterExists": true,
++      "afterSha256": "eb6fd23439b5c084cd84044721f6bd8dd8f77fd4df0e1adc72656fa2300d8747",
++      "afterSourceCopy": "source/G09/after/packages/server/src/transaction-schema-http.ts",
++      "basisLane": "D3a",
++      "beforeExists": true,
++      "beforeSha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130",
++      "beforeSourceCopy": "source/G09/before/packages/server/src/transaction-schema-http.ts",
++      "sourceQualification": "UNACCEPTED; one Low native finding, actual CODEINPROGRESS/root snapshot only"
++    },
++    "packages/server/src/transaction-http.ts": {
++      "afterExists": true,
++      "afterSha256": "bbe9da8000ac9a252a7fda44e4e3c21166fdc278225659c0b0836c97cb54a916",
++      "afterSourceCopy": "source/G09/after/packages/server/src/transaction-http.ts",
++      "basisLane": "D3a",
++      "beforeExists": true,
++      "beforeSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
++      "beforeSourceCopy": "source/G09/before/packages/server/src/transaction-http.ts",
++      "sourceQualification": "UNACCEPTED; one Low native finding, actual CODEINPROGRESS/root snapshot only"
++    },
++    "packages/server/src/transaction-service.test.ts": {
++      "afterExists": true,
++      "afterSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
++      "afterSourceCopy": "source/G09/after/packages/server/src/transaction-service.test.ts",
++      "basisLane": "D3a",
++      "beforeExists": true,
++      "beforeSha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705",
++      "beforeSourceCopy": "source/G09/before/packages/server/src/transaction-service.test.ts",
++      "sourceQualification": "UNACCEPTED; one Low native finding, actual CODEINPROGRESS/root snapshot only"
++    },
++    "packages/server/src/transaction-schema-http.test.ts": {
++      "afterExists": true,
++      "afterSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
++      "afterSourceCopy": "source/G09/after/packages/server/src/transaction-schema-http.test.ts",
++      "basisLane": "D3a",
++      "beforeExists": true,
++      "beforeSha256": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
++      "beforeSourceCopy": "source/G09/before/packages/server/src/transaction-schema-http.test.ts",
++      "sourceQualification": "UNACCEPTED; one Low native finding, actual CODEINPROGRESS/root snapshot only"
++    },
++    "apps/bdptest/src/transactional-schema-installed.test.ts": {
++      "afterExists": true,
++      "afterSha256": "a496043a747b3e8f9bc9dd6e7f9849b3c4a400253b3d90e64d0405b7752b1c89",
++      "afterSourceCopy": "source/G09/after/apps/bdptest/src/transactional-schema-installed.test.ts",
++      "basisLane": "D3a",
++      "beforeExists": true,
++      "beforeSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
++      "beforeSourceCopy": "source/G09/before/apps/bdptest/src/transactional-schema-installed.test.ts",
++      "sourceQualification": "UNACCEPTED; one Low native finding, actual CODEINPROGRESS/root snapshot only"
++    }
+   }
+ }

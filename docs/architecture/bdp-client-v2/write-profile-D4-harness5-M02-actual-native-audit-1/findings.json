@@ -1,0 +1,15 @@
+[
+  {
+    "actualRuntimeFailure": false,
+    "actualSourceRefs": [
+      "source/immutable-helper4/scanner.py:8",
+      "source/immutable-helper4/scanner.py:96",
+      "source/H5/scanner_controls.py:15",
+      "source/H5/scanner_controls.py:35"
+    ],
+    "domain": "Prior native prospective DATA expectation",
+    "id": "M02-DATA-1",
+    "severity": "Low",
+    "summary": "Frozen prospective result incorrectly names concrete RuntimeError; immutable scanner actually raises Refusal(RuntimeError), and adapter records Refusal. Actual source oracle is satisfied; preserve old DATA and root-adjudicate this explicit correction before more controls."
+  }
+]

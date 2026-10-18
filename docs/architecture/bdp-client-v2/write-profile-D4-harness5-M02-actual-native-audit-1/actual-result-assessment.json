@@ -1,0 +1,176 @@
+{
+  "BOTHControlStreamsEOF": true,
+  "actualBootstrapACKs": "Not separately retained raw nonce/ACK journals in this unit attempt; successful bound source paths and authenticated recorded identities support normal bootstrap only",
+  "actualControlResult": {
+    "case": "M02",
+    "executed": true,
+    "hostContainmentCredit": false,
+    "productCalls": 0,
+    "profileCredit": false,
+    "receipt": {
+      "exceptionType": "Refusal",
+      "reason": "marker-attempt",
+      "refused": true
+    },
+    "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+    "status": "UNIT_CONTROL_PASSED",
+    "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+    "syntheticAcceptance": false,
+    "unresolved": [],
+    "variant": "unit"
+  },
+  "allAttemptFilesMode0600SameUID": true,
+  "allOther59Unattempted": true,
+  "controlStreamsBytes": 0,
+  "nativeConsole": {
+    "elapsedSeconds": 2.59700437495485,
+    "event": "native-limiter-terminal",
+    "forced": false,
+    "limiterPid": 54923,
+    "localStatus": "SETTLED_PENDING_ROOT_AUDIT",
+    "ownerPid": 54937,
+    "rawOwnerExit": 0,
+    "requiresFreshRootGroupAudit": true,
+    "syntheticAcceptance": false
+  },
+  "noActualHostControlCredit": true,
+  "noNativeForcedDeadlineCoverage": true,
+  "noPretargetFailureObserved": true,
+  "noProductCredit": true,
+  "originalStaleStartMarkerRefusesBeforeReportOrEnd": "actual source path and Refusal(marker-attempt) result; no injected refusal",
+  "ownerConsole": {
+    "allKnownGroupsAbsent": true,
+    "case": "M02",
+    "elapsedSeconds": 2.582208503037691,
+    "event": "outer-owner-terminal",
+    "ownerFailure": null,
+    "ownerSettled": true,
+    "ownershipUnknown": [],
+    "productCalls": 0,
+    "rawControlExit": 0,
+    "requiresLimiterExitAndRootAudit": true,
+    "syntheticAcceptance": false,
+    "variant": "unit"
+  },
+  "publicationSeconds": 2.265500627923757,
+  "recordedProbeReceipts": [
+    {
+      "atSeconds": 0.10879921121522784,
+      "pgid": 54954,
+      "pid": 54954,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 0.263439211063087,
+      "pgid": 55052,
+      "pid": 55052,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 0.41038167010992765,
+      "pgid": 55055,
+      "pid": 55055,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 0.5652902531437576,
+      "pgid": 55057,
+      "pid": 55057,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 0.7295086700469255,
+      "pgid": 55063,
+      "pid": 55063,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 0.8916460862383246,
+      "pgid": 55065,
+      "pid": 55065,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 1.0546517111361027,
+      "pgid": 55069,
+      "pid": 55069,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 1.1994755859486759,
+      "pgid": 55071,
+      "pid": 55071,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 1.3600156703032553,
+      "pgid": 55077,
+      "pid": 55077,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 1.5140529610216618,
+      "pgid": 55079,
+      "pid": 55079,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 1.6746436702087522,
+      "pgid": 55084,
+      "pid": 55084,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    },
+    {
+      "atSeconds": 1.8199175032787025,
+      "pgid": 55086,
+      "pid": 55086,
+      "rawExit": 0,
+      "stderrEof": true,
+      "stdoutEof": true
+    }
+  ],
+  "root": {
+    "actualNativeRawExit": 0,
+    "controlAcceptedYet": false,
+    "error": null,
+    "noRetry": true,
+    "normalTerminalCandidate": true,
+    "other59Unattempted": true,
+    "productReleased": false,
+    "requiresFullIndependentActualOracleAndFreshAllRecordedAbsence": true,
+    "rootTermRequested": false,
+    "stderrBytes": 0,
+    "stderrEOF": true,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 535,
+    "stdoutEOF": true,
+    "stdoutSha256": "4f60badc77173d7dafcdc821dff78413197a921b33e26100e4b673341ff0679a",
+    "utc": "2026-10-18T17:44:35.936513+00:00",
+    "wholeNativeCaptureSeconds": 2.615341542288661,
+    "wholeRootIncludingImportsGuardHashCaptureSeconds": 3.191247332841158
+  },
+  "sourceOrdering": "snapshot before IO publication and terminal console; not a final journal or full chronology",
+  "tentativeSnapshotSeconds": 1.819942460861057
+}
