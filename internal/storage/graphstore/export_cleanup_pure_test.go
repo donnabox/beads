@@ -19,7 +19,7 @@ import (
 
 // These tests use database/sql's real cleanup paths with a test-owned connector,
 // not an engine or network server. The fixture is an empty controlled workspace
-// with the persisted four-Type installation. It proves error propagation, not
+// with the complete persisted Type installation. It proves error propagation, not
 // engine consistency, SQL query correctness, or the publication contract.
 func TestExportCurrentSnapshotRollbackCleanup(t *testing.T) {
 	for _, failure := range []bool{false, true} {
@@ -47,7 +47,7 @@ func TestExportCurrentSnapshotRollbackCleanup(t *testing.T) {
 				if !errors.Is(err, fault) || !reflect.DeepEqual(state, ExportCurrentState{}) {
 					t.Fatalf("rollback failure leaked state/lost error: %+v %v", state, err)
 				}
-			} else if err != nil || state.IssuePrefix != "web-app-" || len(state.Snapshot.Types) != 4 || state.Snapshot.WriterToken != exportCleanupToken || state.CommentsByIssuePath == nil {
+			} else if err != nil || state.IssuePrefix != "web-app-" || len(state.Snapshot.Types) != len(d.descriptors) || state.Snapshot.WriterToken != exportCleanupToken || state.CommentsByIssuePath == nil {
 				t.Fatalf("successful acquisition control: %+v %v", state, err)
 			}
 			exportCleanupTransactionCount(t, s, d)
@@ -273,7 +273,7 @@ func exportCleanupStore(t *testing.T, faults exportCleanupFaults) (*Store, *expo
 		}},
 		descriptors: make(map[string]graph.TypeDescriptor),
 	}
-	for _, definition := range previewTypeDefinitions()[:4] {
+	for _, definition := range previewTypeDefinitions() {
 		descriptor, err := definition.build(d.options.Binding.ScopeURL)
 		if err != nil {
 			t.Fatal(err)
@@ -335,7 +335,7 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 	case q == "select active_branch()":
 		return row([]string{"branch"}, "main"), nil
 	case q == "select count(*) from graph_preview_types":
-		return row([]string{"count"}, int64(4)), nil
+		return row([]string{"count"}, int64(len(d.descriptors))), nil
 	case strings.HasPrefix(q, "select descriptor, fingerprint from graph_preview_types where name=?"):
 		if len(args) != 2 {
 			return nil, fmt.Errorf("cleanup descriptor lookup arguments: %v", args)

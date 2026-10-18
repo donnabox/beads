@@ -66,6 +66,11 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 				t.Fatalf("native comments: %+v %v", native, err)
 			}
 			wantComments := []types.Comment{*native[0], *native[1]}
+			// IssueComments exposes graph selectors; export preserves the native
+			// Issue ID stored with each comment. Normalize only this copied oracle.
+			for i := range wantComments {
+				wantComments[i].IssueID = work.Properties.ID
+			}
 			before := exportSourceState(t, ctx, s)
 			current, err := s.ExportCurrentSnapshot(ctx)
 			if err != nil || current.IssuePrefix != "web-app-" || current.DeletedAllocations != 0 || len(current.Snapshot.Records) != 6 || !reflect.DeepEqual(current.CommentsByIssuePath["beads/work"], wantComments) {
