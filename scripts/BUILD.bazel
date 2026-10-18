@@ -399,6 +399,7 @@ exports_files(
         "//test/docsync:__pkg__",
     ],
 )
+
 # Disposable fixture producer linked from the legacy import evidence.
 exports_files(
     ["legacy-import-fixture.py"],
