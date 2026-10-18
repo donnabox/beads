@@ -1,0 +1,74 @@
+Review the FIRST NEW mechanically combined trusted-startup source target at /Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum. This is CODE review of current actual source and tests, not approval of a proposal, not a retry of any historical standalone review. Do not write or modify any files. Output findings only in stdout. Use only Read, Glob and Grep. Do not use agents, shell, compilers, tests, formatter, builds, installs, runtime, external reviewers or network. You may read additional source/dependencies when needed.
+
+Return a concise findings-first technical review, ideally <=1500 words. Number concrete findings, each with Critical/High/Medium/Low severity, actual file and line, issue, impact, and smallest concrete fix. Distinguish demonstrated static defects from unmeasured timing risk or evidence limitations. State no findings if appropriate. No praise, whole-profile qualification or approval inferred. Note actual scope/read limits or unavailable evidence, rather than inventing receipts.
+
+Exact target: HEAD a56254d682cf4623cab22a552e3d2f695f691795/tree144f278c7f5a08516c4ac99ba553d4cc25bcf560, all686 files, canonical default-sorted-JSON map5b38717e11ae7e7de7a5be20e29f8acc7e6c8ba1415167293e3c427bcecf6c69.29 base-different paths are22 tracked changes plus7 untracked additions; root ordinary/binary Git patch covers22, while complete29.source.patch adds DATA-derived exact addition hunks. All seven current files are real source, not omitted for being untracked. Ordered D1 -> pure loader -> D3a -> corrected lifecycle33 overlays were mechanically composed. No G09, D4, carrier, incoming main/spec or final-owner fixture. Prior PR168/169/170 green inputs are separate, never combined validation proof.
+
+Start with these exact absolute provenance/patch/native paths:
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/root-review-input/acceptance.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/root-Git-basis/basis.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/root-digest-domains/clarification.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/root-tracked-untracked/runner-adaptation-authority.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/review-complete29.source.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/review-complete29.provenance.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-native/report.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-native/closure.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-native/seven-finding-current-closure.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-native/review-scope.json
+
+Read the FULL current cumulative nine lifecycle source paths below, including both complete new lifecycle test files, not only the seven corrective edits. Review complete29-path patch composition and relevant current neighboring helpers rather than entire unrelated legacy test files. Read loader/registry/capture/HTTP/service/store dependencies as needed; full current source is available:
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/docs/design/startup-configuration.md
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/development-authority.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/development-runtime.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/reference-deployment-process.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/reference-deployment-runtime.test.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/reference-deployment-runtime.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-runtime.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/scripts/smoke-executables.mjs
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/reference-deployment.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/reference-deployment-state.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/reference-deployment.test.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/installed-reference-configuration.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-installed-configuration.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-runtime-configuration.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/development-contracts.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/development-composition.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-http.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-service.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-store.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-discovery.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/transaction-read.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/src/index.ts
+/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum/packages/server/package.json
+
+Review these accepted governing plan/correction/spec and prospective exact validation contracts via their absolute paths:
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-validation-DATA/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-validation-DATA/source-report-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-validation-DATA/installed-report-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-validation-DATA/installed-selection-and-requests.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-validation-DATA/artifact-and-private-boundary-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/combined-validation-DATA/clock-process-and-evidence-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/lifecycle-correction-plan1/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/lifecycle-correction-plan1/startup-fact-capture-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/lifecycle-correction-plan1/source-witnesses.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/lifecycle-correction-plan1/installed-witnesses.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/lifecycle-correction-plan1/persisted-cases.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/standalone-CODE-root-disposition/disposition.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/standalone-CODE-terminal/scope-limitation.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/standalone-CODE-actual/claude-code-review/final-review.txt
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/standalone-PLAN-failed-terminal/report.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/pure-loader-plan3/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/pure-loader-plan3/contract.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/lifecycle-plan3/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-combined-code-review-1/claude-code-review/context/preflight4/pinned-spec/bdp.md
+
+Focus on the real private boundary: immutable capture and own-data/Proxy/getter refusal; genuine WeakMap registration before handle fields; inert non-listening loader, FD closure, strict lossless JSON bounds before numeric admission (32MiB is sole predecode bound; allocation risk explicitly accepted); configured canonical Scope/listener/profile/actual limits and all principals; RU four-tuple/composition, TX one captured preflight/readConfiguration before service construction, existing constructor reads preserved; persisted owner/type/policy/limits and missing-store before SQLite guards; actual host/nonzero port; no fabricated capability or exported secret capture types. Public root/development/reference-configuration exports remain narrow and higher-profile listener admission remains refused.
+
+Inspect acquired-owner/listener/service/pending ownership, cancellation, memoized close, fixed primary plus cleanup causes, prepared completion/fault reporting and legacy result/cache/bind-first/port0/503 preservation. Prepared facts are captured inside cleanup try after final checks and before publication; completion/cache initialization must precede final return with no await/TDZ window. Check D1 stream/transport-abort/admitted-mutation drain and D3a discovery/minimum/receiving/context/conditional boundaries remain compatible with the exact prepared TX runtime. Scope -> actual service-desc -> descriptor.operations -> actual Directory -> received create target must work in all six TX cold IDs I02/I04/I13/I15/I17/I19 against the SAME future combined install; Type is fixture input, not operation oracle. Generic Type serving or a separate D3a process is insufficient.
+
+The standalone actual CODE had seven findings and clean inner/outer terminal, but relative context paths omitted plan/diff/maps/native/root cross-checks; preserve that actual scope. Later full corrected native/root review is separate; the old reviewer did not read future bytes. Earlier lifecycle PLAN had complete substantive findings but FAILED finalization/CLI UNKNOWN/missing outputs, preserved without reconstruction. This NEW combined target has no previous actual CODE attempt. Review all seven corrections substantively, not merely trust their closure: I21 invalid post-ready stop remains invalid and stops/refuses, keeping old public+guard witnesses plus one real ready TX child, exit2 AND stdio-close/fixed diagnostic/ownerProbe(false); symmetric RU pending rejection; defensive capture/primary cleanup; raw Buffer ordinary+CONNECT secret screening before output with no redaction; deep authority export refusal; prepared RU host; entry defaults/overrides docs.
+
+Source51 callbacks include21 persisted and2 source HTTP witnesses. Installed21 callbacks retain126 HTTP+2 CONNECT,33 ordinary/public+4 guards=37 children. Separate exit from stdio close, attempted from settled/succeeded parent close, actual task/peer drain from directory deletion and sticky unknown retention. Raw HTTP response/wire facts are captured before assertions; failed partials must stay truthful, no expected-to-observed filling. Known credentials and decoded raw regular/CONNECT bytes screened before stdout; no auth/capture/digest echo. Probe/dial canonical identity, context, receipt/replay/resource/schema checks must be genuine source-witness oracles.
+
+The validation plan is DATA only and not executed:51+44 source selections,21 installed selections,272 server filenames, stock78 attempts/71 unique vs external76/69 are expected counts. Separate root-proven external consumer from stock-smoke consumer and workspace client/parser/AJV. Request5s/work45s/one cleanup10s/callback60s/outer120sTERM115 and source default5s stay fixed; actual combined fit/build/declarations/package/private resolution/export/consumer/CI are UNKNOWN. No minimum schema/S1/G2/admin/final configuration decision or public Write admission is adopted. Flag concrete static breakage or nondiscriminating witnesses; do not claim an unrun timing prediction is a measured failure or relax bounds.

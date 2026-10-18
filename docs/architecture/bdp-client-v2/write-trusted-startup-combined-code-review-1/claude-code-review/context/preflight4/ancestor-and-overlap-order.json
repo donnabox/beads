@@ -1,0 +1,218 @@
+{
+  "commonBase": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "basisLaneByScopedDelta": {
+    "D1": "base",
+    "pureLoader": "base",
+    "D3a": "D1",
+    "startup": "pureLoader",
+    "D4": "D1",
+    "carrier": "D1",
+    "G09": "D3a"
+  },
+  "all21PairwiseIntersections": [
+    {
+      "earlier": "D1",
+      "later": "pureLoader",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D1",
+      "later": "D3a",
+      "overlapPaths": [
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.ts"
+      ],
+      "byteDetails": [
+        {
+          "path": "packages/server/src/transaction-changefeed.test.ts",
+          "earlierAfterSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+          "laterBeforeSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        },
+        {
+          "path": "packages/server/src/transaction-http.ts",
+          "earlierAfterSha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+          "laterBeforeSha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        }
+      ]
+    },
+    {
+      "earlier": "D1",
+      "later": "startup",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D1",
+      "later": "D4",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D1",
+      "later": "carrier",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D1",
+      "later": "G09",
+      "overlapPaths": [
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts"
+      ],
+      "byteDetails": [
+        {
+          "path": "packages/server/src/transaction-http.ts",
+          "earlierAfterSha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+          "laterBeforeSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+          "directByteAgreement": false,
+          "decision": "TRANSITIVE D1\u2192D3a\u2192G09; later before must equal current D3a overlay, not obsolete D1 after. Verified in each optional virtual sequential overlay."
+        },
+        {
+          "path": "packages/server/src/transaction-service.ts",
+          "earlierAfterSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+          "laterBeforeSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        }
+      ]
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "D3a",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "startup",
+      "overlapPaths": [
+        "docs/design/startup-configuration.md",
+        "scripts/smoke-executables.mjs"
+      ],
+      "byteDetails": [
+        {
+          "path": "docs/design/startup-configuration.md",
+          "earlierAfterSha256": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+          "laterBeforeSha256": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        },
+        {
+          "path": "scripts/smoke-executables.mjs",
+          "earlierAfterSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+          "laterBeforeSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        }
+      ]
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "D4",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "carrier",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "G09",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D3a",
+      "later": "startup",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D3a",
+      "later": "D4",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D3a",
+      "later": "carrier",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D3a",
+      "later": "G09",
+      "overlapPaths": [
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-http.ts"
+      ],
+      "byteDetails": [
+        {
+          "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "earlierAfterSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
+          "laterBeforeSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        },
+        {
+          "path": "packages/server/src/transaction-http.ts",
+          "earlierAfterSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+          "laterBeforeSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+          "directByteAgreement": true,
+          "decision": "direct exact ancestor carry"
+        }
+      ]
+    },
+    {
+      "earlier": "startup",
+      "later": "D4",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "startup",
+      "later": "carrier",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "startup",
+      "later": "G09",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D4",
+      "later": "carrier",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "D4",
+      "later": "G09",
+      "overlapPaths": [],
+      "byteDetails": []
+    },
+    {
+      "earlier": "carrier",
+      "later": "G09",
+      "overlapPaths": [],
+      "byteDetails": []
+    }
+  ],
+  "beforeByteConflicts": [],
+  "sequentialOverlaySourceAgreement": "Every owned delta BEFORE was checked against actual virtual preceding bytes in all four choices; no before-byte conflict. This is not semantic merge proof.",
+  "carrierD4Overlap": [],
+  "G09OptionalOnly": true,
+  "noWholeSnapshotReplacement": true,
+  "assemblyReleased": false
+}

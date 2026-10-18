@@ -1,0 +1,13 @@
+{
+  "scope": "own DATA preparation only",
+  "locatorMiss": "historical pure-loader prep2 has preparation-index.json, not index.json; missing guessed locator caused FileNotFoundError before final metadata/index authoring",
+  "resolvedActualIndex": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/preparation-index.json",
+  "noHelperEvaluated": true,
+  "notProductFailure": true,
+  "allCopiedInputsReattributedAndChecked": true,
+  "additionalOwnDataSyntaxObservation": {
+    "toolChunk": "29feb5",
+    "error": "Own inline DATA generator had a missing space in a conditional expression; Python syntax check failed before any body or file mutation. Corrected generators authored51/21 DATA only.",
+    "productOrHelperExecuted": false
+  }
+}

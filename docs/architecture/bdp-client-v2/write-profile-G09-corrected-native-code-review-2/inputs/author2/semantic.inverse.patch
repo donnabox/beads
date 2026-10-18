@@ -1,0 +1,245 @@
+--- preformat/packages/server/src/transaction-service.test.ts
++++ before/packages/server/src/transaction-service.test.ts
+@@ -4315,7 +4315,7 @@
+ async function g09ServiceCase(
+   id: string,
+   run: (fixture: ReturnType<typeof g09ServiceFixture>) => Promise<void>,
+-  policy: NonNullable<TransactionServiceOptions["minimumReads"]> = {},
++  policy?: TransactionServiceOptions["minimumReads"],
+ ) {
+   const f = g09ServiceFixture(policy);
+   const failures: unknown[] = [];
+@@ -4352,7 +4352,7 @@
+     clearTimeout(timer);
+   }
+ }
+-function g09ServiceFixture(policy: NonNullable<TransactionServiceOptions["minimumReads"]> = {}) {
++function g09ServiceFixture(policy?: TransactionServiceOptions["minimumReads"]) {
+   const boundary = cleanup.length;
+   const f = fixture();
+   const owner = f.owner;
+@@ -4403,14 +4403,7 @@
+   };
+ }
+ it("G09-S01 schemaObserved zero-min/current and captured supplied tuple", async () => {
+-  let tick = 0,
+-    waits = 0,
+-    releasedEntryProbes = 0;
+-  let active: ReturnType<typeof g09ServiceFixture> | undefined;
+-  await g09ServiceCase(
+-    "G09-S01",
+-    async (f) => {
+-      active = f;
++  await g09ServiceCase("G09-S01", async (f) => {
+     const aborted = AbortSignal.abort();
+     const first = f.invoke(undefined, aborted);
+     expect(f.counts().entries).toBe(1); // Original no-minimum synchronous observation timing.
+@@ -4428,48 +4421,7 @@
+       await f.invoke({ ...supplied, scopeEpoch: f.context.scopeEpoch, minimumPosition: "genesis" }),
+     ).toEqual({ context: f.context });
+     expect(f.counts()).toMatchObject({ calls: 3, entries: 3 });
+-      const minimum = {
+-        scopeEpoch: f.context.scopeEpoch,
+-        authorizationView: f.context.authorizationView,
+-        minimumPosition: "pos-1",
+-      };
+-      const pending = f.invoke(minimum);
+-      minimum.scopeEpoch = "foreign";
+-      minimum.authorizationView = "foreign";
+-      minimum.minimumPosition = "opaque";
+-      const nextContext = { ...f.context, scopePosition: "pos-1" };
+-      expect(await pending).toEqual({ context: nextContext });
+-      expect(f.counts()).toMatchObject({ calls: 4, entries: 5 });
+-      expect(f.counts().contexts).toEqual([
+-        f.context,
+-        f.context,
+-        f.context,
+-        f.context,
+-        nextContext,
+-      ]);
+-      expect({ waits, tick, releasedEntryProbes }).toEqual({
+-        waits: 1,
+-        tick: 4,
+-        releasedEntryProbes: 1,
+-      });
+-    },
+-    {
+-      budgetMs: 2,
+-      now: () => tick++,
+-      wait: async () => {
+-        waits++;
+-        if (!active || active.inEntry()) throw new Error("G09 wait retained owner entry");
+-        releasedEntryProbes++;
+-        expect(active.owner.withRead(() => true)).toEqual({ kind: "read", value: true });
+-        await Promise.resolve();
+-        const receipt = active.owner.execute(
+-          owned(active.owner, batch([create("g09-capture")], "g09-capture")),
+-        );
+-        expect(receipt.status).toBe("completed");
+-        expect(active.owner.inspect().position).toBe("1");
+-      },
+-    },
+-  );
++  });
+ }, 5000);
+ it("G09-S02 schemaObserved epoch and view errors", async () => {
+   let waits = 0;
+@@ -4505,10 +4457,6 @@
+     waits = 0,
+     releasedEntryProbes = 0;
+   let active: ReturnType<typeof g09ServiceFixture> | undefined;
+-  const controller = new AbortController();
+-  let abortMode = false,
+-    closeFinished = false;
+-  let closing: Promise<void> | undefined;
+   await g09ServiceCase(
+     "G09-S03",
+     async (f) => {
+@@ -4528,26 +4476,6 @@
+         tick: 6,
+         releasedEntryProbes: 2,
+       });
+-      abortMode = true;
+-      const pending = f.invoke(
+-        {
+-          scopeEpoch: f.context.scopeEpoch,
+-          authorizationView: f.context.authorizationView,
+-          minimumPosition: "pos-999",
+-        },
+-        controller.signal,
+-      );
+-      await expect(pending).rejects.toBeInstanceOf(ScopeServerOperationAbortedError);
+-      expect(f.counts()).toMatchObject({ calls: 3, entries: 5 });
+-      expect({ waits, tick, releasedEntryProbes }).toEqual({
+-        waits: 3,
+-        tick: 8,
+-        releasedEntryProbes: 3,
+-      });
+-      if (!closing) throw new Error("G09 pending close unavailable");
+-      await Promise.all([closing, f.service.closed]);
+-      expect(f.counts()).toMatchObject({ closeCalls: 1, closed: true });
+-      expect(() => f.owner.inspect()).toThrow();
+     },
+     {
+       budgetMs: 2,
+@@ -4558,20 +4486,6 @@
+         releasedEntryProbes++;
+         expect(active.owner.withRead(() => true)).toEqual({ kind: "read", value: true });
+         await Promise.resolve();
+-        if (abortMode) {
+-          controller.abort();
+-          closing = active.service.close();
+-          void closing.then(
+-            () => { closeFinished = true; },
+-            () => { closeFinished = true; },
+-          );
+-          expect(active.inEntry()).toBe(false);
+-          expect(active.closed()).toBe(false);
+-          expect(closeFinished).toBe(false);
+-          await Promise.resolve();
+-          expect(active.closed()).toBe(false);
+-          expect(closeFinished).toBe(false);
+-        }
+       },
+     },
+   );
+--- preformat/packages/server/src/transaction-schema-http.test.ts
++++ before/packages/server/src/transaction-schema-http.test.ts
+@@ -508,12 +508,8 @@
+ it("G09-S05 schema selector HTTP/min failure order", async () => {
+   const forwarded: unknown[] = [];
+   const failures = ["cursor-expired", "foreign-view", "catch-up-timeout"] as const;
+-  let calls = 0,
+-    abortCalls = 0,
+-    abortPropagated = false,
+-    abortSignalForwarded = false;
+-  const contracts = compile();
+-  const select = schemaHttp.createTransactionSchemaHttp(scope, contracts, async (...args) => {
++  let calls = 0;
++  const select = schemaHttp.createTransactionSchemaHttp(scope, compile(), async (...args) => {
+     forwarded.push(args);
+     const failure = calls >= 6 ? failures[calls - 6] : undefined;
+     if (failure) throw new TransactionMinimumFailure(failure, g09Context);
+@@ -565,36 +561,11 @@
+         ]);
+         rows.push({ method, status });
+       }
+-      const { ScopeServerOperationAbortedError } = await import("./read-request.js");
+-      const original = new ScopeServerOperationAbortedError();
+-      const request = new Request(root, { headers: g09Minimum });
+-      const abortSelect = schemaHttp.createTransactionSchemaHttp(scope, contracts, async (...args) => {
+-        abortCalls++;
+-        expect(args).toEqual([
+-          { scopeEpoch: "epoch", authorizationView: "view", minimumPosition: "pos-0" },
+-          request.signal,
+-        ]);
+-        abortSignalForwarded = args[1] === request.signal;
+-        throw original;
+-      });
+-      let observed: unknown;
+-      try {
+-        await abortSelect(request, authorized);
+-      } catch (error) {
+-        observed = error;
+-      }
+-      expect(observed).toBe(original);
+-      expect(observed).toBeInstanceOf(ScopeServerOperationAbortedError);
+-      abortPropagated = observed === original;
+-      expect(abortCalls).toBe(1);
+-      expect(abortSignalForwarded).toBe(true);
+     })(),
+     3000,
+   );
+   expect(calls).toBe(8);
+-  console.log(JSON.stringify({
+-    observation: "G09-S05", calls, rows, abortCalls, abortPropagated, abortSignalForwarded,
+-  }));
++  console.log(JSON.stringify({ observation: "G09-S05", calls, rows }));
+ }, 5000);
+ type G09SourceRow = {
+   ordinal: number;
+--- preformat/apps/bdptest/src/transactional-schema-installed.test.ts
++++ before/apps/bdptest/src/transactional-schema-installed.test.ts
+@@ -719,14 +719,14 @@
+         entrySha256,
+         ready: child
+           ? {
+-              scope: child.ready.scope ?? null,
+-              profile: child.ready.profile ?? null,
+-              history: child.ready.history ?? null,
+-              authorityMode: child.ready.authorityMode ?? null,
+-              claimEligible: child.ready.claimEligible ?? null,
+-              payloadIdentity: child.ready.payloadIdentity ?? null,
+-              runtimeConfigurationIdentity: child.ready.runtimeConfigurationIdentity ?? null,
+-              listenUrl: child.ready.listenUrl ?? null,
++              scope: child.ready.scope,
++              profile: child.ready.profile,
++              history: child.ready.history,
++              authorityMode: child.ready.authorityMode,
++              claimEligible: child.ready.claimEligible,
++              payloadIdentity: child.ready.payloadIdentity,
++              runtimeConfigurationIdentity: child.ready.runtimeConfigurationIdentity,
++              listenUrl: child.ready.listenUrl,
+             }
+           : null,
+         readyValidated,
+@@ -906,8 +906,8 @@
+       comma = { ...minimum, "bdp-minimum-scope-position": "pos-0, pos-1" };
+     const partialResponse = await exchange("partial", "GET", rootSchema, partial);
+     g09InstalledProblem(partialResponse, 400, "malformed-request");
+-    const commaValued = await exchange("comma", "GET", rootSchema, comma);
+-    g09InstalledProblem(commaValued, 400, "malformed-request");
++    const repeated = await exchange("comma", "GET", rootSchema, comma);
++    g09InstalledProblem(repeated, 400, "malformed-request");
+     const headMalformed = await exchange("comma-head", "HEAD", rootSchema, comma);
+     g09InstalledProblem(headMalformed, 400, "malformed-request", true);
+     const unauthenticated = await exchange(
+@@ -974,7 +974,7 @@
+     g09InstalledContext(ref, baseline, "pos-0");
+     for (const response of [
+       partialResponse,
+-      commaValued,
++      repeated,
+       headMalformed,
+       unauthenticated,
+       method,

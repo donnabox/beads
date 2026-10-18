@@ -1,0 +1,11 @@
+--- plan3/source/packages/config/src/index.ts
++++ plan2/source/packages/config/src/index.ts
+@@ -1084,7 +1084,7 @@
+     value.length > 0 &&
+     value.isWellFormed() &&
+     path.isAbsolute(value) &&
+-    !/\p{Cc}/u.test(value) &&
++    !/[\u0000-\u001f\u007f-\u009f]/u.test(value) &&
+     Buffer.byteLength(value) <= 16384
+   )
+     return value;

@@ -1,0 +1,42 @@
+{
+  "G09Accepted": false,
+  "accepted": false,
+  "actualCombinedSourceExists": false,
+  "all259PhysicalAndMirrorVerified": true,
+  "beforeByteCompositionSafeAsDataOnly": true,
+  "byteCompositionDataPrecisionAccepted": true,
+  "establishedWhole": 0,
+  "executionReleased": false,
+  "finalIdentityUnknowns": 11,
+  "findings": [
+    {
+      "evidence": "map-serialization-observation.json",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/report.md",
+      "id": "IP4-N1",
+      "line": 14,
+      "severity": "Low",
+      "sourceCompositionBlocked": false,
+      "summary": "First-two-map byte-identical wording conflates identical path\u2192source-SHA mappings with serialized JSON file bytes. Both mappings are exactly equal to preflight3, but their JSON object key order and file SHA differ. Clarify map-content/source-byte equality in an additive erratum; preserve both frozen indices/files. No change to composition, source or counts is needed."
+    }
+  ],
+  "genuineDataPairsVerified": 12,
+  "missingOwners": 234,
+  "originsVerified": 200,
+  "pairwiseIntersectionsVerified": 21,
+  "partialOwners": 17,
+  "referencePinsVerified": 5761,
+  "reportSha256": "c4cf9f0f91ddd1676aa18fbac2d56b5539e79937fd948ae7e23c72fd767b39ba",
+  "reportingPrecisionRevisionRequired": "IP4-N1 additive map-serialization wording erratum",
+  "reviewType": "FULL independent OTHER-native DATA precision",
+  "rootNamedAssemblyReleaseAndFreshProofStillRequired": true,
+  "selectedLaws": 251,
+  "sequentialChoicesVerified": 4,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAdopted": false,
+  "sourceAssemblyReleased": false,
+  "sourceHashesVerified": 5444,
+  "subjectChoicesSha256": "444ee86d63cb3d8d05b19942d3698f6764a217aa30dca462ad97b30638963382",
+  "subjectClosureSha256": "1dd07ff77c089e32fae0a3cc79ed6fa9a5690554a35e98d0bb2e7088d25dcbb4",
+  "subjectIndexSha256": "ae6e314749e55d60122a48d8af4ec53cc58c39739cda79d0748c3d00d1f3fab6",
+  "subjectOrGitOrHelperEvaluated": false
+}

@@ -1,0 +1,256 @@
+{
+  "state": "PROSPECTIVE corrected d181 successor; no execution",
+  "callbacks": 21,
+  "plannedHttpDispatches": 126,
+  "requestMs": 5000,
+  "workMs": 45000,
+  "cleanupMs": 10000,
+  "callbackMs": 60000,
+  "outerMs": 120000,
+  "outerTermMs": 115000,
+  "retry": false,
+  "callbacksTable": [
+    {
+      "id": "I01",
+      "title": "RU cold prepared startup",
+      "scheduledHttp": 13,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I02",
+      "title": "TX cold prepared startup; requires D3a accepted Scope/descriptor/Directory receiver (rows1\u20133; Type row4 already exists)",
+      "scheduledHttp": 13,
+      "candidateGenerations": 1,
+      "D3aDependency": {
+        "status": "BLOCKED until exact accepted combined-source D3a receiver",
+        "missingColdRows": [
+          1,
+          2,
+          3
+        ],
+        "reason": "fdd Scope/bdp.json/operations explicitly transactional-discovery gap; generic Type row4 already served. No row/callback removed or reclassified as passing."
+      }
+    },
+    {
+      "id": "I03",
+      "title": "RU two-generation create:false reopen and replay",
+      "scheduledHttp": 10,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I04",
+      "title": "TX two-generation create:false reopen and replay; requires D3a accepted Scope/descriptor/Directory receiver",
+      "scheduledHttp": 10,
+      "candidateGenerations": 2,
+      "D3aDependency": {
+        "status": "BLOCKED until exact accepted combined-source D3a receiver",
+        "missingColdRows": [
+          1,
+          2,
+          3
+        ],
+        "reason": "fdd Scope/bdp.json/operations explicitly transactional-discovery gap; generic Type row4 already served. No row/callback removed or reclassified as passing."
+      }
+    },
+    {
+      "id": "I05",
+      "title": "RU changed current credential/policy on same installed store",
+      "scheduledHttp": 10,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I06",
+      "title": "RU missing store create:false",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I07",
+      "title": "TX missing store create:false",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I08",
+      "title": "RU persisted contractCapture mismatch",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I09",
+      "title": "TX persisted contractCapture mismatch",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I10",
+      "title": "RU occupied intended listener",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I11",
+      "title": "TX occupied intended listener",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I12",
+      "title": "RU SIGTERM shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I13",
+      "title": "TX SIGTERM shutdown, actual child exit and second-generation readback; requires D3a accepted Scope/descriptor/Directory receiver",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2,
+      "D3aDependency": {
+        "status": "BLOCKED until exact accepted combined-source D3a receiver",
+        "missingColdRows": [
+          1,
+          2,
+          3
+        ],
+        "reason": "fdd Scope/bdp.json/operations explicitly transactional-discovery gap; generic Type row4 already served. No row/callback removed or reclassified as passing."
+      }
+    },
+    {
+      "id": "I14",
+      "title": "RU SIGINT shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I15",
+      "title": "TX SIGINT shutdown, actual child exit and second-generation readback; requires D3a accepted Scope/descriptor/Directory receiver",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2,
+      "D3aDependency": {
+        "status": "BLOCKED until exact accepted combined-source D3a receiver",
+        "missingColdRows": [
+          1,
+          2,
+          3
+        ],
+        "reason": "fdd Scope/bdp.json/operations explicitly transactional-discovery gap; generic Type row4 already served. No row/callback removed or reclassified as passing."
+      }
+    },
+    {
+      "id": "I16",
+      "title": "RU IPC disconnect shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I17",
+      "title": "TX IPC disconnect shutdown, actual child exit and second-generation readback; requires D3a accepted Scope/descriptor/Directory receiver",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2,
+      "D3aDependency": {
+        "status": "BLOCKED until exact accepted combined-source D3a receiver",
+        "missingColdRows": [
+          1,
+          2,
+          3
+        ],
+        "reason": "fdd Scope/bdp.json/operations explicitly transactional-discovery gap; generic Type row4 already served. No row/callback removed or reclassified as passing."
+      }
+    },
+    {
+      "id": "I18",
+      "title": "RU non-reading CONNECT peer; observed peer-close chronology, shutdown then reopen",
+      "scheduledHttp": 8,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I19",
+      "title": "TX non-reading CONNECT peer; observed peer-close chronology, shutdown then reopen; requires D3a accepted Scope/descriptor/Directory receiver",
+      "scheduledHttp": 8,
+      "candidateGenerations": 2,
+      "D3aDependency": {
+        "status": "BLOCKED until exact accepted combined-source D3a receiver",
+        "missingColdRows": [
+          1,
+          2,
+          3
+        ],
+        "reason": "fdd Scope/bdp.json/operations explicitly transactional-discovery gap; generic Type row4 already served. No row/callback removed or reclassified as passing."
+      }
+    },
+    {
+      "id": "I20",
+      "title": "RU ordinary bdptest --serve remains refused before intended acquisition",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1,
+      "guardHelperChildren": 3,
+      "additionalGuardIds": [
+        "H1",
+        "H2",
+        "H3"
+      ]
+    },
+    {
+      "id": "I21",
+      "title": "TX ordinary public refusal, invalid initial configuration guard, then ordinary ready generation with invalid post-ready command",
+      "scheduledHttp": 0,
+      "candidateGenerations": 2,
+      "guardHelperChildren": 1,
+      "additionalGuardIds": [
+        "H4"
+      ],
+      "ordinarySubphases": [
+        "Retain publicRefusal() before store initialization, no private ready",
+        "Retain H4 invalid initial configuration IPC guard, no ready",
+        "ONE additional real f.launch(true), six-field ready, exact invalid command stop, exit2/null AND stdio close2/null, fixed stderr, empty stdout, only original ready; then ownerProbe(false)"
+      ]
+    }
+  ],
+  "rawConnectPeers": 2,
+  "countRules": "21callbacks/126finiteHTTP+2CONNECT unchanged.33 ordinary candidate/public generations (32 prior + ONE explicit I21 addition),4guards,37total. I21=2ordinary+1guard; I20=1ordinary+3guards. All planned, not observed; expected/actual fields reconcile, failure never synthesizes completion.",
+  "additionalRawConnectAttempts": 2,
+  "totalPlannedHttpAttemptsIncludingConnect": 128,
+  "peerObservationRule": "I18/I19 record actual refusal bytes and peer state/close chronology before shutdown. Already normal-closed stays already closed. Claim shutdown-forced destruction only for observed live owned transport plus observed closure; otherwise refusal/cleanstop/reopen only. No sleep/retry/new seam or transport change, and no inference that RU and TX share the same socket lifecycle.",
+  "originalCandidateOrPublicGenerations": 33,
+  "additionalGuardHelperChildren": 4,
+  "totalOwnedChildProcesses": 37,
+  "candidateGenerationFieldMeaning": "candidateGenerations and existing report actual.originalGenerations mean all ordinary candidate/public sessions, now33; four guards separate,37total.",
+  "guardHelpers": [
+    {
+      "id": "H1",
+      "callback": "I20",
+      "nodeChildren": 1,
+      "mode": "non-entry import WITHOUT inherited IPC",
+      "maximumMs": 5000,
+      "oracle": "Guard importer snapshots process.exitCode and message/disconnect/SIGTERM/SIGINT listener counts, imports emitted private process as non-entry, asserts unchanged code/counts and no entry output/ready/store/listener. Witness may emit one bounded own JSON observation; observed child exit0 AND stdio close0, no signal."
+    },
+    {
+      "id": "H2",
+      "callback": "I20",
+      "nodeChildren": 1,
+      "mode": "non-entry import WITH inherited IPC",
+      "maximumMs": 5000,
+      "oracle": "Same before/after inert assertions before guard-owned process.disconnect; no configuration payload sent. Observe exit0 AND stdio close0; no entry output/ready/store/listener. Guard-owned bounded JSON is witness output, not bootstrap output."
+    },
+    {
+      "id": "H3",
+      "callback": "I20",
+      "nodeChildren": 1,
+      "mode": "direct emitted entry WITHOUT inherited IPC",
+      "maximumMs": 10000,
+      "oracle": "Actual exit2 AND stdio close2, stdout empty, exactly fixed reference deployment startup failed newline on stderr, no ready/listener/store."
+    },
+    {
+      "id": "H4",
+      "callback": "I21",
+      "nodeChildren": 1,
+      "mode": "direct emitted entry WITH IPC, one invalid shared configuration payload",
+      "maximumMs": 10000,
+      "oracle": "Actual exit2 AND stdio close2, empty stdout, same fixed stderr diagnostic, no ready/listener/store. Use actual invalid configuration before any valid deployment/owner selection; never emulate refusal."
+    }
+  ],
+  "guardHelperRules": "These are FOUR real owned Node child processes inside existing I20/I21, not zero processes or new callbacks/candidate generations. Use local code in the already-owned new installed test, no helper file/framework/public API. Every5s/10s per-helper bound is dominated by remaining45s work; shared10s cleanup/60s callback/120s outer/TERM115 unchanged. Track actual PID/generation/exit+close; no retry/extension or timeout-as-clean, retain files on unknown. Bound aggregate stdout/stderr/control/config at existing65536 bytes and configuration deadline10s; no credential/raw error output. Existing original public-refusal child and no-HTTP law remain.",
+  "privateProcessDiagnostic": "reference deployment startup failed\n",
+  "TXProvisioning": "Installed test precreates intended TX parent directory mode0700 before generation1create:true, same exact path/create:false reopen. Loader/private process gain no mkdir/provisioning. Missing create:false store FILE still refuses without provisioning. Shared launcher assumes flat configuration.directory/create, incompatible with new shared Scope/server/bdptest envelope; do not claim its mkdir applies. Use callback-local bounded inherited-IPC orchestration in owned installed test and existing10s/config/control/output limits. Signal tests observe signalled exit AND close directly (shared close rejects signal). No shared-launcher/tenth-file edit.",
+  "fixtureAlignment": "Configured Scope and actual listen URL are separate recorded facts. Assert installed fixture Scope authority matches independently observed acquired address; do not impose this as loader validation or rewrite configured Scope."
+}

@@ -1,0 +1,61 @@
+{
+  "sourceFilesVerified": 686,
+  "contextFilesVerified": 780,
+  "contextOriginsVerified": 780,
+  "artifactToolsVerified": 36,
+  "preparationInputsVerified": 828,
+  "frozenInnerInputsVerified": 793,
+  "authorizedFlagOnlyExceptions": [
+    {
+      "path": "claude-code-review/binding.json",
+      "beforeSha256": "3079099a286481a861e3ec5e62c522a30bd4a0aae1594e4b26222b69ce3ba486",
+      "afterSha256": "8ac06557b01b35c4ec91c8039404a2fb67d8f9f418f37e26414f4ddf3aed86d4",
+      "soleChange": "rootLaunchReleased false -> true"
+    },
+    {
+      "path": "launch-supervision/control.json",
+      "beforeSha256": "32120bba65db4b81a04a6359acb6874d10508ddf2b9c541804627348bc2f400d",
+      "afterSha256": "1af82d9cc73663ca4160f658ba5d4bcf0ae97c6dc706d206a7ab905a1e146941",
+      "soleChange": "rootLaunchReleased false -> true"
+    }
+  ],
+  "allOtherFrozenBytesAndMirrorsExact": true,
+  "sourceBeforeEqualsAfter": true,
+  "observedCleanHead": "d181d9167fdf71d64ceb1d8dc73a86557ba8f032",
+  "observedCleanTree": "06993ca26f0dd4fd586706b1c764782e72276339",
+  "actualGitExecutedByAuditor": false,
+  "current686LiveSourceBytesExact": true,
+  "sourceInputSha256": "a93b1192aae94116da9912dc895a887e206f1b275b764f92df0b35e5137db34c",
+  "rawRecordTypes": {
+    "system": 925,
+    "stream_event": 3994,
+    "rate_limit_event": 4,
+    "assistant": 135,
+    "user": 78,
+    "result": 1
+  },
+  "readOnlyToolUseCounts": {
+    "Read": 34,
+    "Glob": 14,
+    "Grep": 30
+  },
+  "exactArguments": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "runtimeProbeOrProductExecutedByAuditor": false
+}
