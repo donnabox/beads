@@ -1,0 +1,41 @@
+{
+  "state": "FULL native CODE static findings; no execution",
+  "findings": [
+    {
+      "id": "G09-CODE-N1",
+      "severity": "Low",
+      "priority": 3,
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "startLine": 720,
+      "endLine": 729,
+      "title": "Keep absent ready facts explicit in the failed-partial report",
+      "trigger": "The unchanged launcher accepts any message with event qualification.ready and bounded JSON size. A returned ready message missing scope/profile/history/authorityMode/claimEligible/payloadIdentity/runtimeConfigurationIdentity/listenUrl then fails installedTransactionBinding at673.",
+      "observedSourceBehavior": "The finally report constructs ready with direct property reads from Record<string,unknown>. Missing values are undefined; JSON serialization omits those members. A failed-partial report therefore lacks the fixed readyKeys declared in report-contracts.json, rather than recording unavailable facts as null.",
+      "impact": "A strict future auditor cannot consume this failure using the declared closed report shape; unavailable versus omitted evidence is not represented as promised. The callback still fails and gives no positive credit; this is a report precision issue, not a stale-success or production route defect.",
+      "evidence": [
+        {
+          "path": "scripts/transaction-installed-observation.mjs",
+          "lines": "68-86",
+          "fact": "Ready event/size check does not establish required installed metadata fields"
+        },
+        {
+          "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+          "lines": "26-35",
+          "fact": "Missing required metadata rejects before readyValidated is set"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "lines": "673-674,720-729",
+          "fact": "Rejected metadata still reaches direct ready-field projection in finally"
+        },
+        {
+          "artifact": "report-contracts.json",
+          "pointer": "installed.readyKeys",
+          "fact": "Eight named ready keys are declared"
+        }
+      ],
+      "recommendation": "Project each allowlisted ready fact with explicit null when unavailable (and preserve present invalid actual data honestly), align the failed-partial contract, and keep readyValidated=false. No new callback, request, source capability or budget change is needed.",
+      "disposition": "ROOT required; do not mutate the frozen candidate before the separately authorized actual CODE review/disposition"
+    }
+  ]
+}

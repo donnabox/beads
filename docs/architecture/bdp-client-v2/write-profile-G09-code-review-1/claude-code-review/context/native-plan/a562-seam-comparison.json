@@ -1,0 +1,56 @@
+{
+  "historicalCheckout": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "historicalCommitAttribution": "a56254d682cf4623cab22a552e3d2f695f691795 (parent-frozen authority; no Git executed)",
+  "currentHeadAttribution": "cce884ccea1db97cbc6fd7bff876d4d6091f9081 plus exact eed91 source patch, from subject root inspection",
+  "seams": [
+    {
+      "path": "docs/specs/bdp.md",
+      "a562Sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "a61Sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.ts",
+      "a562Sha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130",
+      "a61Sha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.ts",
+      "a562Sha256": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "a61Sha256": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "a562Sha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487",
+      "a61Sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "byteIdentical": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "a562Sha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
+      "a61Sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "byteIdentical": false
+    },
+    {
+      "path": "packages/server/src/transaction-read.ts",
+      "a562Sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "a61Sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/authority-read.ts",
+      "a562Sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "a61Sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "a562Sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "a61Sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "byteIdentical": true
+    }
+  ],
+  "nonidentical": "service only D1 current-changefeed admission; HTTP D1 admission plus D3a discovery, explicitly outside G09 schema proposal. No equality of whole checkouts claimed."
+}

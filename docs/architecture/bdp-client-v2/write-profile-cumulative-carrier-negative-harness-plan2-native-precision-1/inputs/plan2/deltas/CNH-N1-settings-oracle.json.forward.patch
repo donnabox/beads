@@ -1,0 +1,29 @@
+--- /dev/null
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-2/CNH-N1-settings-oracle.json
+@@ -0,0 +1,26 @@
++{
++  "state": "DATA only, no source/helper evaluation",
++  "target": "gate.py177-179 original load_gate verify-installed-consumer branch",
++  "baselineUtf8": "overrides:\n  \"@bdp/protocol\": \"file:/unit-do-not-resolve/protocol.tgz\"\n  \"fast-uri\": \"3.1.5\"\n",
++  "baselineSha256": "71420a62c4a8843ff69a3c097e2b307f85c9484a7d57946abba4a91baa00d44e",
++  "mutatedUtf8": "overrides:\n  \"@bdp/protocol\": \"file:/unit-do-not-resolve/protocol.tgz\"\n  \"fast-uri\": \"3.1.4\"\n",
++  "mutatedSha256": "ad057918888303ad35d035e3843bdafa3bef77a5bb7c2caa4d8caf1e6b09bdae",
++  "mutation": "One version string3.1.5→3.1.4 only",
++  "independentExpectedRootConsumerSettingsSha256": "71420a62c4a8843ff69a3c097e2b307f85c9484a7d57946abba4a91baa00d44e",
++  "sourceLines": {
++    "177": "if name==verify-installed-consumer",
++    "178": "actual root lock acceptance document/source binding, original strict document()",
++    "179": "original actual consumer lock+manifest+settings hashes compare to root/gate expected"
++  },
++  "preserve": [
++    "original document pin read",
++    "original file SHA computation",
++    "original three-comparison predicate and require",
++    "coherent prior gate/source/tool/archive/prefix inputs",
++    "all other source/helper predicates"
++  ],
++  "baselineTrace": "Original179 completes and execution reaches184; deny actual guard spawn only at later isolated IO boundary, proving reached phase not successful authority",
++  "negativeTrace": "Original179 sees mutated settings hash and throws RuntimeError Actual consumer lock/manifest/settings differ, no184 guard or child dispatch",
++  "notSubject": "packages.py114 producer digest is neither injected refusal nor independent compare",
++  "actualOutcome": "UNKNOWN"
++}

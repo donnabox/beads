@@ -1,0 +1,47 @@
+{
+  "utc": "2026-10-18T16:57:10.390096+00:00",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+  "branch": "codex/vickie-schema-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "canonicalSourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+  "trackedFiles": 679,
+  "initialSixDirtyPaths": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "futureAuthorFootprint": [
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "beforeSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.ts",
+      "beforeSha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "beforeSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "beforeSha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "beforeSha256": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "beforeSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    }
+  ],
+  "sourceAuthoringReleased": false,
+  "scope": "Isolated exactcurrenta61 bytebasis; no incomingmain/spec, no new source authored or activevalidation target edited. Future679/10cumulativepaths after6allowedauthorpaths, protected673 vs a61. No oldpasses transferred.",
+  "gitObservations": "HEAD/tree/newbranch/trackedmap/diff/no staged/untracked actual; new worktree only, no remote/main fetch."
+}

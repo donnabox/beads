@@ -1,0 +1,62 @@
+{
+  "utc": "2026-10-18T17:10:54.792796+00:00",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "caller": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/capture.py",
+    "sha256": "3aa2ef7f41600604e0fab7844b70ae6e1277f56a99a6e175f3b7f8baecb046cb"
+  },
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/availability-release.proposed.json",
+    "sha256": "ca5fcb569b95fc186a9061f2aaa99ee59682be0f9a9fbdb01f37267ee5693c88"
+  },
+  "preparationIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/preparation-index.json",
+    "sha256": "f835cd77a32f1ffac5bec28e38d486b8e3e4cd65075a7f06e6c843f0c623809f"
+  },
+  "preparationImplementation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/implementation-hashes.json",
+    "sha256": "88d4ff5148680dbd7f06a66dbc6cb43a8b77fcaa4be0002e3b3ac5c55894fcce"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority2-native-precision-1/index.json",
+    "sha256": "cb56508369ecec0557dc8caaa7726f2b636bd68b5557eebc17c275133e1edb35"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority2-native-precision-1/closure.json",
+    "sha256": "5ad9fe078e44b32e121fdeeee1fb63fa37f6b2ad6aa3b352e5a63bc119d3abb6"
+  },
+  "fullSourceRead149Lines": true,
+  "twoLiteralOnlyInverseExactCaller1": true,
+  "nativeCandidateTenKeysActualPredicatesRead": true,
+  "historiesFullyRehashedInPlace": [
+    {
+      "name": "write-profile-D4-availability-root-authority-preparation-1",
+      "physical": 58
+    },
+    {
+      "name": "write-profile-D4-availability-actual-native-audit-1",
+      "physical": 110
+    },
+    {
+      "name": "write-profile-D4-synthetic-harness-preparation-5",
+      "physical": 143
+    },
+    {
+      "name": "write-profile-D4-synthetic-harness5-native-mechanics-1",
+      "physical": 153
+    },
+    {
+      "name": "write-profile-D4-harness5-root-static-acceptance-1",
+      "physical": 3
+    }
+  ],
+  "callerNativeAttemptsAbsent": true,
+  "subjectOrHelperEvaluated": false,
+  "executionAuthorized": false,
+  "measuredAvailabilityAccepted": false,
+  "clockDomainVerified": false,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "next": "Separate concrete14-key execution proposal FULL OTHER-native/root acceptance/durable exact activation before ONE new H5 availability; no H4 retry."
+}

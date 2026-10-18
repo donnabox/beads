@@ -1,0 +1,418 @@
+[
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C01",
+    "names": [
+      "root-key",
+      "nested-key"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C02",
+    "names": [
+      "invalid-utf8",
+      "trailing-json"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C03",
+    "names": [
+      "nonfinite-number",
+      "depth129"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C04",
+    "names": [
+      "nodes100001",
+      "object10001",
+      "array10001"
+    ],
+    "reachabilityObserved": false,
+    "variants": 3
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C05",
+    "names": [
+      "preexisting-destination",
+      "symlink",
+      "directory",
+      "mode0644",
+      "wrong-uid"
+    ],
+    "reachabilityObserved": false,
+    "variants": 5
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C06",
+    "names": [
+      "inode-race",
+      "mode-race",
+      "time-race",
+      "bytes-race"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C07",
+    "names": [
+      "duplicate-summary",
+      "incomplete-final-line"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C08",
+    "names": [
+      "object-line-over1MiB",
+      "combined-log-over64MiB"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C09",
+    "names": [
+      "missing-name",
+      "extra-name",
+      "duplicate-name",
+      "wrong-file"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C10",
+    "names": [
+      "root-failed",
+      "case-failed",
+      "missing-mandatory-zero",
+      "bool-zero"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C11",
+    "names": [
+      "unselected-pass",
+      "snapshot-change",
+      "unhandled-diagnostic"
+    ],
+    "reachabilityObserved": false,
+    "variants": 3
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C12",
+    "names": [
+      "blocked-gate",
+      "blocked-hash",
+      "blocked-compiler",
+      "blocked-private-parser"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C13",
+    "names": [
+      "spawn-before-ack",
+      "quiet-descendant-race",
+      "EAGAIN-final-suffix",
+      "setup-io-after-handle",
+      "new-Popen-failure-after-complete"
+    ],
+    "reachabilityObserved": false,
+    "variants": 5
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C14",
+    "names": [
+      "prior-live-zombie-then-reap"
+    ],
+    "reachabilityObserved": false,
+    "variants": 1
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C15",
+    "names": [
+      "changed-birth",
+      "changed-live-comm",
+      "known-group-unanchored",
+      "missing-EOF-held-writer",
+      "late-final-bytes",
+      "nonzero-stderr",
+      "partial-read-EIO",
+      "post-EOF-poll-ValueError",
+      "first-refusal-then-current-IO"
+    ],
+    "reachabilityObserved": false,
+    "variants": 9
+  },
+  {
+    "assessment": "CNH-N2 exact120 expiry retained required/BLOCKED; no permitted match/dispatch",
+    "executed": false,
+    "id": "C16",
+    "names": [
+      "ignore-TERM",
+      "slow-close",
+      "publisher-failure",
+      "probe-survives-cutoff",
+      "terminal-publication-blocked",
+      "IO-publication-unavailable",
+      "IO-publication-partial",
+      "IO-publication-after-cutoff"
+    ],
+    "reachabilityObserved": false,
+    "variants": 8
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C17",
+    "names": [
+      "missing-outer",
+      "stale-attempt",
+      "late-whole",
+      "wrong-watchdog-hash",
+      "wrong-exit-hash"
+    ],
+    "reachabilityObserved": false,
+    "variants": 5
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C18",
+    "names": [
+      "missing-key",
+      "unknown-key",
+      "out-of-order",
+      "bootstrap-reuse"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C19",
+    "names": [
+      "source-map",
+      "HEAD",
+      "tree",
+      "dirty-scope",
+      "staged",
+      "untracked",
+      "binary-patch",
+      "tool-drift"
+    ],
+    "reachabilityObserved": false,
+    "variants": 8
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C20",
+    "names": [
+      "nested-only-leaf",
+      "wrong-tar-hash"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C21",
+    "names": [
+      "unsafe-member",
+      "duplicate-member",
+      "missing-member",
+      "extra-member",
+      "altered-built-bytes"
+    ],
+    "reachabilityObserved": false,
+    "variants": 5
+  },
+  {
+    "assessment": "CNH-N1 precise original comparison restored; unexecuted",
+    "executed": false,
+    "id": "C22",
+    "names": [
+      "wrong-lock",
+      "wrong-manifest",
+      "wrong-settings",
+      "wrong-graph",
+      "escape-link",
+      "wrong-entry",
+      "wrong-payload"
+    ],
+    "reachabilityObserved": false,
+    "variants": 7
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C23",
+    "names": [
+      "compiler-nonzero",
+      "missing-TSFILE",
+      "extra-link",
+      "catalog-drift"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C24",
+    "names": [
+      "dynamic-import",
+      "require-alias",
+      "conditional-export",
+      "unpinned-dependency"
+    ],
+    "reachabilityObserved": false,
+    "variants": 4
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C25",
+    "names": [
+      "extra-CJS-cache",
+      "runtime-byte-mismatch"
+    ],
+    "reachabilityObserved": false,
+    "variants": 2
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C26",
+    "names": [
+      "missing-umask",
+      "bad-mode",
+      "missing-stdio-EOF",
+      "unobserved-primary",
+      "remaining-group"
+    ],
+    "reachabilityObserved": false,
+    "variants": 5
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C27",
+    "names": [
+      "wrapper-keys",
+      "wrapper-key-order",
+      "session-count",
+      "metadata",
+      "artifact-bytes",
+      "source-commit",
+      "entry-identity"
+    ],
+    "reachabilityObserved": false,
+    "variants": 7
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C28",
+    "names": [
+      "attempt-summary-differ",
+      "missing-summary",
+      "invalid-canonical",
+      "envelope-extra-key",
+      "owner-row-omission"
+    ],
+    "reachabilityObserved": false,
+    "variants": 5
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C29",
+    "names": [
+      "normalized-raw-digest",
+      "result-only-digest",
+      "seventeen-row-substitution"
+    ],
+    "reachabilityObserved": false,
+    "variants": 3
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C30",
+    "names": [
+      "claim-true",
+      "qualification-ready",
+      "cleanup-ownership-upgrade"
+    ],
+    "reachabilityObserved": false,
+    "variants": 3
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C31",
+    "names": [
+      "existing-attempt-root",
+      "existing-stage-receipt",
+      "postwork-no-fit"
+    ],
+    "reachabilityObserved": false,
+    "variants": 3
+  },
+  {
+    "assessment": "BYTE-identical plan1 full native reviewed row; no new defect found",
+    "executed": false,
+    "id": "C32",
+    "names": [
+      "pre-stage-setup-failure"
+    ],
+    "reachabilityObserved": false,
+    "variants": 1
+  }
+]

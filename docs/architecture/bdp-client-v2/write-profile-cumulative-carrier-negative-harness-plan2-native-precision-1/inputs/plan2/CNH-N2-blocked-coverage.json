@@ -1,0 +1,26 @@
+{
+  "state": "Required coverage BLOCKED, no source/runtime decision adopted",
+  "selector": "C16/IO-publication-after-cutoff",
+  "source": "run.py34-45; original outer120; loop40",
+  "boundary": "subject begin+120 actual finish publication loop expiry",
+  "normal": "earlier root origin+115 strict ROOT+owner complete",
+  "proof": "rootOrigin<=subjectBegin implies subjectBegin+120>=rootOrigin+120>rootOrigin+115. Actual expiry cannot normal-match. Earlier independent TERM115/KILL119 may interrupt first.",
+  "required": true,
+  "coverageMatched": false,
+  "mayDispatchUnderCurrentContract": false,
+  "otherVariantsNotSubstitutes": [
+    "IO-publication-unavailable",
+    "IO-publication-partial",
+    "work105 refusal",
+    "200ms census cutoff"
+  ],
+  "noChanges": [
+    "all32IDs/128names",
+    "7futurepaths",
+    "original105/115/119/120/deadlines/caps",
+    "intact-owner fault scope",
+    "noRetry",
+    "no clock/origin scaling"
+  ],
+  "rootNext": "FULL OTHER-native/root DATA precision and exact disposition of this remaining required boundary. No executable authority, waiver, silent drop or late UNKNOWN success."
+}
