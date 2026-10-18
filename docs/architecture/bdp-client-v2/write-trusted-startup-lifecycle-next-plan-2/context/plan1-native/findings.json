@@ -1,0 +1,26 @@
+[
+  {
+    "id": "N1",
+    "severity": "medium",
+    "location": "source-witnesses.json:34\u201336 (S06)",
+    "problem": "Missing create:false store is described as internal SQLite acquisition/close evidence. Both actual implementations reject missing files before DatabaseSync: recovery-store.ts343\u2013357 and transaction-store.ts359\u2013364. A subsequent valid open/probe cannot prove an internal close on the earlier missing-file attempt.",
+    "impact": "Authors could fabricate SQLite close counters or qualify a cleanup branch that was never entered. The plan otherwise correctly distinguishes attempted opener, returned owner and internal acquisition.",
+    "minimalFix": "Keep both S06 callbacks and all counts/budgets. Require actual open-function attempt, zero returned owner, zero DatabaseSync acquisition/listen and no provisioned file. Attribute real internal SQLite close/reopen evidence to existing S05 persisted-mismatch cases that actually acquire the database, recording actual state/restore/probe steps."
+  },
+  {
+    "id": "N2",
+    "severity": "medium",
+    "location": "installed-witnesses.json:116\u2013123 (I18/I19 titles); request-table.md:27; plan.md:65",
+    "problem": "RU I18 calls its non-reading CONNECT witness forced close and requires a peer not silently substituted with a disconnected socket. Existing development-runtime.ts488\u2013493 calls socket.end(refusal,()=>socket.destroy()), so receipt of refusal bytes and withholding peer FIN do not establish a still-live candidate connection for runtime shutdown to destroy. It may already be closed by normal refusal.",
+    "impact": "The installed witness can be impossible to hold as described or can misattribute normal refusal closure as shutdown-forced transport cleanup. No change to existing HTTP/refusal behavior should be invented to manufacture that proof.",
+    "minimalFix": "Retain the two peer callbacks,126 finite requests+2 CONNECT attempts and bounds. Record actual peer state/close chronology before shutdown and preserve already-closed state honestly. Claim forced destruction only if an actually live owned transport and its closure are observed; otherwise qualify refusal/clean runtime stop/reopen, not forced-peer closure. Do not inject installed seams, sleeps, retry, or disconnected replacement. Apply same observation rule to TX, without assuming its socket lifecycle from RU."
+  },
+  {
+    "id": "N3",
+    "severity": "low",
+    "location": "plan.md:33; source-witnesses.json S03",
+    "problem": "The phrase obtain owner.readConfiguration once can be read as a global constructor traffic count. Existing createTransactionService at transaction-service.ts111 independently calls owner.readConfiguration().receiptMaximumItems. Performing the planned explicit read before service construction therefore does not leave total reads at one.",
+    "impact": "A global exactly-one-read witness would fail or tempt an out-of-footprint service refactor/cache wrapper despite the intended preservation of existing constructor behavior.",
+    "minimalFix": "Specify one explicit pre-bind readback snapshot for the planned checks and account for unchanged service-constructor reads separately. Keep real owner and createTransactionService unchanged; S03 should assert actual order and count measured construction traffic, not a fabricated global one-read total."
+  }
+]

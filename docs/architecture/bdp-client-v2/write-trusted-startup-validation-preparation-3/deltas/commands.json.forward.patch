@@ -1,0 +1,137 @@
+--- preparation2/commands.json
++++ preparation3/commands.json
+@@ -2,7 +2,7 @@
+   "configurationFinalized": true,
+   "closedPreparation": true,
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+-  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3",
+   "commands": {
+     "node-version": {
+       "id": "node-version",
+@@ -65,7 +65,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -182,7 +182,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -213,7 +213,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:captures\\ the\\ RU\\ default\\ closure\\ through\\ the\\ existing\\ capture\\ and\\ exposes\\ only\\ an\\ inert\\ handle|delegates\\ explicit\\ RU\\ schemas,\\ ownership\\ and\\ endpoint\\ multiplicity\\ without\\ an\\ alternate\\ compiler|keeps\\ TX\\ compilation,\\ credentials\\ and\\ capabilities\\ private\\ and\\ leaves\\ live\\ metadata\\ unavailable|accepts\\ duplicate\\ RU\\ principals\\ with\\ unique\\ tokens,\\ preserving\\ existing\\ semantics|snapshots\\ caller\\ settings\\ before\\ await\\ and\\ never\\ rereads\\ after\\ file\\ replacement|does\\ not\\ create\\ or\\ alter\\ a\\ pre\\-existing\\ read\\-only\\ target\\ store\\ directory|refuses\\ shared\\ listener/limits/fixture/fault\\ conflicts\\ before\\ opening\\ and\\ never\\ invokes\\ getters|accepts\\ the\\ supported\\ RU\\ IPv6\\ intended\\ listener|refuses\\ envelope\\ extensions,\\ wrong\\ profile/format\\ and\\ Directory/descriptor\\ wire\\ shapes|delegates\\ RU\\ credential,\\ policy,\\ provisioning,\\ artifact,\\ locality\\ and\\ aggregate\\ refusals|delegates\\ TX\\ exact\\ credential\\ and\\ compiled\\ closure\\ refusals|rejects\\ malformed\\ UTF8,\\ BOM,\\ escaped\\ duplicate\\ names,\\ lone\\ surrogates\\ and\\ unsafe\\ numbers\\ without\\ echo|bounds\\ the\\ lossless\\ tree\\ before\\ numeric\\ admission\\ and\\ treats\\ number\\ literals\\ as\\ atomic|isolates\\ the\\ outer\\ byte\\ ceiling\\ with\\ a\\ valid\\ small\\ envelope\\ and\\ legal\\ trailing\\ whitespace|closes\\ the\\ single\\ real\\ descriptor\\ on\\ success\\ and\\ syntax/contract\\ failures|bounds\\ reads\\ despite\\ stale\\ stat\\ and\\ closes\\ handles\\ on\\ overflow/read\\ failure/non\\-file|exports\\ only\\ the\\ loader\\ and\\ local\\ error\\ constructor\\ from\\ the\\ public\\ data\\ entry|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ read\\-update\\ with\\ one\\ selected\\ file\\ open|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ transactional\\ with\\ one\\ selected\\ file\\ open|refuses\\ a\\ nested\\ deploymentFile\\ mismatched\\-path\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ invalid\\-path\\-type\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ fixture\\-conflict\\ before\\ opening|refuses\\ unsupported\\ profile\\ read\\ before\\ opening|refuses\\ unsupported\\ profile\\ undefined\\ before\\ opening|refuses\\ unsupported\\ profile\\ future\\ before\\ opening|bdptest\\.deploymentFile\\ stores\\ a\\ nonsecret\\ absolute\\ path\\ without\\ opening\\ it\\ and\\ preserves\\ precedence|bdptest\\.deploymentFile\\ uses\\ UTF8\\ bytes\\ at\\ the\\ exact\\ path\\ bound|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 0\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 1\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 2\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 3\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 4\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 5\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdp|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdpbd|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ conformance|pins\\ the\\ root\\ and\\ explicit\\ development\\ facade\\ and\\ refuses\\ missing\\ or\\ broad\\ exports|refuses\\ root,\\ descendants\\ and\\ symlink\\ aliases\\ while\\ accepting\\ an\\ external\\ sibling|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|G11\\ source\\ qualification\\ and\\ private\\ containment\\ keeps\\ lifecycle\\ internals\\ private\\ alongside\\ the\\ explicit\\ development\\ facade|captures\\ detached\\ bounded\\ own\\-data\\ launch\\ inputs\\ without\\ installing\\ alternate\\ runtime\\ controls|binds\\ every\\ default\\ tuple\\ leaf\\ in\\ the\\ pure\\ digest\\ dependency\\ test\\ \\(not\\ a\\ served\\ override\\)|effective\\ stream\\ availability\\ preserves\\ finite\\-only\\ idle\\ seams\\ at\\ the\\ strict\\ boundary|binds\\ every\\ fixed\\ owner\\-bound\\ group\\ into\\ configuration\\ identity\\ without\\ enabling\\ overrides)$"
+       ],
+@@ -329,7 +329,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -347,7 +347,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -370,7 +370,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -391,7 +391,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -407,7 +407,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -425,7 +425,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -440,7 +440,7 @@
+     "consumer-install": {
+       "id": "consumer-install",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -464,7 +464,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -561,7 +561,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/bound-consumer-loader.mjs"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/bound-consumer-loader.mjs"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -583,7 +583,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/audit.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -600,7 +600,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/audit.py",
+         "smoke"
+       ],
+       "outerSeconds": 120,

@@ -1,0 +1,112 @@
+{
+  "state": "static current-code/contract inventory; required means pinned contract, not newly executed evidence",
+  "rows": [
+    {
+      "id": "S1-durable",
+      "implemented": "Durable fixed-anchor manifest/pages, issued-token recognition, expiry and same-entry serving context; no-minimum refetch/reopen witnesses already present.",
+      "required": "Immutable original identity/anchor/checkpoint/expiry; independent page streams and precise changefeed continuation.",
+      "undecided": false,
+      "references": [
+        "transaction-snapshot.ts:550-615",
+        "transaction-store.ts:1584-1629",
+        "transaction-snapshot-http.test.ts:326-378",
+        "transactional-snapshot-installed.test.ts:422-588",
+        "transactional-snapshot-installed.test.ts:914-946"
+      ]
+    },
+    {
+      "id": "S1-fresh-minimum",
+      "implemented": "Fresh create/preflight capture immutable tuple, wait under existing budget, check before Snapshot expiry/capture work; opaque unknown creation minimum waits.",
+      "required": "Eligible creation prefix or existing normative problem, no allocation on ineligible/nonallocating decision.",
+      "undecided": false,
+      "references": [
+        "transaction-service.ts:425-464",
+        "transaction-store.ts:1558-1604",
+        "transaction-snapshot.test.ts:1219-1288",
+        "transactional-snapshot-installed.test.ts:796-956",
+        "transactional-snapshot-installed.test.ts:972-1192"
+      ]
+    },
+    {
+      "id": "S1-retained-minimum",
+      "implemented": "Any lexically valid complete retained-target tuple returns bodyless private500 minimum-position before retained owner lookup. Direct owner/service retained minimum calls reject.",
+      "required": "Pinned spec lists ordinary minimum failures for retained targets; unsupported private500 cannot qualify this required support.",
+      "undecided": "S1-Q1 and retained collision ordering",
+      "references": [
+        "transaction-http.ts:421-427",
+        "transaction-service.ts:447-454",
+        "transaction-store.ts:1582-1583",
+        "transactional-snapshot-installed.test.ts:471-477",
+        "transactional-snapshot-installed.test.ts:914-916",
+        "bdp.md:5841-5851",
+        "bdp.md:5984-5999"
+      ]
+    },
+    {
+      "id": "S1-query-continuation-distinction",
+      "implemented": "Ordinary collection and Bead-links continuation requests are excluded from isCurrentTransactionMinimumRead; HTTP keeps private minimum-position/minimum-position-route gap. Read observations already distinguish original selected snapshot data from current entry.",
+      "required": "Do not substitute a query cursor for a complete Scope Snapshot or infer minimum comparison from current response headers.",
+      "undecided": "Retained comparison/precedence not resolved here; exact route and token kind must be named in any ruling.",
+      "references": [
+        "transaction-read.ts:29-59",
+        "transaction-read.ts:360-363",
+        "transaction-http.ts:586-602",
+        "bdp.md:5782-5784",
+        "bdp.md:5850-5851"
+      ]
+    },
+    {
+      "id": "S1-malformed-retained",
+      "implemented": "Authenticated read malformed tuple400 precedes Snapshot route/owner; partial malformed unknown retained targets are covered in source, raw repeats covered on ordinary routes. Installed malformed create/point/receipt coverage exists; actual retained Snapshot manifest+page malformed matrix is absent in the inspected finite installed callbacks.",
+      "required": "400 malformed-request without observed context before owner read/target lookup, no conditional/media shortcut; HEAD metadata parity/bodyless.",
+      "undecided": false,
+      "references": [
+        "transaction-http.ts:403-405",
+        "transaction-consistency.ts:14-31",
+        "transaction-snapshot-http.test.ts:397-435",
+        "transaction-http.test.ts:4594-4735",
+        "transaction-http.test.ts:4857-4925",
+        "transactional-minimum-receiving-installed.test.ts:419-470",
+        "bdp.md:5819-5832"
+      ]
+    },
+    {
+      "id": "G2-committed-facts",
+      "implemented": "Effectful metadata updates record existing updated data, same-group postimages and owned-source fact; Scope/Link projection works. Tests cover Bead own metadata and mixed properties/metadata.",
+      "required": "Single transition/new revision/updated fact, correct metadata delta; no new Event for semantic no-op.",
+      "undecided": false,
+      "references": [
+        "transaction-batch.ts:739-787",
+        "transaction-batch.ts:805-849",
+        "transaction-events.test.ts:316-372",
+        "bdp.md:5438-5455",
+        "bdp.md:5644-5649"
+      ]
+    },
+    {
+      "id": "G2-incident-membership",
+      "implemented": "Incident Bead shared projector throws TransactionEventProjectionGap when metadataChange exists without change. Finite HTTP becomes non-attesting private500; initial SSE refuses, live/reconnect terminates at same gap.",
+      "required": "Chosen membership must deterministically project existing committed facts with stable IDs/ordinals and no duplicate mutation. Current exception prevents complete Bead Event support.",
+      "undecided": "G2",
+      "references": [
+        "transaction-events.ts:246-270",
+        "transaction-http.ts:657-658",
+        "transaction-events.test.ts:340-371",
+        "transaction-events.test.ts:549-578",
+        "transaction-event-sse.test.ts:515-557",
+        "bdp.md:5583-5590"
+      ]
+    },
+    {
+      "id": "G2-safe-installed-proof",
+      "implemented": "Inspected installed Event files cover SSE/finite equivalence, cursors/restart and minimum context. They contain no metadataChange or incident-link-metadata cases. Existing source Scope/Link metadata positives do not constitute fresh installed proof.",
+      "required": "Fresh packed same-configuration positive Scope/Link metadata data/state/revision relations may be qualified independently of incident membership.",
+      "undecided": false,
+      "references": [
+        "transactional-event-sse-installed.test.ts:80-97",
+        "transactional-event-sse-installed.test.ts:320-409",
+        "transaction-events.test.ts:340-372"
+      ]
+    }
+  ]
+}

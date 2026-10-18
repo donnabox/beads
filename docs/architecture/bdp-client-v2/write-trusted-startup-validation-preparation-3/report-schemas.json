@@ -1,0 +1,76 @@
+{
+  "source": {
+    "grammar": "Actual Vitest JSON testResults/assertionResults fullName/status plus suite absolute name; one-to-one exact selected callback map",
+    "selectedCallbacks": 44,
+    "noTelemetryInvented": true,
+    "mustFail": [
+      "missing/duplicate selected callback",
+      "wrong file",
+      "nonpassed selected callback",
+      "unselected non-skipped execution",
+      "failed/runtime suite count",
+      "unhandled stderr",
+      "stage forced/unknown process closure"
+    ]
+  },
+  "installed": {
+    "event": "startup.bound-consumer-loader",
+    "required": {
+      "outcome": "passed",
+      "profiles": [
+        "read-update",
+        "transactional"
+      ],
+      "loaderCalls": 6,
+      "accepted": 2,
+      "contractRefusals": 4,
+      "configuredPortAcquisitionExcluded": true,
+      "storeDirectoriesAbsent": true,
+      "workTimedOut": false,
+      "cleanupUnknown": false,
+      "temporaryDirectoryRemoved": true,
+      "privateSpecifierCount": 71
+    },
+    "identityFields": [
+      "entryRealpath",
+      "entrySha256",
+      "provenanceSha256",
+      "publicExports",
+      "privateSpecifierCount",
+      "temporaryDirectory"
+    ],
+    "limitations": [
+      "No kernel FD census",
+      "No attempted-bind proof in installed witness",
+      "No source/commit attestation by loader",
+      "No ordinary Write profile or cumulative public qualification"
+    ],
+    "exactReportFields": [
+      "event",
+      "outcome",
+      "profiles",
+      "loaderCalls",
+      "accepted",
+      "contractRefusals",
+      "privateSpecifierCount",
+      "publicExports",
+      "configuredPortAcquisitionExcluded",
+      "storeDirectoriesAbsent",
+      "entryRealpath",
+      "entrySha256",
+      "provenanceSha256",
+      "workTimedOut",
+      "cleanupUnknown",
+      "temporaryDirectory",
+      "temporaryDirectoryRemoved",
+      "sourceLimitation",
+      "observationLimitation"
+    ]
+  },
+  "stockSmoke": {
+    "completion": "installed pure reference deployment loader: RU/TX, refusals and inert boundary passed",
+    "rootConsumerProofAttributed": false,
+    "stockConsumerArchiveLockProof": "UNRESOLVED unless separately actually measured"
+  },
+  "budgetsAreUnchangedNotPassEvidence": true
+}

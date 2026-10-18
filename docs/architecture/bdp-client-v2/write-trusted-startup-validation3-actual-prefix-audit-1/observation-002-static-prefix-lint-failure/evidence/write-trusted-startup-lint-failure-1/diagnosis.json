@@ -1,0 +1,18 @@
+{
+  "kind": "actual-startup-validation3-lint-failure",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdUtc": "2026-10-18T05:49:53.765936+00:00",
+  "typecheckPassed": true,
+  "formatCheckPassed": true,
+  "actualLintExit": 1,
+  "errors": 4,
+  "warnings": 20,
+  "infos": 1,
+  "hiddenDiagnostics": 5,
+  "reason": "Biome noControlCharactersInRegex rejects the explicit C0/C1 range literal at config index1087 and loader105, two diagnostics each. No source/cleanup/deadline drift.",
+  "sourcePatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+  "actualLogSha256": "f8cec4261332e69f07b57b4594f210705a85e1594f9cb6e6b931fb7ffaab3c02",
+  "laterStagesUnattempted": true,
+  "gateClosed": true,
+  "correctionScope": "Only replace explicit C0/C1 regex class by Unicode General_Category=Control (Cc) in the same two existing path checks. Require exhaustive pinned-Node character predicate equivalence and independent native closure; no rule suppression or rejected-input set change. New fresh validation4, never rerun3."
+}

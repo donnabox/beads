@@ -1,0 +1,6 @@
+{
+  "createdUtc": "2026-10-18T05:23:58.234708+00:00",
+  "stage": "pre-freeze metadata comparison",
+  "error": "Source-audit contract has a necessary selector path rebind; byte-identical assertion incorrectly included it. Product/helper code and frozen preparation1 untouched. No execution gate or final index written.",
+  "correction": "Keep source-audit semantic contract unchanged while accepting exact preparation1->2 path substitution; preserve this preparation error."
+}

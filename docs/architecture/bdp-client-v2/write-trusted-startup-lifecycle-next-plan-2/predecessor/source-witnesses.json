@@ -1,0 +1,75 @@
+{
+  "state": "PROSPECTIVE NOT EXECUTED",
+  "callbacks": 51,
+  "defaultCallbackMs": 5000,
+  "requestMs": 5000,
+  "httpDispatches": 2,
+  "finiteCallbacks": [
+    {
+      "id": "S01",
+      "callbacks": 4,
+      "oracle": "Forged handle: plain clone, frozen clone, getter object, proxy; genuine WeakMap lookup refuses before any handle fields, file/store/listen calls or traps."
+    },
+    {
+      "id": "S02",
+      "callbacks": 2,
+      "oracle": "RU second distinct principal discover held: success or rejection. While held, zero listen attempts/acquisitions. Success builds all routes before bind; failure closes acquired owner once with no ready."
+    },
+    {
+      "id": "S03",
+      "callbacks": 1,
+      "oracle": "TX delegating owner.readConfiguration records order and checks listen attempts still zero; actual metadata and same preflight/read tuple complete before the first listen call."
+    },
+    {
+      "id": "S04",
+      "callbacks": 7,
+      "oracle": "Readback counterfactuals: RU Scope/readLimits/installedTypes; TX receiptMaximumItems/scopeSnapshot/authorization-view consistency/installedTypes. Delegate actual owner then corrupt only the returned selected fact; reject before bind, close actual owner once."
+    },
+    {
+      "id": "S05",
+      "callbacks": 21,
+      "oracle": "Real persisted mismatch cases, one finite callback per row in persisted-cases.json; initialize/close genuine owner, mutate only named row or resource/outcome, close fixture database, attempt prepared start. Distinguish failed open from returned owner; no listen call."
+    },
+    {
+      "id": "S06",
+      "callbacks": 2,
+      "oracle": "create:false absent store, RU/TX: actual open attempted, no returned owner and no listen attempt; opener internally releases acquired SQLite resources as shown by independent valid reopen/probe."
+    },
+    {
+      "id": "S07",
+      "callbacks": 2,
+      "oracle": "Occupied intended port, RU/TX: own blocker acquired first; candidate completes actual owner checks, one listen attempt, zero candidate acquisition/ready; owner close once and blocker remains live."
+    },
+    {
+      "id": "S08",
+      "callbacks": 2,
+      "oracle": "Synchronous listen throw after owner prepared, RU/TX: attempt=1 acquisition=0, owner close once, no ready; preserve original error even when listener never acquired."
+    },
+    {
+      "id": "S09",
+      "callbacks": 2,
+      "oracle": "Error after listening event but before startup result publication, RU/TX: acquisition=1 then cleanup, suppress ready, observe completion error, close listener and owner; exact injected turn boundary is recorded."
+    },
+    {
+      "id": "S10",
+      "callbacks": 2,
+      "oracle": "Primary startup failure plus owner-close failure, RU/TX: terminal aggregate retains both errors internally, fixed process diagnostic only; no repeated owner close or ownership-success claim."
+    },
+    {
+      "id": "S11",
+      "callbacks": 2,
+      "oracle": "Concurrent repeated trusted close, RU/TX: one memoized terminal result/owner close, actual listener stopped and store can reopen; this does not alter legacy RU listener-only retry behavior."
+    },
+    {
+      "id": "S12",
+      "callbacks": 2,
+      "oracle": "One genuinely admitted mutation per profile held by source-only delegating method mock. Close destroys transport, observes actual aborted/partial response, waits for admitted work/owner close; release latch and verify actual persisted result by real owner reopen. No fabricated successful delivery or production seam."
+    },
+    {
+      "id": "S13",
+      "callbacks": 2,
+      "oracle": "RU/TX lifecycle cancellation during preparation: abort while delegating preparation is held, observe zero listen attempts, settle the held work, close acquired owner exactly once and publish no ready. A signal already aborted before entry acquires neither owner nor listener. Observe pending tasks; no detached late bind."
+    }
+  ],
+  "counterRules": "Counters are installed before call; open attempts/returned owner/SQLite internal close and listen attempts/listening acquisition/ready/cleanup completion are separate. No inferred negative count from missing ready alone."
+}

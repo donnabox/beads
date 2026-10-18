@@ -1,0 +1,270 @@
+packages/server/src/read-sequence-lifecycle.test.ts:25:8 lint/style/useImportType  FIXABLE  ━━━━━━━━━━
+
+  ! All these imports are only used as types.
+  
+    23 │   type SubmissionCompletion,
+    24 │ } from "./sequence-executor.js";
+  > 25 │ import { type MemberExecutorOptions, type StablePrincipal } from "./member-executor.js";
+       │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    26 │ import {
+    27 │   AuthorityReadError,
+  
+  i Importing the types with import type ensures that they are removed by the compilers and avoids loading unnecessary modules.
+  
+  i Safe fix: Use import type.
+  
+      23   23 │     type SubmissionCompletion,
+      24   24 │   } from "./sequence-executor.js";
+      25      │ - import·{·type·MemberExecutorOptions,·type·StablePrincipal·}·from·"./member-executor.js";
+           25 │ + import·type·{·MemberExecutorOptions,·StablePrincipal·}·from·"./member-executor.js";
+      26   26 │   import {
+      27   27 │     AuthorityReadError,
+  
+
+packages/server/src/reference-deployment.test.ts:365:3 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    363 │   const f = fixture(),
+    364 │     body = ru(f.directory);
+  > 365 │   body.configuration.credentials[1]!.principal = "writer";
+        │   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    366 │   f.write(body);
+    367 │   expect((await loadReferenceDeployment(f.input)).profile).toBe("read-update");
+  
+
+packages/server/src/reference-deployment.test.ts:544:3 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    542 │   }
+    543 │   const invalid = artifacts();
+  > 544 │   invalid.descriptors[1]!.utf8 = JSON.stringify({
+        │   ^^^^^^^^^^^^^^^^^^^^^^^
+    545 │     id: `${scope}types/owner`,
+    546 │     name: "Owner",
+  
+
+packages/server/src/transaction-snapshot.test.ts:119:3 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    117 │ }
+    118 │ const handle = (manifest: TransactionSnapshotManifest) =>
+  > 119 │   new URL(manifest.id).searchParams.get("snapshot")!;
+        │   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    120 │ function collect(
+    121 │   f: ReturnType<typeof fixture>,
+  
+
+packages/server/src/transaction-snapshot.test.ts:132:61 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    130 │     expect(url.searchParams.get("snapshot")).toBe(handle(manifest));
+    131 │     expect(url.searchParams.get("stream")).toBe(`${kind}s`);
+  > 132 │     page = f.owner.readSnapshotPage(handle(manifest), kind, url.searchParams.get("page")!).page;
+        │                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    133 │     records.push(...page.items);
+    134 │   }
+  
+
+packages/server/src/transaction-snapshot.test.ts:237:17 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    235 │   if (observed.kind !== "page") throw Error("feed unsupported");
+    236 │   expect(observed.page.groups).toHaveLength(1);
+  > 237 │   const group = observed.page.groups[0]!;
+        │                 ^^^^^^^^^^^^^^^^^^^^^^^^
+    238 │   const staged = new Map(replica);
+    239 │   for (const change of group.changes) {
+  
+
+packages/server/src/transaction-snapshot.test.ts:382:17 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    380 │   const first = f.owner.captureSnapshot().manifest,
+    381 │     second = f.owner.captureSnapshot().manifest;
+  > 382 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    383 │   expect(f.owner.readSnapshotPage(handle(first), "bead", token).page.items).toHaveLength(1);
+    384 │   problem(() => f.owner.readSnapshotPage(handle(second), "bead", token), "resource-not-found");
+  
+
+packages/server/src/transaction-snapshot.test.ts:382:25 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    380 │   const first = f.owner.captureSnapshot().manifest,
+    381 │     second = f.owner.captureSnapshot().manifest;
+  > 382 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                         ^^^^^^^^^^^^^^^^^
+    383 │   expect(f.owner.readSnapshotPage(handle(first), "bead", token).page.items).toHaveLength(1);
+    384 │   problem(() => f.owner.readSnapshotPage(handle(second), "bead", token), "resource-not-found");
+  
+
+packages/server/src/transaction-snapshot.test.ts:577:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    575 │   expect(first.beads.items).toHaveLength(15);
+    576 │   expect(Buffer.byteLength(stringifyJsonValue(first.beads))).toBeLessThanOrEqual(limits.pageBytes);
+  > 577 │   const firstToken = new URL(first.beads.next!).searchParams.get("page")!;
+        │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    578 │   expect(f.owner.readSnapshotPage(handle(first), "bead", firstToken).page.items).toHaveLength(15);
+    579 │   const second = f.owner.captureSnapshot().manifest;
+  
+
+packages/server/src/transaction-snapshot.test.ts:577:30 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    575 │   expect(first.beads.items).toHaveLength(15);
+    576 │   expect(Buffer.byteLength(stringifyJsonValue(first.beads))).toBeLessThanOrEqual(limits.pageBytes);
+  > 577 │   const firstToken = new URL(first.beads.next!).searchParams.get("page")!;
+        │                              ^^^^^^^^^^^^^^^^^
+    578 │   expect(f.owner.readSnapshotPage(handle(first), "bead", firstToken).page.items).toHaveLength(15);
+    579 │   const second = f.owner.captureSnapshot().manifest;
+  
+
+packages/server/src/transaction-snapshot.test.ts:694:17 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    692 │   const firstId = handle(first),
+    693 │     secondId = handle(second);
+  > 694 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    695 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+    696 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+  
+
+packages/server/src/transaction-snapshot.test.ts:694:25 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    692 │   const firstId = handle(first),
+    693 │     secondId = handle(second);
+  > 694 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                         ^^^^^^^^^^^^^^^^^
+    695 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+    696 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+  
+
+packages/server/src/transaction-snapshot.test.ts:695:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    693 │     secondId = handle(second);
+    694 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+  > 695 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+        │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    696 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+    697 │   for (const run of [
+  
+
+packages/server/src/transaction-snapshot.test.ts:695:30 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    693 │     secondId = handle(second);
+    694 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+  > 695 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+        │                              ^^^^^^^^^^^^^^^^^^
+    696 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+    697 │   for (const run of [
+  
+
+packages/server/src/transaction-snapshot.test.ts:805:26 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    803 │         if (ordinal === transition) {
+    804 │           expect(page.items).toHaveLength(15);
+  > 805 │           expect(new URL(page.next!).searchParams.get("page")).toMatch(
+        │                          ^^^^^^^^^^
+    806 │             new RegExp(`^sp_${transition + 1}_`),
+    807 │           );
+  
+
+packages/server/src/transaction-snapshot.test.ts:815:11 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    813 │           handle(manifest),
+    814 │           "bead",
+  > 815 │           next.searchParams.get("page")!,
+        │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    816 │         ).page;
+    817 │         ordinal++;
+  
+
+packages/config/src/index.ts:1087:8 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━
+
+  × Unexpected control character in a regular expression.
+  
+    1085 │     value.isWellFormed() &&
+    1086 │     path.isAbsolute(value) &&
+  > 1087 │     !/[\u0000-\u001f\u007f-\u009f]/u.test(value) &&
+         │        ^^^^^^
+    1088 │     Buffer.byteLength(value) <= 16384
+    1089 │   )
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+packages/config/src/index.ts:1087:15 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━
+
+  × Unexpected control character in a regular expression.
+  
+    1085 │     value.isWellFormed() &&
+    1086 │     path.isAbsolute(value) &&
+  > 1087 │     !/[\u0000-\u001f\u007f-\u009f]/u.test(value) &&
+         │               ^^^^^^
+    1088 │     Buffer.byteLength(value) <= 16384
+    1089 │   )
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+packages/server/src/reference-deployment.ts:105:7 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━
+
+  × Unexpected control character in a regular expression.
+  
+    103 │     !value.isWellFormed() ||
+    104 │     !path.isAbsolute(value) ||
+  > 105 │     /[\u0000-\u001f\u007f-\u009f]/u.test(value) ||
+        │       ^^^^^^
+    106 │     Buffer.byteLength(value) > 16384
+    107 │   )
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+packages/server/src/reference-deployment.ts:105:14 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━
+
+  × Unexpected control character in a regular expression.
+  
+    103 │     !value.isWellFormed() ||
+    104 │     !path.isAbsolute(value) ||
+  > 105 │     /[\u0000-\u001f\u007f-\u009f]/u.test(value) ||
+        │              ^^^^^^
+    106 │     Buffer.byteLength(value) > 16384
+    107 │   )
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 5.
+Checked 11 files in 19ms. No fixes applied.
+Found 4 errors.
+Found 20 warnings.
+Found 1 info.
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

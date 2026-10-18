@@ -1,0 +1,11 @@
+--- a/packages/server/src/reference-deployment.test.ts
++++ b/packages/server/src/reference-deployment.test.ts
+@@ -194,7 +194,7 @@
+       host: "127.0.0.1",
+       port: 43210,
+       advertisedProfile: profile,
+-      limits: structuredClone(limits),
++      limits: { ...structuredClone(limits), page: { ...limits.page } },
+     },
+   };
+   const write = (value: unknown) => writeFileSync(deploymentFile, JSON.stringify(value));

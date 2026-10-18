@@ -1,0 +1,131 @@
+{
+  "state": "GENUINE PLAN1 TO PLAN2 TEXT/DATA DELTA",
+  "predecessorIndexSha256": "e4098fa33857a4e721f967a5c9b0387d9e41362653ae195dead449b784f48d33",
+  "changedInheritedFiles": [
+    {
+      "path": "input-map.json",
+      "beforeSha256": "70560bae81782777ce4e2bd25e4ace0983a7fa6c554d2a37a46addf2b0bc9f72",
+      "afterSha256": "103302b7cdf18d63d6b9e2ad05ecf921053ab15b38149545ed1b72e67c1073db",
+      "beforeCopy": "predecessor/input-map.json",
+      "forward": "deltas/01.forward.patch",
+      "inverse": "deltas/01.inverse.patch"
+    },
+    {
+      "path": "installed-witnesses.json",
+      "beforeSha256": "3f8a2f80591a180a6235545c1596df4655dbeb4dec8a7bc3db95131674f4c76c",
+      "afterSha256": "0653bc583f72b9e199fa90a5a19337d9000d59172096a9da9ab5a80b19a635f8",
+      "beforeCopy": "predecessor/installed-witnesses.json",
+      "forward": "deltas/02.forward.patch",
+      "inverse": "deltas/02.inverse.patch"
+    },
+    {
+      "path": "plan.md",
+      "beforeSha256": "158cfcbbbe8026a9792864038dae3205e783504450203f64dd30b7c666aa7da8",
+      "afterSha256": "24dcb188b228f9825dfdd54a37fb3289cc7511bf9ac5b5aecb5daa4ac5adec9a",
+      "beforeCopy": "predecessor/plan.md",
+      "forward": "deltas/03.forward.patch",
+      "inverse": "deltas/03.inverse.patch"
+    },
+    {
+      "path": "preservation.json",
+      "beforeSha256": "f99fa8078eeb14586293edca80b2af4a807ab067e3ad2bef41ad193bc568d1df",
+      "afterSha256": "a13f6d5bc710d5661c1b74a66ab170cac9465d587507e609bb0f85d941b5e803",
+      "beforeCopy": "predecessor/preservation.json",
+      "forward": "deltas/04.forward.patch",
+      "inverse": "deltas/04.inverse.patch"
+    },
+    {
+      "path": "report.md",
+      "beforeSha256": "bb3f3d7cae9072662fdb10b8bd89ec4002934baf38549f6fbd2f1db4b9852740",
+      "afterSha256": "4713284617eaf692acfb41f00bee7b5177a609903070913ac2acd91a35684196",
+      "beforeCopy": "predecessor/report.md",
+      "forward": "deltas/05.forward.patch",
+      "inverse": "deltas/05.inverse.patch"
+    },
+    {
+      "path": "request-table.md",
+      "beforeSha256": "bf9e2b45510fcb869fafd338fd7e25414abc3542d051aa9ce1018198bde6a1e4",
+      "afterSha256": "2a6561715b3c83e15cbefbc934b8b6558775a04a68181da37331fb0853d36322",
+      "beforeCopy": "predecessor/request-table.md",
+      "forward": "deltas/06.forward.patch",
+      "inverse": "deltas/06.inverse.patch"
+    },
+    {
+      "path": "source-map.json",
+      "beforeSha256": "716701cb78328a94c502e5eaf84c48ceda458432aee44fd489f36a0f0ac810bd",
+      "afterSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+      "beforeCopy": "predecessor/source-map.json",
+      "forward": "deltas/07.forward.patch",
+      "inverse": "deltas/07.inverse.patch"
+    },
+    {
+      "path": "source-witnesses.json",
+      "beforeSha256": "8549decb8bff9ad0f6a1ba08ebaba63b8bda5bc77f2c3eb3b7eadfd9d72a8714",
+      "afterSha256": "153528ceffca2eeae585a27c285097cb1ab4bc5c3b9e80cb29af0f0e9d1ac471",
+      "beforeCopy": "predecessor/source-witnesses.json",
+      "forward": "deltas/08.forward.patch",
+      "inverse": "deltas/08.inverse.patch"
+    },
+    {
+      "path": "source/packages/server/src/reference-deployment.test.ts",
+      "beforeSha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9",
+      "afterSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+      "beforeCopy": "predecessor/source/packages/server/src/reference-deployment.test.ts",
+      "forward": "deltas/09.forward.patch",
+      "inverse": "deltas/09.inverse.patch"
+    }
+  ],
+  "unchangedInheritedFiles": [
+    "context/tx-discovery-next-plan-2/index.json",
+    "context/tx-discovery-next-plan-2/plan.md",
+    "context/write-trusted-startup-authoring-2/after.json",
+    "context/write-trusted-startup-authoring-2/index.json",
+    "context/write-trusted-startup-code-corrections-1/index.json",
+    "context/write-trusted-startup-code-corrections-1/source-binding.json",
+    "context/write-trusted-startup-code-corrections-1/startup-after-map.json",
+    "context/write-trusted-startup-code-root-disposition-1/disposition.json",
+    "context/write-trusted-startup-next-plan-3/contract.md",
+    "context/write-trusted-startup-next-plan-3/index.json",
+    "context/write-trusted-startup-next-plan-3/plan.md",
+    "d1-source-map.json",
+    "future-footprint.json",
+    "gates.json",
+    "original-source-map.json",
+    "persisted-cases.json",
+    "preparation-notes.md",
+    "source/apps/bdptest/src/installed-reference-startup.test.ts",
+    "source/apps/bdptest/src/installed-reference.test.ts",
+    "source/apps/bdptest/src/main.ts",
+    "source/apps/bdptest/src/server-composition.ts",
+    "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "source/docs/design/startup-configuration.md",
+    "source/packages/config/src/index.ts",
+    "source/packages/server/package.json",
+    "source/packages/server/src/development-authority.ts",
+    "source/packages/server/src/development-composition.ts",
+    "source/packages/server/src/development-contracts.ts",
+    "source/packages/server/src/development-runtime.ts",
+    "source/packages/server/src/installed-payload.ts",
+    "source/packages/server/src/installed-reference-configuration.ts",
+    "source/packages/server/src/installed-reference-process.ts",
+    "source/packages/server/src/installed-reference.ts",
+    "source/packages/server/src/read-update-runtime-limits.ts",
+    "source/packages/server/src/recovery-store.ts",
+    "source/packages/server/src/reference-deployment-state.ts",
+    "source/packages/server/src/reference-deployment.ts",
+    "source/packages/server/src/transaction-authorization.ts",
+    "source/packages/server/src/transaction-http.ts",
+    "source/packages/server/src/transaction-installed-configuration.ts",
+    "source/packages/server/src/transaction-installed-process.ts",
+    "source/packages/server/src/transaction-installed.ts",
+    "source/packages/server/src/transaction-runtime-configuration.ts",
+    "source/packages/server/src/transaction-runtime.ts",
+    "source/packages/server/src/transaction-schema-http.ts",
+    "source/packages/server/src/transaction-service.ts",
+    "source/packages/server/src/transaction-store.ts",
+    "source/scripts/smoke-executables.mjs",
+    "source/scripts/smoke-safety.mjs",
+    "source/scripts/smoke-safety.test.mjs"
+  ],
+  "addedEvidenceScope": "Exact root disposition, original native/addendum, test-correction freeze/native closure, successor basis/resolution and delta records. No executable added."
+}

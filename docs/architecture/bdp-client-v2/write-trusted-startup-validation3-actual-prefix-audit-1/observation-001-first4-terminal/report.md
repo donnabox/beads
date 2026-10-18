@@ -1,0 +1,9 @@
+# Startup validation3 first-four terminal audit
+
+The four fresh stages node-version, pnpm-version, workspace-install and bind-workspace-tools each actually exited0 and were accepted on exact682-source identity fa80acbc158736217d4b58eb3ad927add6099d12a8746254c08cefdf25be2471. Every exit/log/process record was read and hashed. Versions are Node24.16.0/pnpm11.20.0. The offline frozen-lockfile install actually ran and reported already up to date; no claim that dependencies were newly materialized. All11 tool realpaths/bytes and all682 source bytes independently match.
+
+All241 frozen preparation entries remain preserved:240 active files and mirrors match, and the sole root-released execution-gate.json exception retains exact original closed bytes separately. Original preparation wording remains historical. 42 sampled PIDs and 4 groups are independently absent in the fresh recorded census. Exits record no errors, forced cleanup or runtime ownership residues. All four stage scratch/cache directories still exist and are recorded separately; they are not claimed absent.
+
+Corrected-source wrappers honestly chain complete substantive actual CODE evidence for00fa through native/root4fd corrections and native one-line fixture closure398b99f8 to e577. Actual reviewer coverage remains old00fa; supervision remains FAILED, CLI exit UNKNOWN and missing runner outputs preserved. No corrected-byte reviewer claim or retry is made.
+
+Prior validation2 typecheck failure remains failed and its later stages unattempted on that basis. This audit covers only the four fresh terminal stages. Later compilation/build/package/consumer/runtime stages need root barriers and actual evidence; no pass or permission is inferred from elapsed time. Auditor actions were read/hash checks, the authorized role guard/process census and new audit records only.

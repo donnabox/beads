@@ -1,0 +1,37 @@
+--- preparation3/source-binding.json
++++ preparation2/source-binding.json
+@@ -417,7 +417,7 @@
+     "packages/server/src/recovery-store.test.ts": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e",
+     "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+     "packages/server/src/reference-deployment-state.ts": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+-    "packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "packages/server/src/reference-deployment.test.ts": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9",
+     "packages/server/src/reference-deployment.ts": "64fcccf86687e570a3c86eb460fe7d96a1260905205eb95ec35a1981fe79f1c1",
+     "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1",
+     "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+@@ -1434,7 +1434,7 @@
+     "packages/server/src/reference-deployment.test.ts": {
+       "beforeExists": false,
+       "beforeSha256": null,
+-      "afterSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++      "afterSha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9",
+       "indexMode": "100644",
+       "intentToAdd": true,
+       "expectedIndexBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+@@ -1485,13 +1485,10 @@
+     "packages/server/src/reference-deployment.test.ts",
+     "packages/server/src/reference-deployment.ts"
+   ],
+-  "binaryDiffSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
++  "binaryDiffSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+   "expectedStatus": " M docs/design/startup-configuration.md\n M packages/config/src/index.test.ts\n M packages/config/src/index.ts\n M packages/server/package.json\n M packages/server/src/read-sequence-lifecycle.test.ts\n A packages/server/src/reference-deployment-state.ts\n A packages/server/src/reference-deployment.test.ts\n A packages/server/src/reference-deployment.ts\n M packages/server/src/transaction-snapshot.test.ts\n M scripts/smoke-executables.mjs\n M scripts/smoke-safety.mjs\n M scripts/smoke-safety.test.mjs\n",
+   "stagedDiffMustBeEmpty": true,
+   "actualHeadStatusIndexRevalidation": "UNRESOLVED: root acceptance and candidate gate execution",
+-  "correctionFreezeSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
+-  "nativePrecisionClosureSha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
+-  "originalCorrectionFreezeSha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576",
+-  "originalNativePrecisionClosureSha256": "c0423feca0955787ade78039c7ee8fd7960939a907da8a3ae5cd1d99567b6b28",
+-  "typecheckFailurePreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-failure-1"
++  "correctionFreezeSha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576",
++  "nativePrecisionClosureSha256": "c0423feca0955787ade78039c7ee8fd7960939a907da8a3ae5cd1d99567b6b28"
+ }

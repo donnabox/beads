@@ -1,0 +1,11 @@
+--- preparation3/context/source/packages/server/src/reference-deployment.test.ts
++++ preparation2/context/source/packages/server/src/reference-deployment.test.ts
+@@ -194,7 +194,7 @@
+       host: "127.0.0.1",
+       port: 43210,
+       advertisedProfile: profile,
+-      limits: { ...structuredClone(limits), page: { ...limits.page } },
++      limits: structuredClone(limits),
+     },
+   };
+   const write = (value: unknown) => writeFileSync(deploymentFile, JSON.stringify(value));

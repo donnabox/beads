@@ -1,0 +1,48 @@
+{
+  "state": "prospective observable assertions; not executed",
+  "offlineOracleMutations": [
+    {
+      "id": "C-S1-context",
+      "mutation": "add a BDP-Scope-Position response field to a captured malformed response",
+      "mustFail": "required no-context assertion"
+    },
+    {
+      "id": "C-S1-shortcut",
+      "mutation": "replace malformed400 by304/200 preserving headers",
+      "mustFail": "exact malformed status/body oracle"
+    },
+    {
+      "id": "C-G2-omit",
+      "mutation": "remove latest Link metadata updated fact from saved Scope/Link response",
+      "mustFail": "exact latest transaction membership/cardinality"
+    },
+    {
+      "id": "C-G2-owned",
+      "mutation": "change owning source ownedLink metadata delta or fresh Link revision",
+      "mustFail": "cross-resource and Event/postimage relation"
+    },
+    {
+      "id": "C-G2-replay",
+      "mutation": "change saved reopened Event ID/ordinal/data",
+      "mustFail": "stable exact replay assertion"
+    }
+  ],
+  "additionalWireRequestsForOfflineControls": 0,
+  "donePredicates": [
+    "All679 pinned source bytes remain matched before later authoring/review and source remains frozen during review.",
+    "Named one-file append-only source freeze obtains independent native plus actual review and root disposition before execution.",
+    "Existing instrumented source malformed receiving callback proves zero owner entries; existing Snapshot and metadata source callbacks pass on exact build.",
+    "Fresh installed callbacks produce exactly15 and13 completed finite exchanges across1 and2 sequential children, using known payload values and actual returned Snapshot URLs.",
+    "Successful all3 child exits and all owned directories removed are actual observations; any failure/unknown cleanup stops and remains failed.",
+    "GET/HEAD malformed parity and retained original bytes pass; Scope/Link metadata/owned-source/reopen relations pass; expected Bead500 is separately labeled unsupported preservation.",
+    "No whole S1/G2/catalog/profile/admission credit inferred from the bounded proof."
+  ],
+  "unresolvedWrappers": [
+    "future root/native/actual plan acceptance",
+    "one-file source release",
+    "actual code reviews/disposition",
+    "source/build/archive/consumer/lock/proof pins",
+    "execution release/actual results/exact CI"
+  ],
+  "executionReleased": false
+}

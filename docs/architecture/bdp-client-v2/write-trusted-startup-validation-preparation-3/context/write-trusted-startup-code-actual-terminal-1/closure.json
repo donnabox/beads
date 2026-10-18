@@ -1,0 +1,43 @@
+{
+  "state": "independent_terminal_audit_complete_preserved_supervised_failure",
+  "at": "2026-10-18T04:47:56.597241+00:00",
+  "actualAttemptCount": 1,
+  "completeActualResultAvailable": true,
+  "substantiveEvidenceUsableForRootDisposition": true,
+  "cleanSupervisedReview": false,
+  "cliExit0Claimed": false,
+  "classification": "process_ownership_or_cleanup_failure",
+  "sourceInvariant": true,
+  "sourceCount": 682,
+  "contextCount": 98,
+  "artifactCount": 9,
+  "originalSourceCount": 679,
+  "packetCount": 106,
+  "preparationFilesIncludingIndex": 125,
+  "releaseOnlyExceptions": [
+    "claude-code-review/binding.json",
+    "launch-supervision/control.json"
+  ],
+  "actualObservedProcessAbsence": true,
+  "checkedPidCount": 106,
+  "checkedGroupCount": 45,
+  "ownershipUnknownPreserved": true,
+  "exactIdentityFailureCauseResolved": false,
+  "runnerTerminalOutputsMissingPreserved": [
+    "exit.json",
+    "source-after.json",
+    "final-review.md",
+    "terminal-results.json"
+  ],
+  "sourceStatusLimitation": "Postterminal file hashes and direct HEAD metadata only; no live git status recomputed",
+  "findings": 10,
+  "newReviewerAttempted": false,
+  "productExecution": false,
+  "sourceEdits": false,
+  "approvalInferred": false,
+  "writerReleased": false,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "reportSha256": "1894c19cd9675567aa87c7bc46ae52707c978fed1622e70d268f06b137e4af6c",
+  "auditDataSha256": "305d49d8064d61d443f6d0146fd8f7432dd08a93fc05d6bd881ed912f7f5d31d",
+  "findingsCrosscheckSha256": "6fa31185077d76ce4c70640de0f81fc10ee2acc8fd00011d6ed3515d1c794b15"
+}
