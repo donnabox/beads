@@ -1,0 +1,119 @@
+{
+  "F1": {
+    "reason": "Both defaulted NonNullable minimumReads parameters deliver object instead of present undefined under exactOptionalPropertyTypes; matches existing options71 and capture120. No compiler result claimed.",
+    "status": "Statically feasible"
+  },
+  "F2": {
+    "counterfactuals": [
+      "capture after first async yield reads caller foreign tuple and rejects",
+      "recapture in retry reads mutated foreign/opaque and cannot return required realpos1",
+      "no store advance reaches finite timeout, not synthetic success"
+    ],
+    "fixtureAuthority": "create() builds beads/g09-capture, installed Bead descriptor, JSON properties title; initial actual authorization.canMutate true. Real claim from owned(), no forged brand/service.submit/HTTP/fake context.",
+    "status": "Statically feasible, discriminating capture/retry",
+    "trace": [
+      {
+        "clockCallsConsumed": 0,
+        "entries": 1,
+        "phase": "original no-min/preaborted",
+        "waits": 0
+      },
+      {
+        "clockValues": [
+          0
+        ],
+        "entries": 2,
+        "phase": "suppliedpos0"
+      },
+      {
+        "clockValues": [
+          1
+        ],
+        "entries": 3,
+        "phase": "genesis"
+      },
+      {
+        "actualPosition": "pos-0",
+        "behindClock": 3,
+        "deadline": 4,
+        "entry": 4,
+        "phase": "newpos1 start",
+        "start": 2
+      },
+      {
+        "ownerActions": "owned uses principal p + prepareTransaction(scope, batch.body); admit one genuine claim, execute once, receipt completed, inspect metadata position1",
+        "phase": "wait",
+        "releaseProbe": "actual raw owner.withRead -> read,true",
+        "waits": 1,
+        "yield": "caller invoke has returned; tuple epoch/view/position mutated"
+      },
+      {
+        "actualPosition": "pos-1",
+        "clockNotReadOnSuccess": true,
+        "entry": 5,
+        "phase": "retry",
+        "totalClockCalls": 4
+      }
+    ]
+  },
+  "F3handler": {
+    "contractCompileCalls": "one existing compile result shared",
+    "error": "Actual class from cached same-module import inside original3s body, original instance identity rethrown when mapper returnsundefined",
+    "newDirectInvocations": 1,
+    "notEvidence": "Declared direct observer counterfactual is handler-routing evidence, not real installed/owner/transport abort proof",
+    "originalRows": 8,
+    "originalSignalChecks": "Exact request.signal already asserted in all eight; preserved",
+    "status": "Statically feasible",
+    "statuses": [
+      200,
+      200,
+      304,
+      412,
+      406,
+      410,
+      409,
+      503
+    ]
+  },
+  "F3service": {
+    "cleanup": "service.close awaits Promise.allSettled(active) then read.close then owner.close. Later wrapper reuses cached Promise; service.closed actual completion. Throwing assertion rejects admitted task, no unresolved external resolver created. Microtask checks are ordering observations, not host elapsed proof.",
+    "originalTimeoutsRetained": {
+      "calls": 2,
+      "clockCalls": 6,
+      "entries": 4,
+      "rawOwnerReleaseProbes": 2,
+      "waits": 2
+    },
+    "status": "Statically feasible",
+    "third": {
+      "behindClock": 7,
+      "deadline": 8,
+      "finalClockCalls": 8,
+      "nextLoop": "signal.aborted checked before owner attempt/now; exact ScopeServerOperationAbortedError class",
+      "ownerCloseCalls": 1,
+      "ownerEntry": 5,
+      "rawOwnerReleaseProbes": 3,
+      "signal": "abort inside yielded wait; close() memoizes/drains active task while this wait remains pending",
+      "startClock": 6,
+      "waits": 3
+    }
+  },
+  "F4": {
+    "fields": [
+      "scope",
+      "profile",
+      "history",
+      "authorityMode",
+      "claimEligible",
+      "payloadIdentity",
+      "runtimeConfigurationIdentity",
+      "listenUrl"
+    ],
+    "nullish": "Only null/undefined/missing -> null. Preserve present false/0/empty/wrongprofile. Child absent remainsnull; invalid readyValidatedfalse no credit.",
+    "status": "Correct narrow failed-partial correction"
+  },
+  "F5": "Rename exactly two local references; comma-valued single field and original row remain, no repeated-header claim",
+  "F6": "Unmeasured runtime fit retained as risk.3s absolute source work includes startup/default1s minimum wait; remaining request allowance/cleanup1s/callback5s unchanged, no freshclock/widening/split/retry",
+  "F7F8F9": "No concurrent-policy invention, defensive throw removal, cosmetic sweep or substantive context change.",
+  "method": "Manual source-path/Promise ordering and exact DATA reads, no subject import/evaluation or synthetic scheduling"
+}

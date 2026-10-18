@@ -1,0 +1,9 @@
+{
+  "action": "Unnecessary interpreter --version probe after successful role guard",
+  "requestedExecutable": "/opt/homebrew/opt/python3.14/bin/python3.14",
+  "actualFailure": "FileNotFoundError before executable start; guard wrapper exited1",
+  "correctPinnedInterpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "probeRepeated": false,
+  "subjectHelperControlProductOrRepoAction": false,
+  "noVersionObservationInferred": true
+}

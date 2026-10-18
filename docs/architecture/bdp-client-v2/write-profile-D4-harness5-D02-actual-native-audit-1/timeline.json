@@ -1,0 +1,37 @@
+{
+  "forcedNativeDeadline": false,
+  "lastIncludedProbeReceiptSeconds": 2.1733142458833754,
+  "meaning": "Early failure cleanup, not TERM115/KILL119 deadline exercise; these measured durations are samples, not maxima.",
+  "nativeTerminalAtSeconds": 2.97219412494451,
+  "ownerFinalConsoleAtSeconds": 2.965407829731703,
+  "ownerPublishedSnapshotAtSeconds": 2.1733376625925303,
+  "rootCaptureAtSeconds": 3.2941298340447247,
+  "rootClockOrigin": 2233306.862197291,
+  "rootFailureCheckAtSeconds": 3.2944796667434275,
+  "signals": [
+    {
+      "at": 1.8895240798592567,
+      "attempted": true,
+      "pgid": 6126,
+      "signal": 15,
+      "successful": true
+    },
+    {
+      "at": 1.8895636210218072,
+      "attempted": true,
+      "error": "PermissionError",
+      "pgid": 6128,
+      "signal": 15,
+      "successful": false
+    },
+    {
+      "at": 2.0970345796085894,
+      "attempted": true,
+      "pgid": 6126,
+      "signal": 15,
+      "successful": true
+    }
+  ],
+  "sourceClockOrigin": 2233307.18314167,
+  "tentativePublicationAtSeconds": 2.5920144547708333
+}

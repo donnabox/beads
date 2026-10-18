@@ -1,0 +1,63 @@
+{
+  "all9": [
+    {
+      "correction": "Both new service fixture policy parameters become NonNullable<TransactionServiceOptions[minimumReads]> = {}, matching existing fixture pattern; no production option widening.",
+      "decision": "ACCEPT static High; no observed compiler result",
+      "id": "F1"
+    },
+    {
+      "correction": "Preserve existing no-min synchronous/preaborted and genesis/pos0 obligations. Correction DATA plan must specify a discriminating capture control across a real pending/retry boundary or equivalent data-only capture counterfactual, proving it would fail deferred recapture. No prose-only mutation assertion. Explicitly enumerate any extra direct unit calls and honest counts before authoring; preserve original23 direct calls/8callbacks/9sourcewire/30installed exchanges.",
+      "decision": "ACCEPT non-discriminating synchronous capture witness",
+      "id": "F2"
+    },
+    {
+      "correction": "Add bounded source unit abort during a pending minimum wait, proving ScopeServerOperationAbortedError and released owner entry/drain. Existing S05 already asserts exact forwarded request.signal, so dropping HTTP signal is already discriminated. Add abort-to-handler propagation counterfactual with no extra wire if needed; declare any new direct calls. Preserve both S03 timeout cases and S05 all8 existing rows.",
+      "decision": "ACCEPT missing service minimum-wait abort witness; qualify HTTP-drop claim",
+      "id": "F3"
+    },
+    {
+      "correction": "All8 allowlisted failed-partial ready projection values use ?? null, preserving present-invalid values, readyValidatedfalse and strict keyset; no positive fallback or report schema weakening.",
+      "decision": "ACCEPT/corroborates native G09-CODE-N1",
+      "id": "F4"
+    },
+    {
+      "correction": "Rename installed repeated local to commaValued in both references; original one-line comma-valued request/row label and14+16 wire budgets unchanged; no repeated-header evidence inferred.",
+      "decision": "ACCEPT Low naming",
+      "id": "F5"
+    },
+    {
+      "correction": "Retain original absolute3s work, remaining-time request allowance, cleanup/request/callback caps. Do not adopt suggested fresh5s/per-request reset or widen/restart any deadline. Fresh exact-source validation must measure actual completion and fail if it cannot fit; no prior failure or runtime success claimed.",
+      "decision": "ACCEPT unmeasured risk; DEFER source budget change",
+      "id": "F6"
+    },
+    {
+      "correction": "No concurrency mechanism/semantics added; shared existing finite policy/lifecycle remains. Future concurrency work outside this slice.",
+      "decision": "RECORD informational expected authenticated finite-wait exposure",
+      "id": "F7"
+    },
+    {
+      "correction": "No demonstrated reachable500; matches existing defensive idiom. No source change required.",
+      "decision": "RETAIN unreachable defensive throw",
+      "id": "F8"
+    },
+    {
+      "correction": "No required production correction; substantive epoch/view/position assertions preserved. Avoid unrelated cosmetic sweep.",
+      "decision": "RECORD informational cosmetic escapes/tautological constant component",
+      "id": "F9"
+    }
+  ],
+  "noSweep": [
+    "F7",
+    "F8",
+    "F9"
+  ],
+  "requiredEdits": {
+    "F1": "TwoNonNullable defaults in existing newservicefixture helpers",
+    "F2": "S01fourth real pending/capture/advance call; existing3retained",
+    "F3": "S03third pendingabort/drain call+S05ninth selectorabortidentity call; originaltimeouts/eightrows retained",
+    "F4": "Eight ?? null only in installedreadyprojection",
+    "F5": "Rename two repeated references tocommaValued"
+  },
+  "riskOnlyF6": "Keep originalabsolute3s and requestremainingtime allowance. Freshvalidation measures/failswithout widening/reset; no timingfit predicted.",
+  "rootDispositionSha256": "8c7820151b5caed422fb3ef687bc8baf4d7b62625e8349d4f6df50cca10bb17c"
+}
