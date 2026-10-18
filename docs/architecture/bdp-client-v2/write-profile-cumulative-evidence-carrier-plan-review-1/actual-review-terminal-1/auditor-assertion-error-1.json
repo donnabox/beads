@@ -1,0 +1,10 @@
+{
+  "kind": "pure static origin-verification assertion; no candidate/actual-attempt action",
+  "exitCode": 1,
+  "exceptionType": "AssertionError",
+  "beforeOutputDirectoryCreated": true,
+  "cause": "Initial audit loop required all176 origin paths to match original closed hashes. One intentional closed-binding record points to active binding.json, now legally released true; closed copy remains correct original false bytes.",
+  "resolution": "Verified all176 copies against their recorded hashes,175 current origins exact, and one retained closed-binding copy equals root binding.closed while active origin equals binding.released with only rootLaunchReleased changed.",
+  "reviewRetry": false,
+  "missingActualOutputCreated": false
+}

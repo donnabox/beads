@@ -1,0 +1,50 @@
+{
+  "findings": 8,
+  "labels": [
+    {
+      "id": "F1",
+      "severity": "Medium",
+      "title": "The TX sidecar destination is unnamed and lands in the RU sidecar namespace, with no freshness refusal on the TX path."
+    },
+    {
+      "id": "F2",
+      "severity": "Medium",
+      "title": "The authored-assertion join rule across `exchanges[]` and `actions[]` is unspecified, so `authoredAssertionsAllPassed` can be computed from the wrong assertion set."
+    },
+    {
+      "id": "F3",
+      "severity": "Medium",
+      "title": "Where a rejected or absent TX handoff surfaces is contradictory; as written it can fail the existing TX positive test."
+    },
+    {
+      "id": "F4",
+      "severity": "Low",
+      "title": "Comparison semantics for the pre-hook capture versus the parsed handoff bytes are unspecified."
+    },
+    {
+      "id": "F5",
+      "severity": "Low",
+      "title": "`copySourceBytes`/`parseBoundedJson` cannot be reused for report wrappers without naming a `kind`."
+    },
+    {
+      "id": "F6",
+      "severity": "Low",
+      "title": "`maxWorkers 2` is stated as if it were an existing default."
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "title": "`serializeProfileEvidence` is never stated to enforce the unbound closed schema, so the plan3 correction has no enforcement point."
+    },
+    {
+      "id": "F8",
+      "severity": "Low",
+      "title": "The TX→RU-helper import is not declared in the footprint."
+    }
+  ],
+  "severityCounts": {
+    "Medium": 3,
+    "Low": 5
+  },
+  "rootDisposition": "PENDING; clean terminal is not finding approval or source release"
+}
