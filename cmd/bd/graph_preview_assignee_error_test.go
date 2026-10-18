@@ -62,8 +62,18 @@ func TestGraphPreviewAssigneeOwnershipError(t *testing.T) {
 
 func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 	for _, cancellation := range []error{context.DeadlineExceeded, context.Canceled} {
-		for _, uncertain := range []bool{false, true} {
-			name := fmt.Sprintf("%v/uncertain=%t", cancellation, uncertain)
+		for _, test := range []struct {
+			name string
+			wrap error
+			code string
+			exit int
+		}{
+			{"plain", nil, "capability_unavailable", 5},
+			{"invalid-store", graphstore.ErrInvalidStore, "capability_unavailable", 5},
+			{"uncertain", graphstore.ErrOutcomeUnknown, "outcome_unknown", 6},
+			{"uncertain-invalid-store", errors.Join(graphstore.ErrOutcomeUnknown, graphstore.ErrInvalidStore), "outcome_unknown", 6},
+		} {
+			name := fmt.Sprintf("%v/%s", cancellation, test.name)
 			t.Run(name, func(t *testing.T) {
 				stderr, err := os.CreateTemp(t.TempDir(), "stderr")
 				if err != nil {
@@ -73,15 +83,13 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 				os.Stderr, jsonOutput = stderr, true
 				defer func() { os.Stderr, jsonOutput = oldStderr, oldJSON; _ = stderr.Close() }()
 				input := cancellation
-				code, exit := "capability_unavailable", 5
-				if uncertain {
-					input = errors.Join(graphstore.ErrOutcomeUnknown, cancellation)
-					code, exit = "outcome_unknown", 6
+				if test.wrap != nil {
+					input = errors.Join(test.wrap, cancellation)
 				}
 				result := graphStorageError(input)
 				var failure *exitError
-				if !errors.As(result, &failure) || failure.Code != exit {
-					t.Fatalf("error=%v want exit=%d", result, exit)
+				if !errors.As(result, &failure) || failure.Code != test.exit {
+					t.Fatalf("error=%v want exit=%d", result, test.exit)
 				}
 				if _, err := stderr.Seek(0, 0); err != nil {
 					t.Fatal(err)
@@ -93,7 +101,7 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 				if err := json.NewDecoder(stderr).Decode(&envelope); err != nil {
 					t.Fatal(err)
 				}
-				if envelope.Code != code || envelope.Retryable {
+				if envelope.Code != test.code || envelope.Retryable {
 					t.Fatalf("envelope=%+v", envelope)
 				}
 			})

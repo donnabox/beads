@@ -441,7 +441,16 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, o)
+			// Initialization's deadline must not become the cumulative fault-matrix
+			// budget. Each operation and rollback inspection gets a fresh bound;
+			// WithoutCancel retains the initialization context's values.
+			operationContext := func(t *testing.T) context.Context {
+				t.Helper()
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				return operation
+			}
+			s, err := OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -450,32 +459,38 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					t.Error(err)
 				}
 			})
+			state := func(t *testing.T) map[string]string {
+				t.Helper()
+				return legacyImportState(t, operationContext(t), s)
+			}
 			batch := parseLegacyFixture(t, legacyImportFixture)
-			before := legacyImportState(t, ctx, s)
+			before := state(t)
 			// A matching prefix update may report zero changed rows. It still
 			// validates and dry-run must preserve the configuration.
 			samePrefix := strings.ReplaceAll(legacyImportFixture, "old-", before["issue_prefix"]+"-")
-			if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, samePrefix), "importer", true); err != nil {
+			if _, err := s.ImportLegacy(operationContext(t), parseLegacyFixture(t, samePrefix), "importer", true); err != nil {
 				t.Fatalf("same-prefix dry-run: %v", err)
 			}
-			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+			if !reflect.DeepEqual(before, state(t)) {
 				t.Fatal("same-prefix dry-run changed configuration")
 			}
 			for _, stage := range []string{"coordination", "import-prefix", "import-native", "import-issues", "import-links", "source-catalog", "source-retained", "allocation", "payload", "retained", "import-retained"} {
 				t.Run(stage, func(t *testing.T) {
 					fault := errors.New("injected late import failure")
+					previousHook := s.afterWrite
+					t.Cleanup(func() { s.afterWrite = previousHook })
 					s.afterWrite = func(at string) error {
 						if at == stage {
 							return fault
 						}
 						return nil
 					}
-					_, err := s.ImportLegacy(ctx, batch, "importer", false)
-					s.afterWrite = nil
+					_, err := s.ImportLegacy(operationContext(t), batch, "importer", false)
+					s.afterWrite = previousHook
 					if !errors.Is(err, fault) {
 						t.Fatalf("stage %s: %v", stage, err)
 					}
-					if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+					if !reflect.DeepEqual(before, state(t)) {
 						t.Fatal("failed import left database changes")
 					}
 				})
@@ -486,14 +501,16 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					var cancel context.CancelFunc
 					var expected error
 					if deadline {
-						operation, cancel = context.WithTimeout(ctx, 15*time.Second)
+						operation, cancel = context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
 						expected = context.DeadlineExceeded
 					} else {
-						operation, cancel = context.WithCancel(ctx)
+						operation, cancel = context.WithCancel(operationContext(t))
 						expected = context.Canceled
 					}
 					defer cancel()
 					reached := false
+					previousHook := s.afterWrite
+					t.Cleanup(func() { s.afterWrite = previousHook })
 					s.afterWrite = func(stage string) error {
 						if stage == "import-retained" {
 							reached = true
@@ -506,7 +523,7 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 						return nil
 					}
 					_, err := s.ImportLegacy(operation, batch, "importer", false)
-					s.afterWrite = nil
+					s.afterWrite = previousHook
 					// Inspect through the independent live context, after driver
 					// cancellation and transaction cleanup have completed.
 					// A driver watcher may already have rolled back the transaction.
@@ -514,63 +531,63 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					// other driver cleanup errors may also be uncertain.
 					unknown := errors.Is(err, ErrOutcomeUnknown)
 					alreadyDone := errors.Is(err, sql.ErrTxDone)
-					if !reached || !errors.Is(err, expected) || (alreadyDone && !unknown) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+					if !reached || !errors.Is(err, expected) || (alreadyDone && !unknown) || !reflect.DeepEqual(before, state(t)) {
 						t.Fatalf("late context classification or rollback failed: reached=%v unknown=%v alreadyDone=%v err=%v", reached, unknown, alreadyDone, err)
 					}
 				})
 			}
-			preview, err := s.ImportLegacy(ctx, batch, "importer", true)
+			preview, err := s.ImportLegacy(operationContext(t), batch, "importer", true)
 			if err != nil || !preview.DryRun {
 				t.Fatalf("dry run: %+v %v", preview, err)
 			}
-			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+			if !reflect.DeepEqual(before, state(t)) {
 				t.Fatal("dry run changed graph")
 			}
-			result, err := s.ImportLegacy(ctx, batch, "importer", false)
+			result, err := s.ImportLegacy(operationContext(t), batch, "importer", false)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if result.Issues != 2 || result.Memories != 1 || result.Dependencies != 1 || result.Comments != 1 {
 				t.Fatalf("result=%+v", result)
 			}
-			b, err := s.ShowIssue(ctx, "beads/old-b")
+			b, err := s.ShowIssue(operationContext(t), "beads/old-b")
 			if err != nil || len(b.Owned) != 1 || b.Properties.ID != "old-b" {
 				t.Fatalf("issue=%+v err=%v", b, err)
 			}
-			comments, err := s.IssueComments(ctx, "beads/old-b")
+			comments, err := s.IssueComments(operationContext(t), "beads/old-b")
 			if err != nil || len(comments) != 1 || comments[0].ID != "old-comment" {
 				t.Fatalf("comments=%+v err=%v", comments, err)
 			}
-			_, versions, err := s.Versions(ctx, "beads/old-b")
+			_, versions, err := s.Versions(operationContext(t), "beads/old-b")
 			if err != nil || len(versions) != 1 {
 				t.Fatalf("initial versions=%+v %v", versions, err)
 			}
-			imported := legacyImportState(t, ctx, s)
+			imported := state(t)
 			for _, dry := range []bool{false, true} {
-				if _, err := s.ImportLegacy(ctx, batch, "importer", dry); err == nil {
+				if _, err := s.ImportLegacy(operationContext(t), batch, "importer", dry); err == nil {
 					t.Fatal("repeat import accepted")
 				}
-				if !reflect.DeepEqual(imported, legacyImportState(t, ctx, s)) {
+				if !reflect.DeepEqual(imported, state(t)) {
 					t.Fatal("repeat import changed graph")
 				}
 			}
 			if err := s.Close(); err != nil {
 				t.Fatal(err)
 			}
-			s, err = OpenExisting(ctx, o)
+			s, err = OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
-			after, err := s.ShowIssue(ctx, "beads/old-b")
+			after, err := s.ShowIssue(operationContext(t), "beads/old-b")
 			if err != nil || !reflect.DeepEqual(b, after) {
 				t.Fatalf("reopen lost data: %v", err)
 			}
-			fresh, err := s.CreateIssue(ctx, "beads/new-work", publicops.CreateRequest{Actor: "importer", Issue: &types.Issue{Title: "After import", Priority: 2, Status: types.StatusOpen, IssueType: types.TypeTask}})
+			fresh, err := s.CreateIssue(operationContext(t), "beads/new-work", publicops.CreateRequest{Actor: "importer", Issue: &types.Issue{Title: "After import", Priority: 2, Status: types.StatusOpen, IssueType: types.TypeTask}})
 			if err != nil || types.ExtractPrefix(fresh.Properties.ID) != "old-" {
 				t.Fatalf("post-import ID prefix: %+v %v", fresh, err)
 			}
 			for _, pair := range [][2]string{{"beads/new-work", "beads/old-a"}, {"beads/old-b", "beads/new-work"}} {
-				if _, err := s.AddDependency(ctx, DependencyRequest{SourcePath: pair[0], TargetPath: pair[1], Actor: "importer"}); err != nil {
+				if _, err := s.AddDependency(operationContext(t), DependencyRequest{SourcePath: pair[0], TargetPath: pair[1], Actor: "importer"}); err != nil {
 					t.Fatalf("post-import dependency %v: %v", pair, err)
 				}
 			}
@@ -642,7 +659,15 @@ func TestLegacyImportFieldFamilies(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, o)
+			// Field dry-runs, apply and reopened reads must not share Init's
+			// deadline or consume one another's operation budgets.
+			operationContext := func(t *testing.T) context.Context {
+				t.Helper()
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				return operation
+			}
+			s, err := OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -651,14 +676,14 @@ func TestLegacyImportFieldFamilies(t *testing.T) {
 					t.Error(err)
 				}
 			})
-			before := legacyImportState(t, ctx, s)
+			before := legacyImportState(t, operationContext(t), s)
 			for name, fields := range families {
 				t.Run(name, func(t *testing.T) {
 					input := `{"id":"old-a","title":"Fields","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z",` + fields + `}`
-					if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, input), "importer", true); err != nil {
+					if _, err := s.ImportLegacy(operationContext(t), parseLegacyFixture(t, input), "importer", true); err != nil {
 						t.Fatal(err)
 					}
-					if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+					if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 						t.Fatal("field dry-run changed database")
 					}
 				})
@@ -672,19 +697,19 @@ func TestLegacyImportFieldFamilies(t *testing.T) {
 			for i, name := range names {
 				fmt.Fprintf(&input, `{"id":"fields-%d","title":"%s","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z",%s}`+"\n", i+1, name, families[name])
 			}
-			if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, input.String()), "importer", false); err != nil {
+			if _, err := s.ImportLegacy(operationContext(t), parseLegacyFixture(t, input.String()), "importer", false); err != nil {
 				t.Fatal(err)
 			}
 			if err := s.Close(); err != nil {
 				t.Fatal(err)
 			}
-			s, err = OpenExisting(ctx, o)
+			s, err = OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
 			for i, name := range names {
 				path := fmt.Sprintf("beads/fields-%d", i+1)
-				current, err := s.ShowIssue(ctx, path)
+				current, err := s.ShowIssue(operationContext(t), path)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -704,11 +729,11 @@ func TestLegacyImportFieldFamilies(t *testing.T) {
 						t.Errorf("%s field %s=%s, want %s", name, field, got[field], value)
 					}
 				}
-				_, versions, err := s.Versions(ctx, path)
+				_, versions, err := s.Versions(operationContext(t), path)
 				if err != nil || len(versions) != 1 {
 					t.Fatalf("%s initial versions=%v err=%v", name, versions, err)
 				}
-				retained, err := s.ReadVersion(ctx, path, versions[0].Version)
+				retained, err := s.ReadVersion(operationContext(t), path, versions[0].Version)
 				if err != nil {
 					t.Fatal(err)
 				}
