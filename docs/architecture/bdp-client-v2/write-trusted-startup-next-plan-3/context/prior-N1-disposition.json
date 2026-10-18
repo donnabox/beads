@@ -1,0 +1,21 @@
+{
+  "finding": "native-review-2 N1 P1/High",
+  "disposition": "accepted; explicit eleven-file footprint with narrow data subpath only",
+  "corrected": [
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/read-sequence-lifecycle.test.ts"
+  ],
+  "preserved": [
+    "shared deep equality",
+    "missing/broad/private export refusals",
+    "private Snapshot/json-equality names",
+    "lifecycle/facet/owner/entry/privacy behavior",
+    "original plan1 and contract1",
+    "no new policy or source authoring"
+  ],
+  "contractByteIdentical": true,
+  "authoringReleased": false,
+  "publicActivationReleased": false
+}
