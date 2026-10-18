@@ -1,0 +1,33 @@
+{
+  "state": "Independent full corrected native source static inspection; no source/helper/runtime/Git execution",
+  "accepted": true,
+  "checks": 4389,
+  "allPassed": true,
+  "authorIndexSha256": "1cb3933ec44789b2cf5ee693f518517f2f4d7a4bf6fa2bee4ce7b0cf83460d78",
+  "sourceBindingSha256": "8a5af388607a2e0e57d5807a0ce77493c3118c65b438bafba05a40e45b552214",
+  "afterMapSha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
+  "sourceIdentity": "80f2d46a5a480e76eaafd0ac160ff08323c8485f782c56a37305698b2435831e",
+  "rootInspectionSha256": "cf67287a607467de1ad78655d870ce4cf890ae896a0db312f59002b8e45b3c77",
+  "actualSevenBinaryPatchSha256": "3be147c15d2ec45f99e2844b97dd01fa609a562761bbb08c7c04c1ceaa08958c",
+  "actualNineBinaryPatchSha256": "37cb84d5000a8cdfa853cb4be19d0299d5a18681056adb0df245bbc5ac16597a",
+  "counts": {
+    "physical": 770,
+    "origins": 736,
+    "source": 686,
+    "changed": 7,
+    "protectedCandidate": 679,
+    "protectedFdd": 677,
+    "sourceCallbacks": 51,
+    "persisted": 21,
+    "sourceHTTP": 2,
+    "installedCallbacks": 21,
+    "installedHTTP": 126,
+    "CONNECT": 2,
+    "ordinaryGenerations": 33,
+    "guardChildren": 4,
+    "children": 37
+  },
+  "genuinePatchPairs": 4,
+  "runtimeValidation": "UNRUN",
+  "secondReviewAllowed": false
+}

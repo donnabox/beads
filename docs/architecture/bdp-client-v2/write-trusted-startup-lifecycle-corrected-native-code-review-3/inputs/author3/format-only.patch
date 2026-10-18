@@ -1,0 +1,83 @@
+--- a/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ b/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -290,7 +290,10 @@
+         ],
+       };
+       const text = JSON.stringify(report);
+-      if (f.secrets.some((secret) => text.includes(secret)) || unsafeLifecycleWire(f.records, f.controls, f.secrets))
++      if (
++        f.secrets.some((secret) => text.includes(secret)) ||
++        unsafeLifecycleWire(f.records, f.controls, f.secrets)
++      )
+         failure ??= Error("unsafe lifecycle report");
+       else console.log(text);
+     }
+@@ -1434,9 +1437,17 @@
+           Buffer.from(f.secrets[0]!, "utf8"),
+           Buffer.from([0]),
+         ]).toString("base64");
+-        expect(unsafeLifecycleWire([{ wireBase64: safe }], [{ beforeShutdown: { refusalWireBase64: safe } }], f.secrets)).toBe(false);
++        expect(
++          unsafeLifecycleWire(
++            [{ wireBase64: safe }],
++            [{ beforeShutdown: { refusalWireBase64: safe } }],
++            f.secrets,
++          ),
++        ).toBe(false);
+         expect(unsafeLifecycleWire([{ wireBase64: leak }], [], f.secrets)).toBe(true);
+-        expect(unsafeLifecycleWire([], [{ beforeShutdown: { refusalWireBase64: leak } }], f.secrets)).toBe(true);
++        expect(
++          unsafeLifecycleWire([], [{ beforeShutdown: { refusalWireBase64: leak } }], f.secrets),
++        ).toBe(true);
+         const session = await f.launch(true);
+         await f.invalidPostReadyControl(session);
+         await f.ownerProbe(false);
+--- a/packages/server/src/development-runtime.ts
++++ b/packages/server/src/development-runtime.ts
+@@ -588,7 +588,9 @@
+     | Readonly<{
+         listenUrl: string;
+         history: boolean;
+-        ownerFacts: ReturnType<Awaited<ReturnType<typeof openDevelopmentAuthority>>["readConfiguration"]>;
++        ownerFacts: ReturnType<
++          Awaited<ReturnType<typeof openDevelopmentAuthority>>["readConfiguration"]
++        >;
+       }>
+     | undefined;
+   const checkPrepared = () => {
+@@ -682,11 +684,17 @@
+     await new Promise<void>((resolve, reject) => {
+       if (prepared) rejectListening = reject;
+       else server.once("error", reject);
+-      server.listen(options.port, prepared ? prepared.handle.listener.host : ((transport?.host as string | undefined) ?? "127.0.0.1"), () => {
+-        if (!prepared) server.removeListener("error", reject);
+-        rejectListening = undefined;
+-        resolve();
+-      });
++      server.listen(
++        options.port,
++        prepared
++          ? prepared.handle.listener.host
++          : ((transport?.host as string | undefined) ?? "127.0.0.1"),
++        () => {
++          if (!prepared) server.removeListener("error", reject);
++          rejectListening = undefined;
++          resolve();
++        },
++      );
+     });
+     const address = server.address();
+     if (address === null || typeof address === "string") throw new Error("no development address");
+--- a/packages/server/src/transaction-runtime.ts
++++ b/packages/server/src/transaction-runtime.ts
+@@ -507,7 +507,9 @@
+       readonly timeoutMs: number;
+       readonly signal?: AbortSignal;
+     }) => service!.replaceAuthorizationPolicy(options),
+-    /** Test-only inventory, not an HTTP Operation Directory. */ targets: prepared ? preparedFacts!.targets : handler!.targets,
++    /** Test-only inventory, not an HTTP Operation Directory. */ targets: prepared
++      ? preparedFacts!.targets
++      : handler!.targets,
+     close,
+   };
+   function close(): Promise<void> {

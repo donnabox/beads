@@ -1,0 +1,37 @@
+{
+  "state": "PROSPECTIVE",
+  "readUpdate": [
+    "format",
+    "scope",
+    "installation",
+    "lineage",
+    "contractCapture",
+    "installed-types",
+    "resource-uninstalled-type",
+    "retained-runtime-compatibility"
+  ],
+  "transactional": [
+    "format",
+    "receiptMaximumItems",
+    "snapshotLimits",
+    "snapshotTokenPolicy",
+    "initialAuthorizationView",
+    "policyStorageRevision",
+    "identityPolicy",
+    "contractIdentity",
+    "runtimeLimits",
+    "scope",
+    "types",
+    "contractCapture",
+    "authorizationPolicy"
+  ],
+  "total": 21,
+  "rules": [
+    "Use a fresh isolated database for each callback and exact existing validators; invalid initialAuthorizationView or authorizationPolicy is not the legitimate generation1 empty state.",
+    "RU authpolicy and credentials are current capture, not stored installation equality. A later current policy may differ without installation replacement.",
+    "A valid TX generation1 empty policy remains accepted; its actual effective metadata differs and must be retained internally for D3d binding.",
+    "Keep exact supported TX legacy configuration comparison/migration; malformed unsupported rows refuse without inventing a new format.",
+    "Resource/retained-runtime failure may occur after lawful claim recovery or expiry. Record actual selected rows and effects; no blanket byte-unchanged or rollback claim.",
+    "A failed opener can internally acquire and close SQLite before throwing; caller owner-acquisition remains zero."
+  ]
+}

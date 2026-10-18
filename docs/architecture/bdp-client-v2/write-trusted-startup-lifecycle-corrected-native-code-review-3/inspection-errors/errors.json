@@ -1,0 +1,16 @@
+{
+  "candidateModified": false,
+  "runtimeOrHelpersExecuted": false,
+  "errors": [
+    {
+      "error": "FileNotFoundError before/development-authority.ts",
+      "cause": "Auditor incorrectly expected before copies for both unchanged original-nine paths; actual packet correctly copies only seven changed before paths and all nine after.",
+      "resolution": "Compare seven before copies; verify unchanged two directly against complete before/after maps and original source."
+    },
+    {
+      "error": "AssertionError inverse:correction3-final",
+      "cause": "Auditor assumed inverse header labels b/ to a/. Authored inverse convention is a/ to b/ with reversed content, and /dev/null for removed new files.",
+      "resolution": "Read actual headers; independently regenerate exact full inverse bytes with original convention. All four pairs then match."
+    }
+  ]
+}

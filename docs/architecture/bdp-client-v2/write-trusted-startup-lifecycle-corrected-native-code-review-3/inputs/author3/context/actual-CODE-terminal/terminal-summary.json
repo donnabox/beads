@@ -1,0 +1,35 @@
+{
+  "rawBytes": 3074956,
+  "rawSha256": "f4754c47b97fcf7183b150c2d1f56fb81b5d42ca1169e9ed96f43fb084cfdbdc",
+  "validJSONLRecords": 5137,
+  "parseErrors": 0,
+  "terminalResultCount": 1,
+  "resultSubtype": "success",
+  "is_error": false,
+  "actualConfiguredModel": "claude-opus-5[1m]",
+  "subagentsSpawned": 0,
+  "providerAuxiliaryModelUsageReported": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5[1m]"
+  ],
+  "CLIExitCode": 0,
+  "innerClassification": "review_complete",
+  "innerElapsedSeconds": 1345.5215249583125,
+  "outerExitCode": 0,
+  "outerElapsedSeconds": 1347.4853819590062,
+  "outerClassification": "review_complete_pending_root_adjudication",
+  "limits": {
+    "total": 1800,
+    "term": 1790,
+    "kill": 1798
+  },
+  "roleChecks": 89,
+  "roleChecksAll0": true,
+  "forcedCleanup": false,
+  "ownershipUnknown": false,
+  "remainingOwned": [],
+  "noRetry": true,
+  "finalReviewTextSha256": "20a9f04dcd928c000249a6f565cb338913d0c13f54a04140f99ca61de9f98cc7",
+  "finalReviewEqualsTerminalResultExactly": true,
+  "approvalInferred": false
+}

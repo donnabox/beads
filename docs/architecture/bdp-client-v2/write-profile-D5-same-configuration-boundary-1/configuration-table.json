@@ -1,0 +1,78 @@
+{
+  "bindingFields": [
+    "scope",
+    "profile",
+    "history",
+    "sourceCommit",
+    "installedPayloadDigest",
+    "installedContractsDigest",
+    "policyDigest",
+    "authenticationDigest",
+    "fixtureDigest",
+    "fixtureId",
+    "capabilities"
+  ],
+  "equality": "all fields exact; factory provenance + actual ready/session/runtime/transport identities required, equality alone not observation",
+  "rows": [
+    {
+      "id": "public-Read",
+      "entry": "apps/bdptest/src/main.ts59-85 / server index.ts288-317",
+      "selection": "read only",
+      "owner": "configured Read target",
+      "surface": "Read HTTP, evidence-gated public start",
+      "sameConfigCumulativeWrite": false,
+      "reason": "Explicit non-Read admission refusal; sealed/historical Read evidence not TX or RU evidence"
+    },
+    {
+      "id": "trusted-RU",
+      "entry": "reference-deployment.ts288-313; reference-deployment-runtime.ts14-16",
+      "selection": "read-update; History separately captured",
+      "owner": "one DevelopmentReference owner, reference.sqlite",
+      "input": "directory/create/credentials/policies/contracts/maximumEndpointMultiplicity plus Scope/listener",
+      "surface": "inherited Read + eight mutations + non-atomic sequence",
+      "sameConfigCumulativeWrite": "RU only; no TX",
+      "reason": "RU config capture is distinct from TX; own runtime/enforcement/metadata; no durable TX receipts/Event/replication implied"
+    },
+    {
+      "id": "trusted-TX",
+      "entry": "reference-deployment.ts315-350; reference-deployment-runtime.ts14-16",
+      "selection": "transactional; current Historyfalse",
+      "owner": "one TransactionStore owner, transaction.sqlite",
+      "input": "directory/create/credentials/artifacts + stable Scope; canonical authority/no test seams",
+      "surface": "generic Read + eight singleton/alias targets + sequence + batch + update/deleteWhere + receipt/Snapshot/changes/Events",
+      "sameConfigCumulativeWrite": "source-feasible cumulative TX; not demonstrated complete installed qualification",
+      "reason": "All operations route through same service/Scope/owner; no need to combine RU owner. Final merged installed payload/config/law evidence absent"
+    },
+    {
+      "id": "TX-matrix-existing",
+      "entry": "transactional-matrix.test.ts43-90,169-206,3789-3818",
+      "selection": "TX private fixture reference-transactional-v1",
+      "owner": "canonical https://reference.invalid/acme/, per-scenario isolated SQLite; reopen sessions explicit",
+      "input": "Task+Link, schema closure; five token associations/operator+reader same principal, A+rotatedA, B; all-visible/empty supported policy",
+      "surface": "manifest17 selected rows, partial observations",
+      "sameConfigCumulativeWrite": false,
+      "reason": "0 Read-prefixed manifest owners and no whole coverage; transport factories/ready do not fill missing observations"
+    },
+    {
+      "id": "D4-owned-set",
+      "entry": "transactional-set-installed.test.ts15-54,318-327",
+      "selection": "TX; same canonical Scope spelling as matrix",
+      "owner": "separate actual directory/store and installed generation",
+      "input": "Bead+Owner+Link+Owned, n:number closed schema, ownsOutgoing max32; one writer token; empty Scope aggregate",
+      "surface": "32HTTP/33receipt entries/96Events/reopen prospective in current validation",
+      "sameConfigCumulativeWrite": false,
+      "reason": "Contracts/authentication/fixture differ from matrix despite same Scope spelling; cannot pool under matrix capture"
+    },
+    {
+      "id": "D3a-cold/lifecycle",
+      "entry": "D3a transaction-discovery.ts8-66/HTTP587-629 vs lifecycle source3 standalone fdd ancestry",
+      "selection": "private TX/RU scenarios",
+      "owner": "their actual captured fixture/session only",
+      "surface": "D3a cold discovery; lifecycle private preparation/start/stop and ownership",
+      "sameConfigCumulativeWrite": false,
+      "reason": "Separately frozen lane bytes, source fixture captures and proof scopes; all six lifecycle TX cold callbacks still need combined D3a rebind, not synthetic standalone pass"
+    }
+  ],
+  "resets": "Different scenario stores can implement the same reviewed configuration with truthful reset/session attribution; actual restart must reopen same store/Scope, not copy another DB. Fresh credentials change authentication identity; do not silently aggregate them.",
+  "runtimeSelector": "exactly one of read-update or transactional; envelope.profile must equal configured advertisedProfile before file capture; private WeakMap handle selects matching branch; no public capability emerges"
+}

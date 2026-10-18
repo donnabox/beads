@@ -1,0 +1,18 @@
+--- a/source-witnesses.json
++++ b/source-witnesses.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "PROSPECTIVE NOT EXECUTED",
++  "state": "PROSPECTIVE corrected d181 successor; no execution",
+   "callbacks": 51,
+   "defaultCallbackMs": 5000,
+   "requestMs": 5000,
+@@ -13,7 +13,7 @@
+     {
+       "id": "S02",
+       "callbacks": 2,
+-      "oracle": "RU second distinct principal discover held: success or rejection. While held, zero listen attempts/acquisitions. Success builds all routes before bind; failure closes acquired owner once with no ready. In each existing RU callback, compare the prepared four-value tuple against the exact installed-reference.ts14–20 formula using the SAME genuine state.installed and already-created composition. The source-private pure assemblePreparedDevelopmentArguments(installed,composition) tuple assembler in development-runtime.ts is used by the prepared entry and directly source-tested in this already-private module, never package-exported/public-handle output. Expected tuple includes options.token=first captured credential token (required-unused), actual composition, exact configuration/credentials and Scope/host/schemas. No startInstalledReferenceCandidate, recapture, compiler invocation, extra composition factory, owner or HTTP for this equality assertion."
++      "oracle": "RU second distinct principal discover held: success or rejection. While held, zero listen attempts/acquisitions. Success builds all routes before bind; failure closes acquired owner once with no ready. In each existing RU callback, compare the prepared four-value tuple against the exact installed-reference.ts14\u201320 formula using the SAME genuine state.installed and already-created composition. The source-private pure assemblePreparedDevelopmentArguments(installed,composition) tuple assembler in development-runtime.ts is used by the prepared entry and directly source-tested in this already-private module, never package-exported/public-handle output. Expected tuple includes options.token=first captured credential token (required-unused), actual composition, exact configuration/credentials and Scope/host/schemas. No startInstalledReferenceCandidate, recapture, compiler invocation, extra composition factory, owner or HTTP for this equality assertion. Existing success branch also asserts actual listenArgs[0].slice(0,2)==[handle.listener.port,handle.listener.host], port>0; no second start/owner/HTTP/callback or IPv6 qualification."
+     },
+     {
+       "id": "S03",

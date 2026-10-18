@@ -1,0 +1,9 @@
+{
+  "kind": "own-document preparation lookup error only",
+  "exitCode": 1,
+  "exceptionType": "FileNotFoundError",
+  "path": "request-table.md",
+  "cause": "Changed active contracts were intentionally absent until derivation; finalizer read new active path instead of immutable parent before-image. Failure occurred before any finalizer output, index or mirror.",
+  "correction": "Read exact frozen plan3 request-table.md then derive corrected full active table.",
+  "preservation": "All preceding draft file bytes retained; no source/helper/reviewer/Git/compiler/test/runtime/flags action or retry."
+}
