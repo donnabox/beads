@@ -1,0 +1,176 @@
+{
+  "afterSchemaSha256": "b74e093741780341c0094aebb4d629582e9abd2532052bd15eab8051b5f256e0",
+  "allOtherSchemaBytesExactAfterReversal": true,
+  "beforeSchemaSha256": "86a967838236828cb9318660556c0e92c74cd34e0abf3085061d99cd1a154cad",
+  "deltas": [
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-a"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-create-a",
+      "ordinal": 7
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-b"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-create-b",
+      "ordinal": 10
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-update-a"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-update-a",
+      "ordinal": 13
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-l"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-create-l",
+      "ordinal": 16
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-update-l"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-update-l",
+      "ordinal": 19
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-put-alias"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-put-alias",
+      "ordinal": 22
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-alias"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-delete-alias",
+      "ordinal": 26
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-l"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-delete-l",
+      "ordinal": 29
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-b"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-delete-b",
+      "ordinal": 32
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-a"
+        }
+      ],
+      "before": [],
+      "id": "resource-alias-delete-a",
+      "ordinal": 35
+    },
+    {
+      "after": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-a"
+        }
+      ],
+      "before": [],
+      "id": "replay-create",
+      "ordinal": 38
+    }
+  ],
+  "exactOnly11ArraysChanged": true,
+  "newRuntimeObservation": false,
+  "policyHelpersSourceUnchanged": true,
+  "rootReleaseSha256": "e05328992877e9722a30aff69a5a5490deafa7eb884017a9de86c2d387e9f7f6"
+}
