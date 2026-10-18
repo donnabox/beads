@@ -1,0 +1,38 @@
+{
+  "purpose": "exact complete five-file formatter before/after inputs for native syntax-equivalence review; no product imports or tests executed",
+  "files": {
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/before/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "beforeSha256": "1054a0b8151017faca5f02105b2d581d53e731bc579f9c98ca7062a9f39aa83d",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/after/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "afterSha256": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/before/packages/server/src/transaction-event-sse.test.ts",
+      "beforeSha256": "7757be6ccda0bbb4d271d6432069a7161d1f06dea73de65925e8716fabb7d299",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/after/packages/server/src/transaction-event-sse.test.ts",
+      "afterSha256": "6d7ec313c63d02ee157845ec8ab2e2cfab9107f137cdfc8a20d50c97f147fe64"
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/before/packages/server/src/transaction-events.test.ts",
+      "beforeSha256": "8defa654808f746b5202806a31c76a481773c3f187ff694b0984aa27e19ad729",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/after/packages/server/src/transaction-events.test.ts",
+      "afterSha256": "66d1995b35ba86265bcbf904d515aa52cf8a826273065ac46f32b381737a3a64"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/before/packages/server/src/transaction-service.ts",
+      "beforeSha256": "dd4534569ed7acad76f0389ef5fd0e6cea631b9602e7bf9e6b607b086269a1ad",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/after/packages/server/src/transaction-service.ts",
+      "afterSha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487"
+    },
+    "packages/server/src/transaction-store.ts": {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/before/packages/server/src/transaction-store.ts",
+      "beforeSha256": "14bb328f20e0980a14acfa88b5ec7e8daa4e7c83eb6b203a6afe3e048689a2c3",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/after/packages/server/src/transaction-store.ts",
+      "afterSha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002"
+    }
+  },
+  "correctionSha256": "9ed37204f9db1fe7bf7ba50e2fbed05d43ae0494c04ae760438677d455e5b62d",
+  "reverseSha256": "bd44bfae9077c39c1f87d49d2ee93fa19dcb4f541ecf394a6b65b1a87417ebef",
+  "nativeVerdict": null
+}
