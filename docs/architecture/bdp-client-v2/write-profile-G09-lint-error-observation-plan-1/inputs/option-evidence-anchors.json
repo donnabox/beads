@@ -1,0 +1,148 @@
+[
+  {
+    "file": "primary/cli_options.rs",
+    "lineRanges": [
+      [
+        33,
+        40
+      ],
+      [
+        58,
+        66
+      ],
+      [
+        240,
+        243
+      ]
+    ],
+    "sha256": "5f14d9c0d9088031cdc3b7f264fb65940f85ae6a2cd124c7ae9b069bbca9bb23",
+    "supports": "Display severity and default20."
+  },
+  {
+    "file": "primary/commands--lint.rs",
+    "lineRanges": [
+      [
+        60,
+        76
+      ],
+      [
+        121,
+        148
+      ],
+      [
+        234,
+        245
+      ]
+    ],
+    "sha256": "2998e47841fdb260b6d9a59537b93a46742028c0611f4746956df0959fc93dd0",
+    "supports": "Only/skip and write/fix are independent."
+  },
+  {
+    "file": "primary/crates--biome_service--src--file_handlers--javascript.rs",
+    "lineRanges": [
+      [
+        1067,
+        1136
+      ]
+    ],
+    "sha256": "630f07ad690a600f23e2621640cf95c684ef3475d75c266278554d4f37402332",
+    "supports": "Same rule filter; signal sink applies threshold."
+  },
+  {
+    "file": "primary/crates--biome_service--src--file_handlers--mod.rs",
+    "lineRanges": [
+      [
+        519,
+        543
+      ],
+      [
+        546,
+        612
+      ],
+      [
+        615,
+        662
+      ]
+    ],
+    "sha256": "727afffe497270959b3ae2072387f96ef1e2aa1298b1611e1208a196a6be5535",
+    "supports": "Severity resolution/filter BEFORE counters/cap; Error/Fatal before cap. Parse-count caveat."
+  },
+  {
+    "file": "primary/runner--impls--collectors--default.rs",
+    "lineRanges": [
+      [
+        125,
+        142
+      ],
+      [
+        169,
+        181
+      ],
+      [
+        218,
+        264
+      ]
+    ],
+    "sha256": "67061729ab7533d70fdbba60a7ef7985e1ed40a770b1332138d688194aa64d2c",
+    "supports": "Global20 cap; separate aggregate errors; Failure can have no printable diagnostic."
+  },
+  {
+    "file": "primary/runner--impls--finalizers--default.rs",
+    "lineRanges": [
+      [
+        60,
+        70
+      ],
+      [
+        136,
+        156
+      ]
+    ],
+    "sha256": "b79b28db7801b2ebca056372bc7f1bddf29a200130b5397e36be96f475198b38",
+    "supports": "Error failure independent of printed vector; optional warning-as-error matters."
+  },
+  {
+    "file": "primary/runner--execution.rs",
+    "lineRanges": [
+      [
+        30,
+        42
+      ]
+    ],
+    "sha256": "b6f723f97771f75aeb3398810c5b2f0dea987458f0c898476eeae2fb8e700bbf",
+    "supports": "Nondefault reporter removes limit internally."
+  },
+  {
+    "file": "primary/reporter--terminal.rs",
+    "lineRanges": [
+      [
+        134,
+        159
+      ]
+    ],
+    "sha256": "d244ed5a4debf4b955934d6b1d02287efa5816ff405af0f29ab8e8d5bbdd0ed5",
+    "supports": "Terminal output threshold."
+  },
+  {
+    "file": "primary/diagnostics.rs",
+    "lineRanges": [
+      [
+        501,
+        510
+      ]
+    ],
+    "sha256": "8c91acb4e2e5c7f1d99f2fb26a796d4b8a24e66edc38a8ab3bad89dbc075b90b",
+    "supports": "Failure termination."
+  },
+  {
+    "file": "primary/crates--biome_cli--src--main.rs",
+    "lineRanges": [
+      [
+        35,
+        57
+      ]
+    ],
+    "sha256": "6a45f1785399a04398808e5b28e98769a9b26cbdf32cc8a81734e34034d9508d",
+    "supports": "Native error outcome; JS shim preserves status."
+  }
+]
