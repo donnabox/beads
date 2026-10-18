@@ -1,0 +1,28 @@
+{
+  "allPlanHistoriesExactInPlace": true,
+  "source679Exact": true,
+  "sourceOwnedExisting": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "sourceProtected673": true,
+  "planProspectiveOwnedPaths8RemainUnadopted": [
+    "packages/conformance/src/executable-manifest.ts",
+    "packages/conformance/src/runner.ts",
+    "packages/conformance/src/executable-manifest.test.ts",
+    "packages/conformance/src/runner.test.ts",
+    "packages/protocol/src/transaction-discovery-values.test.ts",
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "protocolSpecSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "freshActualReviewCount": 0,
+  "oldReviewsNotRetriedOrRelabelled": true,
+  "oldFailuresUnknownsMissingReceiptsPreserved": "context/history plus immutable origins; no output reconstruction",
+  "productOrWriteCredit": false
+}

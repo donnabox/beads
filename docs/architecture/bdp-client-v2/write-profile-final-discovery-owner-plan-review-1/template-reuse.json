@@ -1,0 +1,32 @@
+{
+  "runner": {
+    "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review/run.py",
+    "beforeSha256": "f8b34f560ee7a853199cd84797aca0f51bd308fd9e3e428d9bde335a6bd34403",
+    "afterSha256": "9ac2408b377b1450d3407a1e66f94bccaf290c01a17cad783dc9bf9190ed2810",
+    "exactNamedLiteralSubstitutions": [
+      {
+        "before": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+        "after": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum"
+      },
+      {
+        "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review/guarded-action-session-20261018-021624-549f.py",
+        "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py"
+      },
+      {
+        "before": "a56254d682cf4623cab22a552e3d2f695f691795",
+        "after": "cce884ccea1db97cbc6fd7bff876d4d6091f9081"
+      }
+    ],
+    "inverseBytesExact": true,
+    "inverseASTExact": true,
+    "semantics": "Proven six-dirty source wrapper checks actual existing six dirty paths; CODE-vs-PLAN is prompt subject only, not changed mechanics. All source/patch/scope/session/parser/deadline/ownership/no-retry predicates remain."
+  },
+  "parserSha256": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+  "argvSha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+  "guardSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "supervisorByteExact": true,
+  "reviewerConfiguredDefaultModel": true,
+  "agentOrModelOrMaxTurnOverrides": false,
+  "actualTemplateOutcomeNotReused": true
+}

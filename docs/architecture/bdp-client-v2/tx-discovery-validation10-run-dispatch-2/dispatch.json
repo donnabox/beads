@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-18T15:31:09.457983+00:00",
+  "activationPublicationReadback": "0eeb147476d0547aa663f6e87c02b7cc7db8b130",
+  "rootDispatcherPid": 98142,
+  "gateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+  "stagesIntended": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "prior4NotRerun": true,
+  "noRetry": true,
+  "stopOnNonzeroOrWholeWrapperElapsedAtLeast120": true
+}

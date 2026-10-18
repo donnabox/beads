@@ -1,0 +1,41 @@
+{
+  "captureKinds": [
+    "response-url",
+    "header-link",
+    "json-pointer",
+    "json-pointer-relative-url"
+  ],
+  "relativeDirectoryCapture": {
+    "fromKeys": [
+      "kind",
+      "pointer"
+    ],
+    "HTTPOnly": true,
+    "rawValue": "one nonempty canonical ASCII lower-case alphanumeric/hyphen segment <=128, no slash/dot-segment/scheme/authority/query/fragment/percent escape/control; directory schema assertions already passed",
+    "base": "actual response.url of the received Operation Directory, never fixture/ready hidden target map",
+    "resolve": "exact new URL(rawValue,response.url), then unchanged HTTP canonical/Scope confinement and trusted exact-route/method/credential validation",
+    "oldCaptureMeaningUnchanged": true,
+    "receiptAuthority": "never grant receipt ledger authority: new kind uses nonreceipt pointer path; existing actual mutation /id and /next logic remains exact"
+  },
+  "contextBodyHeaderAssertion": "proposed response-json-header-equals on same HTTP observation; unavailable until reviewed source authoring",
+  "scopeBinding": "already seeded by runner; fixture shadow forbidden",
+  "newHTTPAssertion": {
+    "kind": "response-json-header-equals",
+    "keys": [
+      "id",
+      "kind",
+      "pointer",
+      "name"
+    ],
+    "nameEnum": [
+      "bdp-scope-epoch",
+      "bdp-authorization-view",
+      "bdp-scope-position"
+    ],
+    "semantics": "JSON own selected value and same actual response compatibility-header must both be nonempty valid token strings and byte-equal, no normalization; absent/wrong type/mismatch fails; valid JSON and available actual wire remain required",
+    "HTTPOnly": "prefix response- keeps programmatic JSON-only filters closed",
+    "wireLimit": "This equality compares decoded view only; raw framing/singleton-header consistency must also be verified independently on same exchange. No duplicate-header raw credit from a last-value map."
+  },
+  "sourceAuthoringReleased": false,
+  "adopted": false
+}

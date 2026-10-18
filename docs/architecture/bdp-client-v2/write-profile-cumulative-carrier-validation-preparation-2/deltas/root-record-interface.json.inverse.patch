@@ -1,0 +1,22 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/root-record-interface.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/root-record-interface.json
+@@ -56,17 +56,9 @@
+     "sourceBindingSha256 exact",
+     "stageExitSha256 actual",
+     "watchdogSha256 actual",
+-    "wholeParentElapsedSeconds finite >=0 and STRICTLY<115, measured from before wrapper launch; successful inner record alone is insufficient",
+-    "parentStdoutEOF=true AND parentStderrEOF=true actual settled root-captured tool pipes",
+-    "censusProbeTerminal exact path/sha256 pin to complete actual parent TOOL stdout, <=1MiB, exactly one newline-terminated carrier-census-probe-terminal-v1 event; provisional until rawExit0+wholeelapsed<115",
+-    "censusProbeClosure exact document pin: accepted=true, stage/attemptId/sourceBindingSha256, parentProbeTerminalSha256, exact complete probePids/probeGroups, taskPids/taskGroups, censusAfterActualParentExit=true, rawExit0/stdoutEOF/stderrEOF/stderrBytes0, censusRaw exact pin to ordinary bounded <=262144-byte raw ps table",
+-    "fresh root ps census must cover ALL registry probe IDs/groups plus recorded task IDs/groups; no remaining row; no event-only, counts-only, last-probe-only or reconstructed receipt acceptance"
++    "wholeParentElapsedSeconds finite >=0 and STRICTLY<115, measured from before wrapper launch; successful inner record alone is insufficient"
+   ],
+   "noAliasesOrOldPassReuse": true,
+   "publication": "Independently inspect full actual objects and file/provenance/process facts; freeze/index/mirror/publish/readback actual root acceptances BEFORE active gate references/prefix release. Field shape alone is never semantic or ownership acceptance.",
+-  "state": "Existing concrete gate.py interface; future actual records remain UNRESOLVED; no execution",
+-  "toolProbeTerminalContract": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/census-probe-contract.json",
+-    "state": "CLOSED declaration; actual tool terminal/fresh root proof remain UNKNOWN"
+-  }
++  "state": "Existing concrete gate.py interface; future actual records remain UNRESOLVED; no execution"
+ }

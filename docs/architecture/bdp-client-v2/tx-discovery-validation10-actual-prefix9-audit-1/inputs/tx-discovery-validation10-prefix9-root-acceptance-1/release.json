@@ -1,0 +1,35 @@
+{
+  "utc": "2026-10-18T15:26:22.636326+00:00",
+  "accepted": true,
+  "acceptanceSha256": "dd441b9890b80d7575103a05ab7bede60e6c919acc8875c2ee330f922dede3e7",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "dispatchOnlyNext5": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "gateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+  "noRetry": true,
+  "preconditions": [
+    "Publish/readback candidate+FULLnative+rootacceptance beforeactivation",
+    "Activate byteexact reviewed6143 gate and publish/readback activation BEFORE dispatch",
+    "Only next5 sequential fresh wrappers; actual raw0+wholeelapsed<120/strict actual source/process/log/receipt acceptance",
+    "Any failure/unknown/late stops no retry",
+    "Actual fresh build inventory/root semantic/source/process proof and new fullindep proposed authority before source collection prefix17"
+  ],
+  "activationPerformed": false,
+  "executionDispatched": false
+}

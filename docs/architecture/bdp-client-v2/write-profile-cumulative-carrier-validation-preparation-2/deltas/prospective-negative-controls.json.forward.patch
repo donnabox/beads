@@ -1,0 +1,39 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/prospective-negative-controls.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/prospective-negative-controls.json
+@@ -85,9 +85,9 @@
+       "target": "run.py"
+     },
+     {
+-      "expected": "register direct handle and preserve worker anchor, no group-wide quiet exclusion",
++      "expected": "register direct handle and preserve worker anchor, no group-wide quiet exclusion; both actual pipe EOF+raw terminal before ANY census use, complete retained probe registry",
+       "id": "C13",
+-      "input": "worker/primary/group spawn before ack and descendant quiet race",
++      "input": "worker/primary/group spawn before ack and descendant quiet race; native census EAGAIN then final complete-row suffix+exit",
+       "observed": "UNEXECUTED",
+       "target": "run.py"
+     },
+@@ -99,16 +99,16 @@
+       "target": "run.py"
+     },
+     {
+-      "expected": "sticky unknown/refuse, no unsafe historical barePGID signaling",
++      "expected": "sticky unknown/refuse, no unsafe historical barePGID signaling; retain exact received failure prefix/UNKNOWN suffix, no partial-prefix census",
+       "id": "C15",
+-      "input": "unknown birth/changed livecomm/census failure/known group unanchored",
+-      "observed": "UNEXECUTED",
+-      "target": "run.py"
+-    },
+-    {
+-      "expected": "bounded repeated owned escalation; raw failure or UNKNOWN, never retry",
++      "input": "unknown birth/changed livecomm/census failure/known group unanchored; native census missing EOF/held writer/late last bytes/nonzero stderr",
++      "observed": "UNEXECUTED",
++      "target": "run.py"
++    },
++    {
++      "expected": "bounded repeated owned escalation; raw failure or UNKNOWN, never retry; immediate direct probe ownership and bounded terminal evidence, fresh root absence of ALL recorded task/probe PIDs/groups",
+       "id": "C16",
+-      "input": "SIGTERM ignored/slow closure/publisher failure",
++      "input": "SIGTERM ignored/slow closure/publisher failure; census probe survives cutoff or parent terminal publication blocks",
+       "observed": "UNEXECUTED",
+       "target": "run.py"
+     },

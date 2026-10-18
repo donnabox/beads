@@ -1,0 +1,112 @@
+[
+  {
+    "line": 31,
+    "method": "read/AST only; never evaluated",
+    "source": "require(len(sys.argv) == 1, \"No arbitrary command or retry arguments accepted\")"
+  },
+  {
+    "line": 32,
+    "method": "read/AST only; never evaluated",
+    "source": "require(CONTROL[\"rootLaunchReleased\"] is True, \"CLOSED supplement; root release required\")"
+  },
+  {
+    "line": 104,
+    "method": "read/AST only; never evaluated",
+    "source": "require(row[\"ppid\"] == os.getpid() and row[\"pgid\"] == pid,\n                            \"Registered direct-child identity changed\")"
+  },
+  {
+    "line": 122,
+    "method": "read/AST only; never evaluated",
+    "source": "require(type(pid) is int and record[\"pgid\"] == pid, \"Bad reviewer identity\")"
+  },
+  {
+    "line": 124,
+    "method": "read/AST only; never evaluated",
+    "source": "require(record[\"argv\"] == CONTROL[\"reviewerArgv\"], \"Reviewer command changed\")"
+  },
+  {
+    "line": 128,
+    "method": "read/AST only; never evaluated",
+    "source": "require(observed >= epoch_begin - 1, \"Stale reviewer process record\")"
+  },
+  {
+    "line": 135,
+    "method": "read/AST only; never evaluated",
+    "source": "require(row[\"pgid\"] == pid and abs(process_start - observed) < 2,\n                                \"Reviewer PID reused or process-group identity changed\")"
+  },
+  {
+    "line": 143,
+    "method": "read/AST only; never evaluated",
+    "source": "require(state[\"authenticatedReviewers\"].get(pid) == authenticated,\n                                    \"Unbound or changed zombie reviewer identity\")"
+  },
+  {
+    "line": 147,
+    "method": "read/AST only; never evaluated",
+    "source": "require(Path(row[\"comm\"]).name == \"claude\", \"Reviewer executable identity changed\")"
+  },
+  {
+    "line": 298,
+    "method": "read/AST only; never evaluated",
+    "source": "require(time.monotonic() - begin < 1790, \"No guard launch after outer TERM boundary\")"
+  },
+  {
+    "line": 326,
+    "method": "read/AST only; never evaluated",
+    "source": "require(not any((PACKET / name).exists() for name in OUTPUTS), \"Prior packet attempt exists; no retry\")"
+  },
+  {
+    "line": 331,
+    "method": "read/AST only; never evaluated",
+    "source": "require(bound == expected, \"Packet release must change only rootLaunchReleased false to true\")"
+  },
+  {
+    "line": 333,
+    "method": "read/AST only; never evaluated",
+    "source": "require({str(f.relative_to(PACKET)) for f in PACKET.rglob(\"*\") if f.is_file()} == set(frozen),\n                \"Frozen packet file set changed\")"
+  },
+  {
+    "line": 337,
+    "method": "read/AST only; never evaluated",
+    "source": "require(sha(PACKET / name) == digest, \"Frozen packet bytes changed: \" + name)"
+  },
+  {
+    "line": 338,
+    "method": "read/AST only; never evaluated",
+    "source": "require(CONTROL[\"expectedSession\"] == \"2026-10-18T02:16:24Z-549f\", \"Wrong session control\")"
+  },
+  {
+    "line": 343,
+    "method": "read/AST only; never evaluated",
+    "source": "require(wait_check(initial), \"Remote role check failed; no reviewer launch\")"
+  },
+  {
+    "line": 344,
+    "method": "read/AST only; never evaluated",
+    "source": "require(state[\"reason\"] is None and time.monotonic() - begin < 1788,\n                \"No wrapper launch near or after outer TERM boundary\")"
+  },
+  {
+    "line": 379,
+    "method": "read/AST only; never evaluated",
+    "source": "require(wait_check(pending_check), \"Pending role check failed\")"
+  },
+  {
+    "line": 383,
+    "method": "read/AST only; never evaluated",
+    "source": "require(not owned and not state[\"unanchoredGroupsCurrent\"],\n                    \"Owned or unanchored known-group process survived normal wrapper exit\")"
+  },
+  {
+    "line": 385,
+    "method": "read/AST only; never evaluated",
+    "source": "require(wrapper.returncode == 0, \"Wrapper failed; inspect preserved local records\")"
+  },
+  {
+    "line": 387,
+    "method": "read/AST only; never evaluated",
+    "source": "require(final_role_ok, \"Final role check failed; no completion claim\")"
+  },
+  {
+    "line": 389,
+    "method": "read/AST only; never evaluated",
+    "source": "require(terminal.get(\"classification\") == \"review_complete\"\n                    and terminal.get(\"reviewComplete\") is True,\n                    \"Runner did not record a complete review\")"
+  }
+]

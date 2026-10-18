@@ -1,0 +1,63 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/final-static-verification.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/final-static-verification.json
+@@ -1,30 +1,34 @@
+ {
+-  "ASTOnlyPython": 8,
+-  "MJSByteExact": 3,
+-  "allActualOutcomesAndFutureTupleProofs": "UNKNOWN",
+-  "allInheritedAndNewExternalPinsRehashed": 4221,
+-  "byteExactOtherHelpers": 8,
+-  "canonicalSourceIdentity": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
+-  "concreteSyntheticHarness": "UNPREPARED/UNAPPROVED",
+-  "fullPredecessor838AndNative850VerifiedInPlaceWithMirrors": true,
+-  "guardRemoteBlob": "9fc90fdc9ee65abd191f4ed21f912c91c66c9f58",
+-  "guardRemoteSession": "2026-10-18T02:16:24Z-549f",
+-  "helperOrSchemaEvaluation": false,
+-  "helpers": 11,
+-  "namespaceInverseCommandsAndMatrixByteExact": true,
+-  "negativeControlsExecuted": 0,
+-  "negativeDescriptions": 32,
+-  "onePositive17Invocation": 1,
+-  "onlyChangedExecutableBodies": [
+-    "run.py",
+-    "gate.py",
+-    "packages.py"
+-  ],
+-  "protected677AndSemantic4Preserved": true,
++  "allErrors": [],
++  "approvedStages": [],
++  "baseToolCandidatePins": 456,
++  "bootstrapReuse": [],
++  "compilerNodeOrRuntimeExecution": false,
++  "currentSourceAndPriorFrozenHistoryUntouched": true,
++  "exactAdaptations": 11,
++  "externalReferencePins": 2528,
++  "flagsAllFalse": true,
++  "genuineOrNew": 10,
++  "helperImportOrEvaluation": false,
++  "identityGuard": 1,
++  "immediatePairs": 2,
++  "mjsManualTextOnly": 3,
++  "negativeHarness": "UNPREPARED/UNAPPROVED/UNEXECUTED",
++  "noTestCollection": true,
++  "originActualAndCopyChecks": 766,
++  "ownIntermediateInspectionErrors": "pre-freeze-drafts/WIP-read-and-static-notes.json plus earlier preserved WIP records; no subject runtime failure inferred",
++  "pythonASTDataParses": 8,
++  "remoteSession": {
++    "actual": true,
++    "blob": "c73d4877646d144206c67ff7391c65356f30cc7f",
++    "expected": "2026-10-18T02:16:24Z-549f"
++  },
+   "runAbsent": true,
+-  "sourceCallbacks": 48,
++  "singlePositive17ExactSelection": true,
++  "source48ExactSelection": true,
+   "sourceFilesRehashed": 681,
+-  "sourceGitOrGateExecution": false,
+-  "stages": 26,
+-  "state": "AUTHOR static verification, never independent approval/test"
++  "sourceIdentity": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
++  "sourceWitnesses": 52,
++  "stageCount": 26,
++  "state": "Author pre-freeze static checks only; independent OTHER-native/root acceptance pending"
+ }

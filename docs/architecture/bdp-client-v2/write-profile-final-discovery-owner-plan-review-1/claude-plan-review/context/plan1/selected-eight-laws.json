@@ -1,0 +1,530 @@
+{
+  "sourceSelectedLawsSha256": "f7ffdb9152d8668183cac87acbf2eb31ed1b39a7db305b853e991a60b2311a33",
+  "rows": [
+    {
+      "ordinal": 1,
+      "id": "read.discovery.scope-service-desc",
+      "title": "Scope response exposes service-desc discovery",
+      "requiredProfile": "read",
+      "catalog": "read-v1.json",
+      "catalogScenarioExact": {
+        "id": "read.discovery.scope-service-desc",
+        "title": "Scope response exposes service-desc discovery",
+        "kind": "normative",
+        "requiredProfile": "read",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "An ordinary `GET` of the Scope URI MUST return a successful response carrying a registered [`service-desc` link relation](https://www.rfc-editor.org/rfc/rfc8631.html) to the machine-readable JSON discovery document."
+          }
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#scope-discovery-and-human-documentation",
+          "selectedText": "An ordinary `GET` of the Scope URI MUST return a successful response carrying a registered [`service-desc` link relation](https://www.rfc-editor.org/rfc/rfc8631.html) to the machine-readable JSON discovery document.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#scope-discovery-and-human-documentation",
+          "fullClauseFirstLine": 909,
+          "fullClauseLastLine": 1025,
+          "fullClauseSha256": "037ff51c4f9a0d5ae25ff73054970a8a4132bb26d7447515285a5750e81913e4",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 2,
+      "id": "read.discovery.canonical-navigation",
+      "title": "Discovery navigation is canonical and Scope-confined",
+      "requiredProfile": "read",
+      "catalog": "read-v1.json",
+      "catalogScenarioExact": {
+        "id": "read.discovery.canonical-navigation",
+        "title": "Discovery navigation is canonical and Scope-confined",
+        "kind": "normative",
+        "requiredProfile": "read",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "For the canonical Scope URL `S`, `beads` MUST equal the URL produced by resolving `beads/` against `S`, `links` MUST equal `links/` resolved against `S`, and `types` MUST equal `types/` resolved against `S`."
+          }
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#scope-discovery-and-human-documentation",
+          "selectedText": "For the canonical Scope URL `S`, `beads` MUST equal the URL produced by resolving `beads/` against `S`, `links` MUST equal `links/` resolved against `S`, and `types` MUST equal `types/` resolved against `S`.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#scope-discovery-and-human-documentation",
+          "fullClauseFirstLine": 909,
+          "fullClauseLastLine": 1025,
+          "fullClauseSha256": "037ff51c4f9a0d5ae25ff73054970a8a4132bb26d7447515285a5750e81913e4",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 3,
+      "id": "read.discovery.optional-limits",
+      "title": "Advertised Read limits are valid and binding",
+      "requiredProfile": "read",
+      "catalog": "read-v1.json",
+      "catalogScenarioExact": {
+        "id": "read.discovery.optional-limits",
+        "title": "Advertised Read limits are valid and binding",
+        "kind": "normative",
+        "requiredProfile": "read",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#advertised-limits",
+            "selectedText": "Omission means only that the bound is not pre-advertised; it does not mean infinite capacity and does not permit silent truncation or a non-normative failure response."
+          }
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#advertised-limits",
+          "selectedText": "Omission means only that the bound is not pre-advertised; it does not mean infinite capacity and does not permit silent truncation or a non-normative failure response.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#advertised-limits",
+          "fullClauseFirstLine": 1042,
+          "fullClauseLastLine": 1091,
+          "fullClauseSha256": "5c9c55e10b99a3789dece6a014e797c3f5fc6d60bdc2cb3cb68e9297bc295bfc",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 44,
+      "id": "read-update.discovery.aliases",
+      "title": "Read+Update discovery advertises aliases: every Read+Update Scope offers the alias targets and serves alias resolution",
+      "requiredProfile": "read-update",
+      "catalog": "read-update-v1.json",
+      "catalogScenarioExact": {
+        "id": "read-update.discovery.aliases",
+        "title": "Read+Update discovery advertises aliases: every Read+Update Scope offers the alias targets and serves alias resolution",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "`aliases` appears exactly when the authority serves alias resolution; a client MUST NOT construct alias URLs otherwise."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#readupdate-discovery",
+            "selectedText": "Read+Update adds required `operations` and `aliases` navigation members to Read discovery and advertises `profile: \"read-update\"`."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#alias-targets",
+            "selectedText": "Because every Read+Update Scope offers the alias targets, a Read+Update authority serves alias resolution and advertises `aliases` in its discovery document"
+          }
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#scope-discovery-and-human-documentation",
+          "selectedText": "`aliases` appears exactly when the authority serves alias resolution; a client MUST NOT construct alias URLs otherwise.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#scope-discovery-and-human-documentation",
+          "fullClauseFirstLine": 909,
+          "fullClauseLastLine": 1025,
+          "fullClauseSha256": "037ff51c4f9a0d5ae25ff73054970a8a4132bb26d7447515285a5750e81913e4",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#readupdate-discovery",
+          "selectedText": "Read+Update adds required `operations` and `aliases` navigation members to Read discovery and advertises `profile: \"read-update\"`.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#readupdate-discovery",
+          "fullClauseFirstLine": 2029,
+          "fullClauseLastLine": 2054,
+          "fullClauseSha256": "0c04ecba476776930c7f99a17825a6e5fee8e77c16f8b702137f4745da2f3fa2",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#alias-targets",
+          "selectedText": "Because every Read+Update Scope offers the alias targets, a Read+Update authority serves alias resolution and advertises `aliases` in its discovery document",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#alias-targets",
+          "fullClauseFirstLine": 2933,
+          "fullClauseLastLine": 3082,
+          "fullClauseSha256": "afde755d08783f67f6ce0bc1f6fb3656af57508fdfc3edcaf4f26020c4d53395",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 114,
+      "id": "transactional.discovery.document",
+      "title": "Transactional discovery has the exact required history and replication members",
+      "requiredProfile": "transactional",
+      "catalog": "transactional-v1.json",
+      "catalogScenarioExact": {
+        "id": "transactional.discovery.document",
+        "title": "Transactional discovery has the exact required history and replication members",
+        "kind": "normative",
+        "requiredProfile": "transactional",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#discovery-profile-membership",
+            "selectedText": "The history, receipt, snapshot, changefeed, and Event members are required only in Transactional and prohibited in both lower profiles."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#discovery-profile-membership",
+            "selectedText": "| `operations` | prohibited | required | required |"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#discovery-profile-membership",
+            "selectedText": "| `aliases` | optional | required | required |"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "The optional `limits`, `maximumEndpointMultiplicity`, `order`, and `historicalResolution` members apply under their contracts."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "An omitted `order` means `canonical-uri`."
+          }
+        ],
+        "retires": [
+          "read-update.discovery.document"
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#discovery-profile-membership",
+          "selectedText": "The history, receipt, snapshot, changefeed, and Event members are required only in Transactional and prohibited in both lower profiles.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#discovery-profile-membership",
+          "fullClauseFirstLine": 3764,
+          "fullClauseLastLine": 3797,
+          "fullClauseSha256": "e08e2714ed9b8efa91a0c98e876a8f071683a4bad5870e34a43dc58e3a7befc5",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#discovery-profile-membership",
+          "selectedText": "| `operations` | prohibited | required | required |",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#discovery-profile-membership",
+          "fullClauseFirstLine": 3764,
+          "fullClauseLastLine": 3797,
+          "fullClauseSha256": "e08e2714ed9b8efa91a0c98e876a8f071683a4bad5870e34a43dc58e3a7befc5",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#discovery-profile-membership",
+          "selectedText": "| `aliases` | optional | required | required |",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#discovery-profile-membership",
+          "fullClauseFirstLine": 3764,
+          "fullClauseLastLine": 3797,
+          "fullClauseSha256": "e08e2714ed9b8efa91a0c98e876a8f071683a4bad5870e34a43dc58e3a7befc5",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#scope-discovery-and-human-documentation",
+          "selectedText": "The optional `limits`, `maximumEndpointMultiplicity`, `order`, and `historicalResolution` members apply under their contracts.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#scope-discovery-and-human-documentation",
+          "fullClauseFirstLine": 909,
+          "fullClauseLastLine": 1025,
+          "fullClauseSha256": "037ff51c4f9a0d5ae25ff73054970a8a4132bb26d7447515285a5750e81913e4",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#scope-discovery-and-human-documentation",
+          "selectedText": "An omitted `order` means `canonical-uri`.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#scope-discovery-and-human-documentation",
+          "fullClauseFirstLine": 909,
+          "fullClauseLastLine": 1025,
+          "fullClauseSha256": "037ff51c4f9a0d5ae25ff73054970a8a4132bb26d7447515285a5750e81913e4",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 115,
+      "id": "transactional.discovery.operation-directory",
+      "title": "The Transactional Operation Directory lists all twelve targets",
+      "requiredProfile": "transactional",
+      "catalog": "transactional-v1.json",
+      "catalogScenarioExact": {
+        "id": "transactional.discovery.operation-directory",
+        "title": "The Transactional Operation Directory lists all twelve targets",
+        "kind": "normative",
+        "requiredProfile": "transactional",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#operation-directory-and-singleton-targets",
+            "selectedText": "The discovered `operations/` Resource is a directory of the generic mutation targets available under the Scope's profile."
+          }
+        ],
+        "retires": [
+          "read-update.discovery.operation-directory"
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#operation-directory-and-singleton-targets",
+          "selectedText": "The discovered `operations/` Resource is a directory of the generic mutation targets available under the Scope's profile.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#operation-directory-and-singleton-targets",
+          "fullClauseFirstLine": 2066,
+          "fullClauseLastLine": 2129,
+          "fullClauseSha256": "97d7443db3496cb283d380adebe99936ded668fb8f519591a98d49075b90d7cc",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 116,
+      "id": "transactional.discovery.limits",
+      "title": "Transactional discovery may advertise the transaction group and receipt and replay retention",
+      "requiredProfile": "transactional",
+      "catalog": "transactional-v1.json",
+      "catalogScenarioExact": {
+        "id": "transactional.discovery.limits",
+        "title": "Transactional discovery may advertise the transaction group and receipt and replay retention",
+        "kind": "normative",
+        "requiredProfile": "transactional",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#transactional-limits",
+            "selectedText": "`retention.idempotency`, `retention.receipt`, `retention.maximumSnapshotLifetime`, and `retention.replay` are ISO 8601 durations."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#transactional-limits",
+            "selectedText": "`retention.receipt` bounds how long detailed outcomes and failed receipts remain"
+          }
+        ],
+        "retires": [
+          "read-update.discovery.limits"
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#transactional-limits",
+          "selectedText": "`retention.idempotency`, `retention.receipt`, `retention.maximumSnapshotLifetime`, and `retention.replay` are ISO 8601 durations.",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#transactional-limits",
+          "fullClauseFirstLine": 3806,
+          "fullClauseLastLine": 3845,
+          "fullClauseSha256": "72a6b67e8723c6ea1e9944a75bffaed6185ad77e4768bbb4d19075cc5e54ab9e",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        },
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#transactional-limits",
+          "selectedText": "`retention.receipt` bounds how long detailed outcomes and failed receipts remain",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#transactional-limits",
+          "fullClauseFirstLine": 3806,
+          "fullClauseLastLine": 3845,
+          "fullClauseSha256": "72a6b67e8723c6ea1e9944a75bffaed6185ad77e4768bbb4d19075cc5e54ab9e",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    },
+    {
+      "ordinal": 117,
+      "id": "transactional.discovery.no-idempotency-retention",
+      "title": "Transactional discovery never advertises retention.idempotency",
+      "requiredProfile": "transactional",
+      "catalog": "transactional-v1.json",
+      "catalogScenarioExact": {
+        "id": "transactional.discovery.no-idempotency-retention",
+        "title": "Transactional discovery never advertises retention.idempotency",
+        "kind": "normative",
+        "requiredProfile": "transactional",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#transactional-limits",
+            "selectedText": "a Transactional discovery document MUST NOT advertise it"
+          }
+        ],
+        "retires": [
+          "read-update.idempotency.retention-minimum"
+        ]
+      },
+      "governingRequirements": [
+        {
+          "source": "docs/specs/bdp.md",
+          "anchor": "#transactional-limits",
+          "selectedText": "a Transactional discovery document MUST NOT advertise it",
+          "fullGoverningClauseKey": "docs/specs/bdp.md#transactional-limits",
+          "fullClauseFirstLine": 3806,
+          "fullClauseLastLine": 3845,
+          "fullClauseSha256": "72a6b67e8723c6ea1e9944a75bffaed6185ad77e4768bbb4d19075cc5e54ab9e",
+          "fullSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+          "excerptIsNotWholeClauseProof": true
+        }
+      ],
+      "fullClauseRule": "ALL applicable obligations in the referenced full governing sections, cross-references and effective TX overrides are required; catalog excerpt/title/count is not a sufficiency claim.",
+      "currentManifestOwner": null,
+      "currentOwnerStatus": "MISSING_OWNER",
+      "currentWholeContract": false,
+      "existingPartialCoverageReason": null,
+      "existingAuthoredActions": 0,
+      "prospectiveWorkPackage": "TX-DISCOVERY",
+      "prospectiveExecutableOwner": "UNKNOWN; not authored/released",
+      "applicability": {
+        "selectedLawRemainsRequired": true,
+        "state": "UNRESOLVED full-clause case/applicability review under final actual configuration",
+        "triggerNotes": [],
+        "noOmissionByApiAbsenceHistoryFalseOrMissingFixture": true
+      },
+      "finalSameTXObservedEvidence": "UNKNOWN",
+      "finalQualification": "UNESTABLISHED",
+      "authoringReleased": false
+    }
+  ],
+  "wholeContractEstablished": false
+}

@@ -1,0 +1,8 @@
+{
+  "operation": "Own readonly inline first4 inspection",
+  "actualExit": 1,
+  "actualError": "AssertionError at inline line7",
+  "wrongAssumption": "Stage temporaryDirectory must be absent",
+  "diagnosis": "Unchanged run.py retains stage scratch/cache; actual required absence predicate is every nested directory named bdp-*. Four scratch roots exist, two only node-compile-cache, two empty. All actual stage receipts PASS; no helper/product retry/source/gate change/cleanup.",
+  "correctedPredicate": "Fresh readonly nested bdp-* runtime directory enumeration matches actual run.py72; retained scratch/cache is evidence, not product residue."
+}

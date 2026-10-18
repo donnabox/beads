@@ -1,0 +1,29 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/findings-resolution.json
++++ /dev/null
+@@ -1,26 +0,0 @@
+-{
+-  "CV1-N1": {
+-    "code": [
+-      "run.py immediate direct probe registry before pipe setup",
+-      "both EOF AND raw terminal before any row parse/use",
+-      "same200ms deadline and262144/4096 raw acceptance caps; one extra overflow sentinel byte only marks failed received prefix, never accepted/truncated whole raw",
+-      "complete finite per-probe creation/raw/EOF/length/hash receipts; no clipping/omission",
+-      "exact last complete raw and first-failure received prefix; intermediate full raw not all persisted",
+-      "earlier watchdog snapshot prefix retained; unique bounded final parent event after LAST census, zero further probes",
+-      "gate.complete strict actual root tool stdout pin/unique event/both pipe EOF/raw0/wholeelapsed<115 plus fresh ALL probe+task PID/PGID raw census required"
+-    ],
+-    "controls": "Existing C13/C15/C16 prospective descriptions refined; no ID/callback added, no control run",
+-    "scopeLimit": "Acquisition facts are same-run source attestation, not independent replay or all-transient-process inventory. No observed runtime outcome or fit guarantee."
+-  },
+-  "CV1-N2": {
+-    "actualTuple": "UNKNOWN; no guessed future commit/branch/tree/patch/source claim",
+-    "code": [
+-      "packages.py clean=not accepted dirtyPaths",
+-      "sourceAttribution expression selects actual cleanHEAD versus reviewed dirty-base description"
+-    ],
+-    "unchanged": "gate.source_check exact clean681 HEAD or dirty4 reviewed base/before-after/staged/untracked/patch checks BYTE/AST unchanged"
+-  },
+-  "executionReleased": false,
+-  "notAcceptedByAuthor": true,
+-  "state": "AUTHOR corrections prepared only; FULL OTHER-native/root pending"
+-}

@@ -1,0 +1,44 @@
+{
+  "createdUtc": "2026-10-18T04:25:42.709014+00:00",
+  "auditClassification": "clean_complete_code_review_with_findings_pending_root_disposition",
+  "actualCodeReviewComplete": true,
+  "runnerCliExitCode": 0,
+  "outerWrapperExitCode": 0,
+  "sourceInvarianceAccepted": true,
+  "packetReleaseIdentityAccepted": true,
+  "observedProcessClosureAccepted": true,
+  "findingsAvailable": true,
+  "reviewFindings": {
+    "blockerHigh": 1,
+    "medium": 1,
+    "lowMedium": 1,
+    "informational": 3
+  },
+  "approvalInferred": false,
+  "runtimeValidationReleased": false,
+  "sourceCorrectionsReleased": false,
+  "rootDispositionRequired": true,
+  "rawStreamSha256": "ed7e0dbfc9acc5c0e3ce9e0fd051317cc0df9c740788dedb977c3680cff06b36",
+  "rawRecords": 6613,
+  "rawBytes": 3903704,
+  "sourcePatchSha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
+  "reviewTextSha256": "e664f7fdb2b6a7aca02cce29d52d69e9602ebb175459ec154d0ec0ed8051fbf9",
+  "terminalResultSha256": "fb7c8907daf2cf4adf90f42e22e8ae489f8d0fc69da7229f80b699d36ba0f4f7",
+  "auditDataSha256": "60ee5c8fc6fce3dac1cb947046f3af4e357929bb255393dc53ef11590970873e",
+  "independentSourceAfterSha256": "1cb7f00fe6ba412592bf0cb79a437dd9dc25a2c2977f793a7c89b41179e2925a",
+  "counts": {
+    "sourceFiles": 679,
+    "contexts": 29,
+    "artifacts": 9,
+    "frozenRootFiles": 89,
+    "frozenPacketFiles": 37,
+    "observedPidsIncludingSupervisor": 292,
+    "observedGroups": 119
+  },
+  "reportSha256": "0d82275b68edd9cd899b6ed7c8143c1c790fc466943fc50576f3d8bd36f1411c",
+  "limitations": [
+    "Static formatting prediction, not observed formatter failure",
+    "No product tests/build/runtime/installed qualification",
+    "Finite observed PID/group closure only"
+  ]
+}

@@ -1,0 +1,11 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/packages.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/packages.py
+@@ -45,7 +45,7 @@
+    required.update(p.relative_to(root).as_posix() for p in (root/sub).rglob('*') if p.is_file())
+   assert set(files)==required,(name,set(files)^required)
+   packages[name]={'archive':str(archive),'archiveSha256':sha(archive.read_bytes()),'files':files}
+- write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':not g['_sourceBinding']['dirtyPaths'],'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':('Actual accepted clean HEAD/tree contains all681 reviewed source bytes, independently verified with fresh build and archives; not child-attested source.' if not g['_sourceBinding']['dirtyPaths'] else 'Base HEAD/tree plus independently verified reviewed dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.')})
++ write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Base HEAD/tree plus independently verified reviewed dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.'})
+ elif mode=='consumer':
+  basis=json.loads((E/'tar-source-provenance.json').read_text());assert basis['head']==g['finalHead']
+  C.mkdir(exist_ok=False)

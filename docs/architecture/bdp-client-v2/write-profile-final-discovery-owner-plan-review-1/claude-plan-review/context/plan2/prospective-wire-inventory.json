@@ -1,0 +1,633 @@
+{
+  "state": "static DATA allowlist expectation, never a cold-client source of navigation",
+  "rows": [
+    {
+      "owner": "read.discovery.scope-service-desc",
+      "id": "d01-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.scope-service-desc",
+      "id": "d01-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d01-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.scope-service-desc",
+      "id": "d01-scope-head",
+      "method": "HEAD",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "scope",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.canonical-navigation",
+      "id": "d02-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.canonical-navigation",
+      "id": "d02-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d02-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.canonical-navigation",
+      "id": "d02-beads",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/beads/?limit=32",
+      "actualURLMustBeCapturedAsAuthored": "d02-beads with literal limit=32",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.canonical-navigation",
+      "id": "d02-links",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/links/?limit=32",
+      "actualURLMustBeCapturedAsAuthored": "d02-links with literal limit=32",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.canonical-navigation",
+      "id": "d02-types",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/types/?limit=32",
+      "actualURLMustBeCapturedAsAuthored": "d02-types with literal limit=32",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d03-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-page-bound",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/types/?limit=32",
+      "actualURLMustBeCapturedAsAuthored": "d03-types ?limit=32",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-page-zero",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/types/?limit=0",
+      "actualURLMustBeCapturedAsAuthored": "d03-types ?limit=0",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-page-over",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/types/?limit=33",
+      "actualURLMustBeCapturedAsAuthored": "d03-types ?limit=33",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-selector-bound",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/beads/?selector=%24%5B%3F%40.properties.title+%3D%3D+%22aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%22%5D",
+      "actualURLMustBeCapturedAsAuthored": "d03-beads ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read.discovery.optional-limits",
+      "id": "d03-selector-over",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/beads/?selector=%24%5B%3F%40.properties.title+%3D%3D+%22aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%22%5D",
+      "actualURLMustBeCapturedAsAuthored": "d03-beads ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d04-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-directory",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/",
+      "actualURLMustBeCapturedAsAuthored": "d04-operations",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-create",
+      "method": "POST",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/create-bead",
+      "actualURLMustBeCapturedAsAuthored": "d04-create-bead",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "discovery-owner-create"
+        }
+      ],
+      "body": {
+        "id": "beads/a",
+        "type": "https://reference.invalid/acme/types/task",
+        "properties": {
+          "title": "discovery"
+        }
+      },
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-before",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/beads/a",
+      "actualURLMustBeCapturedAsAuthored": "existing fixture subject binding (beads/a)",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-put",
+      "method": "POST",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/put-alias",
+      "actualURLMustBeCapturedAsAuthored": "d04-put-alias",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "discovery-owner-put"
+        }
+      ],
+      "body": {
+        "alias": "alias/discovery-owner",
+        "target": "beads/a"
+      },
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-resolve",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/alias/discovery-owner",
+      "actualURLMustBeCapturedAsAuthored": "d04-aliases + reviewed local segment discovery-owner",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-after-put",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/beads/a",
+      "actualURLMustBeCapturedAsAuthored": "d04-bead",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-delete",
+      "method": "POST",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/delete-alias",
+      "actualURLMustBeCapturedAsAuthored": "d04-delete-alias",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "discovery-owner-delete"
+        }
+      ],
+      "body": {
+        "alias": "alias/discovery-owner"
+      },
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-missing",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/alias/discovery-owner",
+      "actualURLMustBeCapturedAsAuthored": "d04-aliases + discovery-owner",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "read-update.discovery.aliases",
+      "id": "d04-after-delete",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/beads/a",
+      "actualURLMustBeCapturedAsAuthored": "d04-bead",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.document",
+      "id": "d05-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.document",
+      "id": "d05-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d05-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.document",
+      "id": "d05-descriptor-head",
+      "method": "HEAD",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d05-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.document",
+      "id": "d05-descriptor-again",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d05-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.operation-directory",
+      "id": "d06-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.operation-directory",
+      "id": "d06-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d06-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.operation-directory",
+      "id": "d06-directory",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/",
+      "actualURLMustBeCapturedAsAuthored": "d06-operations",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.operation-directory",
+      "id": "d06-directory-head",
+      "method": "HEAD",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/",
+      "actualURLMustBeCapturedAsAuthored": "d06-operations",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.operation-directory",
+      "id": "d06-wrong-target-method",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/operations/create-bead",
+      "actualURLMustBeCapturedAsAuthored": "d06-create",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.limits",
+      "id": "d07-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.limits",
+      "id": "d07-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d07-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.no-idempotency-retention",
+      "id": "d08-scope",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/",
+      "actualURLMustBeCapturedAsAuthored": "existing runner scope binding",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "*/*"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    },
+    {
+      "owner": "transactional.discovery.no-idempotency-retention",
+      "id": "d08-descriptor",
+      "method": "GET",
+      "expectedCanonicalAllowlistURL": "https://reference.invalid/acme/bdp.json",
+      "actualURLMustBeCapturedAsAuthored": "d08-descriptor",
+      "headers": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "actualObserved": "UNKNOWN"
+    }
+  ],
+  "requests": 39,
+  "methods": {
+    "GET": 33,
+    "HEAD": 3,
+    "POST": 3
+  },
+  "actualWire": "UNKNOWN",
+  "requestsBeyondCore": "conditional full-clause witnesses must be counted/frozen before final owner release"
+}
