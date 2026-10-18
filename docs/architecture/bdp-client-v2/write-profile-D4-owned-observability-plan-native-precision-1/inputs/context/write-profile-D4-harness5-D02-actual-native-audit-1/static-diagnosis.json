@@ -1,0 +1,52 @@
+{
+  "firstFailingGenerationAndTime": "UNKNOWN_NOT_RECORDED",
+  "firstFailingOldAndNewRows": "UNKNOWN_NOT_RECORDED",
+  "firstFailingPid": "UNKNOWN_NOT_RECORDED",
+  "firstProvenGuardReason": "owned-pid-start-group-executable-changed",
+  "firstReasonNoLaterThanSeconds": 1.8895240798592567,
+  "firstSignalError": {
+    "at": 1.8895636210218072,
+    "attempted": true,
+    "error": "PermissionError",
+    "pgid": 6128,
+    "signal": 15,
+    "successful": false
+  },
+  "minimalFutureInstrumentationProposal": {
+    "authority": "DATA proposal only, immutable named successor plus independent/root review required; no patch authored",
+    "finalProbeCoverageOption": "If future proof requires all probe IDs, emit a bounded final registry after actual last census and before return, with no further probes; earlier tentative snapshot keeps its original attribution. Requires separate design/review, not retrofitted here.",
+    "retainCaughtSignalFailureOnly": [
+      "already-caught exception class and numeric errno",
+      "last census age/generation",
+      "selected group live rows and current anchor decision",
+      "direct handle unreaped state already held"
+    ],
+    "retainFirstMismatchOnly": [
+      "same-clock first failure time/generation",
+      "failing PID/role/registration status",
+      "exact already-parsed old identity and current row tuple",
+      "predicate component mismatch booleans",
+      "direct-handle returncode/reap state already held"
+    ],
+    "unchanged": [
+      "existing input/publication caps; refuse no-fit",
+      "same original clock115/119/120",
+      "all ownership predicates and safe signal rules",
+      "sticky UNKNOWN never cleared by later absence",
+      "no added process query, retry or product call"
+    ]
+  },
+  "noProvenZombieExecReuseOrHostPolicyCause": true,
+  "probeSnapshotLimit": "Tentative file captures 15 probe receipts through2.173314s; source may launch further censuses while IO publication/termination completes through final outer2.965408s. No final complete probe registry is emitted. All 25 recorded task PIDs/20 groups are freshly absent; unrecorded post-snapshot probes are not independently enumerable from saved evidence. No global/all-transient containment claim.",
+  "secondProvenGuardReason": "signal-error",
+  "sourceAnchors": {
+    "actualFinalReceipt": "outer_host.py:249-260",
+    "authenticationAndFinalComm": "outer_host.py:65-85",
+    "firstMismatch": "outer_host.py:107",
+    "groupAndDescendantOwnership": "outer_host.py:88-118",
+    "matches": "outer_host.py:50-53",
+    "signalDecisionAndFailure": "outer_host.py:120-141",
+    "tentativeSnapshot": "outer_host.py:242-248"
+  },
+  "terminalSeenNotSufficientCause": "Prior successful M02 has terminalSeen=true on its control identity too."
+}

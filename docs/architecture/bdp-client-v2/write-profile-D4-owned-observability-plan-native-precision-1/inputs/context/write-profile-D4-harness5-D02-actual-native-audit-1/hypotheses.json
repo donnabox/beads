@@ -1,0 +1,34 @@
+{
+  "hypotheses": [
+    {
+      "falsifyOrDistinguish": "First mismatch telemetry shows same permitted comm and no other tuple change, excluding an executable-only mismatch.",
+      "hypothesis": "An authenticated owned descendant executed a different executable without a registered transition.",
+      "id": "H1",
+      "notEstablished": "No failing PID, previous/new comm, role or mismatch snapshot persisted.",
+      "support": "Descendant identities record only first observed comm; only registered bootstrap roles receive a two-comm transition allowance. D02 includes transient Python and gh descendants from repeated authorization."
+    },
+    {
+      "falsifyOrDistinguish": "Record old terminalSeen plus first mismatching row state. A false terminalSeen at mismatch excludes this branch.",
+      "hypothesis": "An identity with terminalSeen=true was later seen in a non-Z row, causing the deliberate no-revival predicate to fail.",
+      "id": "H2",
+      "notEstablished": "M02 also has terminalSeen=true and succeeds; final terminalSeen alone is not causal. The earlier actual row transition is missing.",
+      "support": "matches() rejects every non-Z row after terminalSeen, independently of matching permitted comm. D02 control identity is terminalSeen=true in the later snapshot."
+    },
+    {
+      "falsifyOrDistinguish": "First old/new tuple and probe generation show whether birth or PGID differs. If both match, this hypothesis is excluded for that first failure.",
+      "hypothesis": "A birth or group mismatch (real identity change/reuse, or process-inventory chronology inconsistency) triggered the guard.",
+      "id": "H3",
+      "notEstablished": "No captured row proves changed birth/PGID, PID reuse, reparenting or incoherent inventory. Reparenting alone is not checked by matches().",
+      "support": "The same generic reason covers birth, PGID, terminal-state and executable mismatch; birth granularity is one second."
+    },
+    {
+      "falsifyOrDistinguish": "Retain already-caught errno and current last-census/anchor tuple at the failed signal, without extra probes or altered signaling. Distinguish actual EPERM from other OSError translation and whether an authenticated live anchor existed.",
+      "hypothesis": "The group TERM failed with an OS signal-permission/group-condition issue independent of, or exposed by, the earlier identity failure.",
+      "id": "H4",
+      "notEstablished": "No numeric errno, contemporaneous live rows, anchor decision, direct handle state or credential/policy evidence persisted. Zombies, sandbox policy and credentials cannot be selected as cause.",
+      "support": "Actual receipt records PGID6128 signal15 unsuccessful/PermissionError; this is later than the first listed ownership reason."
+    }
+  ],
+  "noRuntimeExperimentAuthorized": true,
+  "status": "FOUR_FALSIFIABLE_HYPOTHESES_NOT_CAUSAL_FINDINGS"
+}

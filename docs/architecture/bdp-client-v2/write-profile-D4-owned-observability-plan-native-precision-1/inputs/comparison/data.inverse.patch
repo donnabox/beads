@@ -1,0 +1,222 @@
+--- after-proposed-observation-contract.json
++++ before-static-diagnosis.json
+@@ -1,174 +1,52 @@
+ {
+-  "finalRegistry": {
+-    "banks": {
+-      "completedCensusProbes": {
+-        "fields": [
+-          "pid",
+-          "pgid",
+-          "rawExit",
+-          "stdoutEof",
+-          "stderrEof"
+-        ],
+-        "maxRows": 2048,
+-        "rowBytesWithSeparator": 64,
+-        "source": "every existing probe_receipts entry through actual LAST census; creation order/duplicates retained"
+-      },
+-      "knownGroups": {
+-        "fields": [
+-          "pgid"
+-        ],
+-        "maxRows": 256,
+-        "rowBytesWithSeparator": 11,
+-        "source": "every existing groups key; numeric order; no historical-ID signal authority"
+-      },
+-      "observedIdentities": {
+-        "fields": [
+-          "pid",
+-          "pgid"
+-        ],
+-        "maxRows": 4096,
+-        "rowBytesWithSeparator": 24,
+-        "source": "every existing identities item, numeric PID order; includes descendants even if unregistered"
+-      },
+-      "registrations": {
+-        "fields": [
+-          "pid",
+-          "parent",
+-          "pgid",
+-          "roleCode",
+-          "authenticated",
+-          "direct"
+-        ],
+-        "maxRows": 4096,
+-        "roleCodes": {
+-          "0": "io",
+-          "1": "control",
+-          "2": "nested-zero-product"
+-        },
+-        "rowBytesWithSeparator": 64,
+-        "source": "complete existing registrations, order/duplicates retained"
+-      }
+-    },
+-    "earlierSnapshot": "outer-owner-tentative.json and any earlier watchdog receipt remain earlier snapshots; final registry must not backdate/repair them.",
+-    "event": "outer-owner-final-registry",
+-    "identityFields": [
+-      "schemaVersion=1",
+-      "case",
+-      "variant",
+-      "session",
+-      "ownerPid",
+-      "ownerPgid from existing getpgrp already used by owner, captured value only",
+-      "limiterPid",
+-      "clockOrigin original",
+-      "freezeAt original clock domain",
+-      "lastCensusAt",
+-      "lastCensusGeneration"
++  "firstFailingGenerationAndTime": "UNKNOWN_NOT_RECORDED",
++  "firstFailingOldAndNewRows": "UNKNOWN_NOT_RECORDED",
++  "firstFailingPid": "UNKNOWN_NOT_RECORDED",
++  "firstProvenGuardReason": "owned-pid-start-group-executable-changed",
++  "firstReasonNoLaterThanSeconds": 1.8895240798592567,
++  "firstSignalError": {
++    "at": 1.8895636210218072,
++    "attempted": true,
++    "error": "PermissionError",
++    "pgid": 6128,
++    "signal": 15,
++    "successful": false
++  },
++  "minimalFutureInstrumentationProposal": {
++    "authority": "DATA proposal only, immutable named successor plus independent/root review required; no patch authored",
++    "finalProbeCoverageOption": "If future proof requires all probe IDs, emit a bounded final registry after actual last census and before return, with no further probes; earlier tentative snapshot keeps its original attribution. Requires separate design/review, not retrofitted here.",
++    "retainCaughtSignalFailureOnly": [
++      "already-caught exception class and numeric errno",
++      "last census age/generation",
++      "selected group live rows and current anchor decision",
++      "direct handle unreaped state already held"
+     ],
+-    "meaning": "Complete final enumerated PID/group registry from existing records, not complete raw intermediate census bodies, creation/birth replay or global containment. Every successful census creation is represented by its terminal receipt at this boundary; incomplete setup/read/poll/registry paths stay FAILED/UNKNOWN without fabricated event.",
+-    "preconditions": [
+-      "Use existing final branch: published IO receipt, actual IO/control returncodes known, all known groups closed, census is None. Preserve original clean predicate and failure flags.",
+-      "After all necessary IO publication/settlement censuses, enter irreversible FINALIZATION in same existing owner loop. No further census, registration/worker/task spawn, reaping, file IO or query may occur after registry freeze.",
+-      "No extra probe is added to make finality true; root independently acquires its required fresh census after real terminal.",
+-      "Freeze all banks from existing records including post-tentative probes. Validate finite closed projected wire values; no dedup or omission that loses a recorded ID.",
+-      "Emit exactly one bounded registry JSONL event on current owner stdout before the unchanged outer-owner-terminal event. No separate registry writer/worker or circular IO-publication handshake."
++    "retainFirstMismatchOnly": [
++      "same-clock first failure time/generation",
++      "failing PID/role/registration status",
++      "exact already-parsed old identity and current row tuple",
++      "predicate component mismatch booleans",
++      "direct-handle returncode/reap state already held"
+     ],
+-    "publication": [
+-      "Exact bounded compact ASCII JSON, allow_nan=false, integer tokens<=11 decimal characters and finite clock representations<=32 characters. Encoding failure/no-fit returns failure, no synthesized success.",
+-      "Keep native alarm armed and original owner clock; pre/post construction and write checks require original normal deadline.",
+-      "Keep current nonblocking single-write exact-count policy for each event. Partial/EAGAIN/error means FAILED/UNKNOWN with exact received prefix retained by root; do not add a blocking flush, off-clock drain, retry or grace.",
+-      "After full registry write emit the existing owner terminal event and return using unchanged clean predicate and strict deadline. Existing finally performs no new process query/spawn; original safe cleanup remains, and any abnormal later exit prevents acceptance.",
+-      "Native original limiter terminal and actual raw parent exit are still required. No registry event alone authorizes success."
+-    ],
+-    "rootConjunction": [
+-      "one uniquely typed complete final registry, then one unchanged owner terminal, then native terminal in exact case/session/owner/limiter/origin",
+-      "actual owner/native/root zero exits, normal strict before115 for ordinary /145 for host, whole120/150 unchanged",
+-      "both actual pipe EOF, empty expected stderr, exact retained raw byte counts/hashes; missing/oversized/partial/late event or failed actual exit stays FAILED/UNKNOWN",
+-      "fresh root selected inventory absent for union of ALL final registrations/identities/groups/probes plus root guard/native/dispatcher/observer records; zombie is not absence",
+-      "existing control-specific oracle and all residual/no-credit/unknown/source/tool predicates remain conjunctive"
+-    ],
+-    "status": "PROPOSED CLOSED TOOL EVENT; not product report grammar"
+-  },
+-  "firstFailureTelemetry": {
+-    "firstMismatch": {
+-      "bounds": {
+-        "birthUtf8BytesEach": 64,
+-        "commUtf8BytesEach": 1024,
+-        "integerDecimalCharacters": 11,
+-        "permittedCommEntries": 2,
+-        "slotBytes": 32768,
+-        "stateUtf8Bytes": 16
+-      },
+-      "derivedSubpredicates": [
+-        "birthEqual",
+-        "pgidEqual",
+-        "rowIsZombie",
+-        "oldTerminalSeen",
+-        "commPermitted",
+-        "which existing boolean branch rejected"
+-      ],
+-      "heldFields": [
+-        "PID and PPID from current parsed row",
+-        "old.birth, old.pgid, exact old.permittedComm, old.terminalSeen",
+-        "row.birth, row.pgid, row.comm, row.state",
+-        "existing generation, last_at, census_at, original failure_at if set and origin",
+-        "direct handle stored PID/returncode and registration role/authenticated/direct facts if already present; null when absent"
+-      ],
+-      "hook": "At existing first old-is-not-None and matches(row,old)==False branch, preserve original uncertain reason/call and continue",
+-      "overflow": "Do not clip or fabricate an exact tuple; slot unavailable with explicit diagnostic-capacity status. Original sticky failure/reason remains. No missing/partial diagnostics become success.",
+-      "sideEffectsForbidden": [
+-        "new ps/getpgid/stat/UID/process query",
+-        "poll/wait/reap/send_signal",
+-        "additional ownership matches() invocation or allowlist extension",
+-        "clear/reorder/replace unknown reasons",
+-        "retain exception message, environment, credentials, full argv or raw all-host rows"
+-      ]
+-    },
+-    "firstSignalError": {
+-      "bounds": {
+-        "exceptionClassUtf8Bytes": 128,
+-        "integerDecimalCharacters": 11,
+-        "livePids": 4096,
+-        "slotBytes": 65536
+-      },
+-      "heldFields": [
+-        "record.pgid, signal, at, attempted/success flags",
+-        "type(exc).__name__ and exc.errno only, no str(exc)/strerror",
+-        "already computed direct_anchor, current, fresh_anchor and exact live PID list",
+-        "last_at, generation, original failure_at, origin",
+-        "already retained direct handle PID/returncode and group observed/closed state"
+-      ],
+-      "hook": "Existing caught OSError path after attempted group signal; preserve original signal record/error class and uncertain(signal-error)",
+-      "notInvented": "fresh_anchor is the actual already-computed aggregate boolean. No chosen matching PID is fabricated or new matches() call performed. Live PIDs are metadata, never permission to signal.",
+-      "overflow": "Explicit unavailable/capacity status preserves original failure; no clipped live list represented as complete."
+-    },
+-    "publication": "Final registry event carries latest write-once slots; original tentative file/unknown list/reasons keep original attribution. Missing event/slot on abnormal exit is UNKNOWN, not reconstructed.",
+-    "scope": "Two write-once in-memory diagnostic slots; observational, never an ownership/signaling predicate or causal repair",
+-    "status": "PROPOSED DATA ONLY"
+-  },
+-  "independentExceptionMetadata": {
+-    "affectedExistingCallers": {
+-      "D03": "report_controls.py:112",
+-      "D04": "report_controls.py:118",
+-      "D06": "report_controls.py:131"
+-    },
+-    "change": "Only exact_refusal returned exceptionType string becomes type(exc).__name__",
+-    "rationale": "Already-proven hardcoded label defect, independent of D02 unknown ownership cause. Actual caught Refusal remains dynamically named; RuntimeError stays RuntimeError when actual type is RuntimeError.",
+-    "site": "H5 report_controls.py:15",
+     "unchanged": [
+-      "except RuntimeError catches same concrete subclasses",
+-      "str(exc)==expected equality and all expected reason strings",
+-      "same actual function targets, mutations, fixture/baseline requirements, raw data, protocol grammar and no-credit fields",
+-      "D03/D04/D06 remain required, unattempted, no automatic eligibility or authority"
++      "existing input/publication caps; refuse no-fit",
++      "same original clock115/119/120",
++      "all ownership predicates and safe signal rules",
++      "sticky UNKNOWN never cleared by later absence",
++      "no added process query, retry or product call"
+     ]
+   },
+-  "semanticsPreserved": [
+-    "matches() body exact H5; live birth/PGID/comm and terminalSeen policy unchanged",
+-    "authentication nonce/ACK, allowlists and bootstrap execution order unchanged",
+-    "all unknown reason strings/order/stickiness, failure_at clock and actual source/control status unchanged",
+-    "group membership/descendant expansion/safe signal eligibility, all-zombie skip, direct fallback, repeated escalation and raw errno failure semantics unchanged",
+-    "all Popen registration/ownership and poll/reap ordering unchanged",
+-    "ordinary/host/native alarm origins/deadlines and noRetry unchanged",
+-    "all13Python source roles except two planned observational/metadata changes; two Perl namespace-only literals",
+-    "857 subject implementation files /679 source / product grammar /48 control IDs /60 invocation matrix unchanged"
+-  ]
++  "noProvenZombieExecReuseOrHostPolicyCause": true,
++  "probeSnapshotLimit": "Tentative file captures 15 probe receipts through2.173314s; source may launch further censuses while IO publication/termination completes through final outer2.965408s. No final complete probe registry is emitted. All 25 recorded task PIDs/20 groups are freshly absent; unrecorded post-snapshot probes are not independently enumerable from saved evidence. No global/all-transient containment claim.",
++  "secondProvenGuardReason": "signal-error",
++  "sourceAnchors": {
++    "actualFinalReceipt": "outer_host.py:249-260",
++    "authenticationAndFinalComm": "outer_host.py:65-85",
++    "firstMismatch": "outer_host.py:107",
++    "groupAndDescendantOwnership": "outer_host.py:88-118",
++    "matches": "outer_host.py:50-53",
++    "signalDecisionAndFailure": "outer_host.py:120-141",
++    "tentativeSnapshot": "outer_host.py:242-248"
++  },
++  "terminalSeenNotSufficientCause": "Prior successful M02 has terminalSeen=true on its control identity too."
+ }

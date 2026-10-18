@@ -1,0 +1,18 @@
+{
+  "requiredColdCallbacks": [
+    "I02",
+    "I04",
+    "I13",
+    "I15",
+    "I17",
+    "I19"
+  ],
+  "minimumChoice": "minimum-startup-accepted-static",
+  "sourceDependency": "D1 cce + pureLoader fdd ancestor + exact D3a a61 + corrected lifecycle80f2 in ONE future installed build/runtime/configuration",
+  "reason": "All six TX cold callbacks need Scope/service-desc/descriptor/Directory discovery serving from D3a; generic Type route already exists. A separate passing D3a process cannot satisfy this.",
+  "G09": "Not a prerequisite for these six under accepted plan; optional unknown adoption separately shown",
+  "noStandaloneSkips": true,
+  "noExtraCallsOrBudgetChange": true,
+  "workloads": "51source/21persisted/2sourceHTTP;21installed126HTTP+2CONNECT,33ordinary+4guards=37children; existing fixed budgets",
+  "actualFutureInstalledIdentity": "UNKNOWN; fresh combined preparation/root acceptance required"
+}

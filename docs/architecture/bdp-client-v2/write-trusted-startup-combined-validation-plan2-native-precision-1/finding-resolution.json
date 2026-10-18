@@ -1,0 +1,50 @@
+{
+  "CVP1-N1": {
+    "counts": {
+      ".json": 1,
+      ".mjs": 3,
+      ".ts": 24
+    },
+    "oneMarkdown": "Full existing native/root code-document review +686hash gate; no unsupported Biome PASS claimed",
+    "originalNativeIndexSha256": "817b18073ef15f720ed21f9e545a4b11e71d2204450988656a181ce7d752545e",
+    "originalReportAndMediumFindingPreserved": true,
+    "otherEffectiveFilesUnchanged": 189,
+    "otherStageObjectsUnchanged": 67,
+    "sameStageIds": [
+      "format-check",
+      "lint"
+    ],
+    "status": "CLOSED_BY_EXACT_DATA_OVERLAY",
+    "supportedChangedPaths": [
+      "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/config/src/index.test.ts",
+      "packages/config/src/index.ts",
+      "packages/server/package.json",
+      "packages/server/src/development-authority.ts",
+      "packages/server/src/development-runtime.ts",
+      "packages/server/src/read-sequence-lifecycle.test.ts",
+      "packages/server/src/reference-deployment-process.ts",
+      "packages/server/src/reference-deployment-runtime.test.ts",
+      "packages/server/src/reference-deployment-runtime.ts",
+      "packages/server/src/reference-deployment-state.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "packages/server/src/reference-deployment.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts",
+      "packages/server/src/transaction-runtime.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-snapshot.test.ts",
+      "packages/server/src/transaction-sse.test.ts",
+      "packages/server/src/transaction-store.ts",
+      "scripts/smoke-executables.mjs",
+      "scripts/smoke-safety.mjs",
+      "scripts/smoke-safety.test.mjs"
+    ],
+    "workloadBudgetAndSelectionChanged": false
+  }
+}

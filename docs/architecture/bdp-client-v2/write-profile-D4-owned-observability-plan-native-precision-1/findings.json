@@ -1,0 +1,16 @@
+[
+  {
+    "fact": "The proposed event precedes the unchanged owner terminal/return. Python still executes the original finally on return. When failure is sticky, it calls signal_owned(SIGKILL); that function calls os.getpgrp() before checking gid in closed. The final branch requires all groups closed, so this remaining call skips group signals and does not change any bank, but it is a process query after freeze. Original descriptor cleanup also remains. The plan simultaneously bans any post-freeze query/file IO and requires the existing cleanup/call sequence to remain exact.",
+    "id": "D4-OBS-N1",
+    "impact": "A source author cannot satisfy both literal contracts without choosing an unstated exception or changing protected cleanup order. This is a plan precision conflict; it does not establish an ownership vulnerability, a causal D02 fix or any false-positive runtime result.",
+    "locations": [
+      "final-registry-contract.json preconditions[1] and publication[3]",
+      "preservation-contract.json frozenSemantics/requiredFutureProof",
+      "H5 outer_host.py:120-123,249-257,262-273"
+    ],
+    "minimumCorrection": "Before source release, qualify freeze as no further registry-changing/task-creating operations or new process query, and explicitly retain only the original failure-finally getpgrp/closed-group checks and descriptor cleanup after the event. All groups must already be closed; no new registration/probe/reap/worker or signal authority is acquired. Original finally and terminal failures still prevent acceptance. If an absolute no-query-after-freeze rule is intended instead, its necessary cleanup reordering requires an explicit separately reviewed source delta rather than claiming strip-to-original preservation.",
+    "severity": "Low",
+    "sourceEditsAuthored": false,
+    "title": "Reconcile post-freeze no-query promise with preserved failure cleanup"
+  }
+]

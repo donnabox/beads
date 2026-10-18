@@ -1,0 +1,186 @@
+{
+  "minimum-startup-accepted-static": [
+    {
+      "lane": "D1",
+      "basisLane": "base",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 679,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "pureLoader",
+      "basisLane": "base",
+      "ownedDeltaPaths": 12,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "D3a",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "startup",
+      "basisLane": "pureLoader",
+      "ownedDeltaPaths": 9,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    }
+  ],
+  "full-accepted-static": [
+    {
+      "lane": "D1",
+      "basisLane": "base",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 679,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "pureLoader",
+      "basisLane": "base",
+      "ownedDeltaPaths": 12,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "D3a",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "startup",
+      "basisLane": "pureLoader",
+      "ownedDeltaPaths": 9,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "D4",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 1,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "carrier",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 4,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 688,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    }
+  ],
+  "minimum-startup-optional-G09": [
+    {
+      "lane": "D1",
+      "basisLane": "base",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 679,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "pureLoader",
+      "basisLane": "base",
+      "ownedDeltaPaths": 12,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "D3a",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "startup",
+      "basisLane": "pureLoader",
+      "ownedDeltaPaths": 9,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "G09",
+      "basisLane": "D3a",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "OPTIONAL_UNACCEPTED"
+    }
+  ],
+  "full-optional-G09": [
+    {
+      "lane": "D1",
+      "basisLane": "base",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 679,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "pureLoader",
+      "basisLane": "base",
+      "ownedDeltaPaths": 12,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "D3a",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 682,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "startup",
+      "basisLane": "pureLoader",
+      "ownedDeltaPaths": 9,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "D4",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 1,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 686,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "carrier",
+      "basisLane": "D1",
+      "ownedDeltaPaths": 4,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 688,
+      "qualification": "accepted static/source input only; combined runtime proof UNKNOWN"
+    },
+    {
+      "lane": "G09",
+      "basisLane": "D3a",
+      "ownedDeltaPaths": 6,
+      "beforeByteConflicts": [],
+      "prospectiveFilesAfter": 688,
+      "qualification": "OPTIONAL_UNACCEPTED"
+    }
+  ]
+}
