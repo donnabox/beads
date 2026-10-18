@@ -78,6 +78,10 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil || !reflect.DeepEqual(ordinary, current.Snapshot) {
 				t.Fatalf("existing projection changed: %v", err)
 			}
+			wantSnapshot, err := canonicalJSON(ordinary)
+			if err != nil {
+				t.Fatal(err)
+			}
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("read changed source rows")
 			}
@@ -85,9 +89,27 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			// or the next acquisition and survive neither close nor reopen.
 			current.CommentsByIssuePath["beads/work"][0].Text = "caller mutation"
 			delete(current.CommentsByIssuePath, "beads/prereq")
+			mutatedIssue, mutatedOwned := false, false
+			for _, raw := range current.Snapshot.Records {
+				if issue, ok := raw.(IssueRecord); ok {
+					issue.Properties.Title = "caller mutation"
+					mutatedIssue = true
+					if len(issue.Owned) > 0 && len(issue.Owned[0]) > 0 {
+						issue.Owned[0][0] = '!'
+						mutatedOwned = true
+					}
+				}
+			}
+			if !mutatedIssue || !mutatedOwned {
+				t.Fatal("fixture lacks nested Issue properties or owned Link bytes")
+			}
 			fresh, err := s.ExportCurrentSnapshot(ctx)
-			if err != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath["beads/work"], wantComments) || !reflect.DeepEqual(fresh.Snapshot, ordinary) {
+			freshSnapshot, snapshotErr := canonicalJSON(fresh.Snapshot)
+			if err != nil || snapshotErr != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath["beads/work"], wantComments) || string(freshSnapshot) != string(wantSnapshot) {
 				t.Fatalf("same-Store detachment: %+v %v", fresh, err)
+			}
+			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+				t.Fatal("same-Store reacquisition changed source rows")
 			}
 			if comments, present := fresh.CommentsByIssuePath["beads/prereq"]; !present || comments == nil || len(comments) != 0 {
 				t.Fatal("caller deletion affected the next acquisition")
@@ -105,8 +127,12 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 				}
 			})
 			reopened, err := s.ExportCurrentSnapshot(ctx)
-			if err != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath["beads/work"], wantComments) || !reflect.DeepEqual(reopened.Snapshot, ordinary) || reopened.IssuePrefix != "web-app-" {
+			reopenedSnapshot, snapshotErr := canonicalJSON(reopened.Snapshot)
+			if err != nil || snapshotErr != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath["beads/work"], wantComments) || string(reopenedSnapshot) != string(wantSnapshot) || reopened.IssuePrefix != "web-app-" {
 				t.Fatalf("reopen preservation: %+v %v", reopened, err)
+			}
+			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+				t.Fatal("reopened acquisition changed source rows")
 			}
 			// Native permanent comments cascade on Issue deletion. The retained
 			// Issue History remains outside this current-only acquisition.

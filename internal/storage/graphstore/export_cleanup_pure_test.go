@@ -14,6 +14,7 @@ import (
 	"time"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // These tests use database/sql's real cleanup paths with a test-owned connector,
@@ -103,6 +104,7 @@ func TestExportCurrentSnapshotPhysicalCloseBoundary(t *testing.T) {
 	if err != nil || state.CommentsByIssuePath == nil || d.connectionCloses.Load() != 0 {
 		t.Fatalf("logical connection return confused with physical close: %+v %v closes=%d", state, err, d.connectionCloses.Load())
 	}
+	exportCleanupTransactionCount(t, s, d)
 	if err := s.Close(); !errors.Is(err, fault) {
 		t.Fatalf("caller-owned Store.Close lost physical cleanup failure: %v", err)
 	}
@@ -131,6 +133,115 @@ func TestExportCommentsScanAndCloseCleanup(t *testing.T) {
 	exportCleanupTransactionCount(t, s, d)
 }
 
+// Direct feeds exercise nonempty results without fabricating the native Issue
+// hydration queried by the full reader. Real mixed-store acquisition remains an
+// engine gate; database/sql still owns every rows/transaction cleanup here.
+func TestExportCommentsFeedCleanup(t *testing.T) {
+	stamp := time.Date(2026, time.October, 10, 12, 30, 45, 123000000, time.UTC)
+	first := []driver.Value{"comment-a", "web-app-a1b", "author", "original", stamp}
+	second := []driver.Value{"comment-b", "web-app-a1b", "another author", "next", stamp.Add(time.Second)}
+	bad := func(field int, value string) []driver.Value {
+		row := append([]driver.Value(nil), second...)
+		row[field] = value
+		return row
+	}
+	for _, tc := range []struct {
+		name       string
+		values     [][]driver.Value
+		count      uint64
+		message    string
+		closeFault bool
+	}{
+		{name: "valid", values: [][]driver.Value{first, second}, count: 2},
+		{name: "invalid-id-utf8", values: [][]driver.Value{first, bad(0, "comment-\xff")}, count: 2, message: "not UTF-8", closeFault: true},
+		{name: "invalid-owner-utf8", values: [][]driver.Value{first, bad(1, "web-app-\xff")}, count: 2, message: "not UTF-8", closeFault: true},
+		{name: "invalid-author-utf8", values: [][]driver.Value{first, bad(2, "author-\xff")}, count: 2, message: "not UTF-8", closeFault: true},
+		{name: "invalid-text-utf8", values: [][]driver.Value{first, bad(3, "orig\xffinal")}, count: 2, message: "not UTF-8", closeFault: true},
+		{name: "unknown-owner", values: [][]driver.Value{first, bad(1, "web-app-other")}, count: 2, message: "owner missing", closeFault: true},
+		{name: "count-overflow", values: [][]driver.Value{first, second}, count: 1, message: "differs from its bounded inventory", closeFault: true},
+		// A Close error at EOF takes precedence over incomplete-feed validation.
+		// Keep Close healthy here to exercise that later refusal itself.
+		{name: "incomplete-feed", values: [][]driver.Value{first}, count: 2, message: "incomplete comment feed"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rowsFault := errors.New("direct feed rows close failed")
+			rollbackFault := errors.New("direct feed rollback failed")
+			faults := exportCleanupFaults{commentValues: tc.values}
+			if tc.message != "" {
+				faults.rollback = rollbackFault
+			}
+			if tc.closeFault {
+				faults.commentClose = rowsFault
+			}
+			s, d := exportCleanupStore(t, faults)
+			var feed map[string][]types.Comment
+			err := s.withTx(context.Background(), false, func(tx *sql.Tx) error {
+				var err error
+				feed, err = exportCommentsInTx(context.Background(), tx, map[string]string{
+					"web-app-a1b": "beads/work", "web-app-empty": "beads/empty",
+				}, tc.count)
+				return err
+			})
+			if tc.message == "" {
+				want := map[string][]types.Comment{
+					"beads/work": {
+						{ID: "comment-a", IssueID: "web-app-a1b", Author: "author", Text: "original", CreatedAt: stamp},
+						{ID: "comment-b", IssueID: "web-app-a1b", Author: "another author", Text: "next", CreatedAt: stamp.Add(time.Second)},
+					},
+					"beads/empty": {},
+				}
+				if err != nil || !reflect.DeepEqual(feed, want) {
+					t.Fatalf("valid comment feed changed fields/ownership/order: %+v err=%v", feed, err)
+				}
+			} else if feed != nil || !errors.Is(err, ErrInvalidStore) || !errors.Is(err, rollbackFault) || !strings.Contains(err.Error(), tc.message) {
+				t.Fatalf("failed feed leaked partial map/lost refusal/rollback: %+v err=%v", feed, err)
+			}
+			if tc.closeFault && !errors.Is(err, rowsFault) {
+				t.Fatalf("lost explicit rows-close failure: %v", err)
+			}
+			if d.commentCloses.Load() != 1 {
+				t.Fatalf("direct feed physically closed %d times", d.commentCloses.Load())
+			}
+			exportCleanupTransactionCount(t, s, d)
+		})
+	}
+}
+
+func TestExportCommentsNextCleanup(t *testing.T) {
+	for _, failClose := range []bool{false, true} {
+		t.Run(fmt.Sprintf("close-failure=%t", failClose), func(t *testing.T) {
+			nextFault := errors.New("driver comment Next failed after partial feed")
+			rowsFault := errors.New("driver comment Close also failed")
+			rollbackFault := errors.New("driver rollback failed after Next error")
+			faults := exportCleanupFaults{
+				commentNext: nextFault, rollback: rollbackFault,
+				commentValues: [][]driver.Value{{"comment-a", "web-app-a1b", "author", "original", time.Date(2026, time.October, 10, 12, 30, 45, 0, time.UTC)}},
+			}
+			if failClose {
+				faults.commentClose = rowsFault
+			}
+			s, d := exportCleanupStore(t, faults)
+			var feed map[string][]types.Comment
+			err := s.withTx(context.Background(), false, func(tx *sql.Tx) error {
+				var err error
+				feed, err = exportCommentsInTx(context.Background(), tx, map[string]string{"web-app-a1b": "beads/work"}, 2)
+				return err
+			})
+			if feed != nil || !errors.Is(err, nextFault) || !errors.Is(err, rollbackFault) || d.commentCloses.Load() != 1 {
+				t.Fatalf("Next failure leaked partial map/lost cleanup chain: %+v closes=%d err=%v", feed, d.commentCloses.Load(), err)
+			}
+			// database/sql auto-closes on non-EOF Next errors. Rows.Err keeps the
+			// Next cause, while the later explicit Rows.Close is idempotent. A
+			// simultaneous driver Close fault is suppressed by that API boundary;
+			// do not claim the reader can propagate a cause SQL never exposes.
+			if errors.Is(err, rowsFault) {
+				t.Fatalf("unexpected auto-close error propagation alongside Next: %v", err)
+			}
+			exportCleanupTransactionCount(t, s, d)
+		})
+	}
+}
+
 func exportCleanupTransactionCount(t *testing.T, s *Store, d *exportCleanupDriver) {
 	t.Helper()
 	if d.begins.Load() != 1 || d.rollbacks.Load() != 1 || d.commits.Load() != 0 || s.db.Stats().InUse != 0 {
@@ -141,8 +252,8 @@ func exportCleanupTransactionCount(t *testing.T, s *Store, d *exportCleanupDrive
 const exportCleanupToken = "0123456789abcdef0123456789abcdef"
 
 type exportCleanupFaults struct {
-	rollback, commentClose, connectionClose error
-	commentValues                           [][]driver.Value
+	rollback, commentClose, commentNext, connectionClose error
+	commentValues                                        [][]driver.Value
 }
 
 type exportCleanupDriver struct {
@@ -242,7 +353,7 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 	case strings.HasPrefix(q, "select value from config where `key`"):
 		return row([]string{"value"}, "web-app-"), nil
 	case strings.HasPrefix(q, "select id,issue_id,author,text,created_at from comments order by"):
-		return &exportCleanupRows{columns: []string{"id", "issue_id", "author", "text", "created_at"}, values: d.faults.commentValues, closeErr: d.faults.commentClose, closes: &d.commentCloses}, nil
+		return &exportCleanupRows{columns: []string{"id", "issue_id", "author", "text", "created_at"}, values: d.faults.commentValues, closeErr: d.faults.commentClose, nextErr: d.faults.commentNext, closes: &d.commentCloses}, nil
 	case strings.HasSuffix(q, "limit 0"):
 		return &exportCleanupRows{columns: []string{"schema-guard"}}, nil
 	case strings.HasPrefix(q, "select path,backing,resource_kind from graph_preview_catalog"):
@@ -263,13 +374,13 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 
 type exportCleanupTx struct{ owner *exportCleanupDriver }
 
-func (t *exportCleanupTx) Commit() error {
-	t.owner.commits.Add(1)
+func (tx *exportCleanupTx) Commit() error {
+	tx.owner.commits.Add(1)
 	return errors.New("cleanup fixture forbids committing an export")
 }
-func (t *exportCleanupTx) Rollback() error {
-	t.owner.rollbacks.Add(1)
-	return t.owner.faults.rollback
+func (tx *exportCleanupTx) Rollback() error {
+	tx.owner.rollbacks.Add(1)
+	return tx.owner.faults.rollback
 }
 
 type exportCleanupRows struct {
@@ -277,6 +388,7 @@ type exportCleanupRows struct {
 	values   [][]driver.Value
 	position int
 	closeErr error
+	nextErr  error
 	closes   *atomic.Int64
 }
 
@@ -289,6 +401,9 @@ func (r *exportCleanupRows) Close() error {
 }
 func (r *exportCleanupRows) Next(dest []driver.Value) error {
 	if r.position == len(r.values) {
+		if r.nextErr != nil {
+			return r.nextErr
+		}
 		return io.EOF
 	}
 	copy(dest, r.values[r.position])

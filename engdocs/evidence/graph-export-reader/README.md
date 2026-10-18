@@ -14,7 +14,8 @@ are addressed: first check the persisted binding, remove an impossible by-value
 mutation assertion, and reread detachment on the same Store. The bounded
 [repair manifest](repair-manifest.json), [prompt](repair-prompt.txt) and
 [native repair review](repair-native.txt) cover those repairs and new cleanup
-tests. Actual Claude repair review is running. Runtime remains unqualified.
+tests. Actual Claude repair review completed as recorded below. Runtime remains
+unqualified.
 
 [Pure evidence](pure.log) records four roots and17subtests:21PASS,0FAIL,0SKIP.
 The exact-package runner uses canonical build flags and constructs no backend.
@@ -54,3 +55,28 @@ Actual backend cleanup qualification remains required before readiness. Installe
 encoded-output budget, permissions and cleanup-before-publication proof belong
 to the later independently reviewed exporter/CLI milestone. Current limits
 measure persisted acquisition bytes, not exact heap or JSON output size.
+
+
+## Completed cleanup audit and final repair
+
+The [actual bounded Claude review](repair-claude.txt) completed with exit0 and
+found no reader correctness defect. Its Low coverage findings are repaired:
+nested Issue/owned-Link caller mutation uses an immutable canonical oracle;
+fresh and reopened reads check unchanged source rows; direct comment feeds
+exercise valid nonempty rows, UTF-8/owner/overflow/count refusals and mid-feed
+Next failure. Physical-close accounting and receiver names are corrected.
+The early binding check is deliberate authority-before-content admission;
+shared current-read checks retain their other callers' behavior.
+
+One reviewer claim was rejected against the real Go database/sql boundary:
+non-EOF Next errors auto-close rows, and simultaneous driver Close errors are
+suppressed. The tests preserve exposed Next and rollback causes, nil partial
+maps and exactly one driver Close; they do not fabricate an unavailable cause.
+The [final pure run](final-pure.log) passed11 roots/40 total cases with0failures
+and0skips in1.009s. [Lint](final-lint.log) passed all profiles. The
+[manifest](final-manifest.txt), [prompt](final-prompt.txt) and
+[native confirmation](final-native.txt) identify the repaired-source successor
+council; actual Claude was stopped at Donna's overnight pause (exit143, no
+findings). [Attempt record](final-review-interrupted.json) preserves the boundary;
+rerun that frozen audit on resume. No completed successor council is claimed. Real mixed snapshot/query/backend cleanup
+proof remains unrun until explicit Janet engine handback.

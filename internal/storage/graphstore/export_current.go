@@ -61,6 +61,9 @@ func (s *Store) ExportCurrentSnapshot(ctx context.Context) (ExportCurrentState, 
 }
 
 func (s *Store) exportCurrentSnapshotInTx(ctx context.Context, tx *sql.Tx) (ExportCurrentState, error) {
+	// Check authority before export-specific content refusals. The shared current
+	// snapshot reader checks it again in this transaction; retain that check for
+	// its other callers rather than changing their admission behavior here.
 	if err := checkBinding(ctx, tx, s.options); err != nil {
 		return ExportCurrentState{}, err
 	}
