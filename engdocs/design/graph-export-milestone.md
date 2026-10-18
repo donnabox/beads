@@ -232,9 +232,12 @@ bookkeeping is not claimed unchanged.
 Pure tests and compile checks do not qualify an engine. Authored embedded/server
 lifecycle, rollback, bounds and controlled-interleaving cases await Janet's
 explicit engine handback. Callback stage faults do not stand in for actual
-driver rollback/connection/rows-close fault injection. Those cleanup tests,
-installed acquisition, serializer/publication checks and final output contract
-remain gates before exporter readiness.
+driver rollback/connection/rows-close fault injection. Authored test-owned
+connector cases exercise those real database/sql cleanup paths on an empty
+controlled workspace with the complete six-Type installation. They are neither
+an engine nor proof of cleanup with records present; current-source execution
+of these cases remains unrun. Installed acquisition, serializer/publication
+checks and the final output contract also remain gates before exporter readiness.
 
 ## Detached publication boundary
 

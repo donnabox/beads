@@ -273,8 +273,8 @@ func TestExportCurrentSnapshotFailures(t *testing.T) {
 
 // exportWithOrphanFixture bypasses foreign keys only on this owned pinned
 // session, so each auxiliary-plane probe can be reached without a parent wisp
-// making the earlier wisps probe win. All fixture rows are rolled back before
-// checks are restored; a session whose restoration fails is discarded.
+// making the earlier wisps probe win. Rollback is attempted before checks are
+// restored; rollback or restoration failure fails the test and discards the session.
 func exportWithOrphanFixture(ctx context.Context, s *Store, fn func(*sql.Tx) error) (err error) {
 	conn, err := s.db.Conn(ctx)
 	if err != nil {
@@ -292,6 +292,7 @@ func exportWithOrphanFixture(ctx context.Context, s *Store, fn func(*sql.Tx) err
 	if enabled != 1 {
 		return fmt.Errorf("orphan fixture requires initially enabled foreign keys, got %d", enabled)
 	}
+	rollbackFailed := false
 	defer func() {
 		cleanupCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -303,7 +304,7 @@ func exportWithOrphanFixture(ctx context.Context, s *Store, fn func(*sql.Tx) err
 			}
 		}
 		err = errors.Join(err, restoreErr)
-		if restoreErr != nil {
+		if restoreErr != nil || rollbackFailed {
 			discardErr := conn.Raw(func(any) error { return driver.ErrBadConn })
 			if !errors.Is(discardErr, driver.ErrBadConn) && !errors.Is(discardErr, sql.ErrConnDone) {
 				err = errors.Join(err, discardErr)
@@ -326,8 +327,33 @@ func exportWithOrphanFixture(ctx context.Context, s *Store, fn func(*sql.Tx) err
 	if err != nil {
 		return err
 	}
-	defer func() { err = errors.Join(err, tx.Rollback()) }()
+	defer func() {
+		rollbackErr := tx.Rollback()
+		rollbackFailed = rollbackErr != nil
+		err = errors.Join(err, rollbackErr)
+	}()
 	return fn(tx)
+}
+
+func TestExportOrphanFixtureRollbackFailureDiscardsConnection(t *testing.T) {
+	fault := errors.New("fixture rollback failed without bad-connection sentinel")
+	s, d := exportCleanupStore(t, exportCleanupFaults{rollback: fault})
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	called := false
+	err := exportWithOrphanFixture(ctx, s, func(*sql.Tx) error {
+		called = true
+		return nil
+	})
+	if !called || !errors.Is(err, fault) || d.rollbacks.Load() != 1 {
+		t.Fatalf("rollback failure not preserved: called=%t rollbacks=%d err=%v", called, d.rollbacks.Load(), err)
+	}
+	if d.foreignKeyReads.Load() != 2 || d.foreignKeyRestores.Load() != 1 {
+		t.Fatalf("did not reach successful FK restoration/readback: reads=%d restores=%d", d.foreignKeyReads.Load(), d.foreignKeyRestores.Load())
+	}
+	if d.connectionCloses.Load() != 1 || s.db.Stats().InUse != 0 || s.db.Stats().Idle != 0 {
+		t.Fatalf("uncertain fixture session returned to pool: closes=%d stats=%+v", d.connectionCloses.Load(), s.db.Stats())
+	}
 }
 
 func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {

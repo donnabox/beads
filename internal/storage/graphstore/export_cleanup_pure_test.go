@@ -261,6 +261,7 @@ type exportCleanupDriver struct {
 	options                                                     Options
 	descriptors                                                 map[string]graph.TypeDescriptor
 	begins, rollbacks, commits, commentCloses, connectionCloses atomic.Int64
+	foreignKeyReads, foreignKeyRestores                         atomic.Int64
 }
 
 func exportCleanupStore(t *testing.T, faults exportCleanupFaults) (*Store, *exportCleanupDriver) {
@@ -320,6 +321,11 @@ func (c *exportCleanupConn) ExecContext(_ context.Context, query string, _ []dri
 	switch strings.Join(strings.Fields(strings.ToLower(query)), " ") {
 	case "set @@dolt_transaction_commit = 0", "set @@dolt_force_transaction_commit = 0", "set @@dolt_allow_commit_conflicts = 0", "set @@time_zone = '+00:00'":
 		return driver.RowsAffected(0), nil
+	case "set @@foreign_key_checks = 0":
+		return driver.RowsAffected(0), nil
+	case "set @@foreign_key_checks = 1":
+		c.owner.foreignKeyRestores.Add(1)
+		return driver.RowsAffected(0), nil
 	default:
 		return nil, fmt.Errorf("cleanup fixture refused non-session SQL: %s", query)
 	}
@@ -332,6 +338,9 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return &exportCleanupRows{columns: columns, values: [][]driver.Value{values}}
 	}
 	switch {
+	case q == "select @@foreign_key_checks":
+		d.foreignKeyReads.Add(1)
+		return row([]string{"foreign_key_checks"}, int64(1)), nil
 	case q == "select active_branch()":
 		return row([]string{"branch"}, "main"), nil
 	case q == "select count(*) from graph_preview_types":
