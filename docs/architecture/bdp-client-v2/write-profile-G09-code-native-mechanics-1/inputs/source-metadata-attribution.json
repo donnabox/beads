@@ -1,0 +1,25 @@
+{
+  "rootBasis": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-git-review-basis-1/basis.json",
+  "rootBasisSha256": "322427e9392bea1b62043dd507a3b87c67f0e7af1606fd732f3395b557b7aedf",
+  "rootRawParents": [
+    "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "a56254d682cf4623cab22a552e3d2f695f691795"
+  ],
+  "runnerExpectedMergeState": {
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "tree": "6757829bd5b700faf28df39071190a272add90c9",
+    "parents": [
+      "a56254d682cf4623cab22a552e3d2f695f691795"
+    ]
+  },
+  "explanation": "Root parents.txt is head followed by sole parent; runner git show --format=%P returns parents only. Explicitly remove leading bound HEAD for the runner tuple; preserve full original receipt. Root separate mergeState maps are absence flags, not runner tuple.",
+  "rootMergeOperationAbsent": {
+    "MERGE_HEAD": false,
+    "CHERRY_PICK_HEAD": false,
+    "REVERT_HEAD": false,
+    "rebase-merge": false,
+    "rebase-apply": false
+  },
+  "cumulativeGitScope": "Ten dirty paths, distinct from six G09 authored/reviewed paths",
+  "authorGitExecuted": false
+}
