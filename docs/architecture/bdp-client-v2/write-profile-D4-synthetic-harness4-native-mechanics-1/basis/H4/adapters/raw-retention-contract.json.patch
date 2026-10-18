@@ -1,0 +1,54 @@
+--- /dev/null
++++ raw-retention-contract.json
+@@ -0,0 +1,51 @@
++{
++  "state": "CLOSED prospective acquisition only, no actual observations",
++  "roleFiles": {
++    "term": {
++      "stdout": "term.stdout",
++      "stderr": "term.stderr",
++      "journal": "term.capture.jsonl",
++      "normalPeerReceipt": "term.json"
++    },
++    "kill": {
++      "stdout": "kill.stdout",
++      "stderr": "kill.stderr",
++      "journal": "kill.capture.jsonl",
++      "normalPeerReceipt": "kill.json"
++    }
++  },
++  "exclusive": "os.open O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC0600; no rewrite/chmod/preexisting reuse",
++  "receivedChunkOrder": [
++    "actual os.read (max65536) returns bytes",
++    "increment actual received count",
++    "write exact chunk with partial-write loop and account only returned saved count; no Python file buffer",
++    "hash exact saved prefix, track hashed bytes separately",
++    "on-clock prefix snapshot with observed EOF and last actual poll exit",
++    "apply unchanged per-stream65536 acceptance threshold; crossing bytes already retained",
++    "retain ordinary complete stdout/stderr arrays only for unchanged normal oracle/hash checks"
++  ],
++  "checkpointMeaning": {
++    "receivedBytes": "exact bytes returned by read as of snapshot, not total produced or unread bytes",
++    "savedBytes": "sum of successful os.write returned counts, not assumed whole chunk",
++    "hashedPrefixBytes": "only successful hash updates; hash failure UNKNOWN",
++    "savedPrefixSha256": "prefix-only actual known hash, never reconstructed lost bytes",
++    "actualEofObserved": "only actual zero-byte pipe read",
++    "actualExitIfKnown": "only current Popen.returncode from actual prior poll; null means UNKNOWN",
++    "savedFileIdentity": "actual fstat dev/inode/mode/uid/size/times when available; otherwise UNKNOWN, never guessed",
++    "fullStreamSha256": "UNKNOWN in prefix records, even a closed raw file alone is not accepted availability",
++    "lateOrKilled": "last checkpoint is a bounded historical observation; later received/saved/EOF/exit unknown, partial journal tail never completed by inference"
++  },
++  "failure": "Save actual partial files/known snapshots if filesystem/clock permit; missing failure record or unsaved write remainder remains UNKNOWN. No capacity truncation then pass, retry or off-clock success. Root terminal audit must preserve failed supervision/owner/native outcome.",
++  "normalAcceptance": "Unchanged normal source receipts require exact actual EOF/exits/raw-byte hashes, raw saved/hash/identity equality and raw/journal close before owner terminal. Root still independently compares all raw files/valid prefix receipts, complete normal records and native receipt with fresh current PID/PGID absence and tool/source bytes.",
++  "caps": {
++    "actualReadChunkMax": 65536,
++    "availabilityPerStreamAcceptance": 65536,
++    "whole": 120,
++    "TERM": 115,
++    "KILL": 119,
++    "normalStrictBefore": 115
++  },
++  "capacityIsNotDiskMaximum": true,
++  "productCalls": 0,
++  "evaluated": false
++}

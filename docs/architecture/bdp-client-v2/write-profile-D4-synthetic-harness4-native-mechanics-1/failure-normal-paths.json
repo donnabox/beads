@@ -1,0 +1,67 @@
+{
+  "paths": [
+    {
+      "path": "before peer ACK",
+      "source": "59–65,125–130",
+      "truth": "Immediate retained Popen handle; exclusive O_EXCL/O_CLOEXEC0600 stdout/stderr/journal and initial fstat-prefix checkpoint precede authenticated execute ACK. Creation/receipt failure refuses, may leave actual partial files."
+    },
+    {
+      "path": "normal received block",
+      "source": "66–75,89–95",
+      "truth": "Increment received first; loop accounts returned os.write counts only, hash matching saved prefix with separate count. Checkpoint then original per-stream65536 refusal; crossing bytes retained unless actual write/hash/clock error prevents retention, which is UNKNOWN/failure."
+    },
+    {
+      "path": "actual EOF or process exit",
+      "source": "92,96–102",
+      "truth": "Only zero-byte read sets EOF; only prior actual poll sets returncode. Require both EOF and exit, close pipes/raw descriptors, match received=saved=hashed and fstat file length; no successful completion from last snapshot alone."
+    },
+    {
+      "path": "partial write/hash failure",
+      "source": "68–75,149–162",
+      "truth": "Saved count advances by returned writes; hash count only after successful update; hash failure sets hashKnown false. Actual retained prefix stays, unsaved/unhashed remainder not invented. Best-effort failure/final prefix can be absent or truncated and cannot pass."
+    },
+    {
+      "path": "capacity crossing",
+      "source": "94–95",
+      "truth": "Received crossing block is written/hashed/journaled before refusal.65536 is acceptance policy, not truncation/disk limit. No accepted-buffer append on failure."
+    },
+    {
+      "path": "read/poll/drain timeout or incomplete EOF",
+      "source": "83–103,149–167",
+      "truth": "Previously received bytes are already retained. Last known EOF/exit/counts are snapshots; missing full-stream/terminal is UNKNOWN. Cleanup direct-child kill request is not acquired closure."
+    },
+    {
+      "path": "raw fstat/close/journal write/close failure",
+      "source": "40–58,76–82,102,142–146",
+      "truth": "Identity errors sticky and normal check refuses; raw/journal close failures prevent normal peer receipt. Journal partial tail retained as incomplete; no post hoc repair."
+    },
+    {
+      "path": "owner abrupt loss/native TERM/KILL",
+      "source": "availability_owner.py153–167;availability_limit.pl21–67",
+      "truth": "Last complete checkpoint only as-of evidence; later reads/saved bytes/exit/full hashes UNKNOWN. Native unreaped direct-child anchor owns same availability PGID; root fresh PID/PGID absence plus native terminal still mandatory. No global nested cleanup guarantee."
+    },
+    {
+      "path": "normal term/kill peer",
+      "source": "bootstrap.py29–37;availability_peer.py9–18;availability_owner.py139–148",
+      "truth": "Authenticated ACK then TERM/INT unblock; actual self-TERM handler observed and self-KILL raw-9, nonce/parent/PGID/clock/EOF requirements preserved. Does not test native forced115/119 scheduling."
+    },
+    {
+      "path": "authorization failure",
+      "source": "availability_owner.py104–119",
+      "truth": "Exact ten-key availability-only authority + pinned native/root acceptance + current implementation/tool hashes + untouched closed controls gate; bootstrap admission before10. Failure/no receipt no retry. Static acceptance is not clock availability."
+    }
+  ],
+  "underlyingSubjectCodeExecuted": false,
+  "clock": {
+    "whole": 120,
+    "TERM": 115,
+    "KILL": 119,
+    "bothNormalTerminalsStrictBefore": 115,
+    "authBootstrapBefore": 10,
+    "drainSeconds": 5,
+    "readChunk": 65536,
+    "perStreamAcceptance": 65536
+  },
+  "mainHostAggregateRawBytes": 268435456,
+  "scope": "Static control-flow assessment, never dynamic fault-injection coverage"
+}

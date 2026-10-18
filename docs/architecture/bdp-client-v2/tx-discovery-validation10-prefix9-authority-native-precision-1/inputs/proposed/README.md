@@ -1,0 +1,3 @@
+# CLOSED proposed P10 prefix9 authority
+
+Exact next candidate DATA only. First4 actual stages passed/root+independent audit, all61knownPIDs/fourgroups absent, all679current source/Git unchanged and11 actual workspace tool paths verified. New prefix extends only through bind-fresh-build. Both static/runtime disposition true and all common6flags true; current gate remains first4 until FULL other-native predicate/source/tool/prior-exit precision, durable publication/readback and root byte-exact activation/readback. Scratch/cache retention is distinct from nested bdp runtime absence. No previous pass reuse/later build result/collection/installed/qualification.

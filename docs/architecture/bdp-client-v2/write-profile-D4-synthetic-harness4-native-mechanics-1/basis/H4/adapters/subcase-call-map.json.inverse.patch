@@ -1,0 +1,76 @@
+--- subcase-call-map.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/subcase-call-map.json
+@@ -406,7 +406,7 @@
+   },
+   "sourceDefinitionsAndBranches": {
+     "availability_owner.py": {
+-      "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7",
++      "sha256": "db0abde1dcf4921bab3d830fc3bb8616fff4984e1cc2c211b5a2ee205be148e5",
+       "definitions": [
+         {
+           "name": "need",
+@@ -441,7 +441,7 @@
+         {
+           "name": "main",
+           "line": 30,
+-          "endLine": 166
++          "endLine": 102
+         },
+         {
+           "name": "left",
+@@ -454,34 +454,9 @@
+           "endLine": 39
+         },
+         {
+-          "name": "capture_snapshot",
++          "name": "drain",
+           "line": 40,
+-          "endLine": 50
+-        },
+-        {
+-          "name": "checkpoint",
+-          "line": 51,
+-          "endLine": 58
+-        },
+-        {
+-          "name": "new_capture",
+-          "line": 59,
+-          "endLine": 65
+-        },
+-        {
+-          "name": "retain",
+-          "line": 66,
+-          "endLine": 75
+-        },
+-        {
+-          "name": "close_capture",
+-          "line": 76,
+-          "endLine": 82
+-        },
+-        {
+-          "name": "drain",
+-          "line": 83,
+-          "endLine": 103
++          "endLine": 53
+         }
+       ],
+       "literalCaseLines": []
+@@ -1320,17 +1295,12 @@
+       ]
+     }
+   },
+-  "activeSourceMapAuthority": "H4 actual source hashes/AST lines; earlier complete H3 map is pinned INPLACE. No executed coverage.",
++  "activeSourceMapAuthority": "Exact H3 source hashes and AST lines; intended static calls only, never executed control/branch coverage.",
+   "successor3": {
+     "H2-N1": "bootstrap authenticated ACK then SIG_UNBLOCK only TERM/INT before role exec",
+     "H2-N2": "outer_worker.retain_block actual IO + J10 split-stream below/equal/over; original raw limit unchanged",
+     "H2-N3": "old table explicitly historical; current regenerated AST definitions/calls bound",
+     "faultScope": "intact last outer_host/native limiter, mandatory inner faults retained; unexpected last-owner loss FAILED/UNKNOWN",
+     "availability": "separate availability_limit.pl/owner/peer, all execution closed"
+-  },
+-  "successor4": {
+-    "onlySemanticCodeDelta": "availability_owner.py incremental actual raw-prefix retention; full-stream UNKNOWN on failed/incomplete/killed/write paths",
+-    "otherCode": "12 Python byte-exact H3, two Perl programs mandatory namespace literals only",
+-    "noEvaluation": true
+   }
+ }

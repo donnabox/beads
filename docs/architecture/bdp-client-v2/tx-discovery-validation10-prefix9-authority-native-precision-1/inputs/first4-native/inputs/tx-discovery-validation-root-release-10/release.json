@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-18T15:08:35.758054+00:00",
+  "acceptanceSha256": "e8e851bdb051d2909e52ddb0aa78cc4a7705c3e5216c738e3f7e2873e633af76",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "proposedGateSha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "noRetry": true,
+  "preconditions": [
+    "Publish/readback exact proposed candidate+nativeprecision+rootacceptance",
+    "Then root copies reviewed gate byteexact to active P10 gate; preserve immutable closed snapshot/original preparation index",
+    "Publish/readback activation and exact release/activegate bytes before dispatch",
+    "Only4 sequential fresh stages; each actual wrapper return0 AND wholeelapsed<120, exact inner source/process/log/receipt acceptance; any failure stop no retry",
+    "Later prefixes need fresh measured root artifact/process/semantic acceptance AND complete exact proposed gate/disposition other-native DATA precision before activation"
+  ],
+  "activated": false,
+  "executionDispatched": false,
+  "noMainOrPublicWriteOrWholeQualification": true
+}
