@@ -1,0 +1,14 @@
+{
+  "A": {
+    "chunk_id": "3952b6",
+    "exit_code": 1,
+    "original_token_count": 169,
+    "output": "Traceback (most recent call last):\n  File \"/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/guarded-action-session-20261018-021624-549f.py\", line 20, in <module>\n    subprocess.run(sys.argv[1:], check=True)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 578, in run\n    raise CalledProcessError(retcode, process.args,\n                             output=stdout, stderr=stderr)\nsubprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.14/bin/python3.14', '-']' returned non-zero exit status 1.\n",
+    "wall_time_seconds": 8.811642292
+  },
+  "B": "NOT_INVOKED",
+  "C": "NOT_INVOKED",
+  "administrativeProcessIdentities": "UNRETAINED",
+  "kind": "ROOT_RETAINED_ACTUAL_TOOL_RETURN_NOT_ORIGINAL_RAW_TOOL_RECEIPT",
+  "noRetry": true
+}
