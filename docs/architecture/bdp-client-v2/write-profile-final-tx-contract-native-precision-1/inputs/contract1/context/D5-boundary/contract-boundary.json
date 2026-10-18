@@ -1,0 +1,74 @@
+{
+  "state": "CLOSED DATA ONLY; no new normative contract",
+  "normativeBasis": "Pinned draft docs/specs/bdp.md SHA67772742; draft status lines13-19 retained",
+  "anchors": [
+    {
+      "lines": [
+        88,
+        95
+      ],
+      "quote": "three cumulative protocol profiles",
+      "effect": "Read, Read+Update, Transactional; no fourth Write enum"
+    },
+    {
+      "lines": [
+        118,
+        119
+      ],
+      "quote": "A higher cumulative profile inherits the complete minimum Read surface.",
+      "effect": "Required inherited Read on the higher-profile implementation"
+    },
+    {
+      "lines": [
+        3643,
+        3646
+      ],
+      "quote": "Read+Update acceptance includes all Read obligations",
+      "effect": "plus mutation/sequence/alias/revision/idempotency/recovery/validation/HTTP"
+    },
+    {
+      "lines": [
+        3652,
+        3653
+      ],
+      "quote": "Part IV inherits the Data Model, Read and Read+Update",
+      "effect": "TX adds atomic multi-operation and replication"
+    },
+    {
+      "lines": [
+        6663,
+        6666
+      ],
+      "quote": "Transactional acceptance includes both lower profiles",
+      "effect": "atomicity/ordering/receipts/Events/replication/erasure/recovery also required"
+    },
+    {
+      "lines": [
+        6672,
+        6676
+      ],
+      "quote": "Tests exercise public HTTP behavior",
+      "effect": "Internal interfaces and source route presence do not establish acceptance"
+    },
+    {
+      "lines": [
+        6883,
+        6892
+      ],
+      "quote": "A Transactional claim inherits the Read and Read+Update rows whose obligations the profile preserves",
+      "effect": "explicit retirements replace conflicting envelopes, not wholesale exclusion of lower laws"
+    }
+  ],
+  "sameConfigurationProvenance": {
+    "solePlan": "design.md220 explicitly says inherited Read on same actual target/configuration",
+    "repositoryAcceptance": "profile-contract-plan.ts35-69,110-179 binds all fields and refuses different targets; carrier plan4 line15 preserves actual TX listener inheritance",
+    "notLiteralSpecQuote": "The spec does not contain a standalone same-configuration phrase used as a new law; it requires cumulative implementation behavior. Exact binding is existing evidence machinery implementing that criterion."
+  },
+  "notRequired": [
+    "one listener advertising all three profile enum values simultaneously",
+    "RU inline singleton result and contradictory TX receipt at the same selected-profile URL",
+    "one physical process for every scenario",
+    "pooling separate profiles or different configuration fingerprints"
+  ],
+  "requiredInterpretation": "Prove each advertised profile on its own actual bound configuration. For TX, run inherited nonretired lower-profile laws against that TX installation; separate RU delivery must additionally prove genuine RU semantics on its RU configuration."
+}

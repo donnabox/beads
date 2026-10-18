@@ -1,0 +1,244 @@
+{
+  "state": "FROZEN CLOSED PREPARATION ONLY; no implementation/helper/schema/runtime authority",
+  "schemaVersion": 1,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "governingSpec": {
+    "path": "source/D3a/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "draftStatusPreserved": true
+  },
+  "ancestry": {
+    "acceptedD1Head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "tree": "6757829bd5b700faf28df39071190a272add90c9",
+    "soleParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "incomingMainAbsorbed": false,
+    "futureCombinedHead": "UNKNOWN",
+    "futureCombinedTree": "UNKNOWN",
+    "sourceFeasibilityNotCoverage": true
+  },
+  "parentD5IndexSha256": "ff0ee1b3e64b53eefe2be455d269a758155d6476a80ac41582952e0ec9ff54db",
+  "selection": {
+    "profile": "transactional",
+    "history": false,
+    "required": 251,
+    "read": 43,
+    "readUpdate": 75,
+    "transactional": 133,
+    "retirements": 13,
+    "existingPartialOwners": 17,
+    "missingOwners": 234,
+    "finalWholeCoverage": 0,
+    "lawInventory": "selected-laws.json",
+    "fullGoverningSections": "governing-clause-index.json",
+    "effectiveProfileRules": "effective-profile-rules.json"
+  },
+  "configurationDecision": "fixture-decision.json",
+  "prospectiveFinalCapturedConfiguration": {
+    "scope": "UNKNOWN",
+    "profile": "UNKNOWN",
+    "history": "UNKNOWN",
+    "sourceCommit": "UNKNOWN",
+    "installedPayloadDigest": "UNKNOWN",
+    "installedContractsDigest": "UNKNOWN",
+    "policyDigest": "UNKNOWN",
+    "authenticationDigest": "UNKNOWN",
+    "fixtureDigest": "UNKNOWN",
+    "fixtureId": "UNKNOWN",
+    "capabilities": "UNKNOWN"
+  },
+  "intendedSelection": {
+    "profile": "transactional",
+    "history": false,
+    "actualObservedSelection": "UNKNOWN"
+  },
+  "prospectiveAcquisition": {
+    "reviewedCombinedSourceFreeze": "UNKNOWN",
+    "rootNativeAcceptance": "UNKNOWN",
+    "exactCommittedSource": "UNKNOWN",
+    "toolsIdentity": "UNKNOWN",
+    "buildIdentity": "UNKNOWN",
+    "archiveIdentity": "UNKNOWN",
+    "consumerRoot": "UNKNOWN",
+    "consumerFrozenLockSha256": "UNKNOWN",
+    "completeInstalledInventory": "UNKNOWN",
+    "installedEntryRealpath": "UNKNOWN",
+    "installedEntrySha256": "UNKNOWN",
+    "runtimeConfigurationIdentity": "UNKNOWN",
+    "actualReadyObservation": "UNKNOWN",
+    "actualSessionIdentities": "UNKNOWN",
+    "publicAdmissionCapability": "UNKNOWN",
+    "publicAdmissionAcquisition": "UNKNOWN",
+    "full251Manifest": "UNKNOWN",
+    "full251ManifestDigest": "UNKNOWN",
+    "full251CollectionCapacity": "UNKNOWN",
+    "perCallbackWorkAndCleanupBounds": "UNKNOWN",
+    "outerSupervisorReceipt": "UNKNOWN",
+    "triggeredAdministrationScope": "UNKNOWN",
+    "retainedCopyAssuranceScope": "UNKNOWN"
+  },
+  "sameConfigurationRule": {
+    "allFields": [
+      "scope",
+      "profile",
+      "history",
+      "sourceCommit",
+      "installedPayloadDigest",
+      "installedContractsDigest",
+      "policyDigest",
+      "authenticationDigest",
+      "fixtureDigest",
+      "fixtureId",
+      "capabilities"
+    ],
+    "predicate": "Use existing factory-bound assertSameServedProfileConfiguration, plus actualsource/installedentry/runtime/ready/session/dial/lifecycle proof. Equal hashes do not turn declarations into observations.",
+    "reset": "Truthful samecapturedconfiguration across fresh declared scenario stores; sameactualstore forrestart/reopen; no reportunion acrossconfigurations.",
+    "RU": "Run genuineRead+Updatesemantics in a distinct actualRUcohort. NeveruseRUinlinepostimages orseparatelyadmittedRead as evidence of preservedlowerlaws onTX.",
+    "lifecycle": "No extraownerfusion required: existingTXowner/service/transport is prospectivecumulative lawtarget."
+  },
+  "supportedSeams": {
+    "TX-DISCOVERY": {
+      "seam": "transaction-http.ts587–609 + transaction-discovery.ts8–66: same service discoveryObserved, Scope204+Link, descriptor and12-target Directory",
+      "requiredWork": "Full discovery shape/navigation/limits/profile/History contract under actual TX context; follow received links, never ready-target map as cold oracle."
+    },
+    "TX-INHERITED-READ": {
+      "seam": "transaction-http.ts199–257/611–629; transaction-service readFor/readAtMinimum; transaction-read.ts249–315; read-http-routing/read-request",
+      "requiredWork": "Run every43 selected Read law on actual TX owner/transport; full Resource/Type/properties/collections/selectors/links/aliases/projection/numeric/HTTP contracts and unchanged minima/conditionals. Source routes alone are not coverage."
+    },
+    "TX-MUTATION": {
+      "seam": "transaction-http.ts290–360; service.submit; transaction-batch/store/evaluator",
+      "requiredWork": "Inherited singleton/patch/revision/validation/alias semantics through TX one-operation receipt entries, full before/after/readback/no-effect and disclosure semantics; no RU inline-result substitution."
+    },
+    "TX-SEQUENCE": {
+      "seam": "transaction-http.ts312–344; transaction-service.ts236–261; transaction-sequence.ts75–137",
+      "requiredWork": "True per-member transactions, ordered separately committed outcomes, local bindings, partial success/failure, unrelated-request interleaving, disconnect and retry. Atomic batch is not a sequence oracle."
+    },
+    "TX-KEYS-RECOVERY": {
+      "seam": "transaction-store admit/execute/receipt key state, canonical credentials, existing private process and reopen context",
+      "requiredWork": "Full principal/semantic/cross-carrier/pending/retained/expiry/recovery/ownership fences with actual key state consequences visible via HTTP. Restart same actual store; fault/admission control feasibility unresolved, no clock/test seams added."
+    },
+    "TX-BATCH-SETS": {
+      "seam": "same TX batch/updateWhere/deleteWhere routes, compiled descriptors and evaluator; D4 fresh proposed rebind only",
+      "requiredWork": "Atomic prestate/effect/rollback, guards/races, complete selections, owned revisions/Event ordering/receipts, all5 clone oracles where relevant. D4 old32 requests/33 entries/96 Events retain own fixture identity."
+    },
+    "TX-RECEIPTS": {
+      "seam": "transaction-http.ts receipt routes; service.receiptObserved and actual store projection",
+      "requiredWork": "Independent receipt GET/HEAD, exact body/headers/current-vs-execution contexts, pages/all entry classes, expiry/nondisclosure/current authorization/ownership; do not reduce whole clause to status/schema/count."
+    },
+    "TX-EVENTS-REPLICATION": {
+      "seam": "transaction-http.ts407–585, service snapshots/changefeed/events, stream pumps and store",
+      "requiredWork": "Exact Event/group order and state agreement, complete pages/checkpoints, minima, replay/live/reconnect/expiry/erasure framing, actual aborted-delivery vs internal close, no fabricated raw bytes."
+    },
+    "TX-ERASURE-RESTORE": {
+      "seam": "current store/snapshot/changefeed outputs, controlled-copy/pending-recovery boundaries; no supported erase/logical-restore admin established",
+      "requiredWork": "Unconditional TX framing plus every actual erase/retained-copy/import/restore-triggered duty. Supported administration/acquisition and application ledger remain UNKNOWN; Historyfalse/API absence never waives."
+    },
+    "TX-HTTP": {
+      "seam": "canonical raw executor; transaction-runtime receiver; transaction-http method/bounds/auth/context/conditional dispatch",
+      "requiredWork": "Full exact status/problem/precondition/field/media/token/JSON/HEAD/conditional/disconnect matrix including malformed raw fields; fixed auth/context precedence and genuine transport observations."
+    }
+  },
+  "stages": [
+    {
+      "order": 1,
+      "id": "LAW_AND_SCOPE_FREEZE",
+      "required": "Exact canonical251 ordered IDs/13retirements/30optionalHistory exclusions and full-clause case-to-assertion owners reviewed. Missing234/partial17 remain unestablished.",
+      "stop": "Any omitted selected law, invented applicability waiver, conflicted lower-profile clause or absent full-clause witness."
+    },
+    {
+      "order": 2,
+      "id": "ONE_REVIEWED_CONFIGURATION",
+      "required": "Explicit proposed wider TX fixture and all artifact/credential-principal/policy/History/capability controls are reviewed as ONE capture. Preserve existing source bounds; review actual supported trigger paths.",
+      "stop": "No accepted exact fixture/contract/policy/auth/capability capture; same URL or collection of lane reports is not a configuration."
+    },
+    {
+      "order": 3,
+      "id": "COMBINED_SOURCE_FREEZE",
+      "required": "Future explicit combinedsource contains individually accepted D3a/lifecycle/D4 seams as needed, full final diff/native/root acceptance, exact committed source tree/maps. Current lane maps are only inputs.",
+      "stop": "Unreviewed merge/adoption, incomingmain/spec, dirty/unboundsource, or claim old actualreview read combined/futurebytes."
+    },
+    {
+      "order": 4,
+      "id": "FRESH_INSTALL_PROOF",
+      "required": "Fresh bounded tool/install/static/build/archive/consumer/actualfrozenlock/completepayloadinventory and source→artifact→installedentry proof. Allactualhashes UNKNOWN until produced; no oldconsumer/build reuse inferred.",
+      "stop": "Missing source/tool/archive/lock/proof link, external entry not exact, artifact bound exceeded or incomplete cleanup."
+    },
+    {
+      "order": 5,
+      "id": "TRUSTED_BINDING_AND_BASELINE",
+      "required": "Use actual installed canonical capture/owner/runtime. Existing startInstalledTransactionCandidate supplies canonical metadata/payload; installedTransactionBinding validates ready/12targetinventory and binds all11 fields. Actual ready/runtime/entry/process and observation source must agree with externalproof; hashes alone prove neither truth nor passed laws.",
+      "stop": "Any UNKNOWN final field; policy/auth/config drift; absent actual source/ready; publicadmission stillunresolved is explicit, never bypassed."
+    },
+    {
+      "order": 6,
+      "id": "SESSION_RESET_AND_REOPEN",
+      "required": "Existing createTransactionalExecutionBinding provides actual generation/dial/context/register/abort/drain and assertSame binding eachsession. Each law’s declared reset uses truthful freshisolatedstore with same reviewedconfiguration; restart reopens SAMEactualstore/Scope/createfalse. Stable cohortcredentials reused acrosssessions; any required rotation/policychange is explicit within reviewed law and observation chronology.",
+      "stop": "Silently regeneratedcredentials/newTypes/policy/fixture, copiedotherDB, wrongScope, invented reset/reopen, unknown child/owner/stdio closure."
+    },
+    {
+      "order": 7,
+      "id": "COMPLETE_EXECUTION_OWNERS",
+      "required": "Author separately reviewed full251 executable ownership using canonical TX cumulativebundle/private runner and strict exactexecutor where supported. Real Readcalls hitTXservice; verifyRead/RUinherited laws viaTXforms, allruntimefamilies via realIDs/order/actualtransactions. No runner/helper invoked bythispacket.",
+      "stop": "Missingplan/notimplemented/prerequisiteblocked/deadline/abort/invalidreport/partialrows remain explicit no-credit. Do not turn ordinary dependentnot-run into globalstop without actualrunnerstop; preserve raw recheck exchanges and genuine stop tail."
+    },
+    {
+      "order": 8,
+      "id": "FULL_CLAUSE_OBSERVATION_ADJUDICATION",
+      "required": "Independent exactschema+wholeclause semantic audits bind ALLactualexchanges/actions/lifecycle/source/session/configuration; statuses/counts/schema alone insufficient. Preserve retainedreceipts/resources/ownedclosure/order/noop/replay/rawavailability before/after evidence. Completecollectioncapacity/deadlines remain UNKNOWN until reviewed; existingbounds neverwidenimplicitly.",
+      "stop": "Any unanswered governing clause/extra ormissingrecord/mismatchedfield/source/config, successful rowwithoutactualsupportedfacts, forgedappcoverageflag, cleanupunknown, or inheritedReadfromanotherowner."
+    },
+    {
+      "order": 9,
+      "id": "ADMIN_TRIGGER_AND_ASSURANCE",
+      "required": "Use explicitly supported privateadministration/controlledcopy setup for pendingrecovery; actualHTTPobservations establish publiclaws. Triggerederasure/retainedcopy/logicalrestore route, authoritativeledger acquisition, importer/sourceassurance must be separatelyresolved. Stable livecontinuity distinctfromrestore.",
+      "stop": "Unsupportedtrigger/acquisition/ledger remainsUNRESOLVED; Historyfalse/missingAPI/noexercisedfixture neverN/A. No inventedwireadminAPI, storeedit as ordinary client action, powerlossproof orlogicalrestoreclaim from gracefulreopen."
+    },
+    {
+      "order": 10,
+      "id": "FINAL_SAME_TARGET_AND_PUBLIC_ADMISSION",
+      "required": "Only full sameconfiguration currentinstalled evidence can be assessed for completeTX. Root must separately resolve existing publiccapability/payloadhash cycle and actual publicstartup. SeparateRUcohort proves genuineRUsemantics; historicalRead/Readseal remainsseparate.",
+      "stop": "No publicTXadmissionorwholeWriteclaim untilsupportedfinalidentityandallapplicablelawproof. No fusion, reportunion, normalizeddigest oradoptedspecproposal."
+    }
+  ],
+  "preservedCurrentBounds": {
+    "artifactManifestTXBytes": 1048576,
+    "artifactManifestRUOverrideNotApplicableTXBytes": 4194304,
+    "current17ManifestBytes": 867804,
+    "TXManifestHeadroomBytes": 180772,
+    "artifactDepth": 128,
+    "artifactNodes": 100000,
+    "artifactContainerEntries": 10000,
+    "exactSessionResponseHeaderBytes": 65536,
+    "exactSessionResponseBodyBytes": 1048576,
+    "exactSessionResponseWireBytes": 2097152,
+    "exactRequestMs": 5000,
+    "existingTXPositiveCallbackMs": 63000,
+    "carrierDataCallbackMs": 5000,
+    "noBudgetChangeAuthorized": true,
+    "final251CapacityAndScheduling": "UNKNOWN, separately reviewed before authoring/execution; no extrapolated failure or guarantee"
+  },
+  "noCreditStates": [
+    "missing-owner",
+    "existing-partial-owner",
+    "not-implemented",
+    "not-run",
+    "applicability-unresolved",
+    "setup-unavailable",
+    "prerequisite-blocked",
+    "failed",
+    "aborted",
+    "deadline",
+    "cleanup-unknown",
+    "configuration-mismatch",
+    "missing-raw-observation",
+    "unsupported-administration",
+    "unbound-public-admission"
+  ],
+  "executionReleased": false,
+  "sourceAuthoringReleased": false,
+  "schemaOrHelperExecutionReleased": false,
+  "reviewLaunchReleased": false,
+  "publicAdmissionReleased": false,
+  "wholeWriteQualified": false,
+  "humanQuestionNow": null,
+  "laterDecisionOnlyIfNeeded": "Explicit operator/platform scope for unsupported administration or admission identity; root continues independentfeasibleprep first. No new API or normative semantics adopted by thispacket."
+}

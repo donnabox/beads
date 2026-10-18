@@ -1,0 +1,14 @@
+{
+  "stage": "freeze current-origin equality assertion",
+  "exception": "AssertionError at mutable design.md origin",
+  "mutationsBeforeFailure": "report.md only inside new unfrozen audit; no index or mirror produced",
+  "preserved": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "snapshotSha256": "4aa56334401f671751e41fe5f93348a14c25bcac66f350bfa7e0f6622d515db4",
+      "currentSha256AtFreeze": "ecb17298e0a1f5a133d63138f5dfb06566af4c86c72d15371e58d894ece08dca",
+      "interpretation": "Mutable root-owned sole plan updated during this static audit; original dated snapshot retained, no source/spec or immutable packet changed."
+    }
+  ],
+  "correction": "Explicitly classify design.md as dated snapshot, retain original bytes; all immutable packet/source origins still verified; no product/gate/helper change"
+}

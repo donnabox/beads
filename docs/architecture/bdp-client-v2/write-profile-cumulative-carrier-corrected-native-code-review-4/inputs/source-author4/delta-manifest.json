@@ -1,0 +1,45 @@
+{
+  "cceExistingTwoBeforeHashesCheckedAgainstBaseMap": true,
+  "cceNewTwoAbsent": true,
+  "count": 4,
+  "cumulativeBase": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "kind": "independently generated complete UTF8 source diffs; not Git binary or status certification",
+  "pairs": [
+    {
+      "afterSha256": "c8cb626093c21fd14326071d10a11eefac979176aacdd8e585f491187201bfb3",
+      "beforeSha256": "0b457dfbd74fbf53fca0dfa0e93507fd0051792de4df54f5ddc4931823a52bfc",
+      "forward": "deltas/01.patch",
+      "forwardSha256": "10c44833142d6d4620be618f911523f865c517388eb28183e375305810e88749",
+      "inverse": "deltas/01.inverse.patch",
+      "inverseSha256": "4eb44f3825d88eecf1b9b487f2c80d03a47afc50f9e148c341f0cf5d1fd44b53",
+      "path": "packages/conformance/test-support/profile-evidence.ts"
+    },
+    {
+      "afterSha256": "566e3c8b8d2c939611ac0a40b55e184b2cb3d6acdbd8dfe47155dcb06fa77ba2",
+      "beforeSha256": "55d7546935587afaf11599af824c2bd588b7d4fa9ed3ce4961fc952bdcdc5ee4",
+      "forward": "deltas/02.patch",
+      "forwardSha256": "41de51cc8afbb719235f9175b7618547ce0f9c731454fe985e65edf414ba220d",
+      "inverse": "deltas/02.inverse.patch",
+      "inverseSha256": "688948815405339704e4c532c9c2d7ba50099169de747f0321e6e41026aa1c4f",
+      "path": "packages/conformance/test-support/profile-evidence.test.ts"
+    },
+    {
+      "afterSha256": "4102e1d1f0e2d35f2a23d5a090b06131ddbd12c71a8d756940e6b40bd6e158ca",
+      "beforeSha256": "cfdf5e4d7f3518531cd9a0e753ef45f8866da18abf19def225190a7b28a7f797",
+      "forward": "deltas/03.patch",
+      "forwardSha256": "668eaf9f2bd2588fca5949629a7f71f08ee59ffd3607b778e1d0afd7cd495285",
+      "inverse": "deltas/03.inverse.patch",
+      "inverseSha256": "9d20217ffc6a350c43c7fedfcdf5f58b70ea7cb97f22384d098de6355d12b66a",
+      "path": "apps/bdptest/test-support/read-update-artifact-execution.ts"
+    },
+    {
+      "afterSha256": "cf9ba0c7cb9331826ac42303ca9de70c80af70e1066d8a4948ad3b27df37b06f",
+      "beforeSha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "forward": "deltas/04.patch",
+      "forwardSha256": "a07b9b12369223f0204b7e5e7449aa2550c6db198f1d380d9c7f67ed71854a6b",
+      "inverse": "deltas/04.inverse.patch",
+      "inverseSha256": "7dc66583ef3809f81dc2d10e05904eed756cf69211284ae7c6a2091231c2ae20",
+      "path": "apps/bdptest/src/transactional-matrix.test.ts"
+    }
+  ]
+}
