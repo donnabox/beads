@@ -1,5 +1,7 @@
 # Legacy-import Preview 3 preparation — October 18, 2026
 
+Current follow-up product: `ffc139a059f3dc166a99760b4dc3112c1222ae3b`; latest83-case evidence and review status are in followup/diagnostics/README.md. The original source snapshot below remains historical.
+
 Preparation source: `89ca1e3124059c9f292fd362b93413b6b683dc8a`, tree `96d4c0ae35c76cc9654497db83716e8822e811e7`. Parent merge `67896392784918326c775e3cae9c4558520062de` preserves original PR86 source `ca4d72a9ea2590925e5876912df54a78559a580d` and Janet-qualified integration source `b9eebc31f8e0f21b9a6154652476ed87027e9cad`. This independent preparation branch does not retarget PR86 or move any integration/release ref. Janet explicitly selected b9e for isolated preparation; her newer candidate owns the engine slot.
 
 ## Changes and review disposition
@@ -15,7 +17,7 @@ Preparation source: `89ca1e3124059c9f292fd362b93413b6b683dc8a`, tree `96d4c0ae35
 - Optional SQL character-length clarity: no defect; kv.memory. is ASCII and existing rune count matches LEFT character count. No behavior change for this nit.
 - MEM-POL-001 boundary: graph-only --source-prefix (including explicit empty) refuses before ordinary storage open; corrupt-metadata and default omission have focused tests.
 
-Raw completed external predecessor report/exit/hash and reviewed manifest are retained. Fresh native repaired-source and generated BUILD reviews have no actionable findings. The full external review of89ca1e312 completed exit0 with follow-up findings. Source41bbc5591 repairs/dispositions and83 current focused records are in followup/README.md; fresh external delta review remains RUNNING. No repaired-source pass is inherited. Gemini excluded. Prior source review never qualifies changed code.
+Raw completed external predecessor report/exit/hash and reviewed manifest are retained. Fresh native repaired-source and generated BUILD reviews have no actionable findings. The full external review of89ca1e312 completed exit0 with follow-up findings. Source41bbc5591 repairs/dispositions are in followup/README.md; its completed review led to the narrow latest sourceffc139a05 under followup/diagnostics/README.md, whose external review remains RUNNING. No repaired-source pass is inherited. Gemini excluded. Prior source review never qualifies changed code.
 
 ## Measured checks
 
