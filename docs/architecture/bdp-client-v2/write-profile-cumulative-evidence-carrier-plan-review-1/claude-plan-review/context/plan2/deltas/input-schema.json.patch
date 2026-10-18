@@ -1,0 +1,24 @@
+--- plan1/input-schema.json
++++ plan2/input-schema.json
+@@ -1,9 +1,9 @@
+ {
+   "state": "PROPOSED PRIVATE SOURCE API; no public/wire schema",
+   "functions": {
+-    "assembleProfileEvidence": "(selection, configuration, artifacts, observations, attempt) -> deeply detached/frozen ProfileEvidenceV1",
+-    "verifyProfileEvidence": "(selection, configuration, artifacts, observations, attempt, evidenceSource) -> ProfileEvidenceV1 or fixed ProfileEvidenceError",
+-    "serializeProfileEvidence": "(verifiedOrAssembledEvidence, transientCredentialValues) -> canonical UTF8 bytes; never stdout/automatic files"
++    "assembleProfileEvidence": "(selection, configuration, artifacts, observations, attempt) -> deeply detached/frozen BOUND ProfileEvidenceV1; never called while RU configuration unavailable",
++    "verifyProfileEvidence": "(selection, configuration, artifacts, observations, attempt, evidenceSource) -> BOUND ProfileEvidenceV1 or fixed error; unbound attempt kind is explicitly not accepted as a bound carrier",
++    "serializeProfileEvidence": "(bound ProfileEvidenceV1 OR exact UnboundRUAttemptV1 data, transientCredentialValues) -> canonical UTF8 bytes, distinct closed kind/schema per branch; no new export/action language"
+   },
+   "selection": "existing canonical factory brand, profile read-update|transactional, historyfalse only",
+   "configuration": "existing factory-bound ServedProfileConfiguration, every actual field preserved; compare profile/history to selection and fixture digest to parsed artifacts",
+@@ -24,5 +24,7 @@
+   "reportExtraction": "parse bounded exact existing wrapper source; read existing .result without altering it; rawWrapperSha256 binds exact bytes; canonicalResultSha256 is explicitly a derived digest, never an installed payload normalization. Unused unknown wrapper fields are neither trusted nor serialized. Compare whitelisted source/config/session fields to trusted context; no caller structural cast becomes a bound configuration.",
+   "attempt": "closed data: outcome running|failed|observed; failureStages subset execution/assertion/cleanup/credential-check; owner states from existing writer; reported lifecycle facts/explicit unknown; sourceDirty boolean|null (null unavailable never false); unresolvedConditions list from frozen plan/adapters, not N/A certificates",
+   "ownData": "reuse ownData/copySourceBytes intrinsic capture before parsing; reject proxies/getters/unknown API keys/functions; detach supplied source bytes and evidence data once. No file IO/process/network/service callbacks in pure module.",
+-  "noTruthByHash": "Expected hashes and labels establish byte identity only; trusted external installer/owner/root run provenance establishes truth. The carrier never verifies a service merely by agreement of its own assertions."
++  "noTruthByHash": "Expected hashes and labels establish byte identity only; trusted external installer/owner/root run provenance establishes truth. The carrier never verifies a service merely by agreement of its own assertions.",
++  "preBindingRU": "Existing writer constructor/set/source/path/credentials and start/acquired have NO actual served configuration. Writer emits only distinct UnboundRUAttemptV1 until first safe genuine returned(report) supplies its existing factory-bound configuration. No fake bindServedProfileConfiguration call, new RU signature/caller parameter or guessed ready/target data.",
++  "TXWrapperHandoff": "Before onObserved, observe captures detached genuine {result,sessions,baseline} plus source/entry. The existing positive onObserved owner serializes its EXACT legacy wrapper once if legacy output OR carrierPath is present, returns a closed optional {bytes:Uint8Array,rawWrapperSha256:string} only for carrierPath. Observe rehashes/copies those exact bytes and compares parsed .result, .sessions and .baseline against the pre-hook genuine snapshot. No file readback or legacy output dependency."
+ }

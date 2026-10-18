@@ -1,0 +1,31 @@
+{
+  "rootLaunchReleased": true,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-review-1/claude-plan-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED FIRST carrier actual PLAN packet only. Complete effective plan2+plan3 static root/native accepted. Packet native/root mechanics then named root two-flag release before ONE default read-only Claude. No authoring/runtime/retry/public qualification.",
+  "predecessorIndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+  "rootDispositionSha256": "f029409e8b0ab7de1945a47e4a0c1305e75627eb33c668f770ef94e069115129"
+}
