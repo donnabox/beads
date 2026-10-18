@@ -1,0 +1,39 @@
+{
+  "accepted": false,
+  "revisionsRequired": true,
+  "scope": "independent FULL static D3a validation helper/report mechanics",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "utc": "2026-10-18T08:50:39.258005+00:00",
+  "basePreparationIndexSha256": "d47659bb9fef4e5a0f7c831e89f5f0eb2f40251129d3d91f857d6df2b96df7ce",
+  "indexClosureSha256": "669c22c9cf329bbf1715e03212cef46e028a025eee03fce96a1d7cbcbf45725a",
+  "implementationIndexSha256": "3233e512430d0742e7425c713894d701ffa08624c1fab89aea32348d11746ec5",
+  "sourceBindingSha256": "44d5826ee8f260d0de1ab1570b02ff0427c59a12707333060697f9cf047ad05d",
+  "sourceIdentity": "6bbcce5e8d6c107607822b24853bb8121f7d612137f00d3f0f173b747773f6ea",
+  "sourceMapSha256": "95bfa5a2e266de76469e54dc43e23f185945f8b19b51226ae8b8a2506eb9623d",
+  "physicalIdentityClosed": true,
+  "sourceUnchanged": true,
+  "sourceFilesVerified": 679,
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "Medium",
+      "location": "audit.py:74"
+    },
+    {
+      "id": "N2",
+      "severity": "Medium",
+      "location": "audit.py:96"
+    },
+    {
+      "id": "N3",
+      "severity": "Medium",
+      "location": "audit.py:119"
+    }
+  ],
+  "helperExecuted": false,
+  "productExecuted": false,
+  "sourceEdited": false,
+  "runtimeReleased": false,
+  "secondActualPlanOrCode": false,
+  "rootDispositionRequired": true
+}

@@ -1,0 +1,37 @@
+{
+  "exactStrippingTo085a": true,
+  "originalWorkloadAssertionsReportErrorCleanupBytesUnchanged": true,
+  "patchPairs": [
+    {
+      "forward": "source.patch",
+      "inverse": "source.inverse.patch",
+      "beforeSha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+      "afterSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+      "genuineHunksVerified": true
+    },
+    {
+      "forward": "correction.patch",
+      "inverse": "correction.inverse.patch",
+      "beforeSha256": "085a2e8e481a7cdbc8a705723939808b8120dca4518183c4e26a70de69f7382a",
+      "afterSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+      "genuineHunksVerified": true
+    },
+    {
+      "forward": "marker-only.patch",
+      "inverse": "marker-only.inverse.patch",
+      "beforeSha256": "085a2e8e481a7cdbc8a705723939808b8120dca4518183c4e26a70de69f7382a",
+      "afterSha256": "f4015c8cfd540d7768122c03b419ccbd4e130a407a7870c0147b8df31674e7a2",
+      "genuineHunksVerified": true
+    },
+    {
+      "forward": "format-only.patch",
+      "inverse": "format-only.inverse.patch",
+      "beforeSha256": "f4015c8cfd540d7768122c03b419ccbd4e130a407a7870c0147b8df31674e7a2",
+      "afterSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+      "genuineHunksVerified": true
+    }
+  ],
+  "formatOnlyOneWrap": true,
+  "finalSourceEqualsFormatterFreeze": true,
+  "semanticSourceChangeOnlyPrivateMarkerHelperAndTwoCalls": true
+}

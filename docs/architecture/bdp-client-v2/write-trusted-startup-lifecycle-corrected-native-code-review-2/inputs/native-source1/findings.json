@@ -1,0 +1,66 @@
+{
+  "disposition": "REVISIONS_REQUIRED",
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "Medium",
+      "title": "I20/I21 omit their guard-child expectations and necessarily fail the final count assertion",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "lines": [
+        137,
+        151,
+        1214,
+        1233
+      ],
+      "evidence": "cohort guardChildren defaults to0 at137 and compares actual guard sessions to that argument at151. I20 launches inert-no-ipc,inert-ipc,missing-ipc (three guards) and I21 launches invalid-ipc (one); both call sites end after work callback without supplying3/1. All preceding guard assertions succeeding therefore reaches length3/1 versus0. Expected report.guardChildren is also incorrectly0.",
+      "contract": "Accepted installed-witnesses I20=3/H1-H3,I21=1/H4,32 original generations+4guards=36; no callback/count widening.",
+      "smallestCorrection": "Supply the already-declared3 and1 expected guard counts at the two existing cohort invocations; preserve all four actual guard launches and existing budgets.",
+      "validationNeeded": "Later authorized selected I20/I21 execution must observe three/one actual PID+exit+close rows and matching expected counts; no execution performed here."
+    },
+    {
+      "id": "N2",
+      "severity": "Medium",
+      "title": "Installed parent-owned store probes can fail before verified close while cohort still erases their directory",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "lines": [
+        183,
+        212,
+        642,
+        734,
+        1115,
+        1124
+      ],
+      "evidence": "cleanupKnown at193-196 only joins child exit/close plus HTTP pending. ownerProbe opens a parent RU/TX owner at654/666 and closes at660/675 without registering it in cohort ownership; it then opens DatabaseSync677, runs/parses rows680-683 and closes684 without finally. initialize710-732 and I08/I09 raw DatabaseSync1115-1124 have the same missing ownership record. A read/parse/UPDATE or close failure can escape before observed close. Even though the original failure is retained and the callback fails, cohort can set cleanupKnown true and rmSync root206-208 with an unverified parent database/owner release. Child exit proves none of these parent acquisitions closed.",
+      "contract": "Plan4 requires actual owner release and retaining files on unknown owner state; later reopen/child termination is not proof of earlier parent SQLite release.",
+      "smallestCorrection": "Track each parent probe/initialization/raw SQLite acquisition as soon as returned, close in an observed finally path within existing cleanup budget, and include its verified terminal state in cleanupKnown. Keep unknown/failing release sticky and retain its directory. Preserve original errors and actual close observations, without extra callbacks/children/HTTP or invented success.",
+      "validationNeeded": "Static ownership coverage for every parent acquisition, then later authorized failure-path checks/observations must show unknown retains directory and successful probe records actual close. No runtime injection or probe was executed here."
+    },
+    {
+      "id": "N3",
+      "severity": "Low",
+      "title": "Source SQLite evidence is cumulative across callbacks and contaminates later ownership judgments",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "lines": [
+        34,
+        49,
+        106,
+        120,
+        233,
+        276,
+        815,
+        815
+      ],
+      "evidence": "Hoisted sql.rows only appends at44 and marks individual closes at48; beforeEach resets counters but never records a callback start index or resets/scopes this inventory. afterEach243 emits all historical rows under current callback, and263 uses every historical row to decide removal of current roots. S10 at815 also checks all prior rows. A previous unresolved acquisition makes unrelated later callbacks report cleanup unknown/retain their roots and can fail their closure assertion. Successful callbacks likewise emit growing cross-callback SQLite inventories.",
+      "contract": "Finite per-callback before-cleanup/terminal records must distinguish actual callback acquisitions from previous retained evidence; unknown roots remain retained without contaminating later ownership attribution.",
+      "smallestCorrection": "Capture a callback-local starting index/ownership slice or equivalent bounded local inventory before its acquisitions, and use that slice consistently for its report/cleanup/assertions. Preserve prior unresolved rows and retained-root evidence separately; do not erase an unknown owner to reset the test.",
+      "validationNeeded": "Later authorized collection should show callback-local SQLite acquisitions and previous unknown retention with independent later cleanup attribution; no extra callback or runtime work required."
+    }
+  ],
+  "severityCounts": {
+    "High": 0,
+    "Medium": 2,
+    "Low": 1
+  },
+  "productionOrderingFinding": null,
+  "executionPerformed": false
+}

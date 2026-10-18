@@ -1,0 +1,1 @@
+Root selects one finite marker grammar and fresh-attempt binding for accepted F6 proposal2. Exact try-entry placement and marker-only no-throw behavior preserve the genuine test outcome while independent absence/refusal remains mandatory. Null is diagnostic-only and cannot satisfy an authorized validation attempt. This is data only; no source, helper or execution is released.

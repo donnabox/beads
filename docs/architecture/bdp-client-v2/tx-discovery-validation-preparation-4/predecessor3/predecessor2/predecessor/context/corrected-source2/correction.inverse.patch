@@ -1,0 +1,413 @@
+--- a/apps/bdptest/src/transactional-discovery-installed.test.ts
++++ b/apps/bdptest/src/transactional-discovery-installed.test.ts
+@@ -357,7 +357,6 @@
+     "typeDescriptor",
+     "typesInventory",
+     "currentBeadRecord",
+-    "currentBeadCollection",
+     "currentLinkRecord",
+     "mutationReceipt",
+     "transactionalSequenceResponse",
+@@ -373,7 +372,7 @@
+   expect(validate(value), `D3 schema ${name}`).toBe(true);
+   return d3Object(value);
+ }
+-function d3Json(response: D3ColdResponse, name?: string) {
++function d3Json(response: D3InstalledResponse, name?: string) {
+   const value: unknown = JSON.parse(response.bodyText);
+   return name ? d3Checked(name, value) : d3Object(value);
+ }
+@@ -819,7 +818,7 @@
+           const split = bytes.indexOf("\r\n\r\n");
+           if (
+             (split < 0 && bytes.length > 16384) ||
+-            (split >= 0 && split + 4 > 16384) ||
++            split > 16384 ||
+             (split >= 0 && bytes.length - split - 4 > 131072)
+           )
+             fail(new D3RawTerminal("bound", partialStatus()));
+@@ -906,7 +905,6 @@
+     };
+   }
+   return {
+-    canonicalScope: scope,
+     child,
+     events,
+     directory,
+@@ -929,37 +927,7 @@
+   };
+ }
+ type D3Fixture = Awaited<ReturnType<typeof d3InstalledFixture>>;
+-type D3ColdResponse = Readonly<{
+-  status: number;
+-  headers: Readonly<Record<string, string>>;
+-  bodyText: string;
+-}>;
+-type D3ColdClient = Readonly<{
+-  canonicalScope: string;
+-  send: (...args: Parameters<D3Fixture["send"]>) => Promise<D3ColdResponse>;
+-}>;
+-function d3InstalledCold(
+-  name: string,
+-  expected: Parameters<typeof d3Installed>[1],
+-  work: (client: D3ColdClient) => Promise<void>,
+-) {
+-  return d3Installed(name, expected, (fixture) => {
+-    // Only this client and detached received response fields cross the cold boundary.
+-    const client: D3ColdClient = Object.freeze({
+-      canonicalScope: fixture.canonicalScope,
+-      send: async (...args: Parameters<D3Fixture["send"]>): Promise<D3ColdResponse> => {
+-        const response = await fixture.send(...args);
+-        return Object.freeze({
+-          status: response.status,
+-          headers: Object.freeze({ ...response.headers }),
+-          bodyText: response.bodyText,
+-        });
+-      },
+-    });
+-    return work(client);
+-  });
+-}
+-function d3Context(response: D3ColdResponse, epoch: string, view: string, position: string) {
++function d3Context(response: D3InstalledResponse, epoch: string, view: string, position: string) {
+   expect(response.headers["bdp-scope-epoch"]).toBe(epoch);
+   expect(response.headers["bdp-authorization-view"]).toBe(view);
+   expect(response.headers["bdp-scope-position"]).toBe(position);
+@@ -975,13 +943,12 @@
+   ])
+     expect(response.headers[name]).toBeUndefined();
+ }
+-async function d3Navigate(f: D3ColdClient) {
+-  const probe = await f.send("N1", "GET", f.canonicalScope, 204),
++async function d3Navigate(f: D3Fixture) {
++  const probe = await f.send("N1", "GET", scope, 204),
+     link = d3String(probe.headers.link);
+   expect(link).toBe(
+-    `<${new URL("bdp.json", f.canonicalScope).href}>; rel="service-desc"; type="application/json"`,
++    `<${new URL("bdp.json", scope).href}>; rel="service-desc"; type="application/json"`,
+   );
+-  expect(probe.headers["cache-control"]).toBe("private, no-store");
+   const match = /^<([^>]+)>; rel="service-desc"; type="application\/json"$/.exec(link);
+   if (!match) throw new Error("D3 actual service description Link missing");
+   const descriptorUrl = d3Safe(match[1]);
+@@ -1030,7 +997,7 @@
+   };
+ }
+ type D3Navigation = Awaited<ReturnType<typeof d3Navigate>>;
+-async function d3Types(f: D3ColdClient, nav: D3Navigation) {
++async function d3Types(f: D3Fixture, nav: D3Navigation) {
+   const inventory = d3Json(
+       await f.send("T1", "GET", d3Safe(nav.descriptor.types), 200),
+       "typesInventory",
+@@ -1061,7 +1028,7 @@
+   return { bead: beadId, link: linkId };
+ }
+ async function d3Command(
+-  f: D3ColdClient,
++  f: D3Fixture,
+   nav: D3Navigation,
+   name: (typeof d3OperationNames)[number],
+   id: string,
+@@ -1107,7 +1074,7 @@
+   return resource;
+ }
+ async function d3After(
+-  f: D3ColdClient,
++  f: D3Fixture,
+   id: string,
+   resource: Record<string, unknown>,
+   kind: "bead" | "link",
+@@ -1131,12 +1098,12 @@
+     },
+   });
+ }
+-async function d3Missing(f: D3ColdClient, id: string, url: string) {
++async function d3Missing(f: D3Fixture, id: string, url: string) {
+   const response = await f.send(id, "GET", url, 404);
+   expect(d3Json(response, "transactionalProblem").code).toBe("resource-not-found");
+   expect(response.headers.location).toBeUndefined();
+ }
+-async function d3FinalHeads(f: D3ColdClient, nav: D3Navigation, position: string) {
++async function d3FinalHeads(f: D3Fixture, nav: D3Navigation, position: string) {
+   const refreshed = await f.send("refresh-descriptor", "GET", nav.descriptorUrl, 200),
+     body = d3Object(parseTransactionalDiscovery(JSON.parse(refreshed.bodyText)));
+   expect(body).toMatchObject({
+@@ -1152,12 +1119,11 @@
+   expect(descriptor.headers["content-length"]).toBe(String(Buffer.byteLength(refreshed.bodyText)));
+   expect(directory.headers["content-length"]).toBe(String(nav.directoryLength));
+   expect(probe.headers.link).toBe(nav.link);
+-  expect(probe.headers["cache-control"]).toBe("private, no-store");
+   for (const response of [descriptor, directory, probe])
+     d3Context(response, nav.epoch, nav.view, position);
+ }
+ it("private installed cold resource-alias", async () => {
+-  await d3InstalledCold(
++  await d3Installed(
+     "private installed cold resource-alias",
+     { scheduled: 43, completed: 43, aborts: 0, exact: 43, raw: 0 },
+     async (f) => {
+@@ -1313,7 +1279,7 @@
+   );
+ }, 60000);
+ async function d3Collection(
+-  f: D3ColdClient,
++  f: D3Fixture,
+   nav: D3Navigation,
+   id: string,
+   expected: readonly Record<string, unknown>[],
+@@ -1322,7 +1288,7 @@
+   const url = new URL(d3Safe(nav.descriptor.beads));
+   url.searchParams.set("limit", "32");
+   const response = await f.send(id, "GET", url.href, 200),
+-    body = d3Json(response, "currentBeadCollection"),
++    body = d3Json(response),
+     items = d3Array(body.items);
+   expect(body.next).toBeNull();
+   expect(items.map((item) => item.id)).toEqual(expected.map((item) => item.id));
+@@ -1334,7 +1300,7 @@
+   return items;
+ }
+ it("private installed cold transactional-carriers", async () => {
+-  await d3InstalledCold(
++  await d3Installed(
+     "private installed cold transactional-carriers",
+     { scheduled: 28, completed: 28, aborts: 0, exact: 28, raw: 0 },
+     async (f) => {
+@@ -1343,12 +1309,14 @@
+         rootUrl = d3Safe(nav.descriptor.beads);
+       const ids = ["a", "b", "c", "d", "missing"].map((name) => new URL(name, rootUrl).href);
+       const seed = {
+-        operations: ids.slice(0, 3).map((id, index) => ({
+-          operation: "createBead",
+-          id,
+-          type: types.bead,
+-          properties: { n: index + 1 },
+-        })),
++        operations: ids
++          .slice(0, 3)
++          .map((id, index) => ({
++            operation: "createBead",
++            id,
++            type: types.bead,
++            properties: { n: index + 1 },
++          })),
+       };
+       const batchReceipt = await d3Command(
+           f,
+@@ -1587,14 +1555,16 @@
+         d3Private(response);
+       }
+       const unknown = new URL("unknown", nav.directoryUrl).href;
+-      // An unknown noncanonical encoded suffix, not an alternate spelling of the operation.
+-      const encoded = `${nav.targets.createBead}%2C`;
++      const encoded = new URL(nav.targets.createBead);
++      const leaf = encoded.pathname.at(-1);
++      if (!leaf) throw new Error("D3 actual operation has no leaf");
++      encoded.pathname = `${encoded.pathname.slice(0, -1)}%${leaf.charCodeAt(0).toString(16).toUpperCase()}`;
+       const queried = new URL(nav.targets.createBead);
+       queried.search = "unexpected=1";
+       // All three are ordinary allowlisted URL values with an anonymous credential handle.
+       for (const [id, url] of [
+         ["unknown", unknown],
+-        ["encoded", encoded],
++        ["encoded", encoded.href],
+         ["query", queried.href],
+       ] as const) {
+         const response = await f.send(id, "GET", url, 404, { role: "anonymous" });
+@@ -1740,7 +1710,6 @@
+           const response = await f.send(id, method, route.url, status, {
+             fields: [...d3Tuple(nav, minimum, epoch, view), ...extras],
+           });
+-          d3Context(response, nav.epoch, nav.view, "pos-1");
+           if (code) {
+             expect(response.headers.link).toBeUndefined();
+             expect(response.headers.etag).toBeUndefined();
+@@ -1753,7 +1722,10 @@
+                 String(status === 409 ? viewBytes : timeoutBytes),
+               );
+             if (status === 503) expect(response.headers["retry-after"]).toBe("1");
+-          } else if (route.name === "scope") expect(response.headers.link).toBe(nav.link);
++          } else {
++            d3Context(response, nav.epoch, nav.view, "pos-1");
++            if (route.name === "scope") expect(response.headers.link).toBe(nav.link);
++          }
+         }
+       },
+     );
+@@ -1767,10 +1739,7 @@
+           route = d3DiscoveryRoutes(nav).find((item) => item.name === routeName)!;
+         const pending = f.localRaw("pending-minimum", route.url, {
+           role: "writer",
+-          fields: d3Tuple(nav, "opaque-minimum").map(({ name, value }): [string, string] => [
+-            name,
+-            value,
+-          ]),
++          fields: d3Tuple(nav, "opaque-minimum").map(({ name, value }) => [name, value] as const),
+         });
+         // A successful write callback means sent-only; it proves no admission or wait.
+         await pending.written;
+--- a/apps/bdptest/src/transactional-schema-installed.test.ts
++++ b/apps/bdptest/src/transactional-schema-installed.test.ts
+@@ -338,14 +338,9 @@
+     expect(method.headers.allow).toBe("GET, HEAD");
+     expect(method.bodyText).toBe("");
+     const discovery = await exchange("discovery", "GET", scope);
+-    expect(discovery.status).toBe(204);
++    expect(discovery.status).toBe(500);
+     expect(discovery.bodyText).toBe("");
+-    expect(discovery.headers.link).toBe(
+-      `<${new URL("bdp.json", scope).href}>; rel="service-desc"; type="application/json"`,
+-    );
+-    expect(discovery.headers["cache-control"]).toBe("private, no-store");
+-    expect(discovery.headers["x-bdp-development-limit"]).toBeUndefined();
+-    context(discovery, "pos-0");
++    expect(discovery.headers["x-bdp-development-limit"]).toBe("transactional-discovery");
+     const mutation = await exchange(
+       "create",
+       "POST",
+--- a/packages/server/src/transaction-changefeed.test.ts
++++ b/packages/server/src/transaction-changefeed.test.ts
+@@ -11,7 +11,6 @@
+   isJsonSchemaUri,
+   isJsonSchemaDateTime,
+   parseTypeDescriptor,
+-  parseTransactionalDiscovery,
+   stringifyJsonValue,
+ } from "@bdp/protocol";
+ import type { ResourceRecord } from "./resource-evaluator.js";
+@@ -688,13 +687,7 @@
+   const unauth = await f.request("changes/?after=genesis", { headers: { authorization: "" } });
+   expect(unauth.status).toBe(401);
+   expect(unauth.headers.get("bdp-scope-position")).toBeNull();
+-  const discovery = await f.request("bdp.json");
+-  expect(discovery.status).toBe(200);
+-  expect(discovery.headers.has("x-bdp-development-limit")).toBe(false);
+-  const descriptor = parseTransactionalDiscovery(await discovery.json());
+-  expect(descriptor.scopeEpoch).toBe(discovery.headers.get("bdp-scope-epoch"));
+-  expect(descriptor.authorizationView).toBe(discovery.headers.get("bdp-authorization-view"));
+-  expect(descriptor.headPosition).toBe(discovery.headers.get("bdp-scope-position"));
++  expect((await f.request("bdp.json")).status).toBe(500);
+   await f.reopen();
+   expect(await (await f.request("changes/?after=genesis")).json()).toEqual(firstPage);
+ });
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -6860,10 +6860,7 @@
+       for (const [method, headers, status, url] of rows) {
+         const response = await f.call(url ?? target, method, headers);
+         d3Response(response, status, "pos-0");
+-        if (route === "scope") {
+-          expect(response.headers.get("link")).toBe(d3Link);
+-          expect(response.headers.get("cache-control")).toBe("private, no-store");
+-        }
++        if (route === "scope") expect(response.headers.get("link")).toBe(d3Link);
+         if (method === "HEAD" || status !== 200) expect(response.body).toBeUndefined();
+         if (method === "GET" && status === 200) {
+           if (route === "descriptor") parseTransactionalDiscovery(response.body);
+@@ -6909,7 +6906,7 @@
+       let partialLength = 0;
+       for (const [method, headers, role, status] of rows) {
+         const response = await f.call(target, method, headers, role);
+-        d3Response(response, status, status < 400 ? "pos-0" : undefined);
++        d3Response(response, status);
+         if (status >= 400) {
+           d3NoDisclosure(response);
+           if (method === "GET") {
+@@ -7129,7 +7126,7 @@
+           const split = bytes.indexOf("\r\n\r\n");
+           if (
+             (split < 0 && bytes.length > 16384) ||
+-            (split >= 0 && split + 4 > 16384) ||
++            split > 16384 ||
+             (split >= 0 && bytes.length - split - 4 > 131072)
+           )
+             fail(new Error("D3 raw header/body bound"));
+@@ -7343,7 +7340,6 @@
+         "unsafe-directory-target",
+         (copy) => {
+           record(copy.directory).createBead = "https://foreign.invalid/create";
+-          expect(() => parseTransactionalOperationDirectory(copy.directory)).toThrow();
+         },
+       ],
+       [
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -601,7 +601,6 @@
+               status: 204,
+               headers: new Headers({
+                 link: `<${new URL("bdp.json", scope).href}>; rel="service-desc"; type="application/json"`,
+-                "cache-control": "private, no-store",
+               }),
+             }
+           : jsonResponse(descriptor ? observed.discovery : observed.directory),
+--- a/packages/server/src/transaction-installed-contracts.test.ts
++++ b/packages/server/src/transaction-installed-contracts.test.ts
+@@ -4,13 +4,7 @@
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { afterEach, expect, it } from "vitest";
+-import {
+-  stringifyJsonValue,
+-  isJsonSchemaUri,
+-  isJsonSchemaDateTime,
+-  parseTransactionalDiscovery,
+-  parseTransactionalOperationDirectory,
+-} from "@bdp/protocol";
++import { stringifyJsonValue, isJsonSchemaUri, isJsonSchemaDateTime } from "@bdp/protocol";
+ import { Ajv2020 } from "ajv/dist/2020.js";
+ import { compileDevelopmentContracts, type DevelopmentContracts } from "./development-contracts.js";
+ import {
+@@ -408,48 +402,18 @@
+     return { status: response.status, value: await response.json() };
+   };
+   async function discoveryBoundary() {
+-    let phaseContext: (string | null)[] | undefined;
+-    for (const relative of ["", "bdp.json", "operations/"]) {
+-      let representationBytes = 0;
++    for (const relative of ["", "bdp.json", "operations/"])
+       for (const method of ["GET", "HEAD"]) {
+         const target = new URL(new URL(relative, scope).pathname, runtime.listenUrl);
+         const response = await fetch(target, {
+           method,
+           headers: { authorization: `Bearer ${"a".repeat(32)}` },
+         });
+-        expect(response.status).toBe(relative === "" ? 204 : 200);
+-        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+-        const currentContext = [
+-          "bdp-scope-epoch",
+-          "bdp-authorization-view",
+-          "bdp-scope-position",
+-        ].map((name) => response.headers.get(name));
+-        for (const value of currentContext) expect(value).toMatch(/\S+/);
+-        phaseContext ??= currentContext;
+-        expect(currentContext).toEqual(phaseContext);
+-        const body = await response.text();
+-        if (relative === "") {
+-          expect(response.headers.get("link")).toBe(
+-            `<${new URL("bdp.json", scope).href}>; rel="service-desc"; type="application/json"`,
+-          );
+-          expect(response.headers.get("cache-control")).toBe("private, no-store");
+-          expect(body).toBe("");
+-        } else if (method === "GET") {
+-          representationBytes = Buffer.byteLength(body);
+-          if (relative === "bdp.json") {
+-            const descriptor = parseTransactionalDiscovery(JSON.parse(body));
+-            expect([
+-              descriptor.scopeEpoch,
+-              descriptor.authorizationView,
+-              descriptor.headPosition,
+-            ]).toEqual(currentContext);
+-          } else parseTransactionalOperationDirectory(JSON.parse(body));
+-        } else {
+-          expect(body).toBe("");
+-          expect(response.headers.get("content-length")).toBe(String(representationBytes));
+-        }
++        expect(response.status).toBe(500);
++        expect(response.headers.get("x-bdp-development-limit")).toBe("transactional-discovery");
++        expect(response.headers.has("link")).toBe(false);
++        expect(await response.text()).toBe("");
+       }
+-    }
+   }
+   await discoveryBoundary();
+   const installedDescriptors = options.artifacts.descriptors

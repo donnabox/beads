@@ -1,0 +1,311 @@
+--- a/packages/server/src/reference-deployment-runtime.test.ts
++++ b/packages/server/src/reference-deployment-runtime.test.ts
+@@ -88,6 +88,9 @@
+   | { entered: PromiseWithResolvers<void>; release: PromiseWithResolvers<void> }
+   | undefined;
+ let actualComposition: ReturnType<typeof compose> | undefined;
++let sqlStart = 0;
++const callbackSQLite = () => sql.rows.slice(sqlStart);
++const previousUnresolvedSQLite = () => sql.rows.slice(0, sqlStart).filter((row) => !row.closed);
+ let observedCase = "",
+   assertionsCompleted = false,
+   bodyExtra: unknown = null,
+@@ -104,6 +107,7 @@
+   return copy as T;
+ }
+ beforeEach((context) => {
++  sqlStart = sql.rows.length;
+   observedCase = context.task.name;
+   assertionsCompleted = false;
+   bodyExtra = null;
+@@ -240,7 +244,8 @@
+       assertionsCompleted,
+       counts: counts(),
+       extra: bodyExtra,
+-      SQLite: sql.rows.map((r) => ({ ...r })),
++      SQLite: callbackSQLite().map((r) => ({ ...r })),
++      previousUnresolvedSQLite: previousUnresolvedSQLite().map((r) => ({ ...r })),
+       claimEligible: false,
+     }),
+   );
+@@ -260,7 +265,7 @@
+         }),
+     ),
+   );
+-  const unknown = cleanup.some((r) => r.status === "rejected") || sql.rows.some((r) => !r.closed);
++  const unknown = cleanup.some((r) => r.status === "rejected") || callbackSQLite().some((r) => !r.closed);
+   if (!unknown) for (const root of directories) rmSync(root, { recursive: true, force: true });
+   console.log(
+     JSON.stringify({
+@@ -268,6 +273,8 @@
+       callback: observedCase,
+       assertionsCompleted,
+       cleanupKnown: !unknown,
++      SQLite: callbackSQLite().map((r) => ({ ...r })),
++      previousUnresolvedSQLite: previousUnresolvedSQLite().map((r) => ({ ...r })),
+       counts: counts(),
+       directories: directories.map((directory) => ({ directory, absent: !existsSync(directory) })),
+       claimEligible: false,
+@@ -812,7 +819,7 @@
+     expect(causes(failure).includes(listenFailure)).toBe(true);
+     expect(causes(failure).includes(closeFailure)).toBe(true);
+     expect(ownerCloses).toBe(1);
+-    expect(sql.rows.every((value) => value.closed)).toBe(true);
++    expect(callbackSQLite().every((value) => value.closed)).toBe(true);
+     emit("S10-" + profile, { observedPrimary: true, observedCleanupFailure: true });
+   },
+ );
+--- a/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ b/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -177,6 +177,8 @@
+       );
+     }
+     if (f) {
++      const parentCleanup = f.cleanupParents(cleanupEnd);
++      const cleanupFailures: unknown[] = [];
+       for (const session of f.sessions)
+         if (!session.exit && session.child.connected)
+           session.child.send({ command: "close" }, () => {});
+@@ -190,8 +192,12 @@
+           }
+         }),
+       );
++      const parentResults = await parentCleanup;
++      cleanupFailures.push(...[...cleanup, ...parentResults].flatMap((result) => result.status === "rejected" ? [result.reason] : []));
+       cleanupKnown =
+         cleanup.every((r) => r.status === "fulfilled") &&
++        parentResults.every((r) => r.status === "fulfilled") &&
++        f.parentOwnershipKnown() &&
+         f.sessions.every((s) => s.exit !== null && s.close !== null) &&
+         f.pending.size === 0;
+       for (const socket of f.peers) {
+@@ -200,8 +206,9 @@
+       }
+       try {
+         await limited(f.reserved.close(), cleanupEnd);
+-      } catch {
++      } catch (error) {
+         cleanupKnown = false;
++        cleanupFailures.push(error);
+       }
+       if (cleanupKnown) {
+         try {
+@@ -210,6 +217,10 @@
+           cleanupKnown = false;
+         }
+       }
++      if (cleanupFailures.length) failure = new AggregateError(
++        [...(failure === undefined ? [] : [failure]), ...cleanupFailures],
++        "lifecycle body and observed cleanup failed",
++      );
+       const report = {
+         observation: "reference-lifecycle-installed",
+         id,
+@@ -240,6 +251,7 @@
+           directory: f.root,
+           directoryAbsent: !existsSync(f.root),
+           ownerProbes: f.ownerProbes,
++          parentOwnership: f.parentOwnership(),
+           controls: f.controls,
+         },
+         elapsedMs: performance.now() - started,
+@@ -375,6 +387,67 @@
+     peers: Socket[] = [],
+     controls: Record<string, unknown>[] = [],
+     ownerProbes: Record<string, unknown>[] = [];
++  const parentOwners: {
++    state: {
++      kind: "read-update-owner" | "transaction-owner" | "SQLite";
++      stage: string;
++      closeAttempted: boolean;
++      closeSettled: boolean;
++      closeSucceeded: boolean;
++      uncertain: boolean;
++    };
++    close(): Promise<void>;
++  }[] = [];
++  async function withParentOwner<T extends { close(): unknown }, R>(
++    kind: "read-update-owner" | "transaction-owner" | "SQLite",
++    stage: string,
++    value: T,
++    work: (owned: T) => R | Promise<R>,
++  ): Promise<R> {
++    const state = { kind, stage, closeAttempted: false, closeSettled: false, closeSucceeded: false, uncertain: false };
++    let closing: Promise<void> | undefined;
++    const close = () => {
++      if (!closing) {
++        state.closeAttempted = true;
++        closing = Promise.resolve().then(() => value.close()).then(
++          () => { state.closeSettled = true; state.closeSucceeded = true; },
++          (error: unknown) => { state.closeSettled = true; throw error; },
++        );
++        void closing.catch(() => {});
++      }
++      return closing;
++    };
++    // Register immediately after acquisition, before any read/parse/write or await.
++    parentOwners.push({ state, close });
++    let result!: R;
++    let primary: { cause: unknown } | undefined;
++    try {
++      result = await work(value);
++    } catch (cause) {
++      primary = { cause };
++    } finally {
++      try {
++        await limited(close(), started + 45000);
++      } catch (cleanup) {
++        state.uncertain = true; // Sticky even if a late close eventually settles.
++        if (primary) throw new AggregateError([primary.cause, cleanup], "parent owner operation and close failed");
++        throw cleanup;
++      }
++    }
++    if (primary) throw primary.cause;
++    return result;
++  }
++  const cleanupParents = (end: number) => Promise.allSettled(parentOwners.map(async (owned) => {
++    try {
++      await limited(owned.close(), end); // Same memoized attempt, never a second close.
++    } catch (error) {
++      owned.state.uncertain = true;
++      throw error;
++    }
++  }));
++  const parentOwnershipKnown = () => parentOwners.every(({ state }) =>
++    state.closeSettled && state.closeSucceeded && !state.uncertain);
++  const parentOwnership = () => parentOwners.map(({ state }) => ({ ...state }));
+   const receiptSchema = JSON.parse(
+     readFileSync(path.join(workspace, "schemas/bdp-v0.schema.json"), "utf8"),
+   );
+@@ -651,19 +724,18 @@
+     const h = await loader.loadReferenceDeployment(input),
+       state = registry.referenceDeploymentState(h);
+     if (state.profile === "read-update") {
+-      const value = await ownerModule.openDevelopmentAuthority({
++      await withParentOwner("read-update-owner", "probe", await ownerModule.openDevelopmentAuthority({
+         scope,
+         directory,
+         create: false,
+         configuration: state.installed.configuration,
+-      });
+-      await value.close();
++      }), () => undefined);
+     } else {
+       const module = (await import(
+         pathToFileURL(path.join(serverRoot, "transaction-store.js")).href
+       )) as typeof import("../../../packages/server/src/transaction-store.js");
+       const p = state.preflight;
+-      const value = module.openTransactionStore({
++      await withParentOwner("transaction-owner", "probe", module.openTransactionStore({
+         file: path.join(directory, "transaction.sqlite"),
+         scope,
+         create: false,
+@@ -671,17 +743,11 @@
+         contracts: p.contracts!,
+         receiptMaximumItems: p.settings.receiptMaximumItems,
+         maintenanceIntervalMs: p.settings.maintenanceIntervalMs,
+-      });
+-      value.close();
++      }), () => undefined);
+     }
+-    const db = new DatabaseSync(
++    const rows = await withParentOwner("SQLite", "probe-resource-read", new DatabaseSync(
+       path.join(directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"),
+-    );
+-    const rows = db
+-      .prepare("SELECT body FROM resources")
+-      .all()
+-      .map((r) => object(JSON.parse(String(r.body))));
+-    db.close();
++    ), (db) => db.prepare("SELECT body FROM resources").all().map((r) => object(JSON.parse(String(r.body)))));
+     const retained = rows.find((r) => r.id === scope + "beads/startup");
+     expect(retained !== undefined).toBe(expectCreated);
+     if (expectCreated) {
+@@ -708,19 +774,18 @@
+     )) as typeof import("../../../packages/server/src/reference-deployment-state.js");
+     const state = registry.referenceDeploymentState(await loader.loadReferenceDeployment(input));
+     if (state.profile === "read-update") {
+-      const o = await ownerModule.openDevelopmentAuthority({
++      await withParentOwner("read-update-owner", "initialize", await ownerModule.openDevelopmentAuthority({
+         scope,
+         directory,
+         create: true,
+         configuration: state.installed.configuration,
+-      });
+-      await o.close();
++      }), () => undefined);
+     } else {
+       const m = (await import(
+         pathToFileURL(path.join(serverRoot, "transaction-store.js")).href
+       )) as typeof import("../../../packages/server/src/transaction-store.js");
+       const p = state.preflight;
+-      const o = m.openTransactionStore({
++      await withParentOwner("transaction-owner", "initialize", m.openTransactionStore({
+         file: path.join(directory, "transaction.sqlite"),
+         scope,
+         create: true,
+@@ -728,8 +793,7 @@
+         contracts: p.contracts!,
+         receiptMaximumItems: p.settings.receiptMaximumItems,
+         maintenanceIntervalMs: p.settings.maintenanceIntervalMs,
+-      });
+-      o.close();
++      }), () => undefined);
+     }
+     ownerProbes.push({ profile, actualFixtureInitializationAndClose: true });
+   }
+@@ -872,6 +936,10 @@
+     peers,
+     controls,
+     ownerProbes,
++    withParentOwner,
++    cleanupParents,
++    parentOwnershipKnown,
++    parentOwnership,
+     client,
+     launch,
+     refused,
+@@ -1111,17 +1179,16 @@
+       const file = path.join(
+           f.directory,
+           profile === "read-update" ? "reference.sqlite" : "transaction.sqlite",
+-        ),
+-        db = new DatabaseSync(file);
+-      const prior = String(
+-        db.prepare("SELECT value FROM metadata WHERE name='contractCapture'").get()!.value,
+-      );
+-      db.prepare("UPDATE metadata SET value='null' WHERE name='contractCapture'").run();
+-      db.close();
++        );
++      const prior = await f.withParentOwner("SQLite", "persisted-capture-edit", new DatabaseSync(file), (db) => {
++        const value = String(db.prepare("SELECT value FROM metadata WHERE name='contractCapture'").get()!.value);
++        db.prepare("UPDATE metadata SET value='null' WHERE name='contractCapture'").run();
++        return value;
++      });
+       await f.refused(false);
+-      const restore = new DatabaseSync(file);
+-      restore.prepare("UPDATE metadata SET value=? WHERE name='contractCapture'").run(prior);
+-      restore.close();
++      await f.withParentOwner("SQLite", "persisted-capture-restore", new DatabaseSync(file), (restore) => {
++        restore.prepare("UPDATE metadata SET value=? WHERE name='contractCapture'").run(prior);
++      });
+       await f.ownerProbe(false);
+     }),
+   60000,
+@@ -1219,7 +1286,7 @@
+       await f.guard("inert-no-ipc");
+       await f.guard("inert-ipc");
+       await f.guard("missing-ipc");
+-    }),
++    }, 3),
+   60000,
+ );
+ it(
+@@ -1228,6 +1295,6 @@
+     cohort("I21", "transactional", 0, 1, async (f) => {
+       await f.publicRefusal();
+       await f.guard("invalid-ipc");
+-    }),
++    }, 1),
+   60000,
+ );
