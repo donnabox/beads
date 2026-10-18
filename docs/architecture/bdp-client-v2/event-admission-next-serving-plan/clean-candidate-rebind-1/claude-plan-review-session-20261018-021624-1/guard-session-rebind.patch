@@ -1,0 +1,28 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/guarded-action-session-20261018-021624-549f.py
+@@ -1,5 +1,20 @@
+-import subprocess, json, base64, sys
+-r=json.loads(subprocess.check_output(["gh","api","repos/donnabox/agent-coordination/contents/launch/vickie.md"]))
+-s=base64.b64decode(r["content"]).decode()
+-assert "\nsession: 2026-10-08T20:26:35Z-81e5\n" in s, "ROLE SESSION SUPERSEDED"
+-subprocess.run(sys.argv[1:],check=True)
++"""Vickie exact-session guard. Does not claim or modify a launch file."""
++import base64
++import json
++import subprocess
++import sys
++
++EXPECTED_SESSION = "2026-10-18T02:16:24Z-549f"
++if len(sys.argv) < 2:
++    raise SystemExit("No guarded command supplied")
++response = json.loads(subprocess.check_output(
++    ["gh", "api", "repos/donnabox/agent-coordination/contents/launch/vickie.md"],
++    timeout=30,
++))
++if response.get("type") != "file" or response.get("path") != "launch/vickie.md" or response.get("encoding") != "base64":
++    raise SystemExit("Unexpected remote launch response; command refused")
++launch = base64.b64decode(response["content"], validate=False).decode("utf-8", errors="strict")
++sessions = [line[len("session: "):] for line in launch.splitlines() if line.startswith("session: ")]
++if sessions != [EXPECTED_SESSION]:
++    raise SystemExit("ROLE SESSION SUPERSEDED OR AMBIGUOUS; command refused")
++subprocess.run(sys.argv[1:], check=True)

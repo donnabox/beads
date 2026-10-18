@@ -1,0 +1,11 @@
+# New-session CLOSED preparation report
+
+Original `/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review` is unchanged. Its34-entry index,24contexts,11bound artifacts and679source hashes all match. Source is exact clean `a56254d682cf4623cab22a552e3d2f695f691795` / tree`144f278c7f5a08516c4ac99ba553d4cc25bcf560` with original parent retained. No main absorption.
+
+New packet: `/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1`. Expected remote session: `2026-10-18T02:16:24Z-549f`, observed by read-only GitHub API during preparation. Guard is separately named and never writes launch state. Original guard stays byte-identical at SHA256`fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84`.
+
+Genuine deltas are supplied for runner, prompt, binding, tool inventory, status and new guard. Runner changes only its guard path and a fresh check immediately before Popen. Prompt changes only absolute context-directory paths; the complete embedded proposal/workload is unchanged. Binding retains all source/semantic/deadline/closed pins; maps its copied inputs to the successor and rehashes changed attribution files. Historical source-reanchor/provenance records retain original attribution and are unchanged. All24contexts, parser, arguments and original runner adaptation remain byte-identical.
+
+New `session-rebind.json` includes original complete file inventory, before/after hashes, source invariance and the permitted delta. `preparation-index.json` covers every finished file except itself, without circular hashing. The new guard is both indexed and in binding artifacts. No attempt outputs exist. No reviewer, formatter, tests, build, install or runtime launched.
+
+Next: root assigns fresh independent native mechanics inspection, checks full index/deltas/source invariance, then preserves this CLOSED index/binding before a separate flag-only launch release. The exact prospective invocation is in preparation-status.md. Single default-model Read/Glob/Grep attempt1800s/TERM1790, no retry; failures/raw partials and owned process closure remain mandatory. Review completion does not imply approval. This bounded worker has no release authority.

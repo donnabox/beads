@@ -1,0 +1,826 @@
+Review this implementation PLAN independently against the actual repository and pinned protocol. Do not write or modify any files. Output findings only in stdout. Do not run commands, tests, builds, installs, services or other reviewers. Read/Glob/Grep only. This is a PLAN review, not a code implementation review or an approval of the preceding Event work.
+
+Return a concise numbered findings-first technical review with severity, exact plan/source location, concrete issue, impact and smallest correction. Give an explicit final verdict (blockers or none), limitations and actual reviewed scope before the fixed 1800-second boundary; prioritize actionable findings rather than narrating exhaustive research. Prior native reviews are context, not authority. Distinguish true defects from optional additional coverage and do not demand unrelated redesign.
+
+Repository root: /Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum
+Exact clean HEAD: a56254d682cf4623cab22a552e3d2f695f691795
+This next changefeed admission/replay batch is proposed only. Its initial dirty planning bytes and subsequent committed source are identical. The accepted plan and rebind retain their earlier CI-PENDING text truthfully; separate root-exact-green-acceptance.json records subsequent exact CI success. No new protocol/profile qualification or public advertisement is claimed. Sole design is immutable checkpoint 6335248e877924157109b674d0f36628c7491dd3; older design snapshot is historical.
+
+Focus full six-file proposal: HTTP canonical intent/media/raw Last-Event-ID ordering and current-changefeed private tag; service capture before run and start anchor before waiter preflight; owner checkpoint/current-context/minimum/corruption ordering; preserved default and old finite-start-now semantics; whole-group finite and live SSE replay. Review all new A/B/C/F/D/E oracles and selected historical callbacks, exact title inventories, source/installed request accounting, actual descriptor seed validity, observer correctness, timers, abort-before-release, owned cleanup and late/unknown child behavior. In particular B/C/F must avoid historical global fixture cleanup; confirm the smallest local ownership design preserves counts and failure bounds. The final implementation must bind real reports/consumer provenance, not planned values.
+
+Proposed source files (all available in full):
+/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.ts
+/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-service.ts
+/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-store.ts
+/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-changefeed.test.ts
+/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-sse.test.ts
+/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+
+Additional relevant source: packages/server/src/transaction-changefeed.ts (intent and checkpoint parser, whole-group page), transaction-consistency.ts (lexical/strict capture and bounded waiter), transaction-runtime.ts (later pump without minimum), packages/server/test-support/raw-sse-recorder.ts (recorder), installed test support/exact executor and payload binding helpers. Read broader source when needed. Normative references: copied spec.md5841–5851,6030–6047,6148–6153,6178–6195,6612–6634,6646. Separate a permissible remaining-read reference choice from a Resource-only MUST; do not resolve S1/G2, foreign protocol policy beyond specified comparisons, discovery activation or unrelated Types/History work. D3 ordinary discovery/startup and D5 cumulative same-target qualification remain delivery work outside this batch.
+
+All immutable context paths (absolute; do not assume relative working directory):
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/accepted-plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/selection.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/workload.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/report-schemas.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/preservation.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/clean-source-binding.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/source-rebind.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/plan-rebind.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/native-rebind-closure.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/root-rebind-acceptance.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/ci-pending-publication.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/original-plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/original-native-plan-review.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/N1-corrected-plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/N1-native-closure.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/N1-root-acceptance.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/historical-dirty-source-binding.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/root-exact-green-acceptance.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/native-exact-green-audit.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/exact-green-run.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/spec.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/design-historical-snapshot.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/design-current-checkpoint.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/ledger-current-snapshot.md
+
+Complete accepted plan follows:
+
+# Current changefeed admission/replay minimum composition
+
+Status: CLOSED concrete read-only plan. No writer, review launch or runtime authorization. The original recommendation and evidence remain untouched. This is the next coherent D1 serving slice; D3 ordinary TX discovery/startup and D5 same-target cumulative qualification follow it, not an open-ended sequence of optional D1 audits.
+
+## Source, scope and release dependencies
+
+Planning source is now the clean Event candidate a56254d682cf4623cab22a552e3d2f695f691795, tree144f278c7f5a08516c4ac99ba553d4cc25bcf560, direct parent9f89271e2563a105410789ca8ca1e77dfb4d0b9f. All679 committed and current source bytes equal the preserved dirty concrete-plan-2 planning map and the tested Event helper-successor-1 map. The earlier failed historical helper audit remains preserved; subsequent corrected local validation and publication are separately attributed in copied evidence. PR167 is DRAFT and exact CI39082528652 is RUNNING in the publication snapshot: exact-green acceptance is PENDING, not inferred. This rebind is SUPPORTING PREPARATION ONLY. Native/root rebind closure and explicit exact-head green acceptance are required before final actual Claude PLAN packet/launch or any writer. All eventual tool/build/consumer pins must be observed, never inferred from this preparation. Keep public admission, Snapshot S1, incident Event G2, Types, History, other stacks and main separate.
+
+Own exactly six files: transaction-http.ts, transaction-service.ts, transaction-store.ts, transaction-changefeed.test.ts, transaction-sse.test.ts under packages/server/src, plus apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts. No parser/codec/consistency/pump/shared helper edits. Preserve production outside the changefeed seam; append source tests and the new installed callback. The sole legacy source exception is the two HTTP500 rows and their development-limit/status-vector assertions specified below. Preserve the complete existing installed file prefix byte-for-byte; if a new recorder import is needed, use a callback-local dynamic import of the existing server test-support recorder. No protocol/spec or progress-document rewrite in this six-file plan.
+
+Pinned spec bdp.md5841–5851 gives the general remaining-read minimum law: bounded waiting here is a reference choice, not the narrower current-Resource unknown-position MUST. 6030–6047 fixes explicit start and effective SSE header;6148–6153 fixes page after;6178–6195 fixes atomic groups/current observation/checkpoint frames;6612–6634 preserves validators and response families;6646 reserves genesis. No new precedence is inferred.
+
+## Production changes and preserved order
+
+Introduce the private literal admission tag `current-changefeed` alongside existing `finite-start-now` in the service and owner method signatures. It is supplied only by the canonical changes HTTP branch after its existing intent/media/raw-field selection. Do not infer admission from checkpoint text. Preserve the existing default strict behavior. In service, old finite-start-now still enables lexical capture only when the copied intent has start now. In owner, old finite-start-now already enables its branch based on tag alone: the owner cannot reconstruct the originating intent, and its behavior remains unchanged. New current-changefeed enables lexical capture/current comparison for any admitted after/start intent.
+
+HTTP468–503: retain URL parser first, select media, collect raw Last-Event-ID, refuse repeated selected-SSE fields at the current point, choose effective header only for selected SSE. Then retain hasMinimumControls/undefined and helper-return-undefined→explicit unsupported fence. Use currentReadMinimumHeaders for this newly admitted canonical branch and pass current-changefeed to service. Finite JSON ignores malformed/repeated Last-Event-ID; unsupported Accept also reaches minimum before negotiation. Do not catch/relabel parser failures or change global authentication/receiving precedence.
+
+Service466–499: copy intent and snapshot tuple synchronously before run; malformed tuples still throw before closed-service checks. For current-changefeed use snapshotCurrentReadMinimum; sentinel and undefined remain unchanged. Capture start-now head exactly once inside run at the existing point, before waiter policy/clock/abort preflight; explicit after never invokes captureChangesStart. Every retry uses the same captured after/tuple and the same private tag but a fresh owner entry/current context. Default and old-tag compatibility remain literal. Spread-delegate in tests, preserving readConfiguration, all other methods and explicit close; never spy on the frozen owner.
+
+Owner1848–1930: current-changefeed uses lexical snapshot and checkCurrentReadMinimum(minimum,context,true). Preserve type/tuple capture before entry; explicit unsupported returns before readContext. For eligible tuples retain order: current context → checkpoint parse/epoch-before-view → future-position → retained cursor-row existence → minimum epoch-before-view/known-position or unproved → group selection/framing. Retained-row SELECT is legitimate before minimum; do not claim zero SQL or zero allocation. Corruption is not catch-up-timeout. Pump transaction-runtime203–218 continues later changes({after},undefined,signal); no extra minimum per group and no pump edit.
+
+## Fixtures and common controls
+
+Use existing source Bead/Link descriptors; real two separate single-create commits a then b. Source A may use existing create()/fixture(); historical callbacks keep their existing helpers. New B/C and F instead use callback-local store/service ownership with no registration in the historical cleanup array: reuse descriptor/configuration values and ordinary admission semantics, not fixture()/service() calls that install global afterEach cleanup. An appended constructor confined to these new callbacks is sufficient; leave every historical helper/caller unchanged. Source HTTP D in transaction-sse.test.ts uses its existing Task descriptor/types and callback-local runtime ownership, matching fixture options without changing shared fixture(). Installed E uses its existing Task artifact requiring title; seeds are distinct keys current-feed-a/current-feed-b and bodies with title current-feed-a/current-feed-b. No huge receipts, clock-dependent maintenance or invented Type descriptors.
+
+After second commit, two finite reads establish group1/group2. CP1 is first actual checkpoint, CP2 second; group counts1/1, first.next exact canonical changes/?after=CP1, second.next null. K is the exact actual epoch/view with minimum pos-2; U substitutes unknown and P substitutes pos-01. STALE/FOREIGN_VIEW/FUTURE are test-only invalid checkpoints constructed with transactionCheckpoint in source or fixed-width segments from actual CP1 in HTTP (no new opaque parser); FUTURE position3. Never advertise these as issued. All tests record real attempts/context; expected arrays are oracles, not emitted measurements.
+
+## New source A: owner boundary
+
+Exact title in selection.json. One store, two separate commits, two baseline reads, then all16 table rows in workload.json: total18 readChanges invocations. Rows use current-changefeed except explicitly old-tag row13 and sentinel row12. Assert typed TransactionMinimumUnproved, TransactionMinimumFailure.reason or TransactionChangefeedParameterError with exact frozen pos-2 context, or explicit unsupported without context. Row14 malformed tuple throws TypeError before entry; do not count it as entered owner work. Rows8/9 prove checkpoint failures defeat conflicting minimum fields; row7 proves minimum epoch before view. Row13 explicitly preserves owner old-tag behavior, without claiming service old-tag after admission.
+
+After row14, close owner, open one raw SQLite connection, delete groups position1, close raw connection, reopen same owner/store with existing fixture.reopen. Rows15/16 prove missing retained cursor row and missing initial group fail as Error, not503/Unproved; no minimum catch relabeling. Two owner lifetimes, one store; finally closes/removes via existing fixture. Baseline pages and eligible rows show complete groups. No SQL spy/census. Report18 actual records,2 baseline/16 table,2 commits and actual outcomes/context; no fabricated context on unsupported/TypeError/corruption.
+
+## New source B: four bounded capture cases
+
+Four exact titles: start-now-unknown, genesis-unknown, retained-unknown, retained-pos-01. Each: one locally owned store/service; commit a; baseline genesis read yields actual CP1; create spread delegate that records real readChanges calls, captures and close. No historical global cleanup registration is permitted. Only verified operation/service closure allows directory removal; unknown or failed drainage preserves the directory and records the failure, with no unconditional later close/removal or unbounded fallback. Use budget2, tick0, controlled wait latch. Call new-tag service with supplied signal; immediately attach success/error outcome observer. Await race entered vs premature settlement vs1000ms timer, not an unbounded latch. Once entered, mutate caller tuple's three fields and caller intent (start row add after; after rows replace after), commit b, set tick2, release. Expect catch-up-timeout with actual pos-2 and both attempted records retaining original frozen tuple/after; first context pos-1 remains immutable. Start-now captures once CP1; explicit genesis/retained captures zero.
+
+Then one known-pos2 positive call using new tag and the original after, no extra capture: start/retained returns second complete group, genesis returns first and next CP1. Per case4 readChanges calls (1 baseline,2 negative attempts,1 positive),2 commits,1wait,4clocks,1 delegated close. Across four16reads/8commits/4waits/16clocks/1capture. On every failure abort supplied signal BEFORE release, then observe operation and close under1000ms drain deadline; aggregate original and cleanup failures, clear entry/drain timers, preserve unresolved ownership. No unobserved rejection or retry loop with constant tick0.
+
+## New source C: two abort/drain cases
+
+Exact labels start-now/retained. Each uses the same local ownership rule as B, without historical global cleanup registration: commit a and baseline genesis read CP1; delegate records reads/capture/close. Only verified operation/service closure permits removal; unknown drainage preserves the directory, records the failure, and must not trigger an unconditional later close/removal or unbounded fallback. New-tag U call, budget2/tick0, held wait. Immediate outcome observer; same1000ms entered/premature-settlement/timer race. Start service.close and attach its outcome observer immediately; local closeSettled tracks actual promise settlement. Synchronous false alone is not an independent deferred-close proof. Abort, release, observe ScopeServerOperationAbortedError and close completion; require wait-entered→abort→wait-released→owner-close→close-resolved. One service postclose call throws closed before a new capture/read, plus one separately counted raw owner closed probe. Per case2 reads before probe (baseline+attempt),1 separate raw probe,1wait/2clocks/1close/1commit; capture1 for now,0 retained. Always abort→release→bounded operation/close drain in finally and aggregate failures. No TypeError/abort outcome interchange.
+
+## New source F: preflight preservation
+
+One exact callback containing four isolated fixture/service rows: already-aborted, invalid-policy, throwing-clock, nonfinite-clock. Each uses the same locally owned constructor with no historical global cleanup registration, seeds one commit and invokes current-changefeed start-now U, observing rejection immediately. Its wait stub throws immediately on any unexpected invocation; a regression cannot loop on constant time. Apply the same bounded observation/closure and verified-removal rule as B/C, preserving the directory and aggregated primary/cleanup errors if closure is unknown. Preserve existing order: capture1 each before policy/clock/abort; reads0/waits0; clock0 for invalid-policy,1 for each other row. Exact error identities/reasons match existing old-tag preflight tests. Four stores/owners/commits/captures/closes;3clocks. Report four real row records. Default/old-tag compatibility remains covered separately; no shared helper edits or expanded product policy.
+
+## New source D:32 concrete HTTP requests
+
+Follow DRequests in workload.json exactly; it is the ordinal/header/status table. K/U/P, CP1/STALE/FOREIGN_VIEW/FUTURE defined above. POST seeds use fetch with owned bounded signal and body reader; all GET/HEAD records can use callback-local recordRawSse with explicit controller/raw header tuples, supporting JSON duplicate fields faithfully. Require ready/status/body and terminal close for finite responses; do not treat closed alone as success. Headers include actual auth except32. Positive30 uses effective CP1 and must produce exactly group2, with id CP2/event change-group/data exact whole finite group; no first-group duplicate. Prove media/context/status200 and live nonaborted/nondestroyed readiness immediately before intentional close, then exact frame after drain. Existing helper is unchanged.
+
+32 dispatches:6×200,12×503,5×400,3×410,2×409 and one each406/304/412/401. Source seams use budget2 and advancing fake tick, not production delay. GET6/HEAD7 and GET8/HEAD9 require same represented content-length/context, zero HEAD body. Every503 validates Problem catch-up-timeout/after-delay, application/problem+json, Retry-After1, private no-store, no ETag or development-limit, actual pos-2 context and no SSE frame. Early400 rows20–22 have no context; effective malformed header23/future26 are owner-observed400 with current context. Cursor/minimum foreign rows keep their distinct precedence. Empty406 remains empty, not a Problem; non-attesting marker remains. Receipt/page/Problem validators and exact canonical request target assertions apply.
+
+Callback retains default5000ms; work abort3000ms and absolute cleanup-inclusive4000ms ceiling are callback-local, no timeout widening. Own local runtime/listener/store; raw requests5000ms are additionally governed by the shared earlier abort. Finally abort all readers, drain recorder/pending exchanges and close runtime within remaining absolute cleanup budget; clear timers; remove directory only after verified closure. Record attempted/completed request counts, safe response metadata/body+wire hashes where actually available, stream live/drained fields, elapsed cleanup-inclusive time, close/directory/failure states. No fabricated wire bytes for fetch seeds. No exact retry-count/timing assertion.
+
+## Legacy selection and narrow oracle change
+
+Select exactly the six named rows in selection.json. Four are HTTP/SSE callbacks with source-derived traffic10+7+2+9=28; two are direct service/owner. Six stores, five commits, four listeners. Preserve all existing callback titles/dispatches/fixture/deadlines. The old ten-request HTTP callback changes rows8/9 from500 to503 with validated contextual catch-up Problem, Retry-After1, no development-limit, and corresponding whole ten-status vector [200,200,200,503,503,503,503,503,503,400]. Preserve its non-attesting behavior and existing source report identity. No change to old default/old-tag strict boundary callback. New rows do not claim uninstrumented legacy counts were observed; existing two legacy reports remain separately attributed.
+
+Other old callbacks—including old finite-start capture and preflight parameterizations, framing/reconstruction and broader stream pump tests—remain source-preserved and ordinary fullCI coverage, not silently included in this selected workload. This bounded set includes the required start anchor, reconnect-context, minimum/conditional and cancellation fences.
+
+## Installed E and historical separation
+
+Append exact title from selection.json, observation private-installed-current-changefeed-minimum. Keep old historical10 and finite-start-now4 callback bytes unchanged and execute each by exact title separately with immediate audit; no whole-file selector mislabeled as10. Three callbacks/24HTTP/3sequential children/3stores total. New E owns one child/store and ten requests, as ERequests: two distinct commits, two finite pages, five opaque503 terminal refusals, one positive SSE. Five200/five503; no discovery, public profile admission or extra setup probes. Source commit is declaration plus independently verified external binding, not child source attestation.
+
+Nine finite exchanges can use callback-local exact raw executor(s) with closed per-phase route sets; CP1-dependent route is added only after validating the actual first page. One global pre-dispatch ceiling10 covers executor and recorder; phase executor changes do not reset it. One raw recorder owns final stream. Record literal header multiplicity and exact requests; finite JSON row9 ignores both malformed Last-Event-ID fields. Schema validate both receipts and pages, compare entire group2 and actual CP2 to final SSE frame. K always uses actual second receipt context/pos2. Production default1000ms minimum budget applies; five refusals fit45s work without asserting exact wait count or timing. No per-stream minimum after admission.
+
+Keep5000ms request/recorder,45000ms work,10000ms TOTAL cleanup,60000ms callback,120000ms outer with TERM115000/no retry. Observe launch and operation rejection immediately; child exit/close listeners after ownership, pending finite operations tracked, stream controller owned. On failure abort→drain stream/pending→close child within same cleanup deadline. Observe late close rejection; deadline leaves ownership unknown and directory preserved, even if launcher later force-kills/drains. Do not await unbounded second launcher window after deadline or assert removal before actual code0/signalnull exit+close. Report actual childpid, ready/binding, payload, exit/close, pending count, stopUnknown, directory state, safe responses and stream evidence; counters are not socket-close census. Default workspace dist fallback remains supported, while external validation must bind fresh pack/consumer explicitly.
+
+## Verification sequence and release boundary
+
+Exact selection15source/3installed; source60HTTP, installed24HTTP, combined84 across21stores/22owner lifetimes/27commits (see separate dimensions and limits in workload). These are prospective source-derived budgets. Fresh emitted build BEFORE source/module collection or installed entry resolution; no stale dist. After source freeze native+actual CODE and finding disposition, fresh bounded static/build/source/audit, fresh archives/external consumer with actual lock/proof acceptance, then three independently supervised installed callback/audit pairs; required repo checks and exact-head CI remain root-owned. Tests must emit the planned reports from real operations; final authored schema/selection binding must be reviewed before any validation gate. Preserve distinct Update qualification and inherited Read; this private D1 slice is not D3/D5 completion.
+
+Complete exact selection follows:
+
+{
+  "state": "prospective concrete plan, no execution",
+  "source": [
+    {
+      "kind": "new",
+      "group": "A",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "preserves changefeed cursor precedence under current-admission opaque minima"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: start-now-unknown"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: genesis-unknown"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: retained-unknown"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: retained-pos-01"
+    },
+    {
+      "kind": "new",
+      "group": "C",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "drains current changefeed admission before owner close: start-now"
+    },
+    {
+      "kind": "new",
+      "group": "C",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "drains current changefeed admission before owner close: retained"
+    },
+    {
+      "kind": "new",
+      "group": "F",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "preserves current changefeed anchor capture before waiter preflight"
+    },
+    {
+      "kind": "new",
+      "group": "D",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "serves current changefeed opaque minima across finite and SSE admission"
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "keeps start=now's original admission anchor through a minimum wait and drains on close",
+      "sourceDerivedHttp": 0,
+      "sourceDerivedCommits": 2
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "keeps direct and excluded changefeed minimum paths strict",
+      "sourceDerivedHttp": 0,
+      "sourceDerivedCommits": 1
+    },
+    {
+      "kind": "legacy-amended",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "serves finite start-now opaque minima before HTTP shortcuts",
+      "sourceDerivedHttp": 10,
+      "sourceDerivedCommits": 1
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "sourceDerivedHttp": 7,
+      "sourceDerivedCommits": 0
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
+      "sourceDerivedHttp": 2,
+      "sourceDerivedCommits": 0
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up",
+      "sourceDerivedHttp": 9,
+      "sourceDerivedCommits": 1
+    }
+  ],
+  "installed": [
+    {
+      "kind": "historical-context",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "fullName": "observes genuine installed current context on changefeed parameter refusals",
+      "sourceDerivedHttp": 10
+    },
+    {
+      "kind": "historical-fresh",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "fullName": "observes genuine installed finite start-now opaque minimum refusal",
+      "sourceDerivedHttp": 4
+    },
+    {
+      "kind": "new-E",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "fullName": "observes installed current changefeed minimum admission and retained replay",
+      "sourceDerivedHttp": 10
+    }
+  ],
+  "sourceTitleFilter": "^(?:preserves\\ changefeed\\ cursor\\ precedence\\ under\\ current\\-admission\\ opaque\\ minima|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ start\\-now\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ genesis\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-pos\\-01|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ start\\-now|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ retained|preserves\\ current\\ changefeed\\ anchor\\ capture\\ before\\ waiter\\ preflight|serves\\ current\\ changefeed\\ opaque\\ minima\\ across\\ finite\\ and\\ SSE\\ admission|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|disconnect\\ cancels\\ the\\ actual\\ finite\\ minimum\\ wait\\ without\\ consuming\\ its\\ remaining\\ budget|effective\\ reconnect\\ cursor\\ owns\\ epoch/view/retention\\ decisions;\\ overridden\\ query\\ is\\ not\\ looked\\ up)$",
+  "installedSeparatelySupervised": true,
+  "unselectedCallbacks": "Preserved; ordinary full CI covers remaining old callbacks. No whole-file run represented as this selection."
+}
+
+Complete prospective workload follows:
+
+{
+  "state": "SOURCE-DERIVED PROSPECTIVE; not observations",
+  "newSource": {
+    "callbacks": 9,
+    "stores": 12,
+    "ownerLifetimes": 13,
+    "http": 32,
+    "commits": 18,
+    "listeners": 1,
+    "reports": 9,
+    "groups": {
+      "A": {
+        "callbacks": 1,
+        "stores": 1,
+        "ownerLifetimes": 2,
+        "commits": 2,
+        "readChangesCalls": 18,
+        "baselineReads": 2,
+        "tableReads": 16,
+        "rawOfflineSqliteHandles": 1,
+        "deletionStatements": 1,
+        "waits": 0
+      },
+      "B": {
+        "callbacks": 4,
+        "stores": 4,
+        "commits": 8,
+        "readChangesCalls": 16,
+        "serviceAttempts": 8,
+        "positiveServiceReads": 4,
+        "baselineReads": 4,
+        "captures": 1,
+        "waits": 4,
+        "clocks": 16,
+        "closes": 4
+      },
+      "C": {
+        "callbacks": 2,
+        "stores": 2,
+        "commits": 2,
+        "readChangesCallsBeforeSeparateClosedProbe": 4,
+        "separateRawClosedProbes": 2,
+        "captures": 1,
+        "waits": 2,
+        "clocks": 4,
+        "closes": 2
+      },
+      "F": {
+        "callbacks": 1,
+        "isolatedRows": 4,
+        "stores": 4,
+        "commits": 4,
+        "captures": 4,
+        "readChangesCalls": 0,
+        "waits": 0,
+        "clocks": 3,
+        "closes": 4
+      },
+      "D": {
+        "callbacks": 1,
+        "stores": 1,
+        "ownerLifetimes": 1,
+        "http": 32,
+        "commits": 2,
+        "listeners": 1,
+        "positiveStreams": 1,
+        "expectedStatuses": {
+          "200": 6,
+          "503": 12,
+          "406": 1,
+          "304": 1,
+          "412": 1,
+          "400": 5,
+          "410": 3,
+          "409": 2,
+          "401": 1
+        }
+      }
+    }
+  },
+  "legacySource": {
+    "callbacks": 6,
+    "stores": 6,
+    "ownerLifetimes": 6,
+    "http": 28,
+    "commits": 5,
+    "listeners": 4,
+    "details": [
+      {
+        "file": "packages/server/src/transaction-changefeed.test.ts",
+        "title": "keeps start=now's original admission anchor through a minimum wait and drains on close",
+        "http": 0,
+        "commits": 2
+      },
+      {
+        "file": "packages/server/src/transaction-changefeed.test.ts",
+        "title": "keeps direct and excluded changefeed minimum paths strict",
+        "http": 0,
+        "commits": 1
+      },
+      {
+        "file": "packages/server/src/transaction-changefeed.test.ts",
+        "title": "serves finite start-now opaque minima before HTTP shortcuts",
+        "http": 10,
+        "commits": 1
+      },
+      {
+        "file": "packages/server/src/transaction-changefeed.test.ts",
+        "title": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+        "http": 7,
+        "commits": 0
+      },
+      {
+        "file": "packages/server/src/transaction-sse.test.ts",
+        "title": "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
+        "http": 2,
+        "commits": 0
+      },
+      {
+        "file": "packages/server/src/transaction-sse.test.ts",
+        "title": "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up",
+        "http": 9,
+        "commits": 1
+      }
+    ],
+    "existingInstrumentedReports": 2,
+    "nonInstrumentedTraffic": "remaining18 legacy requests are source-derived, not invented observed counters"
+  },
+  "sourceTotal": {
+    "callbacks": 15,
+    "stores": 18,
+    "ownerLifetimes": 19,
+    "http": 60,
+    "commits": 23,
+    "listeners": 5,
+    "newReports": 9,
+    "legacyReports": 2
+  },
+  "installed": {
+    "callbacks": 3,
+    "http": 24,
+    "stores": 3,
+    "childrenSequential": 3,
+    "commits": 4,
+    "historicalHttp": [
+      10,
+      4
+    ],
+    "newHttp": 10,
+    "newStatuses": {
+      "200": 5,
+      "503": 5
+    }
+  },
+  "combined": {
+    "callbacks": 18,
+    "http": 84,
+    "stores": 21,
+    "ownerLifetimes": 22,
+    "commits": 27
+  },
+  "DRequests": [
+    {
+      "ordinal": 1,
+      "method": "POST",
+      "suffix": "operations/batch",
+      "controls": "seed a",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 2,
+      "method": "POST",
+      "suffix": "operations/batch",
+      "controls": "seed b",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 3,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "JSON K",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 4,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON K",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 5,
+      "method": "HEAD",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON K",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 6,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "JSON U; If-None-Match:*",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 7,
+      "method": "HEAD",
+      "suffix": "changes/?after=genesis",
+      "controls": "same as6",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 8,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON P; If-Match:\"missing\"",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 9,
+      "method": "HEAD",
+      "suffix": "changes/?after=CP1",
+      "controls": "same as8",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 10,
+      "method": "GET",
+      "suffix": "changes/?start=now",
+      "controls": "SSE U",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 11,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "SSE U",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 12,
+      "method": "GET",
+      "suffix": "changes/?start=now",
+      "controls": "SSE U; Last-Event-ID:CP1",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 13,
+      "method": "GET",
+      "suffix": "changes/?after=STALE",
+      "controls": "SSE U; Last-Event-ID:CP1",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 14,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "JSON U; raw Last-Event-ID:bad and raw Last-Event-ID:also-bad",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 15,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON U; Last-Event-ID:FOREIGN_VIEW",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 16,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "Accept:text/plain; U",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 17,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "Accept:text/plain; K",
+      "expectedStatus": 406
+    },
+    {
+      "ordinal": 18,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON K; If-None-Match:*",
+      "expectedStatus": 304
+    },
+    {
+      "ordinal": 19,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON K; If-Match:\"missing\"",
+      "expectedStatus": 412
+    },
+    {
+      "ordinal": 20,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON only minimum-position:unknown (missing context tuple)",
+      "expectedStatus": 400
+    },
+    {
+      "ordinal": 21,
+      "method": "GET",
+      "suffix": "changes/?after=bad",
+      "controls": "SSE U; Last-Event-ID:CP1",
+      "expectedStatus": 400
+    },
+    {
+      "ordinal": 22,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE U; duplicate raw Last-Event-ID:CP1 twice",
+      "expectedStatus": 400
+    },
+    {
+      "ordinal": 23,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE U; single Last-Event-ID:bad",
+      "expectedStatus": 400
+    },
+    {
+      "ordinal": 24,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE U with foreign minimum view; Last-Event-ID:STALE",
+      "expectedStatus": 410
+    },
+    {
+      "ordinal": 25,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE U with foreign minimum epoch; Last-Event-ID:FOREIGN_VIEW",
+      "expectedStatus": 409
+    },
+    {
+      "ordinal": 26,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE U; Last-Event-ID:FUTURE",
+      "expectedStatus": 400
+    },
+    {
+      "ordinal": 27,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON U with foreign minimum epoch",
+      "expectedStatus": 410
+    },
+    {
+      "ordinal": 28,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON U with foreign minimum view",
+      "expectedStatus": 409
+    },
+    {
+      "ordinal": 29,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON U with both minimum context fields foreign",
+      "expectedStatus": 410
+    },
+    {
+      "ordinal": 30,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE K; Last-Event-ID:CP1; positive live group2",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 31,
+      "method": "HEAD",
+      "suffix": "changes/?start=now",
+      "controls": "SSE U",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 32,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE U; no Authorization",
+      "expectedStatus": 401
+    }
+  ],
+  "ERequests": [
+    {
+      "ordinal": 1,
+      "method": "POST",
+      "suffix": "operations/batch",
+      "controls": "seed a",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 2,
+      "method": "POST",
+      "suffix": "operations/batch",
+      "controls": "seed b",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 3,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "JSON K",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 4,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON K",
+      "expectedStatus": 200
+    },
+    {
+      "ordinal": 5,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "JSON U; If-None-Match:*",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 6,
+      "method": "GET",
+      "suffix": "changes/?after=CP1",
+      "controls": "JSON P; If-Match:\"missing\"",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 7,
+      "method": "GET",
+      "suffix": "changes/?start=now",
+      "controls": "SSE U",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 8,
+      "method": "GET",
+      "suffix": "changes/?start=now",
+      "controls": "SSE U; Last-Event-ID:CP1",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 9,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "JSON U; duplicate raw malformed Last-Event-ID values",
+      "expectedStatus": 503
+    },
+    {
+      "ordinal": 10,
+      "method": "GET",
+      "suffix": "changes/?after=genesis",
+      "controls": "SSE K; Last-Event-ID:CP1; positive live group2",
+      "expectedStatus": 200
+    }
+  ],
+  "ARows": [
+    {
+      "ordinal": 1,
+      "after": "genesis",
+      "minimum": "U",
+      "expected": "unproved"
+    },
+    {
+      "ordinal": 2,
+      "after": "CP1",
+      "minimum": "P",
+      "expected": "unproved"
+    },
+    {
+      "ordinal": 3,
+      "after": "CP1",
+      "minimum": "K",
+      "expected": "page group2"
+    },
+    {
+      "ordinal": 4,
+      "after": "genesis",
+      "minimum": "undefined",
+      "expected": "page group1"
+    },
+    {
+      "ordinal": 5,
+      "after": "CP1",
+      "minimum": "U with foreign minimum epoch",
+      "expected": "cursor-expired"
+    },
+    {
+      "ordinal": 6,
+      "after": "CP1",
+      "minimum": "U with foreign minimum view",
+      "expected": "foreign-view"
+    },
+    {
+      "ordinal": 7,
+      "after": "CP1",
+      "minimum": "U with both minimum fields foreign",
+      "expected": "cursor-expired"
+    },
+    {
+      "ordinal": 8,
+      "after": "STALE",
+      "minimum": "U with foreign minimum view",
+      "expected": "cursor-expired"
+    },
+    {
+      "ordinal": 9,
+      "after": "FOREIGN_VIEW",
+      "minimum": "U with foreign minimum epoch",
+      "expected": "foreign-view"
+    },
+    {
+      "ordinal": 10,
+      "after": "FUTURE",
+      "minimum": "U",
+      "expected": "invalid-parameter"
+    },
+    {
+      "ordinal": 11,
+      "after": "bad",
+      "minimum": "U",
+      "expected": "invalid-parameter"
+    },
+    {
+      "ordinal": 12,
+      "after": "bad",
+      "minimum": "unsupported sentinel",
+      "expected": "unsupported, no context"
+    },
+    {
+      "ordinal": 13,
+      "after": "CP1",
+      "minimum": "U with OLD finite-start-now OWNER tag",
+      "expected": "unproved; owner does not check original intent"
+    },
+    {
+      "ordinal": 14,
+      "after": "genesis",
+      "minimum": "malformed tuple minimum contains space",
+      "expected": "synchronous TypeError before owner entry"
+    },
+    {
+      "ordinal": 15,
+      "after": "CP1 after offline delete row1",
+      "minimum": "U",
+      "expected": "missing retained change group Error"
+    },
+    {
+      "ordinal": 16,
+      "after": "genesis after offline delete row1",
+      "minimum": "K",
+      "expected": "missing retained change group Error"
+    }
+  ],
+  "bounds": {
+    "sourceDefaultCallbackMs": 5000,
+    "newDWorkMs": 3000,
+    "newDCleanupInclusiveStopMs": 4000,
+    "sourceLatchMs": 1000,
+    "sourceDrainMs": 1000,
+    "installedWorkMs": 45000,
+    "installedTotalCleanupMs": 10000,
+    "installedCallbackMs": 60000,
+    "requestMs": 5000,
+    "recorderMs": 5000,
+    "outerStageMs": 120000,
+    "termAtMs": 115000,
+    "automaticRetries": 0
+  }
+}
+
+End of supplied plan. These are proposed oracles, not observed execution. Inspect actual source and return your final findings/limitations/verdict in stdout only.

@@ -1,0 +1,57 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/prompt.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/prompt.txt
+@@ -19,30 +19,30 @@
+ Additional relevant source: packages/server/src/transaction-changefeed.ts (intent and checkpoint parser, whole-group page), transaction-consistency.ts (lexical/strict capture and bounded waiter), transaction-runtime.ts (later pump without minimum), packages/server/test-support/raw-sse-recorder.ts (recorder), installed test support/exact executor and payload binding helpers. Read broader source when needed. Normative references: copied spec.md5841–5851,6030–6047,6148–6153,6178–6195,6612–6634,6646. Separate a permissible remaining-read reference choice from a Resource-only MUST; do not resolve S1/G2, foreign protocol policy beyond specified comparisons, discovery activation or unrelated Types/History work. D3 ordinary discovery/startup and D5 cumulative same-target qualification remain delivery work outside this batch.
+ 
+ All immutable context paths (absolute; do not assume relative working directory):
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/accepted-plan.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/selection.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/workload.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/report-schemas.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/preservation.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/clean-source-binding.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/source-rebind.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/plan-rebind.patch
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/native-rebind-closure.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/root-rebind-acceptance.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/ci-pending-publication.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/original-plan.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/original-native-plan-review.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/N1-corrected-plan.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/N1-native-closure.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/N1-root-acceptance.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/historical-dirty-source-binding.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/root-exact-green-acceptance.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/native-exact-green-audit.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/exact-green-run.json
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/spec.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/design-historical-snapshot.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/design-current-checkpoint.md
+-/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/context/ledger-current-snapshot.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/accepted-plan.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/selection.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/workload.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/report-schemas.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/preservation.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/clean-source-binding.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/source-rebind.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/plan-rebind.patch
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/native-rebind-closure.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/root-rebind-acceptance.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/ci-pending-publication.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/original-plan.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/original-native-plan-review.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/N1-corrected-plan.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/N1-native-closure.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/N1-root-acceptance.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/historical-dirty-source-binding.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/root-exact-green-acceptance.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/native-exact-green-audit.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/exact-green-run.json
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/spec.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/design-historical-snapshot.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/design-current-checkpoint.md
++/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/ledger-current-snapshot.md
+ 
+ Complete accepted plan follows:
+ 

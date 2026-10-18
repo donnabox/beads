@@ -1,0 +1,19 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/run.py
+@@ -3,7 +3,7 @@
+ p=Path(__file__).parent
+ w=Path("/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+-def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
++def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/guarded-action-session-20261018-021624-549f.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+ assert b["sourceBindingFinalized"] is True, "Closed: actual plan/source context has not been frozen"
+ outputs=["source-before.json","source-after.json","process.json","stream.jsonl","progress.jsonl","stderr.txt","exit.json","final-review.txt","terminal-results.json"]
+@@ -65,6 +65,7 @@
+                 parse_errors+=1;log({"kind":"partial_or_invalid_final_record","recordBytes":len(pending)})
+             pending=b""
+     try:
++        guard()  # Recheck exact remote role session immediately before reviewer execution.
+         c=subprocess.Popen(args,cwd=w,stdin=inp,stdout=out,stderr=err,start_new_session=True)
+         (p/"process.json").write_text(json.dumps({"pid":c.pid,"pgid":c.pid,"started":datetime.datetime.now(datetime.timezone.utc).isoformat(),"argv":args,"timeoutSeconds":1800,"termAfterSeconds":1790},indent=2))
+         with (p/"stream.jsonl").open("rb") as tail:
