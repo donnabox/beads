@@ -1,0 +1,53 @@
+--- a/apps/bdptest/src/transactional-set-installed.test.ts
++++ b/apps/bdptest/src/transactional-set-installed.test.ts
+@@ -165,6 +165,7 @@
+     return (
+       row.acquisition === "acquired" &&
+       owned !== undefined &&
++      owned.pid !== null &&
+       owned.exit?.code === 0 &&
+       owned.exit.signal === null &&
+       owned.closed?.code === 0 &&
+@@ -256,7 +257,13 @@
+     } else {
+       metadata.workspaceDirty = git(["status", "--porcelain"]).length > 0;
+       metadata.diffSha256 = createHash("sha256")
+-        .update(git(["diff", "--binary", "HEAD"]))
++        .update(
++          execFileSync("git", ["diff", "--binary", "HEAD"], {
++            cwd: root,
++            timeout: 2000,
++            maxBuffer: 1048576,
++          }),
++        )
+         .digest("hex");
+       metadata.disposition = "captured";
+     }
+@@ -286,6 +293,7 @@
+       expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
+     };
+     metadata.nullReason = null;
++    phase = "launch-failed";
+     controller.signal.throwIfAborted();
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-set-installed-"));
+     directoryDisposition = "retained";
+@@ -352,7 +360,6 @@
+         throw error;
+       }
+     };
+-    phase = "launch-failed";
+     child = await launch(1, configuration);
+     phase = "binding-validation-failed";
+     initialReady = child.ready;
+@@ -686,8 +693,9 @@
+     expect(await send("links/owned")).toEqual(linkAfter);
+     await send("beads/tentative", undefined, undefined, 404);
+     // Live session replacement retains logical binding, original receipt and actual next URL.
+-    if (pending.size !== 0 || observations.filter((row) => row.received === true).length !== 28)
+-      throw problem("pending-unsettled");
++    if (pending.size !== 0) throw problem("pending-unsettled");
++    if (observations.filter((row) => row.received === true).length !== 28)
++      throw problem("observation-failed");
+     await closeObserved(acquisitions[0]!, Math.min(started + 90000, performance.now() + 10000));
+     if (!clean(acquisitions[0]!)) throw problem("child-close-unobserved");
+     child = undefined;
