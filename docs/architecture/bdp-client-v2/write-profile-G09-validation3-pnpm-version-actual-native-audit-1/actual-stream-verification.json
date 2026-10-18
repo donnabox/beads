@@ -1,0 +1,107 @@
+{
+  "actualInnerLog": {
+    "bytes": 8,
+    "sha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201",
+    "text": "11.20.0\n"
+  },
+  "innerMergedLogNotSeparateInnerPIPEProof": true,
+  "rootStdoutJsonExactlyEqualsInnerExit": true,
+  "streams": [
+    {
+      "actualEOF": true,
+      "currentInodeDeviceModeUidSizeMatches": true,
+      "fileIdentity": {
+        "bytes": 476,
+        "device": 16777232,
+        "inode": 96065134,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "0f386def78fd1ad0c1ebfed928494787e8ff44bf325d4335f330432377225d40",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 476,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/pnpm-version.stdout",
+      "phase": "A",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 476,
+      "runtimeEOFAndCloseEvidence": "Exact actual source + retained receipt + trusted normal tool terminal; no extra live FD inspection/probe.",
+      "savedBytes": 476,
+      "savedPrefixSha256": "0f386def78fd1ad0c1ebfed928494787e8ff44bf325d4335f330432377225d40",
+      "writeOrCloseError": null
+    },
+    {
+      "actualEOF": true,
+      "currentInodeDeviceModeUidSizeMatches": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96065135,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/pnpm-version.stderr",
+      "phase": "A",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 0,
+      "runtimeEOFAndCloseEvidence": "Exact actual source + retained receipt + trusted normal tool terminal; no extra live FD inspection/probe.",
+      "savedBytes": 0,
+      "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "writeOrCloseError": null
+    },
+    {
+      "actualEOF": true,
+      "currentInodeDeviceModeUidSizeMatches": true,
+      "fileIdentity": {
+        "bytes": 206316,
+        "device": 16777232,
+        "inode": 96065268,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "cd9a2c3d3524d29116ea4cb3a6a8babbeda5159839e00d7c7674d1fc3b9541fd",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 206316,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/postterminal-census.stdout",
+      "phase": "B",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 206316,
+      "runtimeEOFAndCloseEvidence": "Exact actual source + retained receipt + trusted normal tool terminal; no extra live FD inspection/probe.",
+      "savedBytes": 206316,
+      "savedPrefixSha256": "cd9a2c3d3524d29116ea4cb3a6a8babbeda5159839e00d7c7674d1fc3b9541fd",
+      "writeOrCloseError": null
+    },
+    {
+      "actualEOF": true,
+      "currentInodeDeviceModeUidSizeMatches": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96065269,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/postterminal-census.stderr",
+      "phase": "B",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 0,
+      "runtimeEOFAndCloseEvidence": "Exact actual source + retained receipt + trusted normal tool terminal; no extra live FD inspection/probe.",
+      "savedBytes": 0,
+      "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "writeOrCloseError": null
+    }
+  ]
+}

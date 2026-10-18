@@ -1,0 +1,44 @@
+{
+  "AExactlyPrepublishedBaseline": true,
+  "B_C": {
+    "B": {
+      "actual": {
+        "bytes": 6685,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-pnpm-version-root-tool-evidence-1/actual-B.txt",
+        "sha256": "7bc8bfe3c7ccb5df4c4838324767a9bbe9541536e74dfd14b6b912ced694dce9"
+      },
+      "actualInlineDataProofOnlyShapeVerified": true,
+      "actualPrecedingTerminal0RequiredAndAttributed": true,
+      "allBodyGuardRAW_EXIT0Unchanged": true,
+      "baseline": {
+        "bytes": 6704,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-instantiated-source-1/cells/pnpm-version.B.txt",
+        "sha256": "dd4ce929d59a406d5d0ae54a1d289493dbd278d313b2cc71b14bf83d0b7806c7"
+      },
+      "independentFullInverseEqual": true,
+      "normalizedSHA": "dd4ce929d59a406d5d0ae54a1d289493dbd278d313b2cc71b14bf83d0b7806c7",
+      "wholeLFcount1": true
+    },
+    "C": {
+      "actual": {
+        "bytes": 1764,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-pnpm-version-root-tool-evidence-1/actual-C.txt",
+        "sha256": "1bd10d7891a2e356d73f3e4b6ae249b1cb911b91f9c21ad0b38ac27e95748218"
+      },
+      "actualInlineDataProofOnlyShapeVerified": true,
+      "actualPrecedingTerminal0RequiredAndAttributed": true,
+      "allBodyGuardRAW_EXIT0Unchanged": true,
+      "baseline": {
+        "bytes": 1785,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-instantiated-source-1/cells/pnpm-version.C.txt",
+        "sha256": "62d3e74123be795714cd30339d904f913bcf76328fde97bcfe4361452eb73f4e"
+      },
+      "independentFullInverseEqual": true,
+      "normalizedSHA": "62d3e74123be795714cd30339d904f913bcf76328fde97bcfe4361452eb73f4e",
+      "wholeLFcount1": true
+    }
+  },
+  "noGlobalReplacementOrLateRAWEXITChange": true,
+  "noSubjectOrCodeEvaluation": true,
+  "ordinaryDataProofFormat": "Exact hash/count/fullInverse/guardAndRawExit fields; unlike prior Node observation no full-body envelope is presumed."
+}

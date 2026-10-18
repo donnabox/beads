@@ -1,0 +1,25 @@
+{
+  "errors": [
+    {
+      "cause": "Own DATA verifier assumed previous Node observation body/proof envelope. Actual PNPM inline checker outputs only exact hashes/count/fullInverse/guardAndRawExit proof.",
+      "correction": "Read actual shape; independently recomputed full actual B/C sources and exact proof fields against published baselines. No subject action/evaluation/retry/source change.",
+      "error": "KeyError: 'body'",
+      "rawExit": 1,
+      "toolChunk": "7bdc49"
+    }
+  ],
+  "rootReportedDataNotes": [
+    {
+      "cause": "String row PID/group compared against integer registry in root DATA check; source correctly converts int.",
+      "productOrHelperDefect": false,
+      "source": "Parent trusted message; no raw toolreceipt reconstruction",
+      "tool": "896837"
+    },
+    {
+      "cause": "Root DATA assumed empty temp; actual nine compile-cache entries are allowed under nested-bdp-only predicate.",
+      "productOrHelperDefect": false,
+      "source": "Parent trusted message; no raw toolreceipt reconstruction",
+      "tool": "e104a0"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "actualRawCensus": {
+    "bytes": 206316,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/postterminal-census.stdout",
+    "sha256": "cd9a2c3d3524d29116ea4cb3a6a8babbeda5159839e00d7c7674d1fc3b9541fd"
+  },
+  "actualRawRows": 1390,
+  "actualTaskPGIDs": [
+    52678,
+    52683,
+    53433
+  ],
+  "actualTaskPIDs": [
+    52682,
+    52683,
+    53433
+  ],
+  "additionalAuditorCensuses": 0,
+  "collector": {
+    "differentValuesPreserved": true,
+    "pgid": 52678,
+    "pid": 52682
+  },
+  "directProbe": {
+    "basis": "Exact source successful communicate/retained receipt/trusted B0",
+    "bothEOF": true,
+    "directReaped": true,
+    "parent": 54143,
+    "pgid": 54144,
+    "pid": 54144,
+    "rawExit": 0
+  },
+  "guardAndInlineDataCheckerPIDs": "UNRETAINED_UNKNOWN",
+  "inner": {
+    "pgid": 53433,
+    "pid": 53433
+  },
+  "innerSamples": {
+    "bytes": 461,
+    "sha256": "1193da44f13ecb722c19541f47c2172b0b19678c209fdd65567bd75b94821509"
+  },
+  "intConversionBeforeRegistryComparison": true,
+  "laterRetainedCensusNoMatchingZombie": true,
+  "noGlobalAllTransientEscapedDomainAbsenceClaim": true,
+  "observer": {
+    "laterTrustedToolTerminal": "05c275 exit0",
+    "notClaimedAbsentInOwnInventory": true,
+    "pgid": 54139,
+    "pid": 54143,
+    "presentInOwnRawCensus": true
+  },
+  "originalDecodedRawToolReceipts": "UNRETAINED",
+  "selectedMatchingRows": [],
+  "selectionOrigins": [
+    {
+      "basis": "actual local getpid/getpgrp; no signal authority",
+      "pgid": 52678,
+      "pid": 52682,
+      "role": "collector"
+    },
+    {
+      "basis": "actual retained Popen start_new_session",
+      "pgid": 52683,
+      "pid": 52683,
+      "role": "direct-wrapper"
+    },
+    {
+      "pgid": 53433,
+      "pid": 53433,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/pnpm-version.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 53433,
+      "pid": 53433,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/pnpm-version.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 53433,
+      "pid": 53433,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/pnpm-version.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 53433,
+      "pid": 53433,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/pnpm-version.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": null,
+      "pid": 53433,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/pnpm-version.exit.json",
+      "role": "actual-inner-sampledPid"
+    }
+  ],
+  "transientDefunctSampleRetained": true,
+  "wrapper": {
+    "pgid": 52683,
+    "pid": 52683
+  }
+}
