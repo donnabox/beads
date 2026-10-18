@@ -1,0 +1,36 @@
+"""Wait for the independent owner's fresh identity ACK before zero-product exec.
+Lost ACK/EOF refuses. Same PID/PPID/PGID and inherited descriptors are preserved.
+"""
+import time
+import json,os,select,socket,sys
+from pathlib import Path
+
+def main():
+ fd=int(sys.argv[1]);origin=float(sys.argv[2]);term=float(sys.argv[3]);nonce=sys.argv[4];argv=sys.argv[5:]
+ # Only immutable local harness roles or exact real ps, never a product command.
+ here=Path(__file__).resolve().parent
+ if argv[:3]==[sys.executable,'-I','-B']:
+  if len(argv)<4 or Path(argv[3]).resolve() not in {here/'outer_worker.py',here/'host_peer.py'}:return 1
+ elif argv!=['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm=']:return 1
+ channel=socket.socket(fileno=fd);channel.setblocking(False);raw=b'';deadline=min(origin+term,time.monotonic()+5)
+ while time.monotonic()<deadline and len(raw)<=4096:
+  if not select.select([channel],[],[],.02)[0]:continue
+  block=channel.recv(4096)
+  if not block:
+   os.set_blocking(2,False)
+   receipt=(json.dumps({'event':'bootstrap-control-eof','pid':os.getpid(),'receivedHex':raw.hex(),'peerExecuted':False},separators=(',',':'))+'\n').encode()
+   try:os.write(2,receipt)
+   except OSError:pass
+   return 1 # fixed refusal, no EOF spin and no peer execution
+  raw+=block
+  if b'\n' in raw:
+   line,tail=raw.split(b'\n',1)
+   if tail:return 1
+   value=json.loads(line)
+   if value!={'event':'execute','nonce':nonce,'pid':os.getpid()}:return 1
+   if argv[0]=='/bin/ps' or(len(argv)>=4 and Path(argv[3]).resolve()==here/'host_peer.py'):
+    reply=(json.dumps({'event':'executing','nonce':nonce,'pid':os.getpid()},separators=(',',':'))+'\n').encode()
+    if channel.send(reply)!=len(reply):return 1
+   channel.close();os.execv(argv[0],argv)
+ return 1
+if __name__=='__main__':raise SystemExit(main())

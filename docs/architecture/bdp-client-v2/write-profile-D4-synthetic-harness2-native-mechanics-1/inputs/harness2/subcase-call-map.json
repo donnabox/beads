@@ -1,0 +1,403 @@
+{
+  "declaredMappings": {
+    "P01": [
+      "unit original closed G.load_gate plus cfg workload presence; missing/present released path BLOCKED",
+      "host blocked-preflight; UNIT modeled blocked clock",
+      "host pending-term uses real TERM while original run masks signals",
+      "all original flat857 implementation strings and six exclusions pinned; released-gate consumption BLOCKED"
+    ],
+    "P08": [
+      "unit early-ipc-failure and host leader-exit-before-created",
+      "unit shared-member and host leader-exit-after-created",
+      "unit live-to-z; actual zombie scheduling BLOCKED",
+      "unit terminal-member and terminal-resurrection; actual observation BLOCKED"
+    ],
+    "P09": [
+      "unit reparented-member; never-seen actual reparent timing BLOCKED",
+      "unit shared-member plus host P08 group survival",
+      "unit comm-change/birth-change/pgid-change with actual traced refuse reason",
+      "unit closed-resurrection/terminal-resurrection; no signals from closed numeric group",
+      "unit escaped; no999 signal; actual escaped-session injection BLOCKED"
+    ],
+    "P11": [
+      "actual original G.complete synthetic145 equality + unit completion-equality; real exact completion BLOCKED",
+      "actual G.complete ordinary115 equality + unit relative-equality/ordinary-equality; real relative timing BLOCKED"
+    ],
+    "P12": [
+      "host publisher-block/publisher-fail retain missing/tentative; unit same scenarios",
+      "unit publisher-cross-relative; actual stalled final census/reap timing BLOCKED"
+    ],
+    "D02": [
+      "actual audit_partial divergent seed length1 with next failed GET",
+      "actual final validated Event boundary refusal",
+      "actual first/second receipt counts assigned before source assertion stop"
+    ],
+    "D03": [
+      "actual audit_partial mutations of every declared derived field, raw/body/postimage failures through original full auditor",
+      "positive fixture original full audit_d4 Python-only; protocol AJV BLOCKED",
+      "actual audit_partial all9 settled nonnull categories, settled null refusal, pending null eligible; same20 controls below"
+    ]
+  },
+  "D03All20": [
+    {
+      "id": "D03-M01",
+      "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-M02",
+      "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M03",
+      "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M04",
+      "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M05",
+      "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-M06",
+      "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M07",
+      "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-M08",
+      "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-C01",
+      "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C02",
+      "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C03",
+      "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C04",
+      "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C05",
+      "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C06",
+      "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C07",
+      "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C08",
+      "mutation": "000 with errorCategory=network; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C09",
+      "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-W01",
+      "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-W02",
+      "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-W03",
+      "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    }
+  ],
+  "sourceDefinitionsAndBranches": {
+    "gate_controls.py": {
+      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+      "definitions": {
+        "encoded": 11,
+        "stage_receipts": 12,
+        "consumer_bindings": 37,
+        "call": 44,
+        "document_file": 40
+      },
+      "literalCaseLines": {}
+    },
+    "harness.py": {
+      "sha256": "7a7b2e27e554d57dcb2fe411740cc9a7b1d362e65628a70705b60e938aad3f0e",
+      "definitions": {
+        "need": 16,
+        "sha": 18,
+        "unique": 19,
+        "read": 23,
+        "write": 24,
+        "document": 26,
+        "authorized": 28,
+        "load": 56,
+        "child": 60,
+        "parent": 89,
+        "main": 132
+      },
+      "literalCaseLines": {
+        "D06": 80
+      }
+    },
+    "host_controls.py": {
+      "sha256": "1ea700f6f369a097532e852f5feed1cbcc8585cb257acaf68b1bf99bde3e8714",
+      "definitions": {
+        "run": 14,
+        "popen": 22,
+        "trace": 43
+      },
+      "literalCaseLines": {}
+    },
+    "host_peer.py": {
+      "sha256": "36658b92223c50f40c455472f631a44c706ebabaf16febcf140d0d398ff46a02",
+      "definitions": {
+        "write": 9,
+        "wait_until": 11,
+        "main": 13,
+        "note": 36,
+        "receive": 38
+      },
+      "literalCaseLines": {}
+    },
+    "report_controls.py": {
+      "sha256": "575fb771d2c1af1103666576d7ea6576f5382641b8b773b26fe82b7a95ed77cd",
+      "definitions": {
+        "wire": 11,
+        "child": 16,
+        "row": 18,
+        "pending": 22,
+        "partial": 24,
+        "positive": 28,
+        "run": 60,
+        "full": 62,
+        "check": 64
+      },
+      "literalCaseLines": {
+        "D01": 66,
+        "D02": 69,
+        "D03": 78,
+        "D04": 107,
+        "D05": 112,
+        "D06": 117
+      }
+    },
+    "scanner_controls.py": {
+      "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "definitions": {
+        "line": 9,
+        "marker": 10,
+        "refusal": 12,
+        "feed": 18,
+        "stream": 20,
+        "run": 24,
+        "reject": 27,
+        "drive": 83,
+        "Growing": 110,
+        "opening": 118,
+        "__init__": 111,
+        "read": 112
+      },
+      "literalCaseLines": {
+        "M01": 28,
+        "M02": 35,
+        "M03": 36,
+        "M04": 37,
+        "M05": 40,
+        "M06": 41,
+        "M07": 42,
+        "M08": 43,
+        "M09": 44,
+        "M10": 45,
+        "M11": 46,
+        "M12": 47,
+        "M13": 52,
+        "M14": 53,
+        "M15": 59,
+        "M16": 60,
+        "J01": 61,
+        "J02": 62,
+        "J03": 63,
+        "J04": 64,
+        "J05": 65,
+        "J06": 69,
+        "J07": 72,
+        "J08": 77,
+        "J09": 80,
+        "J10": 91,
+        "J11": 100,
+        "J12": 108
+      }
+    },
+    "watchdog_controls.py": {
+      "sha256": "086d0c9be51ba49a18eb6c6c2e49618c7f08d03e9385d47524c74d01f7260731",
+      "definitions": {
+        "Pipe": 11,
+        "Process": 15,
+        "Channel": 33,
+        "Model": 53,
+        "scenario": 152,
+        "run": 163,
+        "__init__": 54,
+        "fileno": 35,
+        "close": 37,
+        "poll": 18,
+        "kill": 32,
+        "setblocking": 36,
+        "send": 38,
+        "recv": 47,
+        "monotonic": 78,
+        "wall": 79,
+        "pair": 80,
+        "member_live": 82,
+        "row": 87,
+        "rows": 91,
+        "popen": 111,
+        "read": 119,
+        "killpg": 122,
+        "install": 127,
+        "mask": 128,
+        "select": 133,
+        "execute": 137,
+        "trace": 140
+      },
+      "literalCaseLines": {
+        "P01": 164,
+        "P02": 170,
+        "P03": 171,
+        "P04": 172,
+        "P05": 173,
+        "P06": 174,
+        "P07": 175,
+        "P08": 176,
+        "P09": 178,
+        "P10": 184,
+        "P11": 189,
+        "P12": 190,
+        "P13": 191,
+        "P14": 194
+      }
+    }
+  },
+  "authority": "static intended call map only; zero execution",
+  "all48RegistryIds": [
+    "M01",
+    "M02",
+    "M03",
+    "M04",
+    "M05",
+    "M06",
+    "M07",
+    "M08",
+    "M09",
+    "M10",
+    "M11",
+    "M12",
+    "M13",
+    "M14",
+    "M15",
+    "M16",
+    "J01",
+    "J02",
+    "J03",
+    "J04",
+    "J05",
+    "J06",
+    "J07",
+    "J08",
+    "J09",
+    "J10",
+    "J11",
+    "J12",
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13",
+    "P14",
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "D06"
+  ],
+  "successor2": {
+    "SH-N1": [
+      "host_peer.receive_control immediate EOF refusal + exact received bytes + absolute existing receive deadline",
+      "P01 host-close-before-ack: empty and partial actual socket EOF",
+      "P01 host-bootstrap-close: real independent-owner authentication, partial ACK then EOF before peer exec"
+    ],
+    "SH-N2": [
+      "D03 same-case full(o), exact RuntimeError wire-base64-type/wire-body/owned-inline-metadata",
+      "D04 same-case full(o), typed-report-value or actual-child-pid",
+      "D06 same-case full(o), source/served/payload typed-report-value, fixture-proof, runtime same-live-configuration"
+    ],
+    "SH-N3": [
+      "M03 collector null only, source ordinary branch explicitly unresolved",
+      "P03 exact reached first refusal recorded, scheduled marker does not prove late receipt",
+      "P05 actual phase/pipe scope only, console/results worker chain unresolved"
+    ],
+    "actualOuterOwner": "all invocations use native limiter -> outer_host -> owned IO/control workers; registered bootstrap bridge for exact peer/ps argv",
+    "noEvaluations": true
+  }
+}

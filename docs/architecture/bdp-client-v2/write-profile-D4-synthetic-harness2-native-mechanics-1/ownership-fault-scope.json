@@ -1,0 +1,83 @@
+{
+  "exactApprovedFaultScope": [
+    {
+      "actualFault": "inner bound peer preflight stalls, or TERM is queued for the control worker executing original R.main",
+      "controls": "P01 host-blocked-preflight / host-pending-term",
+      "outermostOwnerFaultApproved": false,
+      "required": "original finite refusal and actual group cleanup; N1 must be corrected",
+      "trustedOwnerExpectedAlive": "outer_host plus native limiter"
+    },
+    {
+      "actualFault": "adapted original watchdog census probe sleeps; original watchdog must refuse at200ms",
+      "controls": "P07 host-blocked-census",
+      "outermostOwnerFaultApproved": false,
+      "required": "actual original census-deadline and retained handles/groups absence",
+      "trustedOwnerExpectedAlive": "outer_host census/limiter independent of the original probe"
+    },
+    {
+      "actualFault": "original R.main owned worker host_peer exits before/after created notification while member remains",
+      "controls": "P08 two host leader exits",
+      "outermostOwnerFaultApproved": false,
+      "required": "retained direct anchor, same-group member handling and actual KILL/absence; zombie never absence",
+      "trustedOwnerExpectedAlive": "original R.main/control worker and outer_host"
+    },
+    {
+      "actualFault": "original watchdog publisher role blocks or exits1 after tentative record",
+      "controls": "P12 publisher-block / publisher-fail",
+      "outermostOwnerFaultApproved": false,
+      "required": "original raw1 and preserved tentative/missing records; no promotion",
+      "trustedOwnerExpectedAlive": "outer_host remains responsible for full host clock/owned IO/control"
+    },
+    {
+      "actualFault": "modeled original subject clock/process inputs; actual outer145/149 fault fixture absent",
+      "controls": "P10 unit / P11 unit / other modeled schedules",
+      "outermostOwnerFaultApproved": false,
+      "required": "do not count modeled signals or equality as real host proof",
+      "trustedOwnerExpectedAlive": "all real outer components"
+    },
+    {
+      "actualFault": "finite data/peer scenarios as exact command matrix, never an intentional stop/kill of outer_host",
+      "controls": "Remaining48-ID unit bodies and P01 EOF/bootstrap-close/P03/P05/P06 host variants",
+      "outermostOwnerFaultApproved": false,
+      "required": "own declared predicate/UNKNOWN plus full owner/limiter/fresh root receipts",
+      "trustedOwnerExpectedAlive": "outer_host and native limiter"
+    }
+  ],
+  "ifRootRequiresOuterOwnerFaultContainment": {
+    "clock": "All registry/census/cleanup/publication stays within same120/150 and TERM115/145 KILL119/149; incomplete cleanup at limit remains FAILED/UNKNOWN. No postdeadline acceptance or grace.",
+    "minimalConcreteMechanism": "Before adding a deliberate outer-owner stop/kill control, make existing bootstrap registration independently observable to the surviving native/root boundary BEFORE each execution ACK. Retain sealed role/nonce/PID/PPID/PGID/birth/executable/creation receipts there, not only in outer_host memory/final publication. The surviving boundary must have independently owned responsive census/cleanup authority for those registered groups and preserve membership anchors until fresh absence; no numeric-history signals. This is a finite one-boundary extension, not recursive watchdogs. A concrete separately frozen implementation/full native review is necessary before asserting it works.",
+    "noInfiniteRegress": "Kernel/scheduler failure or loss of the final trusted external boundary cannot be converted into a guaranteed cleanup claim. Fail closed and preserve unknowns; do not demand an unbounded chain of supervisors."
+  },
+  "knownExecutableGap": {
+    "fact": "Perl safely signals its unreaped direct Python owner group only. IO/control workers and some peers are separate groups. Their authenticated registry belongs to outer_host. If that outer owner stalls or is killed, Perl has no independent nested-group authentication/cleanup path. This is real missing executable authority, not the generic observation that signals can be delayed.",
+    "recordedStatus": "Author BLOCK-HARD-ISOLATION remains unchanged and blocks current evaluation pending root disposition.",
+    "source": [
+      "hard_limit.pl:22-29,49-68",
+      "outer_host.py:43-46,157-166,207-239",
+      "hard-limiter-authority.md:11"
+    ]
+  },
+  "nativeAuthorityAssessment": {
+    "OSUncertainty": "Any observed late signal/completion refuses. Ordinary OS scheduling uncertainty does not justify weakening strict deadlines and is distinct from missing group registry/authority.",
+    "actualLoadingClockIdSupportEpochAvailabilitySignalLatency": "UNMEASURED; local existence/export text is not successful runtime verification",
+    "localToolsModulesHeaders": "exact bytes/realpaths checked; Time::HiRes exports clock_gettime, local header CLOCK_UPTIME_RAW=8 and mach_absolute_time declaration located"
+  },
+  "noAutomaticWaiver": "Accepted predecessor design expressly called abrupt owner death/missing journals a blocker. This review cannot turn that into a passed domain or release around existing BLOCK-HARD-ISOLATION. Root must explicitly disposition the finite supported fault domain/recovery requirements before a new candidate/release. No new semantics/user ruling is needed.",
+  "productReleased": false,
+  "scopeConclusion": "No declared60 invocation intentionally stalls/kills outer_host or the native limiter. Inner original R.main/worker/publisher/census failures ARE required finite controls and cannot be excused by the outermost-owner limitation. Unexpected loss of the last trusted group owner is fallback failure: record FAILED/UNKNOWN, withhold all acceptance, do not claim nested absence or bounded cleanup. Neither root release nor reviewed DATA demands recursively guaranteeing cleanup after killing every last trusted owner.",
+  "smallestConditionalBoundary": {
+    "acceptanceConditions": [
+      "all original callable-specific predicates and per-case residuals retained",
+      "both outer owner and native limiter terminal receipts complete strictly before existing normal deadline",
+      "complete saved output/EOF/owned writer settlement",
+      "fresh root inventory proves every recorded direct PID/known PGID absent, including final census probes",
+      "outer-owner loss/stall, missing creation journal, escaped unauthenticated member or late receipt is UNKNOWN/failed; stop further work, no retry/no product acceptance",
+      "root explicitly assesses availability of safe local recovery/ownership records; never signal historical groups without a current authenticated anchor"
+    ],
+    "limitation": "This subset cannot validate the outermost-owner-loss cleanup domain or establish a global guarantee.",
+    "option": "Finite expected-fault evaluation under an intact last trusted outer owner, ONLY after concrete N1/N2 corrections, native clock/availability checks and root disposition",
+    "proposedSubset": "Start with existing P01 EOF/bootstrap-close and pure scanner/gate/report units as separately named finite invocations; original host fault variants only where outer_host remains alive. This is a proposal, NOT an approved invocation subset or waiver."
+  },
+  "state": "Known fallback containment limitation adjudicated separately from new concrete findings; no execution release",
+  "syntheticReleased": false
+}

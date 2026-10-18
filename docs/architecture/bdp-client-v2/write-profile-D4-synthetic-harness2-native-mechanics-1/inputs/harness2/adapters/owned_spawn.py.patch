@@ -1,0 +1,63 @@
+--- /dev/null
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/owned_spawn.py
+@@ -0,0 +1,60 @@
++"""CLOSED zero-product bootstrap adapter. No subject algorithm is copied.
++Use a retained real Popen factory, never the globally patched subprocess.Popen.
++Registration is one atomic datagram carrying a per-child ACK socket descriptor.
++"""
++import array,json,os,socket,subprocess,sys,time
++from pathlib import Path
++REAL_POPEN=subprocess.Popen
++HANDLES=[]
++HERE=Path(__file__).resolve().parent
++
++def bridge():
++ fd=os.environ.get('D4_OUTER_FD');nonce=os.environ.get('D4_OUTER_NONCE')
++ if fd is None or nonce is None:raise RuntimeError('outer-owner-required')
++ return socket.socket(fileno=os.dup(int(fd))),nonce
++
++def note(event,**fields):
++ channel,nonce=bridge()
++ try:
++  raw=(json.dumps({'event':event,'nonce':nonce,'pid':os.getpid(),**fields},separators=(',',':'))+'\n').encode()
++  if len(raw)>4096:raise RuntimeError('outer-control-capacity')
++  channel.setblocking(False)
++  if channel.send(raw)!=len(raw):raise RuntimeError('outer-control-short-send')
++ finally:channel.close()
++
++def spawn(argv,**kwargs):
++ # Called only for exactly enumerated harness/peer/ps roles. It is not an
++ # arbitrary-command API or product executor. The worker validates pin hashes.
++ stimulus=kwargs.pop('_outer_stimulus',None)
++ if stimulus not in [None,'close-before-ack']:raise RuntimeError('outer-bootstrap-stimulus')
++ argv=list(argv)
++ if argv[:1]==['/bin/ps']:
++  if argv!=['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm=']:raise RuntimeError('outer-ps-argv')
++ elif argv[:3]==[sys.executable,'-I','-B']:
++  if len(argv)<4 or Path(argv[3]).resolve() not in {HERE/'host_peer.py'}:raise RuntimeError('outer-peer-argv')
++ else:raise RuntimeError('outer-command-refused')
++ channel,nonce=bridge();ack,boot=socket.socketpair();handle=None
++ try:
++  inherited=tuple(dict.fromkeys([*kwargs.pop('pass_fds',()),boot.fileno(),int(os.environ['D4_OUTER_FD'])]))
++  command=[sys.executable,'-I','-B',str(HERE/'bootstrap.py'),str(boot.fileno()),os.environ['D4_OUTER_ORIGIN'],os.environ['D4_OUTER_TERM'],nonce,*argv]
++  handle=REAL_POPEN(command,pass_fds=inherited,**kwargs)
++  HANDLES.append(handle) # FIRST action after Popen; no inventory, file, hash or rich metadata.
++  if len(HANDLES)>4096:raise RuntimeError('outer-handle-capacity')
++  boot.close()
++  record={'event':'register','nonce':nonce,'pid':handle.pid,'parent':os.getpid(),'pgid':handle.pid if kwargs.get('start_new_session')else os.getpgrp(),'sessionLeader':bool(kwargs.get('start_new_session')),'finalComm':argv[0],'kind':'nested-zero-product','at':time.monotonic(),'createdEpoch':time.time(),'stimulus':stimulus}
++  raw=(json.dumps(record,separators=(',',':'))+'\n').encode();channel.setblocking(False)
++  if len(raw)>4096 or channel.sendmsg([raw],[(socket.SOL_SOCKET,socket.SCM_RIGHTS,array.array('i',[ack.fileno()]))])!=len(raw):raise RuntimeError('outer-registration-failed')
++  if stimulus=='close-before-ack':
++   ack.close();return handle # owner retains sole ACK endpoint and deliberately closes it.
++  ack.settimeout(min(5,max(.001,float(os.environ['D4_OUTER_ORIGIN'])+float(os.environ['D4_OUTER_TERM'])-time.monotonic())))
++  response=ack.recv(4096)
++  if not response or json.loads(response)!={'event':'executing','nonce':nonce,'pid':handle.pid}:raise RuntimeError('outer-bootstrap-execution-ack')
++  return handle
++ except BaseException:
++  # Safe direct unreaped child fallback. A failed register never executes peer.
++  if handle is not None and handle.returncode is None:
++   try:handle.kill()
++   except ProcessLookupError:pass
++  raise
++ finally:
++  channel.close();ack.close();boot.close()

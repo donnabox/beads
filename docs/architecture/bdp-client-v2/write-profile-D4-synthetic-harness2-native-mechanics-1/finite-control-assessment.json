@@ -1,0 +1,1479 @@
+{
+  "D03DeclaredStates": 20,
+  "IDs": 48,
+  "allInvocations": "UNEXECUTED",
+  "cases": [
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M01",
+      "originalDescription": {
+        "id": "M01",
+        "input": "two valid compact current-ID records split at every selected token boundary",
+        "predicate": "accept only with actual same-attempt report/results/terminal proof",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "pure scanner/gate units do not execute unchanged worker entire report/results/terminal chain"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M02",
+      "originalDescription": {
+        "id": "M02",
+        "input": "stale complete marker pair",
+        "predicate": "refuse current binding",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M03",
+      "originalDescription": {
+        "id": "M03",
+        "input": "null attemptId ordinary diagnostic",
+        "predicate": "refuse validation; source outcome unchanged",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N3",
+      "retainedUnsupported": [
+        "source ordinary no-environment outcome is not executed; this case reaches scanner null-ID refusal only"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M04",
+      "originalDescription": {
+        "id": "M04",
+        "input": "malformed non32hex environment marker",
+        "predicate": "source null; collector refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "environment-to-null is frozen product source behavior, not scanner API; no product callback allowed"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M05",
+      "originalDescription": {
+        "id": "M05",
+        "input": "missing start",
+        "predicate": "refuse by absolute10",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "absolute10 requires separately observed P01 host blocked-preflight; scanner finish refusal is not a clock observation"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M06",
+      "originalDescription": {
+        "id": "M06",
+        "input": "missing end",
+        "predicate": "refuse by min(start+120,130)",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "callback/absolute deadline is watchdog obligation, not scanner finish clock proof"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M07",
+      "originalDescription": {
+        "id": "M07",
+        "input": "duplicate start",
+        "predicate": "refuse order/count",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M08",
+      "originalDescription": {
+        "id": "M08",
+        "input": "reversed end/start",
+        "predicate": "refuse order",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M09",
+      "originalDescription": {
+        "id": "M09",
+        "input": "third marker",
+        "predicate": "refuse closed count",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M10",
+      "originalDescription": {
+        "id": "M10",
+        "input": "extra marker key",
+        "predicate": "refuse closed schema",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M11",
+      "originalDescription": {
+        "id": "M11",
+        "input": "marker4097byte line",
+        "predicate": "resource refusal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M12",
+      "originalDescription": {
+        "id": "M12",
+        "input": "interleaved corrupt marker bytes",
+        "predicate": "refuse, retain bytes",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M13",
+      "originalDescription": {
+        "id": "M13",
+        "input": "marker incomplete final line",
+        "predicate": "refuse no repaired newline",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M14",
+      "originalDescription": {
+        "id": "M14",
+        "input": "end elapsed negative/nonfinite/string/bool each finite subcase",
+        "predicate": "refuse type/finite",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M15",
+      "originalDescription": {
+        "id": "M15",
+        "input": "end elapsed less thanstart or over120000",
+        "predicate": "refuse chronology",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "M16",
+      "originalDescription": {
+        "id": "M16",
+        "input": "fresh-looking different ID second marker",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J01",
+      "originalDescription": {
+        "id": "J01",
+        "input": "duplicate JSON keys including escaped-equivalent names",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J02",
+      "originalDescription": {
+        "id": "J02",
+        "input": "UTF8 invalid continuation split across chunks",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J03",
+      "originalDescription": {
+        "id": "J03",
+        "input": "NaN/Infinity/1e999 each finite subcase",
+        "predicate": "refuse nonfinite",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J04",
+      "originalDescription": {
+        "id": "J04",
+        "input": "depth129",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J05",
+      "originalDescription": {
+        "id": "J05",
+        "input": "1000001 value nodes",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J06",
+      "originalDescription": {
+        "id": "J06",
+        "input": "100001 entries in object and array",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J07",
+      "originalDescription": {
+        "id": "J07",
+        "input": "valid bounded depth128/container100000/finite numbers",
+        "predicate": "parse if all other contracts satisfied",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J08",
+      "originalDescription": {
+        "id": "J08",
+        "input": "results16MiB+1",
+        "predicate": "resource refusal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J09",
+      "originalDescription": {
+        "id": "J09",
+        "input": "selected line64MiB+1 including newline",
+        "predicate": "resource refusal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J10",
+      "originalDescription": {
+        "id": "J10",
+        "input": "raw log256MiB+1",
+        "predicate": "resource refusal, preserve full savedbytes",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J11",
+      "originalDescription": {
+        "id": "J11",
+        "input": "giant unrelated non-JSON line within raw threshold",
+        "predicate": "bounded skip without truncating saved log",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "scanner_controls.py",
+      "bodySha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "J12",
+      "originalDescription": {
+        "id": "J12",
+        "input": "file grows during hash/parse",
+        "predicate": "refuse changed size/mtime/inode",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "file_json has no before/after stat-stability predicate; implemented real growth refusal covers file_hash only"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [
+        {
+          "id": "P01-declared-1",
+          "input": "missing prospectiveWorkload refuses; exact present workload reaches original selected-stage gate without executing product",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P01-declared-2",
+          "input": "blocked preflight no product after10",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P01-declared-3",
+          "input": "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P01-declared-4",
+          "input": "exact current flat implementation path-to-SHA index is consumed completely; missing wrapper is not invented, all hashes/six exclusions remain bound; data-only interface reaches original stage gate without product",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "name": "SH-N1 empty and partial close-before-ack",
+          "scope": "actual socket EOF and received bytes only; same outer clock; no immutable watchdog verdict inferred",
+          "subject": "host_peer.receive_control"
+        },
+        {
+          "name": "outer bootstrap partial ACK then actual EOF",
+          "scope": "actual sealed descriptor/partial bytes/EOF/no peer exec; not product admission",
+          "subject": "bootstrap.py after independent outer identity authentication"
+        }
+      ],
+      "hostAdapter": "host_controls.py",
+      "id": "P01",
+      "originalDescription": {
+        "finiteSubcases": [
+          "missing prospectiveWorkload refuses; exact present workload reaches original selected-stage gate without executing product",
+          "blocked preflight no product after10",
+          "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock",
+          "exact current flat implementation path-to-SHA index is consumed completely; missing wrapper is not invented, all hashes/six exclusions remain bound; data-only interface reaches original stage gate without product"
+        ],
+        "id": "P01",
+        "input": "blocked gate/preflight",
+        "predicate": "worker terminated within same origin; no product after10",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N1",
+      "retainedUnsupported": [
+        "fully root-released gate missing/present prospectiveWorkload path is not evaluated; actual gate stays CLOSED",
+        "registration-before-fallible-inventory exact fault timing remains a host injection gap"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-blocked-preflight",
+        "host-pending-term",
+        "host-close-before-ack",
+        "host-bootstrap-close"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "P02",
+      "originalDescription": {
+        "id": "P02",
+        "input": "preflight ends at10 equality leaving no positive admission",
+        "predicate": "no product spawn",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "unit no-start-at10 is not actual worker preflight admission equality"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": "host_controls.py",
+      "id": "P03",
+      "originalDescription": {
+        "id": "P03",
+        "input": "start receipt after10",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N3",
+      "retainedUnsupported": [
+        "scheduled late marker may lose to start-missing; exact reached refusal is recorded, no actual late-receipt claim"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-late-start"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "P04",
+      "originalDescription": {
+        "id": "P04",
+        "input": "start early/end after absolute130",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "actual delayed end at130 host fixture absent; unit schedule only"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": "host_controls.py",
+      "id": "P05",
+      "originalDescription": {
+        "id": "P05",
+        "input": "end before delayed console RPC/results",
+        "predicate": "do not complete flush before actual artifacts",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N3",
+      "retainedUnsupported": [
+        "host normal exercises synthetic phases and actual pipe EOF, not real console-RPC/results artifact publication"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-normal"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": "host_controls.py",
+      "id": "P06",
+      "originalDescription": {
+        "id": "P06",
+        "input": "blocked final source/build/consumer hash",
+        "predicate": "flush stops by min(end+5,135)",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "host peer models blocked final work by absence of verified receipt; not actual blocked source/build/consumer hash"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-blocked-final"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": "host_controls.py",
+      "id": "P07",
+      "originalDescription": {
+        "id": "P07",
+        "input": "blocked census probe",
+        "predicate": "200ms refusal; watchdog stays responsive",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-blocked-census"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [
+        {
+          "id": "P08-declared-1",
+          "input": "product spawn before created notification then IPC failure/worker exit; retained unreaped anchor contains shared-group members",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P08-declared-2",
+          "input": "created receipt+ack then worker exits with live member; no early poll/wait or quiet",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P08-declared-3",
+          "input": "previous live identity becomes matching terminal Z with <defunct> comm; retained until actual absence/reap",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P08-declared-4",
+          "input": "terminal-only newly contained member cannot later become live or establish live executable baseline",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "hostAdapter": "host_controls.py",
+      "id": "P08",
+      "originalDescription": {
+        "finiteSubcases": [
+          "product spawn before created notification then IPC failure/worker exit; retained unreaped anchor contains shared-group members",
+          "created receipt+ack then worker exits with live member; no early poll/wait or quiet",
+          "previous live identity becomes matching terminal Z with <defunct> comm; retained until actual absence/reap",
+          "terminal-only newly contained member cannot later become live or establish live executable baseline"
+        ],
+        "id": "P08",
+        "input": "worker leader exits while authenticated child group remains",
+        "predicate": "retain group ownership and terminate; no absence inferred",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "real peers do not force unseen-first-after-reparent or matching zombie observations",
+        "external host cleanup after abrupt harness death remains unproved"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-leader-exit-before-created",
+        "host-leader-exit-after-created"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [
+        {
+          "id": "P09-declared-1",
+          "input": "unseen reparented member in registered worker PGID is discovered/contained and prevents quiet",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-2",
+          "input": "member in worker PGID remains after primary exit: worker-PID-only quiet rejects",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-3",
+          "input": "previous authenticated member changes live comm/birth/PGID: sticky UNKNOWN",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-4",
+          "input": "closed PGID reappears or terminal identity becomes live: UNKNOWN/no unsafe signal",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-5",
+          "input": "escaped group without fresh anchor: no historical numeric signal and no acceptance",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "hostAdapter": null,
+      "id": "P09",
+      "originalDescription": {
+        "finiteSubcases": [
+          "unseen reparented member in registered worker PGID is discovered/contained and prevents quiet",
+          "member in worker PGID remains after primary exit: worker-PID-only quiet rejects",
+          "previous authenticated member changes live comm/birth/PGID: sticky UNKNOWN",
+          "closed PGID reappears or terminal identity becomes live: UNKNOWN/no unsafe signal",
+          "escaped group without fresh anchor: no historical numeric signal and no acceptance"
+        ],
+        "id": "P09",
+        "input": "escaped group without current identity anchor",
+        "predicate": "UNKNOWN refusal; no unsafe numeric signal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "actual escaped-session and terminal/closed-PGID resurrection injections absent; deterministic model only"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "P10",
+      "originalDescription": {
+        "id": "P10",
+        "input": "TERM/KILL dispatch at145/149",
+        "predicate": "owned signal receipts; host150, no retry",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "exact145/149 host dispatch not implemented; current mock reaches start-missing first"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [
+        {
+          "id": "P11-declared-1",
+          "input": "original normal completion equality145 refuses",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P11-declared-2",
+          "input": "exact relative flush+10 equality refuses even when absolute145 not reached; ordinary115 unchanged",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "hostAdapter": null,
+      "id": "P11",
+      "originalDescription": {
+        "finiteSubcases": [
+          "original normal completion equality145 refuses",
+          "exact relative flush+10 equality refuses even when absolute145 not reached; ordinary115 unchanged"
+        ],
+        "id": "P11",
+        "input": "normal completion exactly145",
+        "predicate": "refuse equality",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "gate.complete equality145/115 is real callable unit evidence; exact host equality remains unobserved"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [
+        {
+          "id": "P12-declared-1",
+          "input": "existing publisher-block/fail case preserved",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P12-declared-2",
+          "input": "publisher already registered and a fresh census/reap begins before flush+10 but completes after that relative deadline while absolute145 remains: finalreturn refuses; tentative publication also rechecks actual current effective deadline",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "hostAdapter": "host_controls.py",
+      "id": "P12",
+      "originalDescription": {
+        "finiteSubcases": [
+          "existing publisher-block/fail case preserved",
+          "publisher already registered and a fresh census/reap begins before flush+10 but completes after that relative deadline while absolute145 remains: finalreturn refuses; tentative publication also rechecks actual current effective deadline"
+        ],
+        "id": "P12",
+        "input": "publisher write blocks/fails after tentative exit artifact",
+        "predicate": "parent still enforces same clock; no outer exit0/no later-stagecredit",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "fresh census/reap crossing relative flush+10 is model only; tentative publication remains tentative"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit",
+        "host-publisher-block",
+        "host-publisher-fail"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "P13",
+      "originalDescription": {
+        "id": "P13",
+        "input": "invalid/missing raw complete selected report or test result",
+        "predicate": "refuse; retain originals",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "watchdog_controls.py",
+      "bodySha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "P14",
+      "originalDescription": {
+        "id": "P14",
+        "input": "late hash after failed deadline",
+        "predicate": "never promote",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "late fake verified receipt is not actual late hash I/O"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "report_controls.py",
+      "bodySha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "D01",
+      "originalDescription": {
+        "id": "D01",
+        "input": "valid positive fixed32 request/crossrow bodies",
+        "predicate": "private slice only, no whole profile",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [
+        "synthetic32 Python bodies are not established as protocol-AJV-valid; Node/dist prerequisites unbound"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "report_controls.py",
+      "bodySha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "declaredSubcases": [
+        {
+          "id": "D02-declared-1",
+          "input": "finite divergent seed page counts with later failed/unvalidated send: derive actual page lengths/counts/complete from visited source path, not successful prefix",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D02-declared-2",
+          "input": "final validated Event send, including divergent deletion pagination stopped by later source assertion: UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL; raw retained/no credit",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D02-declared-3",
+          "input": "first/second receipt response failure retains exact assignment-before-assertion counters",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "hostAdapter": null,
+      "id": "D02",
+      "originalDescription": {
+        "finiteSubcases": [
+          "finite divergent seed page counts with later failed/unvalidated send: derive actual page lengths/counts/complete from visited source path, not successful prefix",
+          "final validated Event send, including divergent deletion pagination stopped by later source assertion: UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL; raw retained/no credit",
+          "first/second receipt response failure retains exact assignment-before-assertion counters"
+        ],
+        "id": "D02",
+        "input": "failed report has actual Event pagination divergent from positive table",
+        "predicate": "failed-only retained evidence; never enforce positive-prefix or grant credit",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "report_controls.py",
+      "bodySha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "declaredSubcases": [
+        {
+          "id": "D03-declared-1",
+          "input": "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-declared-2",
+          "input": "positive32 body/wire/postimage counterfactuals unchanged",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-declared-3",
+          "input": "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M01",
+          "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M02",
+          "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M03",
+          "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M04",
+          "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M05",
+          "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse source-impossible state",
+          "id": "D03-M06",
+          "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M07",
+          "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "id": "D03-M08",
+          "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C01",
+          "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C02",
+          "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C03",
+          "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C04",
+          "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C05",
+          "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C06",
+          "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C07",
+          "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C08",
+          "mutation": "000 with errorCategory=network; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-C09",
+          "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-W01",
+          "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-W02",
+          "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+          "status": "UNEXECUTED"
+        },
+        {
+          "executed": false,
+          "expected": "refuse initial-state contradiction",
+          "id": "D03-W03",
+          "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "hostAdapter": null,
+      "id": "D03",
+      "originalDescription": {
+        "finiteSubcases": [
+          "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+          "positive32 body/wire/postimage counterfactuals unchanged",
+          "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull"
+        ],
+        "id": "D03",
+        "input": "counts32 but missing wire/changed body/incorrect owned postimage",
+        "predicate": "refuse actual crossrow evidence",
+        "productCalls": 0,
+        "sourceStateSubcases": [
+          {
+            "executed": false,
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "id": "D03-M01",
+            "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "refuse source-impossible state",
+            "id": "D03-M02",
+            "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "refuse source-impossible state",
+            "id": "D03-M03",
+            "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "refuse source-impossible state",
+            "id": "D03-M04",
+            "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "id": "D03-M05",
+            "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "refuse source-impossible state",
+            "id": "D03-M06",
+            "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "id": "D03-M07",
+            "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "id": "D03-M08",
+            "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C01",
+            "mutation": "000 with errorCategory=abort; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C02",
+            "mutation": "000 with errorCategory=configuration; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C03",
+            "mutation": "000 with errorCategory=timeout; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C04",
+            "mutation": "000 with errorCategory=disconnect; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C05",
+            "mutation": "000 with errorCategory=header-limit; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C06",
+            "mutation": "000 with errorCategory=body-limit; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C07",
+            "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C08",
+            "mutation": "000 with errorCategory=network; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-C09",
+            "mutation": "000 with errorCategory=unavailable; writeState null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-W01",
+            "mutation": "000 with writeState=not-started; errorCategory null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-W02",
+            "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null"
+          },
+          {
+            "executed": false,
+            "expected": "refuse initial-state contradiction",
+            "id": "D03-W03",
+            "mutation": "000 with writeState=complete; errorCategory null; response fields null"
+          }
+        ],
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N2",
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "report_controls.py",
+      "bodySha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "D04",
+      "originalDescription": {
+        "id": "D04",
+        "input": "exit0 but absent child close or memoized close failure",
+        "predicate": "refuse ownership",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N2",
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "report_controls.py",
+      "bodySha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "D05",
+      "originalDescription": {
+        "id": "D05",
+        "input": "GET omitted requestBody",
+        "predicate": "correct source JSON representation; do not invent request headers",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": null,
+      "retainedUnsupported": [],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    },
+    {
+      "body": "report_controls.py",
+      "bodySha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "declaredSubcases": [],
+      "hostAdapter": null,
+      "id": "D06",
+      "originalDescription": {
+        "id": "D06",
+        "input": "wrong actual archive/payload/fixture/config/current source",
+        "predicate": "refuse before/after binding",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "priorFinding": "SH-N2",
+      "retainedUnsupported": [
+        "actual packages full tar/payload execution is a future separately authorized control; unit bindings only"
+      ],
+      "review": "Full original callable/dataflow compared statically; no invocation or runtime pass",
+      "variants": [
+        "unit"
+      ]
+    }
+  ],
+  "noProductOrAJVClaim": true,
+  "passed": 0,
+  "prospectiveInvocations": 60,
+  "realHostVariants": 12
+}
