@@ -28,7 +28,35 @@
     "verify-archives",
     "prepare-consumer",
     "consumer-install",
-    "verify-installed-consumer"
+    "verify-installed-consumer",
+    "installed-01",
+    "audit-installed-01",
+    "installed-02",
+    "audit-installed-02",
+    "installed-03",
+    "audit-installed-03",
+    "installed-04",
+    "audit-installed-04",
+    "installed-05",
+    "audit-installed-05",
+    "installed-06",
+    "audit-installed-06",
+    "installed-07",
+    "audit-installed-07",
+    "installed-08",
+    "audit-installed-08",
+    "installed-09",
+    "audit-installed-09",
+    "installed-10",
+    "audit-installed-10",
+    "installed-11",
+    "audit-installed-11",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/base-tools.candidate.json",
@@ -36,14 +64,14 @@
   },
   "bootstrapReuse": [],
   "consumerInventory": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/installed-consumer-inventory.json",
+    "sha256": "6487ff1d0255b66165f769cf33f51d3cfdb7b12646ed52ac33405cc9f1fdaa5a"
   },
   "consumerLockSha256": "1532d15c60db968a31bb0e84ce0adbdc79bfa5ef2dc78c9dd6fcf4361453b6e1",
   "implementationIndexSha256": "8d623d949f221cdedf52114a7a8bca5c3784cf2fdcab4ad971cbd9abbac90106",
   "installedProvenance": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/installed-provenance.json",
+    "sha256": "f319f5232b119638fe764c2fe18c96acf0031a1bd7ca834b7342aaf557a63a3b"
   },
   "knownCorrectedSourceFreeze": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-snapshot-target-source-correction-1/index.json",
@@ -73,8 +101,8 @@
     "sha256": "b8baf04eb5bc0dbd3013ad9a43d7ce3daf0cef3a39999aa7926965155ca57b30"
   },
   "rootConsumerProofAcceptance": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-installed-proof-root-release-1/acceptance.json",
+    "sha256": "9fc40d831083b30f8d935d2a3215599716c6217c5d199dbd65dc023f2eaa0ffa"
   },
   "rootDisposition": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-7/disposition.json",
