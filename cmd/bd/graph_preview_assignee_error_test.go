@@ -487,6 +487,35 @@ func TestGraphPreviewStoreOpenUsesRawErrorMapper(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewStoreOpenDispatchesOnlyOpenMapper(t *testing.T) {
+	oldConfig, oldJSON, oldOutput := graphPreviewConfig, jsonOutput, graphFailureOutput
+	t.Cleanup(func() { graphPreviewConfig, jsonOutput, graphFailureOutput = oldConfig, oldJSON, oldOutput })
+	graphPreviewConfig = &configfile.Config{} // Refused before dialing any connector.
+	var diagnostic bytes.Buffer
+	jsonOutput, graphFailureOutput = true, &diagnostic
+	openCalls, operationCalls := 0, 0
+	mapped := errors.New("open mapper result")
+	result := withGraphStoreStageErrorMappers(time.Second, func(context.Context, *graphstore.Store) (any, string, error) {
+		t.Fatal("operation ran after failed open")
+		return nil, "", nil
+	}, func(any, string) error {
+		t.Fatal("success output ran after failed open")
+		return nil
+	}, func(raw error) error {
+		openCalls++
+		if !errors.Is(raw, graphstore.ErrInvalidStore) || diagnostic.Len() != 0 {
+			t.Fatalf("open mapper received reported/replaced error: %v diagnostic=%q", raw, diagnostic.String())
+		}
+		return mapped
+	}, func(error) error {
+		operationCalls++
+		return errors.New("operation mapper called for failed open")
+	})
+	if result != mapped || openCalls != 1 || operationCalls != 0 || diagnostic.Len() != 0 {
+		t.Fatalf("stage dispatch: result=%v open=%d operation=%d diagnostic=%q", result, openCalls, operationCalls, diagnostic.String())
+	}
+}
+
 func TestGraphPreviewLegacyImportSummaryPrefix(t *testing.T) {
 	withPrefix := graphPreviewLegacyImportSummary("Imported", "source.jsonl", graphstore.LegacyImportResult{IssuePrefix: "web-app", Issues: 1})
 	if !strings.Contains(withPrefix, "Workspace Issue prefix: web-app.") {
