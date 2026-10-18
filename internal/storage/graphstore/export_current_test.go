@@ -5,6 +5,7 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -40,7 +41,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if _, err := s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite")); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq"}); err != nil {
+			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "test-author"}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision}); err != nil {
@@ -218,18 +219,26 @@ func TestExportCurrentSnapshotFailures(t *testing.T) {
 			if !errors.Is(err, context.Canceled) || !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) {
 				t.Fatalf("lost cancellation cause: %+v %v", got, err)
 			}
-			cases := []struct{ name, query, message string }{
-				{"unmapped-comment-owner", "DELETE FROM graph_preview_catalog WHERE path='beads/work'", "comment without a live graph Issue"},
-				{"deleted-comment-owner", "UPDATE graph_preview_catalog SET allocation_state='deleted' WHERE path='beads/work'", "comment without a live graph Issue"},
-				{"legacy-memory-even-empty", "INSERT INTO config (`key`,value) VALUES ('kv.memory.old','')", "legacy KV Memories"},
-				{"wisps", "INSERT INTO wisps (id,title) VALUES ('exp-wisp','disposable')", "wisps"},
-				{"wisp-comments", "INSERT INTO wisp_comments (id,issue_id,text) VALUES ('wisp-comment','orphan','disposable')", "wisp_comments"},
-				{"wisp-labels", "INSERT INTO wisp_labels (issue_id,label) VALUES ('orphan','disposable')", "wisp_labels"},
+			cases := []struct {
+				name, query, message string
+				orphan               bool
+			}{
+				{"unmapped-comment-owner", "DELETE FROM graph_preview_catalog WHERE path='beads/work'", "comment without a live graph Issue", false},
+				{"deleted-comment-owner", "UPDATE graph_preview_catalog SET allocation_state='deleted' WHERE path='beads/work'", "comment without a live graph Issue", false},
+				{"legacy-memory-even-empty", "INSERT INTO config (`key`,value) VALUES ('kv.memory.old','')", "legacy KV Memories", false},
+				{"wisps", "INSERT INTO wisps (id,title) VALUES ('exp-wisp','disposable')", "wisps", false},
+				{"wisp-comments", "INSERT INTO wisp_comments (id,issue_id,text) VALUES ('wisp-comment','orphan','disposable')", "wisp_comments", true},
+				{"wisp-labels", "INSERT INTO wisp_labels (issue_id,label) VALUES ('orphan','disposable')", "wisp_labels", true},
+				{"wisp-dependencies", "INSERT INTO wisp_dependencies (id,issue_id,depends_on_external,type) VALUES ('wisp-dependency','orphan','external:disposable','blocks')", "wisp_dependencies", true},
 			}
 			for _, test := range cases {
 				t.Run(test.name, func(t *testing.T) {
 					// Temporary corrupt/alternative rows never leave this rollback.
-					err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+					withFixture := func(fn func(*sql.Tx) error) error { return s.withTx(ctx, false, fn) }
+					if test.orphan {
+						withFixture = func(fn func(*sql.Tx) error) error { return exportWithOrphanFixture(ctx, s, fn) }
+					}
+					err := withFixture(func(tx *sql.Tx) error {
 						if _, err := tx.ExecContext(ctx, test.query); err != nil {
 							return err
 						}
@@ -260,6 +269,65 @@ func TestExportCurrentSnapshotFailures(t *testing.T) {
 			}
 		})
 	}
+}
+
+// exportWithOrphanFixture bypasses foreign keys only on this owned pinned
+// session, so each auxiliary-plane probe can be reached without a parent wisp
+// making the earlier wisps probe win. All fixture rows are rolled back before
+// checks are restored; a session whose restoration fails is discarded.
+func exportWithOrphanFixture(ctx context.Context, s *Store, fn func(*sql.Tx) error) (err error) {
+	conn, err := s.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if closeErr := conn.Close(); !errors.Is(closeErr, sql.ErrConnDone) {
+			err = errors.Join(err, closeErr)
+		}
+	}()
+	var enabled int
+	if err = conn.QueryRowContext(ctx, "SELECT @@foreign_key_checks").Scan(&enabled); err != nil {
+		return err
+	}
+	if enabled != 1 {
+		return fmt.Errorf("orphan fixture requires initially enabled foreign keys, got %d", enabled)
+	}
+	defer func() {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_, restoreErr := conn.ExecContext(cleanupCtx, "SET @@foreign_key_checks = 1")
+		if restoreErr == nil {
+			restoreErr = conn.QueryRowContext(cleanupCtx, "SELECT @@foreign_key_checks").Scan(&enabled)
+			if restoreErr == nil && enabled != 1 {
+				restoreErr = fmt.Errorf("orphan fixture did not restore foreign keys: %d", enabled)
+			}
+		}
+		err = errors.Join(err, restoreErr)
+		if restoreErr != nil {
+			discardErr := conn.Raw(func(any) error { return driver.ErrBadConn })
+			if !errors.Is(discardErr, driver.ErrBadConn) && !errors.Is(discardErr, sql.ErrConnDone) {
+				err = errors.Join(err, discardErr)
+			}
+		}
+	}()
+	for _, statement := range []string{"SET @@dolt_transaction_commit = 0", "SET @@dolt_force_transaction_commit = 0", "SET @@dolt_allow_commit_conflicts = 0", "SET @@time_zone = '+00:00'", "SET @@foreign_key_checks = 0"} {
+		if _, err = conn.ExecContext(ctx, statement); err != nil {
+			return err
+		}
+	}
+	var branch string
+	if err = conn.QueryRowContext(ctx, "SELECT active_branch()").Scan(&branch); err != nil {
+		return err
+	}
+	if branch != "main" {
+		return fmt.Errorf("orphan fixture requires main branch, got %s", branch)
+	}
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { err = errors.Join(err, tx.Rollback()) }()
+	return fn(tx)
 }
 
 func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {

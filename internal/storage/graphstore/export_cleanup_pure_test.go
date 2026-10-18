@@ -47,7 +47,7 @@ func TestExportCurrentSnapshotRollbackCleanup(t *testing.T) {
 				if !errors.Is(err, fault) || !reflect.DeepEqual(state, ExportCurrentState{}) {
 					t.Fatalf("rollback failure leaked state/lost error: %+v %v", state, err)
 				}
-			} else if err != nil || state.IssuePrefix != "web-app-" || len(state.Snapshot.Types) != len(d.descriptors) || state.Snapshot.WriterToken != exportCleanupToken || state.CommentsByIssuePath == nil {
+			} else if err != nil || state.IssuePrefix != "web-app-" || len(state.Snapshot.Types) != 6 || state.Snapshot.WriterToken != exportCleanupToken || state.CommentsByIssuePath == nil {
 				t.Fatalf("successful acquisition control: %+v %v", state, err)
 			}
 			exportCleanupTransactionCount(t, s, d)

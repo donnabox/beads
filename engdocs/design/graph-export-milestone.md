@@ -1,6 +1,7 @@
 # Independent graph export milestone
 
-Status: inventory and plan council complete; internal reader implementation in progress.
+Status: internal reader and detached publication implemented; current-core source
+review and runtime qualification pending.
 Interchange format and CLI contract are proposals
 until coordinated and reviewed. Governing plan: donnabox/agent-coordination#6.
 Supporting export issue: donnabox/agent-coordination#10.
@@ -13,9 +14,11 @@ import. Graph-format import starts after the corresponding export exists.
 
 ## Isolation
 
-The export branch starts from qualified integration commit
-`76fde9c9cb0865d430bf12d76fc473490f51128a`, without PR86 ancestry. Newer staged
-integration commits are not assumed qualified. Janet selects the integration
+The original export branch started from qualified integration commit
+`76fde9c9cb0865d430bf12d76fc473490f51128a`, without PR86 ancestry. Janet selected
+`c67855b4f7c1e4fb24409eb22d142a52d19ab92f` on October 18 for a separate
+source-only reader/publication adaptation. Other integration commits are not
+assumed selected or qualified for this lane. Janet selects the integration
 pin; Donna decides the cutline. No mutation of Janet's staging, core worktree,
 runner or release candidate is authorized. Engine-backed qualification uses
 fresh disposable stores and the coordinated engine slot.
@@ -232,3 +235,20 @@ explicit engine handback. Callback stage faults do not stand in for actual
 driver rollback/connection/rows-close fault injection. Those cleanup tests,
 installed acquisition, serializer/publication checks and final output contract
 remain gates before exporter readiness.
+
+## Detached publication boundary
+
+`internal/graphoutput` accepts already validated detached bytes and caller-selected
+file permissions. It does not acquire a Store, encode a format or authorize
+content exposure. The caller must complete acquisition, validation and checked
+Store cleanup before publication. Cancellation and write failures before final
+publication preserve an existing destination; successful publication remains
+success if cancellation arrives afterward. Stdout writes can leave partial
+output, which cannot be retracted.
+
+The file path uses the existing atomicfile temporary-write/fsync/rename boundary.
+It does not promise directory-fsync or power-loss durability, nor recovery of
+physical cleanup errors suppressed by that underlying API. These internal
+mechanics do not activate public export flags, select file permissions or settle
+Memory inclusion policy. Source-bound historical pure results and fresh source
+council remain separate from Janet-owned current-source runtime qualification.
