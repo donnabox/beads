@@ -108,6 +108,11 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil || snapshotErr != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath["beads/work"], wantComments) || string(freshSnapshot) != string(wantSnapshot) {
 				t.Fatalf("same-Store detachment: %+v %v", fresh, err)
 			}
+			// TypeDescriptor fields are private: JSON fingerprints capture only
+			// their count, so compare the descriptors independently as well.
+			if !reflect.DeepEqual(fresh.Snapshot.Types, ordinary.Types) {
+				t.Fatal("same-Store reacquisition changed installed Types or their order")
+			}
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("same-Store reacquisition changed source rows")
 			}
@@ -130,6 +135,9 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			reopenedSnapshot, snapshotErr := canonicalJSON(reopened.Snapshot)
 			if err != nil || snapshotErr != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath["beads/work"], wantComments) || string(reopenedSnapshot) != string(wantSnapshot) || reopened.IssuePrefix != "web-app-" {
 				t.Fatalf("reopen preservation: %+v %v", reopened, err)
+			}
+			if !reflect.DeepEqual(reopened.Snapshot.Types, ordinary.Types) {
+				t.Fatal("reopened acquisition changed installed Types or their order")
 			}
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("reopened acquisition changed source rows")
@@ -295,13 +303,24 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			}
 			const deletedHeadByteLimit = 40 << 10
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				// Match the isolated state used below: the retained filler head
+				// remains charged once, without its live payload or comment feed.
 				if _, err := tx.ExecContext(ctx, "DELETE FROM comments"); err != nil {
+					return err
+				}
+				if _, err := tx.ExecContext(ctx, "DELETE FROM graph_preview_payloads WHERE path='beads/filler'"); err != nil {
+					return err
+				}
+				if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_catalog SET allocation_state='deleted' WHERE path='beads/filler'"); err != nil {
 					return err
 				}
 				_, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, deletedHeadByteLimit)
 				return err
 			}); err != nil {
 				t.Fatalf("baseline must fit deleted-head test budget: %v", err)
+			}
+			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+				t.Fatal("deleted-head baseline isolation escaped rollback")
 			}
 			// Deleted Issue validation decodes its final retained head, despite
 			// excluding it from live output; its acquisition also has a budget.
@@ -314,6 +333,7 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if _, err := s.DeleteIssue(ctx, IssueDeleteRequest{Path: "beads/removed", ExpectedRevision: deleted.Revision}); err != nil {
 				t.Fatal(err)
 			}
+			beforeDeletedHeadCheck := exportSourceState(t, ctx, s)
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Isolate this admission check from unrelated live filler/feed.
 				if _, err := tx.ExecContext(ctx, "DELETE FROM comments"); err != nil {
@@ -331,6 +351,9 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 				return nil
 			}); err != nil {
 				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(beforeDeletedHeadCheck, exportSourceState(t, ctx, s)) {
+				t.Fatal("deleted-head admission isolation escaped rollback")
 			}
 		})
 	}
