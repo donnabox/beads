@@ -555,9 +555,22 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					if _, err := s.db.ExecContext(operationContext(t), "DELETE FROM config WHERE `key`='issue_prefix'"); err != nil {
 						t.Fatal(err)
 					}
+					// Binding validation reads the prefix first through ReadConfigPrefix,
+					// which classifies absence as not initialized. checkBinding keeps
+					// ErrInvalidStore and the configuration diagnostic, not sql.ErrNoRows.
+					// The import-specific inspection helper's raw SQL cause contract is
+					// covered separately in TestLegacyImportInterruptedInspection.
+					var writeStages []string
+					previousHook := s.afterWrite
+					s.afterWrite = func(stage string) error {
+						writeStages = append(writeStages, stage)
+						return errors.New("missing-prefix refusal reached a write stage")
+					}
+					t.Cleanup(func() { s.afterWrite = previousHook })
 					result, err := s.ImportLegacy(operationContext(t), batch, "importer", dry)
-					if !errors.Is(err, ErrInvalidStore) || !errors.Is(err, sql.ErrNoRows) || !reflect.DeepEqual(result, LegacyImportResult{}) {
-						t.Fatalf("missing prefix lost invalid-store/cause or leaked a result: result=%+v err=%v", result, err)
+					s.afterWrite = previousHook
+					if !errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), "Issue configuration:") || !strings.Contains(err.Error(), "issue_prefix config is missing") || !reflect.DeepEqual(result, LegacyImportResult{}) || len(writeStages) != 0 {
+						t.Fatalf("missing prefix lost binding diagnostic, reached writes or leaked a result: result=%+v stages=%v err=%v", result, writeStages, err)
 					}
 					// Restore the deliberately removed prerequisite before comparing
 					// all other planes, including transaction coordination writes.
