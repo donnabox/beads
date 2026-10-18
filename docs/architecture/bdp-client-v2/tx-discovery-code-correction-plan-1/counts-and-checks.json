@@ -1,0 +1,67 @@
+{
+  "allProductCountsProspective": true,
+  "newD3Source": {
+    "callbacks": 21,
+    "directHandler": 96,
+    "wire": 14,
+    "cloneCounterfactuals": 9,
+    "counterfactualWire": 0
+  },
+  "newD3Installed": {
+    "callbacks": 11,
+    "scheduled": 190,
+    "publicExact": 186,
+    "localRaw": 4,
+    "completedResponses": 187,
+    "expectedCloseAborts": 3,
+    "cold": [
+      43,
+      28
+    ]
+  },
+  "legacyExistingExchanges": {
+    "changefeedDescriptor": 1,
+    "installedContractsInitialAndReopenDiscovery": 12,
+    "schemaInstalledScope": 1,
+    "total": 14,
+    "added": 0,
+    "separateCohortAccounting": true
+  },
+  "sourceBounds": {
+    "defaultMs": 5000,
+    "D3workMs": 3000,
+    "cleanupMs": 1000,
+    "cleanupInclusiveMs": 4000,
+    "oldRawMethodMs": 2000,
+    "exchangeCeilingMs": 5000,
+    "parentRemainingWins": true
+  },
+  "installedBounds": {
+    "exchangeMs": 5000,
+    "workMs": 45000,
+    "cleanupMs": 10000,
+    "callbackMs": 60000,
+    "outerMs": 120000,
+    "termAtMs": 115000,
+    "defaultMinimumWaitMs": 1000,
+    "retries": 0
+  },
+  "transportCaps": {
+    "responseBody": 131072,
+    "responseHeaderIncludingTerminator": 16384,
+    "derivedWire": 163840,
+    "requestHeader": 16384,
+    "requestBody": 65536,
+    "maximumWireOptionAdded": false
+  },
+  "prospectiveChecks": [
+    "native/root precision before separate6file source-only release",
+    "true correction+inverse/full cumulative patch/all679/sixcopies/673unowned invariance, exact root Git metadata, no originalcandidate overwrite",
+    "native exactcode correction closure after freeze; no repeat actualreview or false new-byte readclaim",
+    "root-released exactsource typecheck/format/lint/boundaries and affected existing D3+legacy suites, no stale dist",
+    "fresh actual build/archive/external consumer/lock/proof before affected existing11D3+schema installed callbacks; no new wire/workload",
+    "immediate truthful report/selectedcallback audits and terminal pending/exit/close/PID/store cleanup within unchanged budgets; any failure closesattempt",
+    "final combined source/config/public admission/wholeWrite remain separate unresolved"
+  ],
+  "noExecution": true
+}

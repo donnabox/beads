@@ -1,0 +1,146 @@
+[
+  {
+    "path": "packages/server/src/transaction-changefeed.test.ts",
+    "copy": "source/packages/server/src/transaction-changefeed.test.ts",
+    "sha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+    "startLine": 687,
+    "endLine": 693,
+    "finding": "F1legacydescriptor",
+    "excerpt": "687:   const unauth = await f.request(\"changes/?after=genesis\", { headers: { authorization: \"\" } });\n688:   expect(unauth.status).toBe(401);\n689:   expect(unauth.headers.get(\"bdp-scope-position\")).toBeNull();\n690:   expect((await f.request(\"bdp.json\")).status).toBe(500);\n691:   await f.reopen();\n692:   expect(await (await f.request(\"changes/?after=genesis\")).json()).toEqual(firstPage);\n693: });"
+  },
+  {
+    "path": "packages/server/src/transaction-installed-contracts.test.ts",
+    "copy": "source/packages/server/src/transaction-installed-contracts.test.ts",
+    "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+    "startLine": 404,
+    "endLine": 418,
+    "finding": "F1legacyGETHEAD helper",
+    "excerpt": "404:   async function discoveryBoundary() {\n405:     for (const relative of [\"\", \"bdp.json\", \"operations/\"])\n406:       for (const method of [\"GET\", \"HEAD\"]) {\n407:         const target = new URL(new URL(relative, scope).pathname, runtime.listenUrl);\n408:         const response = await fetch(target, {\n409:           method,\n410:           headers: { authorization: `Bearer ${\"a\".repeat(32)}` },\n411:         });\n412:         expect(response.status).toBe(500);\n413:         expect(response.headers.get(\"x-bdp-development-limit\")).toBe(\"transactional-discovery\");\n414:         expect(response.headers.has(\"link\")).toBe(false);\n415:         expect(await response.text()).toBe(\"\");\n416:       }\n417:   }\n418:   await discoveryBoundary();"
+  },
+  {
+    "path": "packages/server/src/transaction-installed-contracts.test.ts",
+    "copy": "source/packages/server/src/transaction-installed-contracts.test.ts",
+    "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+    "startLine": 487,
+    "endLine": 491,
+    "finding": "F1samehelperafterreopen",
+    "excerpt": "487:   await runtime.close();\n488:   runtime = await emitted.startTransactionRuntime({ ...options, create: false });\n489:   await discoveryBoundary();\n490:   expect(await request(\"types/\")).toEqual(inventory);\n491:   expect("
+  },
+  {
+    "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-schema-installed.test.ts",
+    "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+    "startLine": 340,
+    "endLine": 343,
+    "finding": "F1legacyScope",
+    "excerpt": "340:     const discovery = await exchange(\"discovery\", \"GET\", scope);\n341:     expect(discovery.status).toBe(500);\n342:     expect(discovery.bodyText).toBe(\"\");\n343:     expect(discovery.headers[\"x-bdp-development-limit\"]).toBe(\"transactional-discovery\");"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 1558,
+    "endLine": 1572,
+    "finding": "F2unreservedrow",
+    "excerpt": "1558:       const encoded = new URL(nav.targets.createBead);\n1559:       const leaf = encoded.pathname.at(-1);\n1560:       if (!leaf) throw new Error(\"D3 actual operation has no leaf\");\n1561:       encoded.pathname = `${encoded.pathname.slice(0, -1)}%${leaf.charCodeAt(0).toString(16).toUpperCase()}`;\n1562:       const queried = new URL(nav.targets.createBead);\n1563:       queried.search = \"unexpected=1\";\n1564:       // All three are ordinary allowlisted URL values with an anonymous credential handle.\n1565:       for (const [id, url] of [\n1566:         [\"unknown\", unknown],\n1567:         [\"encoded\", encoded.href],\n1568:         [\"query\", queried.href],\n1569:       ] as const) {\n1570:         const response = await f.send(id, \"GET\", url, 404, { role: \"anonymous\" });\n1571:         d3Private(response);\n1572:       }"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 740,
+    "endLine": 744,
+    "finding": "F3tupleparam",
+    "excerpt": "740:   function localRaw(\n741:     id: string,\n742:     url: string,\n743:     options: { host?: string; role: \"writer\" | \"anonymous\"; fields?: readonly [string, string][] },\n744:   ) {"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 1740,
+    "endLine": 1743,
+    "finding": "F3tupleargument",
+    "excerpt": "1740:         const pending = f.localRaw(\"pending-minimum\", route.url, {\n1741:           role: \"writer\",\n1742:           fields: d3Tuple(nav, \"opaque-minimum\").map(({ name, value }) => [name, value] as const),\n1743:         });"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 480,
+    "endLine": 489,
+    "finding": "F5trustedworkdispatch",
+    "excerpt": "480: async function d3Installed(\n481:   name: string,\n482:   expected: { scheduled: number; completed: number; aborts: number; exact: number; raw: number },\n483:   work: (f: Awaited<ReturnType<typeof d3InstalledFixture>>) => Promise<void>,\n484: ) {\n485:   const f = await d3InstalledFixture(name, expected),\n486:     failures: unknown[] = [];\n487:   let workSettled = false,\n488:     cleanupKnown = false;\n489:   const task = Promise.resolve().then(() => work(f));"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 907,
+    "endLine": 929,
+    "finding": "F5fullfixtureobject",
+    "excerpt": "907:   return {\n908:     child,\n909:     events,\n910:     directory,\n911:     metadata,\n912:     counts,\n913:     pending,\n914:     records,\n915:     started,\n916:     tokens: [writer, reader],\n917:     send,\n918:     localRaw,\n919:     stopWork: () => {\n920:       clearTimeout(timer);\n921:       controller.abort(new Error(\"D3 work ended\"));\n922:     },\n923:     cancelled: cancelled.promise,\n924:     expectedAbort: () => {\n925:       counts.aborts++;\n926:     },\n927:   };\n928: }\n929: type D3Fixture = Awaited<ReturnType<typeof d3InstalledFixture>>;"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 1709,
+    "endLine": 1729,
+    "finding": "F4minimumcontext",
+    "excerpt": "1709:         for (const [id, method, minimum, epoch, view, extras, status, code] of cases) {\n1710:           const response = await f.send(id, method, route.url, status, {\n1711:             fields: [...d3Tuple(nav, minimum, epoch, view), ...extras],\n1712:           });\n1713:           if (code) {\n1714:             expect(response.headers.link).toBeUndefined();\n1715:             expect(response.headers.etag).toBeUndefined();\n1716:             if (method === \"GET\") {\n1717:               expect(d3Json(response, \"transactionalProblem\").code).toBe(code);\n1718:               if (status === 409) viewBytes = Buffer.byteLength(response.bodyText);\n1719:               if (status === 503) timeoutBytes = Buffer.byteLength(response.bodyText);\n1720:             } else\n1721:               expect(response.headers[\"content-length\"]).toBe(\n1722:                 String(status === 409 ? viewBytes : timeoutBytes),\n1723:               );\n1724:             if (status === 503) expect(response.headers[\"retry-after\"]).toBe(\"1\");\n1725:           } else {\n1726:             d3Context(response, nav.epoch, nav.view, \"pos-1\");\n1727:             if (route.name === \"scope\") expect(response.headers.link).toBe(nav.link);\n1728:           }\n1729:         }"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 818,
+    "endLine": 824,
+    "finding": "F6installedheader",
+    "excerpt": "818:           const split = bytes.indexOf(\"\\r\\n\\r\\n\");\n819:           if (\n820:             (split < 0 && bytes.length > 16384) ||\n821:             split > 16384 ||\n822:             (split >= 0 && bytes.length - split - 4 > 131072)\n823:           )\n824:             fail(new D3RawTerminal(\"bound\", partialStatus()));"
+  },
+  {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "copy": "source/packages/server/src/transaction-http.test.ts",
+    "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f",
+    "startLine": 7126,
+    "endLine": 7132,
+    "finding": "F6sourceheader",
+    "excerpt": "7126:           const split = bytes.indexOf(\"\\r\\n\\r\\n\");\n7127:           if (\n7128:             (split < 0 && bytes.length > 16384) ||\n7129:             split > 16384 ||\n7130:             (split >= 0 && bytes.length - split - 4 > 131072)\n7131:           )\n7132:             fail(new Error(\"D3 raw header/body bound\"));"
+  },
+  {
+    "path": "packages/server/src/transaction-http.ts",
+    "copy": "source/packages/server/src/transaction-http.ts",
+    "sha256": "09e5ba9cd3203af9bffebc1db1e7840eae732dc4b506bed5d11ac9730bd0c015",
+    "startLine": 587,
+    "endLine": 609,
+    "finding": "F7Scopeprojection",
+    "excerpt": "587:     // Specialised Snapshot/changefeed/Event/receipt lifetimes above retain their\n588:     // own receiving and minimum rules. Discovery is one current observation.\n589:     const scopeProbe = url.pathname === scopeUrl.pathname;\n590:     const descriptor = url.href === new URL(\"bdp.json\", scope).href;\n591:     const directory = url.href === new URL(\"operations/\", scope).href;\n592:     if (scopeProbe || descriptor || directory) {\n593:       const supplied = hasMinimumControls(request);\n594:       const minimum = supplied ? currentReadMinimumHeaders(request.headers) : undefined;\n595:       if (supplied && minimum === undefined)\n596:         throw new Error(\"lexically valid discovery minimum lost its tuple\");\n597:       const observed = await service.discoveryObserved(minimum, request.signal);\n598:       return context(\n599:         scopeProbe\n600:           ? {\n601:               status: 204,\n602:               headers: new Headers({\n603:                 link: `<${new URL(\"bdp.json\", scope).href}>; rel=\"service-desc\"; type=\"application/json\"`,\n604:               }),\n605:             }\n606:           : jsonResponse(descriptor ? observed.discovery : observed.directory),\n607:         observed.context,\n608:       );\n609:     }"
+  },
+  {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "copy": "source/packages/server/src/transaction-http.test.ts",
+    "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f",
+    "startLine": 7339,
+    "endLine": 7369,
+    "finding": "F8directparser",
+    "excerpt": "7339:       [\n7340:         \"unsafe-directory-target\",\n7341:         (copy) => {\n7342:           record(copy.directory).createBead = \"https://foreign.invalid/create\";\n7343:         },\n7344:       ],\n7345:       [\n7346:         \"epoch-context-mismatch\",\n7347:         (copy) => {\n7348:           record(copy.discovery).scopeEpoch = \"foreign\";\n7349:         },\n7350:       ],\n7351:       [\n7352:         \"head-context-mismatch\",\n7353:         (copy) => {\n7354:           record(copy.discovery).headPosition = \"pos-999\";\n7355:         },\n7356:       ],\n7357:       [\n7358:         \"schema-valid-foreign-operations-base\",\n7359:         (copy) => {\n7360:           record(copy.discovery).operations = \"https://foreign.invalid/operations/\";\n7361:           parseTransactionalDiscovery(copy.discovery);\n7362:         },\n7363:       ],\n7364:     ];\n7365:     for (const [name, mutate] of mutations) {\n7366:       const copy = structuredClone(input);\n7367:       mutate(copy);\n7368:       expect(() => d3SourceOracle(copy), name).toThrow();\n7369:       budget.record({ counterfactual: name, rejected: true, wireRequests: 0 });"
+  },
+  {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+    "startLine": 1281,
+    "endLine": 1300,
+    "finding": "F9collection",
+    "excerpt": "1281: async function d3Collection(\n1282:   f: D3Fixture,\n1283:   nav: D3Navigation,\n1284:   id: string,\n1285:   expected: readonly Record<string, unknown>[],\n1286:   n: readonly number[],\n1287: ) {\n1288:   const url = new URL(d3Safe(nav.descriptor.beads));\n1289:   url.searchParams.set(\"limit\", \"32\");\n1290:   const response = await f.send(id, \"GET\", url.href, 200),\n1291:     body = d3Json(response),\n1292:     items = d3Array(body.items);\n1293:   expect(body.next).toBeNull();\n1294:   expect(items.map((item) => item.id)).toEqual(expected.map((item) => item.id));\n1295:   expect(items).toHaveLength(n.length);\n1296:   for (const [index, item] of items.entries()) {\n1297:     d3Checked(\"currentBeadRecord\", item);\n1298:     expect(item.properties).toEqual({ n: n[index] });\n1299:   }\n1300:   return items;"
+  },
+  {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "copy": "source/packages/server/src/transaction-http.test.ts",
+    "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f",
+    "startLine": 6887,
+    "endLine": 6919,
+    "finding": "F10readercontext",
+    "excerpt": "6887:       const rows: [string, HeadersInit, string, number][] = [\n6888:         [\"GET\", { \"bdp-minimum-scope-position\": \"genesis\" }, \"anonymous\", 401],\n6889:         [\"GET\", {}, \"reader\", route === \"scope\" ? 204 : 200],\n6890:         [\"GET\", { \"bdp-minimum-scope-position\": \"genesis\" }, \"writer\", 400],\n6891:         ...Object.keys(tuple).map(\n6892:           (field) =>\n6893:             [\n6894:               \"GET\",\n6895:               {\n6896:                 ...tuple,\n6897:                 [field]: `${tuple[field as keyof typeof tuple]}, ${tuple[field as keyof typeof tuple]}`,\n6898:               },\n6899:               \"writer\",\n6900:               400,\n6901:             ] as [string, HeadersInit, string, number],\n6902:         ),\n6903:         [\"GET\", { ...tuple, \"bdp-minimum-scope-position\": \"genesis,genesis\" }, \"writer\", 400],\n6904:         [\"HEAD\", { \"bdp-minimum-scope-position\": \"genesis\" }, \"writer\", 400],\n6905:       ];\n6906:       let partialLength = 0;\n6907:       for (const [method, headers, role, status] of rows) {\n6908:         const response = await f.call(target, method, headers, role);\n6909:         d3Response(response, status);\n6910:         if (status >= 400) {\n6911:           d3NoDisclosure(response);\n6912:           if (method === \"GET\") {\n6913:             checkedProblem(record(response.body));\n6914:             partialLength = Buffer.byteLength(JSON.stringify(response.body));\n6915:           } else {\n6916:             expect(response.body).toBeUndefined();\n6917:             expect(Number(response.headers.get(\"content-length\"))).toBe(partialLength);\n6918:           }\n6919:         }"
+  }
+]

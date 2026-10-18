@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-18T07:50:48.069555+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "parentDispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+  "scope": "Precision addendum only; all10prior decisions and sixfile footprint/counts/deadlines preserved",
+  "F5": "Fresh cold runtime object is canonicalScope plus a closure-bound send wrapper. It invokes actual f.send ONCE and copies ONLY cold-needed actual response status,detached headers,bodyText into a narrow readonly response. Exclude exactRequest,headerLines,wire telemetry,credentials and lifecycle metadata from returned cold object; underlying fullresponse/actualrequesttelemetry stays trusted wrapper. This removes the request-credential exposure mechanism, not a universal secrecy guarantee about arbitrary served response contents. No extra HTTP/runner/publicAPI or counter changes.",
+  "F10": "Reader success context assertion inspects the direct-call HttpResponse headers. It is direct source response evidence, not a network-wire witness. Existing14actualsource wire requests remain separately counted.",
+  "next": "Preserve initial frozen correction-plan1 and bind separately named minimal plan2 precision overlay/supplement, exact effectivecomposition/nativeprecision/root before authoring2.",
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "reviewRetryAllowed": false
+}

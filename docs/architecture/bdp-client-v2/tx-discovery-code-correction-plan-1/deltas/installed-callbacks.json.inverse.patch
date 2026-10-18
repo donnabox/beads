@@ -1,0 +1,11 @@
+--- correction-plan1/installed-callbacks.json
++++ plan4/installed-callbacks.json
+@@ -536,7 +536,7 @@
+         {
+           "id": "badtarget-10",
+           "method": "GET",
+-          "target": "ACTUAL createBead URL plus uppercase encoded RESERVED suffix %2C (noncanonical encoded suffix, not alternate spelling)",
++          "target": "alternate percent-encoded spelling of ACTUAL createBead URL",
+           "status": 404,
+           "assert": "exact operationtarget refusal; no mutation",
+           "transport": "public-exact",

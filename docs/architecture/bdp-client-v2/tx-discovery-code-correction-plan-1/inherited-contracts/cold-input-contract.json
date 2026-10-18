@@ -1,0 +1,81 @@
+{
+  "scope": "https://reference.invalid/acme/",
+  "credentials": [
+    {
+      "reference": "writer",
+      "principal": "writer",
+      "canMutate": true
+    },
+    {
+      "reference": "reader",
+      "principal": "reader",
+      "canMutate": false
+    }
+  ],
+  "artifacts": {
+    "beadDescriptor": {
+      "id": "Scope-local types/bead",
+      "name": "Bead",
+      "describes": "bead",
+      "conformsTo": [],
+      "propertiesSchema": "Scope-local schemas/n"
+    },
+    "linkDescriptor": {
+      "id": "Scope-local types/link",
+      "name": "Link",
+      "describes": "link",
+      "conformsTo": [],
+      "propertiesSchema": "Scope-local schemas/n",
+      "source": {
+        "conformsTo": [
+          "beadDescriptor.id"
+        ],
+        "external": "opaque"
+      },
+      "target": {
+        "conformsTo": [
+          "beadDescriptor.id"
+        ],
+        "external": "opaque"
+      }
+    },
+    "propertiesSchema": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "n"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oracleInputOnly": [
+    "canonicalScope",
+    "writer/reader credential references",
+    "dial-only loopback host/port mapping",
+    "byte/time bounds"
+  ],
+  "forbiddenOracleInput": [
+    "ready.targets",
+    "runtime.targets",
+    "installedTransactionBinding operationTargets",
+    "TRANSACTION_HTTP_OPERATIONS",
+    "descriptor/Directory/receipt/Resource/replication URLs from IPC or fixture",
+    "server administrative artifact retrieval URIs"
+  ],
+  "metadataLane": "project only source/payload/runtime/config/artifact/policy/auth identities and dial binding; never pass raw ready or operationTargets to oracle",
+  "negativeOnlyFixtureInput": {
+    "knownBeadTypeContractId": "explicit provisioned Bead Type id is allowed only in the three noncold minimum-order seed request bodies",
+    "notNavigationAuthority": true,
+    "negativeCallbacks": "perform actual N1/N2/N3 to obtain actual operation route; this Type payload input is not cold provenance",
+    "positiveColdOracleInputUnchanged": true
+  },
+  "positiveColdScopeLink": {
+    "emitter": "\"<\" + new URL(\"bdp.json\", canonicalScope).href + \">; rel=\\\"service-desc\\\"; type=\\\"application/json\\\"\"",
+    "fixtureExpectedBytes": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+    "comparison": "Exact response Link string equality to existing URL emitter, then parse ACTUAL header for navigation; canonicalScope is the actual callback Scope, not metadata target map."
+  }
+}

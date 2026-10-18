@@ -1,0 +1,10 @@
+{
+  "kind": "bounded static-read range mistake, no product action",
+  "exitCode": 1,
+  "exceptionType": "IndexError",
+  "message": "list index out of range",
+  "operation": "Read send680–739, then protocol parser60–88; parser file ends81. Loop printed valid60–81, then failed before subsequent source-test read.",
+  "cause": "Author requested an end line beyond EOF without clamping range.",
+  "effect": "Read-only; no source/helper/compiler/test/Git/runtime/reviewer operation. Source and parent hashes remain exact. No failed output is used as a successful full-range read or compilation result.",
+  "actualReviewRetry": false
+}

@@ -1,0 +1,117 @@
+{
+  "utc": "2026-10-18T07:42:47.529768+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "actualCodeReviewComplete": true,
+  "supervision": "CLEAN inner0/outer0",
+  "rawStreamSha256": "77371d037836dc2f37b1654f51136ce8e92c161dfe0d0f558fd54279da853d79",
+  "actualReviewSha256": "009367a6d7c76a1137cfa8f3b7a72232efc251ee94cbe99474194a6c71197c11",
+  "nativeTerminalClosureSha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084",
+  "rootRehashedSourceContextArtifacts": [
+    679,
+    123,
+    21
+  ],
+  "rootFreshObservedPidsAbsent": 243,
+  "rootFreshObservedGroupsAbsent": 102,
+  "frozenOriginalPatchSha256": "039db9f45657c4e065af1b91b1c61ca9aefb2f90b5613f6dca67a696f4ea40f1",
+  "frozenOriginalOwnedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+  ],
+  "proposedCorrectionOwnedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "legacyFanoutExchangesUnchanged": 14,
+  "dispositions": [
+    {
+      "id": "F1",
+      "severity": "High",
+      "decision": "ACCEPT bounded scope extension",
+      "requiredCorrection": "Extend correction footprint from3to6 ONLY by legacytransaction-changefeed.test.ts/transaction-installed-contracts.test.ts/transactional-schema-installed.test.ts. Supersedeold500discoveryassertions with204+canonicalLink/200descriptor-orDirectory parse/currentcontext asappropriate. Existing14exchanges1+12+1 unchanged; no otherowner/runtime/interface edits. Original3filecandidate remainsimmutable reviewbasis."
+    },
+    {
+      "id": "F2",
+      "severity": "High",
+      "decision": "ACCEPT",
+      "requiredCorrection": "Replace installedencodedunreservedalias row with anonymous canonical-executor-allowedencodedRESERVEDsuffix%2C. Explicitly label noncanonicalencoded suffix, not alternatespelling. Sameone request/caps, norawtarget/Hostguardbypass."
+    },
+    {
+      "id": "F3",
+      "severity": "High",
+      "decision": "ACCEPT",
+      "requiredCorrection": "Use explicit mutable [string,string] map return annotation instead of readonly asconst, preservinglocalRaw parameter/API/runtime."
+    },
+    {
+      "id": "F4",
+      "severity": "Medium",
+      "decision": "ACCEPT nativeN2",
+      "requiredCorrection": "All21 errorrows410/409/503 GETHEAD assertactualsame-entryepoch/view/pos1 with existing d3Context, unchangedrequests."
+    },
+    {
+      "id": "F5",
+      "severity": "Medium",
+      "decision": "ACCEPT nativeN1",
+      "requiredCorrection": "Actual fresh runtime cold-client object canonicalScope+bound sendONLY beforebothpositivecoldwork invocations; no type-onlycast/fullfixture/rawready/child/events/directory/pending/tokens/metadata exposure. Lifecycle/report/capturemetadata stayswrapper. Sharedcoldhelpers narrowclient type; negative/lifecycle lanes retainneededfullfixture. No duplicate runner or publicAPI."
+    },
+    {
+      "id": "F6",
+      "severity": "Low",
+      "decision": "ACCEPT nativeN3",
+      "requiredCorrection": "Bothsourceandinstalledlocalraw completeheader cap uses split+4>16384. Preserveunterminated cap/body131072/derivedwire163840 andallbudgets."
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "decision": "ACCEPT localprivacy policy choice",
+      "requiredCorrection": "Addcache-control private,no-store toauth-dependentScope204context response; preserveexactservice-descLink/sharedURLemitter/singleapplyReadHttpSemantics. Assertpolicyonsuccess. Thisisallowedimplementationprivacy, not newnormative/optionalrequirement orspecadoption."
+    },
+    {
+      "id": "F8",
+      "severity": "Low",
+      "decision": "ACCEPT",
+      "requiredCorrection": "InexistingunsafeDirectorycounterfactual directlyassertparseTransactionalOperationDirectory(mutatedDirectory) throws beforegeneraloracle, provingconstparserrefusaldistinctforeignschema-validconfinement. Same9clones/zeroHTTP/noextra callback."
+    },
+    {
+      "id": "F9",
+      "severity": "Low",
+      "decision": "ACCEPT",
+      "requiredCorrection": "RegisterexistingcanonicalcurrentBeadCollection validator and validateall3coldcollectionenvelopes beforeexistingitem/expectedstate checks. No schemafile/protocol change."
+    },
+    {
+      "id": "F10",
+      "severity": "Low",
+      "decision": "ACCEPT",
+      "requiredCorrection": "Readersuccesssource receiving row passesexpectedpos0 tod3Response soepoch/view/position reachedwire, samecall/counters."
+    }
+  ],
+  "nativeFindingsAliases": {
+    "N1": "F5",
+    "N2": "F4",
+    "N3": "F6"
+  },
+  "next": "Freeze CLOSED six-file correction plan1/native precision/root acceptance, then separately named source authoring2 release; original candidate/actual evidence unchanged. Corrected source needs independent native closure and exactsource validation; no reviewer retry.",
+  "newCallbacksDirectWireCountsUnchanged": {
+    "sourceCallbacks": 21,
+    "direct": 96,
+    "sourceWire": 14,
+    "installedCallbacks": 11,
+    "scheduled": 190,
+    "completed": 187,
+    "expectedAborts": 3,
+    "cold": [
+      43,
+      28
+    ]
+  },
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "secondActualCodeAllowed": false,
+  "secondActualPlanAllowed": false,
+  "noIncomingMainSpec": true
+}

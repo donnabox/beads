@@ -1,0 +1,197 @@
+{
+  "state": "CLOSED exact root choices, no authored patch",
+  "rootDispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+  "actualFindings": 10,
+  "nativeAliases": {
+    "N1": "F5",
+    "N2": "F4",
+    "N3": "F6"
+  },
+  "fixes": [
+    {
+      "id": "F1",
+      "severity": "High",
+      "files": [
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts"
+      ],
+      "locations": {
+        "packages/server/src/transaction-changefeed.test.ts": [
+          690,
+          690
+        ],
+        "packages/server/src/transaction-installed-contracts.test.ts": [
+          404,
+          418,
+          489
+        ],
+        "apps/bdptest/src/transactional-schema-installed.test.ts": [
+          340,
+          343
+        ]
+      },
+      "change": "ONLY these legacy discovery500 expectations become existing Scope204+exact canonical service-desc Link or JSON200 parsed descriptor/Directory, absence of transactional-discovery development-limit and actual current context as appropriate. Existing14 exchanges1+12+1 unchanged; no new requests/callbacks/schema/runtime interface.",
+      "oracle": "Use actual same-response or phase-captured context, not guessed fixed pos0 after mutations/reopen. JSON GET parsed by existing canonical protocol parsers; HEAD bodyless with same GET representation metadata, no extra GET."
+    },
+    {
+      "id": "F2",
+      "severity": "High",
+      "files": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "apps/bdptest/src/transactional-discovery-installed.test.ts": [
+          1558,
+          1572
+        ]
+      },
+      "change": "Replace installed unreserved %64 alternate-spelling construction with actual received createBead URL plus uppercase encoded RESERVED suffix %2C. Keep anonymous GET404/public exact executor route allowlist and same one wire row. Rename witness description to noncanonical encoded suffix.",
+      "oracle": "%2C is preserved by URL and not an encoded unreserved octet; canonical executor accepts its configuration, while exact operation route refuses unknown suffix. This is static source reasoning, not a dispatch result. No rawRequestTarget, Host guard or header widening. Source direct-Request encoded-spelling counterexample remains unchanged and distinct."
+    },
+    {
+      "id": "F3",
+      "severity": "High",
+      "files": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "apps/bdptest/src/transactional-discovery-installed.test.ts": [
+          743,
+          743,
+          1742,
+          1742
+        ]
+      },
+      "change": "Keep localRaw fields?:readonly [string,string][] parameter unchanged. Replace map callback readonly asconst with explicit mutable return annotation ({name,value}):[string,string]=>[name,value].",
+      "oracle": "Same string pairs and runtime behavior; no new public/private parameter API, no actual typecheck result claimed."
+    },
+    {
+      "id": "F4",
+      "nativeAlias": "N2",
+      "severity": "Medium",
+      "files": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "apps/bdptest/src/transactional-discovery-installed.test.ts": [
+          1709,
+          1729
+        ]
+      },
+      "change": "Call existing d3Context(response,nav.epoch,nav.view,pos-1) unconditionally for every minimum-order case before the success/error split; retain all status/problem/retry/HEAD-length/nondisclosure assertions.",
+      "oracle": "All21 error rows (7 per route×3) now assert actual same-entry epoch/view/pos1, including410/409/503 GET/HEAD; no request/count/deadline change."
+    },
+    {
+      "id": "F5",
+      "nativeAlias": "N1",
+      "severity": "Medium",
+      "files": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "apps/bdptest/src/transactional-discovery-installed.test.ts": [
+          480,
+          489,
+          907,
+          929,
+          946,
+          946,
+          1125,
+          1131,
+          1302,
+          1309
+        ]
+      },
+      "change": "A trusted local cold adapter constructs a REAL fresh frozen runtime object {canonicalScope:scope,send:fixture.send} before either positive cold work invocation; pass that object alone to cold callback/helpers. Shared cold helper type exposes only those two client fields. Keep fixture in existing lifecycle wrapper/adapter; no cast/spread or promise of not reading forbidden fields.",
+      "oracle": "No own property/accessor exposes child,rawready,targets,events,directory,pending,tokens,metadata,stopWork or cleanup capability. All positive helpers use only send; canonicalScope is initial client input. Bound send encapsulates credential references/dial mapping/caps, never returns secrets or provisioning targets. Existing noncold negative/lifecycle lanes retain needed full fixture. No duplicate runner/public API/HTTP request."
+    },
+    {
+      "id": "F6",
+      "nativeAlias": "N3",
+      "severity": "Low",
+      "files": [
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "packages/server/src/transaction-http.test.ts": [
+          7126,
+          7132
+        ],
+        "apps/bdptest/src/transactional-discovery-installed.test.ts": [
+          818,
+          824
+        ]
+      },
+      "change": "In both NEW local raw helpers replace complete-header split>16384 with split>=0&&split+4>16384.",
+      "oracle": "Retain unterminated-header ceiling, body131072, derived wire163840, request caps, parent budget and old2s source rawMethod helper unchanged. No shared executor/helper edit."
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "files": [
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "packages/server/src/transaction-http.ts": [
+          599,
+          605
+        ]
+      },
+      "change": "Add cache-control:private,no-store ONLY to authenticated Scope204 projection carrying owner context; assert local policy on already-existing successful Scope probe responses in source and installed positive coverage.",
+      "oracle": "Conservative allowed LOCAL privacy policy, not a new BDP law/History option/spec adoption. Exact service-desc Link string and existing URL emitter unchanged; shared applyReadHttpSemantics still called once. Existing HEAD/conditional/status/owner-context and response identity behavior preserved."
+    },
+    {
+      "id": "F8",
+      "severity": "Low",
+      "files": [
+        "packages/server/src/transaction-http.test.ts"
+      ],
+      "locations": {
+        "packages/server/src/transaction-http.test.ts": [
+          7339,
+          7344,
+          7358,
+          7368
+        ]
+      },
+      "change": "Inside existing unsafe-directory-target clone case, after mutation directly assert parseTransactionalOperationDirectory(copy.directory) throws, then retain general d3SourceOracle throw.",
+      "oracle": "Direct const-parser refusal is witnessed distinctly from schema-valid foreign descriptor.operations confinement, whose parseTransactionalDiscovery success assertion remains. Same9 clones/0wire/0newcallback/3 actual setup calls."
+    },
+    {
+      "id": "F9",
+      "severity": "Low",
+      "files": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ],
+      "locations": {
+        "apps/bdptest/src/transactional-discovery-installed.test.ts": [
+          353,
+          368,
+          1281,
+          1300
+        ]
+      },
+      "change": "Add existing pinned currentBeadCollection name to local d3Validators and call d3Json(response,currentBeadCollection) for d3Collection before existing item/state checks.",
+      "oracle": "All3 cold collection envelopes batch-after/set-update-after/final-state checked with existing canonical schema; currentBeadRecord item checks stay. No schema/protocol artifact edit or request."
+    },
+    {
+      "id": "F10",
+      "severity": "Low",
+      "files": [
+        "packages/server/src/transaction-http.test.ts"
+      ],
+      "locations": {
+        "packages/server/src/transaction-http.test.ts": [
+          6887,
+          6909
+        ]
+      },
+      "change": "Pass expectedPosition pos-0 to d3Response only on the receiving reader success row (status<400); keep undefined on receiving/auth errors.",
+      "oracle": "Actual wire epoch/view/position asserted while only reader enters owner/discovery. Same8 calls per route and counters; invalid receiving rows still nondisclosing."
+    }
+  ]
+}

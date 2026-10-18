@@ -1,0 +1,55 @@
+{
+  "files": [
+    {
+      "copy": "context/root-disposition1.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-root-disposition-1/disposition.json",
+      "sha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+      "bytes": 5567,
+      "role": "all10 finalchoices unchanged"
+    },
+    {
+      "copy": "context/root-disposition2.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-root-disposition-2/disposition.json",
+      "sha256": "8a83a9c4a7909c2810fe3643a3452b9474c180eb08a36075f383d8f756fea3ed",
+      "bytes": 1407,
+      "role": "additive F5response/F10source precision approved"
+    },
+    {
+      "copy": "context/plan1-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-correction-plan-1/index.json",
+      "sha256": "663469c3a69f009e03753ccb0e9f735e7301b8a57378dc9c22ba08f546bb6bd7",
+      "bytes": 11263,
+      "role": "immutable parent69indexed+index"
+    },
+    {
+      "copy": "context/plan1-client-precision-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-correction-plan-1/client-response-precision-1/index.json",
+      "sha256": "d154b9d7afd12f4d68426d1cca66bd904a860266c7b42d2b3bd69e8a4f915d54",
+      "bytes": 1205,
+      "role": "immutable child7indexed+index"
+    },
+    {
+      "copy": "context/original-candidate-binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-correction-plan-1/source-bindings.json",
+      "sha256": "55cd58f1f2601bf75984255e7cc2c9852ced14d2ccf81499ba19e8346ee3785a",
+      "bytes": 2773,
+      "role": "original6copies/all679 basis; corrected bytes unresolved"
+    },
+    {
+      "copy": "before/plan1.md",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-correction-plan-1/plan.md",
+      "sha256": "98c8d80e9a4d233b89ab3a78c40be29f3c2abcbd7914150a303a850e392607a0",
+      "bytes": 10864,
+      "role": "exact before effectiveplan delta"
+    },
+    {
+      "copy": "before/correction-matrix.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-correction-plan-1/correction-matrix.json",
+      "sha256": "d2ee4bb297e6b584fbd0b06eec437cdb84f82bd193576af2976264bc9e7fc997",
+      "bytes": 8950,
+      "role": "exact before effectivefixmatrix delta"
+    }
+  ],
+  "count": 7,
+  "transitiveParentInventory": "plan1-input-inventory.json exact78files checked against originals and mirror"
+}

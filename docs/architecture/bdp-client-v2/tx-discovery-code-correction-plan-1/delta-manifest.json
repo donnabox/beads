@@ -1,0 +1,38 @@
+{
+  "kind": "genuine DOCUMENT/DATA before-after pairs; NOT authored product correction patch",
+  "genuinePairs": 3,
+  "pairs": [
+    {
+      "path": "plan.md",
+      "beforeCopy": "predecessor-plan4/plan.md",
+      "beforeSha256": "877eb6b0a57cb5425316e05308a6e05955056f5fa5ba5ad64daa0488da854211",
+      "afterSha256": "98c8d80e9a4d233b89ab3a78c40be29f3c2abcbd7914150a303a850e392607a0",
+      "forward": "deltas/plan.md.patch",
+      "inverse": "deltas/plan.md.inverse.patch"
+    },
+    {
+      "path": "preservation.json",
+      "beforeCopy": "predecessor-plan4/preservation.json",
+      "beforeSha256": "628b45ed35d455c5606ed077abdec9ff97f99a9dc5aa50196379fe7cf6b2f265",
+      "afterSha256": "5c2b084d9cdf1e72126d355fc04b530c4cfa6335a1726937b32b0e217a6d682d",
+      "forward": "deltas/preservation.json.patch",
+      "inverse": "deltas/preservation.json.inverse.patch"
+    },
+    {
+      "path": "installed-callbacks.json",
+      "beforeCopy": "predecessor-plan4/installed-callbacks.json",
+      "beforeSha256": "422190d787b43966d4135fed81010c4df1d0dadbe45f34b62601c6c6762ea31d",
+      "afterSha256": "c1580e60af0b0f7e5501e4138b97219da695cf724391193ec7549fde3ed7c583",
+      "forward": "deltas/installed-callbacks.json.patch",
+      "inverse": "deltas/installed-callbacks.json.inverse.patch"
+    }
+  ],
+  "installedTableChangedLeavesOnly": [
+    {
+      "callback": "private installed discovery methods authorization transport",
+      "id": "badtarget-10"
+    }
+  ],
+  "allSourceFilesUntouched": true,
+  "allInheritedContractsByteIdentical": true
+}

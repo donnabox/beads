@@ -1,0 +1,93 @@
+{
+  "sourceReportSha256": "009367a6d7c76a1137cfa8f3b7a72232efc251ee94cbe99474194a6c71197c11",
+  "sourceRawSha256": "77371d037836dc2f37b1654f51136ce8e92c161dfe0d0f558fd54279da853d79",
+  "findings": [
+    {
+      "ordinal": 1,
+      "severity": "HIGH",
+      "title": "Production supersession breaks three **unowned** test files (behavioral regression outside the authorized file set)",
+      "exactReportLine": 9,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 2,
+      "severity": "HIGH",
+      "title": "Installed `encoded` negative row cannot be dispatched: the public exact executor rejects percent-encoded unreserved octets at construction",
+      "exactReportLine": 29,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 3,
+      "severity": "HIGH",
+      "title": "TypeScript compile error: readonly tuple elements passed to a mutable-tuple array parameter",
+      "exactReportLine": 41,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 4,
+      "severity": "MEDIUM",
+      "title": "(confirms native N2) Installed minimum-error rows omit the required actual-context assertions",
+      "exactReportLine": 59,
+      "nativeAssociation": "confirms native N2",
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 5,
+      "severity": "MEDIUM",
+      "title": "(confirms native N1, with narrowed evidence) The whole fixture crosses the cold-client input seam",
+      "exactReportLine": 69,
+      "nativeAssociation": "confirms native N1 with narrowed evidence",
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 6,
+      "severity": "LOW",
+      "title": "(confirms native N3, and extends it to the source file) Local-raw header bound omits the 4-byte terminator",
+      "exactReportLine": 79,
+      "nativeAssociation": "confirms native N3 and extends source copy",
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 7,
+      "severity": "LOW",
+      "title": "Scope 204 carries owner context headers without `cache-control: private, no-store`",
+      "exactReportLine": 87,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 8,
+      "severity": "LOW",
+      "title": "Counterfactual `unsafe-directory-target` does not distinguish the schema-const refusal from a confinement refusal",
+      "exactReportLine": 97,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 9,
+      "severity": "LOW",
+      "title": "Cold collection page envelope is not schema-validated",
+      "exactReportLine": 105,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    },
+    {
+      "ordinal": 10,
+      "severity": "LOW",
+      "title": "Source `receiving` success row asserts no context headers",
+      "exactReportLine": 113,
+      "nativeAssociation": null,
+      "rootDisposition": "PENDING; verbatim reviewer finding, no independent semantic endorsement by terminal audit"
+    }
+  ],
+  "counts": {
+    "High": 3,
+    "Medium": 2,
+    "Low": 5
+  },
+  "actualVerdict": "BLOCKERS PRESENT / not approvable as frozen",
+  "semanticDisposition": "root owns; no source correction, second actual CODE/PLAN or runtime released"
+}

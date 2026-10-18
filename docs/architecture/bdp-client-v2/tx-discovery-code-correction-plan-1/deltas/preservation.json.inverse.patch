@@ -1,0 +1,45 @@
+--- correction-plan1/preservation.json
++++ plan4/preservation.json
+@@ -2,16 +2,13 @@
+   "ownedFutureFiles": [
+     "packages/server/src/transaction-http.ts",
+     "packages/server/src/transaction-http.test.ts",
+-    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+-    "packages/server/src/transaction-changefeed.test.ts",
+-    "packages/server/src/transaction-installed-contracts.test.ts",
+-    "apps/bdptest/src/transactional-schema-installed.test.ts"
++    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+   ],
+   "explicitSupersession": {
+-    "installed": "Original six GET/HEAD discovery500s were superseded in reviewed candidate; correction also supersedes the one existing transactional-schema-installed ScopeGET500 with204+canonicalLink/currentcontext. Same existing exchanges; all other assertions/workload unchanged.",
+-    "source": "Original three sourceGET500 projections were superseded in reviewed candidate; correction also supersedes transaction-changefeed.test.ts690 descriptorGET500 and transaction-installed-contracts.test.ts404–418/489 twelve existing discovery GET/HEAD500s with proper204Link/200canonical parses/current context. No additional requests.",
++    "installed": "Only six authenticated GET/HEAD discovery500s at transactional-discovery-installed.test.ts:188-194 become204/200/200 twice; replace only corresponding development-limit/empty JSON assertions. Keep original3 anonymous + batch/read/replay3.",
++    "source": "Only three GET500 projection assertions transaction-http.test.ts:211-217 become Scope204/JSON200; keep targetinventory+405/write/read/receipt assertions.",
+     "minimumUnsupportedLoop": "Remove only suffixes empty,bdp.json,operations/ at transaction-http.test.ts:1781-1792; retain links/?cursor=missing and beads/?cursor=missing exact500 minimum-position-route.",
+-    "production": "Original reviewed candidate composition is preserved except root-selected F7 Scope204 private,no-store header. Exact service-desc Link, owner context, observation placement, fixed unreachable arms, protected D1 branches/error mapper/development tag and single shared Read semantics remain exact."
++    "production": "Selected discovery route projection before586 and final discovery refusal fence604-611 only; required readRoute.discover212 and already-unreachable perform discovery union244-245 stay present with fixed internal invariant throws. No other developmentGap or nonowned interface changed."
+   },
+   "retained": [
+     "non-attesting/header, claimEligiblefalse/historyfalse; publicadmission unchanged",
+@@ -52,21 +49,5 @@
+     "derivedWireBytes": 163840,
+     "allOriginalDeadlinesUnchanged": true,
+     "old2sSourceRawHelperUnchanged": true
+-  },
+-  "correctionBasis": {
+-    "originalThreeFileCandidateMapSha256": "f55e40725115eae0475b85af47d5d4eda0bbdd2897d1ecfd9a6672903a157dae",
+-    "originalBinaryPatchSha256": "039db9f45657c4e065af1b91b1c61ca9aefb2f90b5613f6dca67a696f4ea40f1",
+-    "originalAuthorTextPatchSha256": "25b3d83ff00df794cc68c5ca1c97297b5423e210375fb8ff366c5d6967eb0e2a",
+-    "rootFinalDispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+-    "actualTerminalClosureSha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084",
+-    "legacyExistingWireExchangesUnchanged": 14,
+-    "installedEncodedWitness": "anonymous GET actual createBead URL plus reserved%2C suffix, same row; not encoded-unreserved alias",
+-    "localScopePrivacy": "private,no-store is allowed local policy, not normative extension",
+-    "protectedUnownedFilesAfterFutureCorrection": 673,
+-    "correctedSourceMap": "UNRESOLVED",
+-    "secondActualPlanAllowed": false,
+-    "secondActualCodeAllowed": false,
+-    "sourceAuthoringReleased": false,
+-    "executionReleased": false
+   }
+ }
