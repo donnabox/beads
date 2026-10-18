@@ -1,0 +1,20 @@
+{
+  "findings": [
+    {
+      "id": "PA-N1",
+      "severity": "Low",
+      "title": "Bind restrictive child umask before requiring legacy output mode0600",
+      "contractAnchor": "closed-output-grammar.json:fileAcquisition.files; prospective-command-matrix.json:single-installed-positive17",
+      "sourceAnchor": "apps/bdptest/src/transactional-matrix.test.ts:509-532; apps/bdptest/test-support/read-update-artifact-execution.ts:120-124,157",
+      "observed": "The DATA grammar requires both sidecars and original legacy wrapper to be ordinary nonsymlink0600 source-written files. Sidecars explicitly open0600; the unchanged legacy hook uses writeFileSync(legacy,bytes) without a mode option. The proposed launch contract binds paths/environment but no umask. A fresh legacy file under inherited022 is0644, so a genuine otherwise-valid positive run can fail the proposed grammar. The0700 containing directory protects traversal but does not make its file0600. No permission state was probed or assumed for an actual run.",
+      "neededPrecision": "Before any helper/positive execution release, explicitly bind a source-preserving umask077 on the owned test child before it creates the absent legacy path, retain that launch precondition and verify acquired mode0600. Do not precreate the legacy file, chmod/rewrite captured evidence afterward, weaken sidecarwx ownership, or change product code. Root may choose another explicit contract-preserving acquisition design; it needs the same native/root mechanics closure.",
+      "effect": "Contract precision prerequisite; not a source defect or current secrecy-leak claim. All execution already closed."
+    }
+  ],
+  "findingCount": 1,
+  "high": 0,
+  "medium": 0,
+  "low": 1,
+  "executionAccepted": false,
+  "helperAuthoringAccepted": false
+}

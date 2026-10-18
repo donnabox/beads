@@ -1,0 +1,32 @@
+{
+  "state": "CLOSED DATA-only PA-N1 successor; not self-approved",
+  "rootDispositionSha256": "535070fc63d41e5421ccae2ec25579940463a25613ab25db488318538930d6e8",
+  "rootDurableReadback": "95dc6701 (root supplied trusted authorization; author did not invoke Git)",
+  "contract": {
+    "requiredChildUmask": "0o077",
+    "bindingPoint": "Future independently reviewed supervisor creates the single positive test child with inherited umask077 installed by the owned launch mechanism before exec and before ANY child output creation; Vitest workers and installed descendants inherit that same mask. Not an environment variable or delayed script statement.",
+    "retainedPrecondition": "Before release/launch, freeze exact supervisor implementation/control and its child umask077 setting. Retain same-attempt authenticated launch receipt identifying exact child, pre-exec setting and reviewed control; auditor verifies this prerequisite along with actual file modes. Setting remains UNIMPLEMENTED/UNVERIFIED until separately authored/reviewed concrete supervisor and actual receipts.",
+    "requiredActualModes": "At final acquired-descriptor reads, require actual ordinary nonsymlink mode0600 for original legacy wrapper and both final sidecars, with lstat/fstat/read identity binding and current ownership checks unchanged.",
+    "refusal": "Missing/unknown/mismatched launch-mask prerequisite or any actual mode mismatch fails validation separately even if product passes. Preserve bounded truthful evidence; do not upgrade by assumed ambient umask.",
+    "prohibited": [
+      "precreate the legacy destination",
+      "post-hoc chmod of observed files",
+      "rewrite or normalize captured evidence",
+      "product/source edit",
+      "weaken sidecar first-creation wx ownership",
+      "relax actual0600 grammar"
+    ],
+    "clock": "All precondition/control/receipt checking and actual file acquisition remain within the existing whole-stage120000/TERM115000/KILL119000 clock from before first gate/setup; no additional stage or off-clock check.",
+    "executionReleased": false
+  },
+  "unchanged": [
+    "original9key serialization/bytes and two sidecar equality",
+    "source681/map919829/source78e1",
+    "18routes24sessions7reopens/234exchanges25children/256rows",
+    "17partial251required234missing5optional/48dataIDs5s",
+    "all caps/deadlines/strict emit factory brands/private imports",
+    "auth/policy source-attestation limitation",
+    "launcher exit vs per-child close and sidecar-cleanup unknowns",
+    "all execution/helper/compiler flags false; no approvedStages"
+  ]
+}

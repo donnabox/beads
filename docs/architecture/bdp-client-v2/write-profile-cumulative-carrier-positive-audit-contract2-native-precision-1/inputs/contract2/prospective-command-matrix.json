@@ -1,0 +1,112 @@
+{
+  "failureOrder": "Stop release of later stages on first failure. Preserve primary product failure/cleanup and audit failures separately; audit may inventory failed outputs only under separate failure-record authorization, never positive credit. No retry/reused positive attempt.",
+  "stages": [
+    {
+      "argv": [
+        "${FRESH_BOUND_NATIVE_TYPESCRIPT7_TSC}",
+        "--project",
+        "${OWNED_ATTEMPT_ROOT}/compiler-project.json",
+        "--pretty",
+        "false",
+        "--listEmittedFiles"
+      ],
+      "clock": "whole-stage120/TERM115/KILL119 proposed, all setup/hash/config/catalog/import-proof/closure included, independently reviewed helper required",
+      "id": "private-verifier-emit",
+      "outputs": [
+        "private-emit inventory+hashes",
+        "catalog inventory",
+        "resolved dependency proof",
+        "actual compiler exit/logs/process terminal"
+      ],
+      "requires": [
+        "fresh exact-source typecheck/format/lint/boundaries/build",
+        "fresh root-bound tools and source4 native/root acceptance"
+      ]
+    },
+    {
+      "argv": [
+        "${FRESH_BOUND_NODE24}",
+        "${FRESH_BOUND_WORKSPACE_VITEST_MJS}",
+        "run",
+        "packages/conformance/test-support/profile-evidence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=${OWNED_DATA_ATTEMPT}/data48.results.json",
+        "--testNamePattern",
+        "^private profile data (?:V0[1-6]|R(?:0[1-9]|1[0-9]|2[0-4])|S0[1-8]|L(?:0[1-9]|10))$"
+      ],
+      "callbackMs": 5000,
+      "clock": "separate existing-source selection supervision; concrete collection-capacity mechanics/root release still required, no preclaimed result",
+      "id": "source-data-48",
+      "sourceCallbacks": 48
+    },
+    {
+      "additionalProductChildren": 0,
+      "additionalRunnerCalls": 0,
+      "argv": [
+        "${FRESH_BOUND_NODE24}",
+        "${FRESH_BOUND_WORKSPACE_VITEST_MJS}",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=${OWNED_POSITIVE_ATTEMPT}/positive17.results.json",
+        "--testNamePattern",
+        "^observes seventeen partial Transactional contracts through packed-capable actual installed HTTP$"
+      ],
+      "env": {
+        "BDP_PRIVATE_PROFILE_EVIDENCE_PATH": "${OWNED_POSITIVE_ATTEMPT}/carrier",
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "${PROVED_EXTERNAL_CONSUMER_ENTRY}",
+        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "${OWNED_POSITIVE_ATTEMPT}/original-legacy-wrapper.json",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "${ROOT_RELEASED_DECLARED_SOURCE_COMMIT}",
+        "TMPDIR": "${OWNED_POSITIVE_ATTEMPT}/scratch"
+      },
+      "id": "single-installed-positive17",
+      "invocationsMax": 1,
+      "requires": [
+        "private emit accepted",
+        "fresh package/archive/external consumer frozen lock provenance payload entry proof",
+        "all three final output destinations absent immediately before this invocation",
+        "exact reviewed pre-exec child umask077 binding and retained launch prerequisite; actual0600 mode checked during bounded final acquisition"
+      ],
+      "selectedCallback": "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP",
+      "unchangedSourceBounds": {
+        "callbackMs": 120000,
+        "cleanupMs": 10000,
+        "elapsedAssertionMs": 63000,
+        "requestMs": 5000,
+        "workMs": 90000
+      },
+      "childLaunchPrecondition": {
+        "umask": "0o077",
+        "before": "exec and any child output creation",
+        "implementation": "future exact reviewed owned supervisor launch setting; no product wrapper or environment-only claim",
+        "receipt": "same-attempt authenticated exact-child launch setting bound to reviewed source/control; required independently checked prerequisite",
+        "actualFileModeAfterClosure": "0600 for original legacy wrapper and both sidecars",
+        "clock": "same existing whole-stage clock; no uncharged setup/readback",
+        "status": "CLOSED UNIMPLEMENTED/UNVERIFIED until future supervisor/native/root/actual receipts"
+      }
+    },
+    {
+      "argv": [
+        "${FRESH_BOUND_NODE24}",
+        "${FUTURE_FROZEN_PRIVATE_AUDITOR_MJS}",
+        "--contract",
+        "${FUTURE_EXACT_CONTROL_JSON}"
+      ],
+      "clock": "independently supervised whole-stage120/TERM115/KILL119 proposed; starts before gate/session/hash/read/parse/verifier/closure; no off-clock postchecks",
+      "id": "IMMEDIATE-positive-carrier-audit",
+      "missingAuditorNow": "UNAUTHORED/UNRESOLVED; this DATA contract is not an executable stage",
+      "requires": [
+        "actual same-invocation product terminal+stdio/group receipt",
+        "frozen full original wrapper + two sidecars",
+        "unique actual summary + strict selected-test results",
+        "same private emit/source/tool/consumer proof still exact"
+      ],
+      "zeroProductExecutions": true
+    }
+  ],
+  "state": "CLOSED DATA-only exact prospective argv, variables resolved/frozen by later helper/native/root release; none executed"
+}

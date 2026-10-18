@@ -1,0 +1,117 @@
+{
+  "credentialHandles": [
+    {
+      "headerNames": [
+        "authorization"
+      ],
+      "id": "operator"
+    },
+    {
+      "headerNames": [
+        "authorization"
+      ],
+      "id": "reader"
+    },
+    {
+      "headerNames": [
+        "authorization"
+      ],
+      "id": "principal-a"
+    },
+    {
+      "headerNames": [
+        "authorization"
+      ],
+      "id": "principal-a-rotated"
+    },
+    {
+      "headerNames": [
+        "authorization"
+      ],
+      "id": "principal-b"
+    },
+    {
+      "headerNames": [],
+      "id": "anonymous"
+    }
+  ],
+  "defaultCredentialRef": "operator",
+  "maximumRequestBodyBytes": 65536,
+  "maximumRequestHeaderBytes": 16384,
+  "profile": "transactional",
+  "routes": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/new"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?after=genesis"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/c"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-where"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-where"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/missing"
+    }
+  ],
+  "scope": "https://reference.invalid/acme/"
+}
