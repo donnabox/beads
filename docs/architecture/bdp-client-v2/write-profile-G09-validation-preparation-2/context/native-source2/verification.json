@@ -1,0 +1,92 @@
+{
+  "ASTToolEvaluation": false,
+  "actualRootGitBinarySha256": "00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f",
+  "all47AuthorOriginsExact": true,
+  "allAuthorAndMirrorExact": true,
+  "allThreeLegacyPrefixesExact": {
+    "apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18590,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    },
+    "packages/server/src/transaction-schema-http.test.ts": {
+      "bytes": 16866,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "082c17775d42960a7a0ea1f6091c274c51f2bd71ee38eb19bd49b97b70613d21"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "bytes": 156516,
+      "meaning": "Original pre-G09 legacy prefix, including existing narrow foreign-tuple supersession in schema-http; no new top import needed",
+      "requireFutureExactPrefix": true,
+      "sha256": "e2fc3121bb92e5378ed41b4ea904f04451b2c474072d08c31a0891f51ba70210"
+    }
+  },
+  "auditorGitOrFormatterInvoked": false,
+  "authorIndexSha256": "784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14",
+  "authorIndexed": 78,
+  "authorPhysical": 79,
+  "changed3": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "effective56PinsExact": true,
+  "formatterBinaryPinned": true,
+  "formatterCheckCompilerTestRuntimePassClaimed": false,
+  "formatterReceipt0Exact3Only": true,
+  "genuineDeltas": [
+    {
+      "genuineRegenerated": true,
+      "path": "semantic.patch",
+      "sha256": "bdacb808f955b11f2e111c487776cad349a1d089bee75eabf8dec471f888ef56"
+    },
+    {
+      "genuineRegenerated": true,
+      "path": "semantic.inverse.patch",
+      "sha256": "7b819bb00d0257e6294627ada22425b0db0621f232f66f9fca45624c0207a6a9"
+    },
+    {
+      "genuineRegenerated": true,
+      "path": "format-only.patch",
+      "sha256": "c9c3138a38ae6e4645036a3b597f71f37653e04601e763979c4ffe412acce9ec"
+    },
+    {
+      "genuineRegenerated": true,
+      "path": "format-only.inverse.patch",
+      "sha256": "97f573f57c990b7fba6754ab23f7b6238ff235734e78ec324128f17187243284"
+    },
+    {
+      "genuineRegenerated": true,
+      "path": "final.patch",
+      "sha256": "d085baa86abef52bbfd65d312ac1ea8c4dab9c41f4a22cac53788eb206c3a3f9"
+    },
+    {
+      "genuineRegenerated": true,
+      "path": "final.inverse.patch",
+      "sha256": "8b0dc8d16e627c9fb0bc9ea2b62fb9faa5ed4eff7d889a41bf8953340a1738bc"
+    }
+  ],
+  "historicalInstalled14ByteExact": true,
+  "noSubjectImportedOrEvaluated": true,
+  "postFormatterSourceCopiesCurrent": true,
+  "protected676Exact": true,
+  "rootCumulative10HunksReconstructCce": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "selection10NamesLinesAndFileHashesExact": true,
+  "source679Current": true,
+  "sourceCanonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "sourceCasesFinalBindingsExact": true,
+  "sourceWireSuffixExact": true
+}

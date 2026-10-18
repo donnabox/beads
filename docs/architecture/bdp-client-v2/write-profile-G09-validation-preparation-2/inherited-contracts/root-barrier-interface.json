@@ -1,0 +1,136 @@
+{
+  "baseTools": {
+    "lines": [
+      111,
+      112
+    ],
+    "requirements": [
+      "tools path -> {realpath,sha256} exact real files/bytes",
+      "sourceLockSha256 equals actual bound source pnpm-lock hash"
+    ]
+  },
+  "currentInstalledProof": "MISSING; no old consumer/proof or product pass reuse",
+  "documentPin": {
+    "exactKeys": [
+      "path",
+      "sha256"
+    ],
+    "lines": [
+      26,
+      28
+    ],
+    "requirements": [
+      "absolute path, existing regular file, not symlink, actual bytes hash equals sha256",
+      "strict duplicate/nonfinite JSON reader; no alternate normalized hash"
+    ]
+  },
+  "futureCorrection": "Fresh successor plus NEW actual root records when observed; preserve malformed P8 record/closed gate unchanged; never add fallback/nested-field alias or mutate acceptance in place.",
+  "keysetPolicy": "Existing acceptance documents are NOT closed-keyset objects; preserve required top-level leaves/types/hash relationships, allow existing supplementary metadata. This extract neither weakens checks nor invents new mandatory fields.",
+  "nativeCodeDispositionAndActualCodeDisposition": {
+    "lines": [
+      117,
+      120
+    ],
+    "requirements": [
+      "both gate booleans true",
+      "each document accepted is true and sourceBindingSha256 equals exact gate sourceBinding.sha256",
+      "historical actual reviewer scope metadata remains honest; field acceptance does not mean reviewer read future bytes"
+    ]
+  },
+  "rootArchiveAcceptance": {
+    "applies": "prepare-consumer and every later stage, not prior verify-archives stage",
+    "lines": [
+      125,
+      127
+    ],
+    "nestedTarProvenance": "Allowed supplementary data; cannot substitute for required top-level string",
+    "requiredValues": {
+      "accepted": true,
+      "sourceBindingSha256": "exact gate sourceBinding.sha256",
+      "tarProvenanceSha256": "TOP LEVEL SHA256 of actual run/tar-source-provenance.json"
+    }
+  },
+  "rootBuildAcceptance": {
+    "additionalBeforeChecks": "verify_build requires accepted fresh-build terminal, same head/tree/sourceIdentity, complete actual artifact map and exact start/exit/log pins",
+    "lines": [
+      122,
+      124
+    ],
+    "requiredValues": {
+      "accepted": true,
+      "buildMapSha256": "SHA256 of actual run/build-artifacts.json",
+      "sourceBindingSha256": "exact gate sourceBinding.sha256"
+    }
+  },
+  "rootConsumerLockAcceptance": {
+    "applies": "verify-installed-consumer",
+    "lines": [
+      128,
+      132
+    ],
+    "requiredValues": {
+      "accepted": true,
+      "consumerLockSha256": "same SHA256 as gate consumerLockSha256 and actual consumer/pnpm-lock.yaml",
+      "consumerManifestSha256": "actual consumer/package.json SHA256",
+      "consumerSettingsSha256": "actual consumer/pnpm-workspace.yaml SHA256",
+      "sourceBindingSha256": "exact gate sourceBinding.sha256"
+    }
+  },
+  "rootConsumerProofAcceptance": {
+    "additionalBeforeChecks": "verify_consumer full inventory+lock+tar/currentarchive+entry hash/scope/source/head/tree/sourceIdentity binding; actual proof gates requiredConsumerProof callbacks",
+    "lines": [
+      133,
+      136
+    ],
+    "requiredValues": {
+      "accepted": true,
+      "consumerInventory": "exact pin object equal to gate.consumerInventory",
+      "installedProvenance": "exact pin object equal to gate.installedProvenance",
+      "sourceBindingSha256": "exact gate sourceBinding.sha256"
+    }
+  },
+  "rootDisposition": {
+    "lines": [
+      104,
+      104
+    ],
+    "otherSites": [
+      116,
+      120
+    ],
+    "requiredValues": {
+      "accepted": true,
+      "freshPipelineRequired": true,
+      "runtimeValidationAuthorized": "true for other released stages",
+      "sourceBindingSha256": "exact actual gate sourceBinding.sha256",
+      "staticValidationAuthorized": "true for typecheck/format-check/lint"
+    }
+  },
+  "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/gate.py",
+  "sourceSha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+  "state": "DATA extract of EXACT existing gate.py field predicates, not a new schema/helper or release",
+  "topGate": {
+    "lines": [
+      89,
+      121
+    ],
+    "requirements": [
+      "exact existing closed gate keyset, six typed booleans, released/sourceAccepted/planAccepted/current session/mode",
+      "actual immutable implementation/reference pins/current tracked679/sixowned/673others/unstaged scope/binarydiff source check",
+      "approvedStages exact prefix contains selected command; fixed120outer/115TERM/noRetry and no unresolved argv",
+      "actual prior accepted terminal/log/source receipts for every earlier command; bootstrapReuse empty",
+      "original implementation/source/static/compiler/runtime distinctions unchanged"
+    ]
+  },
+  "workspaceTools": {
+    "lines": [
+      113,
+      115
+    ],
+    "requirements": [
+      "only after bind-workspace-tools: actual tools path/realpath/sha checks",
+      "sourceIdentity equals actual computed source map identity",
+      "sourceLockSha256 exact current source lock"
+    ]
+  }
+}

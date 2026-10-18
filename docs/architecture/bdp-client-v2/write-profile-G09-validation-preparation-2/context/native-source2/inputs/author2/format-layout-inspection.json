@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "changed": true,
+      "conservativeLexicalEqualityIgnoringLayoutAndTrailingCommas": true,
+      "file": "packages/server/src/transaction-service.test.ts",
+      "finalSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
+      "preformatSha256": "0f64fbf48c014515ebfe984495e0de0f714d0d2bbbd10d0e12568525c05ee7c3"
+    },
+    {
+      "changed": true,
+      "conservativeLexicalEqualityIgnoringLayoutAndTrailingCommas": true,
+      "file": "packages/server/src/transaction-schema-http.test.ts",
+      "finalSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+      "preformatSha256": "cd40c10690e534128b2e0518c62db07e3faf34fe5bb4a9105eb88fa54f06d2ea"
+    },
+    {
+      "changed": false,
+      "conservativeLexicalEqualityIgnoringLayoutAndTrailingCommas": true,
+      "file": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "finalSha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a",
+      "preformatSha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+    }
+  ],
+  "invocations": 1,
+  "method": "Own Python text token comparison, not a TypeScript parser/compiler/evaluator; literals/comments retained, whitespace and commas immediately before closing delimiter ignored. Full format-only diff also read manually.",
+  "postFormatterSourceEdits": false,
+  "rawFormatterExit": 0
+}

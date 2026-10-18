@@ -1,0 +1,48 @@
+{
+  "configuration": "New owned empty store, one task bead descriptor, no ownsOutgoing, create=true, canonical installed fixture; bearer writer canMutate=true; random credential unavailable offline and not emitted.",
+  "fixtureCreateInput": {
+    "id": "beads/g09",
+    "properties": {
+      "title": "caf\u00e9"
+    },
+    "type": "https://reference.invalid/acme/types/task"
+  },
+  "forbiddenForExactFixture": [
+    "revisionProvenance",
+    "source",
+    "target",
+    "ownedLinks",
+    "links"
+  ],
+  "requiredKeys": [
+    "id",
+    "type",
+    "revision",
+    "properties",
+    "metadata"
+  ],
+  "requiredMetadata": {},
+  "runtimeObserved": false,
+  "steps": [
+    {
+      "fact": "Create normalization supplies properties/metadata defaults; omitted metadata becomes {} and no revisionProvenance is added.",
+      "source": "transaction-batch.ts:457-468"
+    },
+    {
+      "fact": "Actual owner calls evaluateTransaction with recordChangeContext=false.",
+      "source": "transaction-store.ts:1318-1334"
+    },
+    {
+      "fact": "No supplied context or actor/agent/message; needsContext false; preserved context undefined.",
+      "source": "resource-evaluator.ts:841-857"
+    },
+    {
+      "fact": "materializeVersion always includes metadata:recipe.commonMetadata. No provenance when context and actor undefined. Bead has no endpoints.",
+      "source": "resource-evaluator.ts:1109-1123"
+    },
+    {
+      "fact": "Actual Resource mutation result is directly spread into transaction results, with original materialized resource retained.",
+      "source": "transaction-batch.ts:708-740"
+    }
+  ]
+}
