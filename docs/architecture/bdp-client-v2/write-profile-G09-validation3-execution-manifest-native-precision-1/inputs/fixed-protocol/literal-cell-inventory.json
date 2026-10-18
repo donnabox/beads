@@ -1,0 +1,114 @@
+[
+  {
+    "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version",
+    "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+    "rootArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "node-version"
+    ],
+    "sections": {
+      "A": {
+        "bytes": 14943,
+        "sha256": "f451ab42c5952e707b96cb9b9d7f1f7a52dbca6e9963562ace315962a93920bd"
+      },
+      "B": {
+        "bytes": 6704,
+        "sha256": "bdb4bb7c6c7faa6ebf70b0e2bb1fddc598e7883097500de2aeea0464b5ee52e1"
+      },
+      "C": {
+        "bytes": 1785,
+        "sha256": "0ea29da7466a3926a18c2043d35e0526c61c4564cdc026d2537a9e21ad9762ab"
+      }
+    },
+    "stage": "node-version",
+    "template": "proposals/node-version.capture.txt",
+    "templateBytes": 28529,
+    "templateSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f"
+  },
+  {
+    "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version",
+    "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+    "rootArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "pnpm-version"
+    ],
+    "sections": {
+      "A": {
+        "bytes": 14943,
+        "sha256": "1467c7d9d9ce92cf7c41a1d970ef4ad7f542b560c66d7976b4c90b6db149ae9e"
+      },
+      "B": {
+        "bytes": 6704,
+        "sha256": "dd4ce929d59a406d5d0ae54a1d289493dbd278d313b2cc71b14bf83d0b7806c7"
+      },
+      "C": {
+        "bytes": 1785,
+        "sha256": "62d3e74123be795714cd30339d904f913bcf76328fde97bcfe4361452eb73f4e"
+      }
+    },
+    "stage": "pnpm-version",
+    "template": "proposals/pnpm-version.capture.txt",
+    "templateBytes": 28529,
+    "templateSha256": "05f370d55248a2f0d017aacbf1e645b6003b97fc925327dd62664b7b5b6b2cfe"
+  },
+  {
+    "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install",
+    "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+    "rootArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "workspace-install"
+    ],
+    "sections": {
+      "A": {
+        "bytes": 14958,
+        "sha256": "257b46f6f79f83c3aff6ce46ece5722d310faf68794ccb77b0794b391ab340eb"
+      },
+      "B": {
+        "bytes": 6719,
+        "sha256": "30e5a69ae6598209725951fee0ccca357a6e6898203df2c5d77c1a472dd72d23"
+      },
+      "C": {
+        "bytes": 1800,
+        "sha256": "c731862793672434b2f30e9a7bbb106977e0a01815c307015614d9792ff6f078"
+      }
+    },
+    "stage": "workspace-install",
+    "template": "proposals/workspace-install.capture.txt",
+    "templateBytes": 28574,
+    "templateSha256": "ec6b8f14b5054311f3cb984c8f00a0a37ee3e5b7d9e6ba6fd4cf04024533cef9"
+  },
+  {
+    "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools",
+    "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+    "rootArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "final",
+      "bind-workspace-tools"
+    ],
+    "sections": {
+      "A": {
+        "bytes": 14967,
+        "sha256": "ab0ae61c66da2cc26d62cc35a37433a1cf25a7ba849370581aaa8633081c9c65"
+      },
+      "B": {
+        "bytes": 6728,
+        "sha256": "c43388e4c5a4c000d6bd4483a2adeeece71a4db4661056ec77e58f5a3c8af35e"
+      },
+      "C": {
+        "bytes": 1809,
+        "sha256": "933e9799700d2463a0e66acd95f0687a7b0ee891036a04354fe568b85d02bb5b"
+      }
+    },
+    "stage": "bind-workspace-tools",
+    "template": "proposals/bind-workspace-tools.capture.txt",
+    "templateBytes": 28601,
+    "templateSha256": "4c2434393c537f142fb14e36b951644bb75dbb4e2ef2079d648487b454277440"
+  }
+]
