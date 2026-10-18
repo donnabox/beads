@@ -1,0 +1,21 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/preparation-state.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/preparation-state.json
+@@ -1,4 +1,5 @@
+ {
++  "actualMasksSignalsPipes": "UNKNOWN",
+   "availabilityMeasured": false,
+   "callerAttemptAbsent": true,
+   "callerExecutionReleased": false,
+@@ -6,11 +7,9 @@
+   "futureRootExecutionReleaseAbsent": true,
+   "harnessAvailabilityAttemptAbsent": true,
+   "nativeInvocations": 0,
+-  "newH5Outcomes": "UNKNOWN/UNEXECUTED",
+   "noRetry": true,
+-  "originalH4Attempt": "FAILED immutable; never retry/relabel",
+   "productReleased": false,
+   "reviewLaunchReleased": false,
+-  "state": "FROZEN CLOSED author2 preparation only; FULL OTHER-native/root PENDING",
++  "state": "FROZEN CLOSED author-only availability authority/caller preparation; FULL OTHER-native/root pending",
+   "syntheticReleased": false
+ }

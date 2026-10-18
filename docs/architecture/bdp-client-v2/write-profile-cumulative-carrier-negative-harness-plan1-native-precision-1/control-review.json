@@ -1,0 +1,523 @@
+{
+  "IDs": 32,
+  "controls": [
+    {
+      "findingIds": [],
+      "id": "C01",
+      "nativeAssessment": "Duplicate root/nested keys hit scanner unique/pre-scan; original bytes and distinct fixed refusal are independent of adapter exit.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:15-19,21-70",
+      "target": "scanner.strict_json",
+      "variantCount": 2,
+      "variants": [
+        "root-key",
+        "nested-key"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C02",
+      "nativeAssessment": "Invalid UTF8 and adjacent complete JSON hit decode/trailing predicates; retain actual input and raw adapter exception class.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:21-25,58-60",
+      "target": "scanner.strict_json",
+      "variantCount": 2,
+      "variants": [
+        "invalid-utf8",
+        "trailing-json"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C03",
+      "nativeAssessment": "1e309 and depth129 hit finite/depth predicates before final tree allocation; no product execution.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:39-57",
+      "target": "scanner.strict_json",
+      "variantCount": 2,
+      "variants": [
+        "nonfinite-number",
+        "depth129"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C04",
+      "nativeAssessment": "100x999 zero leaves +100 inner arrays +root =100001 nodes, with every container <=10000; object/array10001 are separate container cases.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:41-49",
+      "target": "scanner.strict_json",
+      "variantCount": 3,
+      "variants": [
+        "nodes100001",
+        "object10001",
+        "array10001"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C05",
+      "nativeAssessment": "Preexisting destination is worker admission raw1; scanner source acquisition cases adapter raw17. Wrong UID is a labelled lstat fixture, not chown or kernel observation. Future implementation must place preexisting leaf after exclusive owned-root creation.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "worker.py:39-42;scanner.py:97-115",
+      "target": "secure original acquisition + prelaunch destination check",
+      "variantCount": 5,
+      "variants": [
+        "preexisting-destination",
+        "symlink",
+        "directory",
+        "mode0644",
+        "wrong-uid"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C06",
+      "nativeAssessment": "Real leaf mutation between actual read and final fstat/lstat reaches signature checks; deterministic barrier must wrap upstream read only, never decision predicate.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:103-115",
+      "target": "scanner.secure_read",
+      "variantCount": 4,
+      "variants": [
+        "inode-race",
+        "mode-race",
+        "time-race",
+        "bytes-race"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C07",
+      "nativeAssessment": "Two unique-summary lines and unterminated final line have separate scanner paths; positive summary line is required for a healthy baseline.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:72-95",
+      "target": "SummaryScanner",
+      "variantCount": 2,
+      "variants": [
+        "duplicate-summary",
+        "incomplete-final-line"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C08",
+      "nativeAssessment": "Actual returned crossing chunks are retained by owned raw sink first. Object-line1MiB and total64MiB remain acceptance limits, not truncation permissions.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "scanner.py:75-95;worker.py:62-67",
+      "target": "scanner + owned raw sink",
+      "variantCount": 2,
+      "variants": [
+        "object-line-over1MiB",
+        "combined-log-over64MiB"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C09",
+      "nativeAssessment": "Exact selected name multiset/file matching reaches actual selected_results; earlier unselected-pass rejection is an explicitly permitted refusal family.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "audit.py:13-39",
+      "target": "selected_results",
+      "variantCount": 4,
+      "variants": [
+        "missing-name",
+        "extra-name",
+        "duplicate-name",
+        "wrong-file"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C10",
+      "nativeAssessment": "Mandatory success and typed zero distinguish false from0, missing keys and failed selected status; raw17 is not sufficient by itself.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "audit.py:14-30",
+      "target": "selected_results",
+      "variantCount": 4,
+      "variants": [
+        "root-failed",
+        "case-failed",
+        "missing-mandatory-zero",
+        "bool-zero"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C11",
+      "nativeAssessment": "Unselected pass/snapshot update and split diagnostic use actual selected_results/SummaryScanner. Split diagnostic requires both chunks and original tail.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "audit.py:31-38,83-87;scanner.py:75,95",
+      "target": "selected_results + diagnostic scan",
+      "variantCount": 3,
+      "variants": [
+        "unselected-pass",
+        "snapshot-change",
+        "unhandled-diagnostic"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C12",
+      "nativeAssessment": "Blocked peer replaces exact worker launch upstream, exercising actual watchdog work cutoff and owned cleanup; it proves watchdog containment, not compiler/parser behavior.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "run.py:5,14-19,140-213",
+      "target": "actual watchdog main with controlled worker",
+      "variantCount": 4,
+      "variants": [
+        "blocked-gate",
+        "blocked-hash",
+        "blocked-compiler",
+        "blocked-private-parser"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C13",
+      "nativeAssessment": "Immediate retained Popen and ACK suffix protocol target actual run.py acquisition/EOF paths. Fixed200ms, actual two-stream EOF and distinct reset/current/lastComplete associations remain required.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "run.py:16-19,64-122,214-287",
+      "target": "actual watchdog + real peers/probes",
+      "variantCount": 5,
+      "variants": [
+        "spawn-before-ack",
+        "quiet-descendant-race",
+        "EAGAIN-final-suffix",
+        "setup-io-after-handle",
+        "new-Popen-failure-after-complete"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C14",
+      "nativeAssessment": "Actual held zombie must not be absence. Real waitpid release plus later census may permit ordering contrast0; no synthetic zombie row can prove kernel behavior.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "run.py:59-122,268-285",
+      "target": "actual watchdog + held waitpid peer",
+      "variantCount": 1,
+      "variants": [
+        "prior-live-zombie-then-reap"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C15",
+      "nativeAssessment": "Changed rows are synthetic predicate stimuli only; real FDs/EOF/poll and first/current prefix tests remain independently associated, outer signal authority stays actual.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "run.py:30-55,59-135,225-286",
+      "target": "watchdog census/ordinary IO",
+      "variantCount": 9,
+      "variants": [
+        "changed-birth",
+        "changed-live-comm",
+        "known-group-unanchored",
+        "missing-EOF-held-writer",
+        "late-final-bytes",
+        "nonzero-stderr",
+        "partial-read-EIO",
+        "post-EOF-poll-ValueError",
+        "first-refusal-then-current-IO"
+      ]
+    },
+    {
+      "findingIds": [
+        "CNH-N2"
+      ],
+      "id": "C16",
+      "nativeAssessment": "Publication/cleanup failure paths exist, but exact after-cutoff reachability needs N2. Missing/partial target output remains UNKNOWN, root must independently close.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "run.py:34-55,123-135,210-300",
+      "target": "watchdog cleanup/publication",
+      "variantCount": 8,
+      "variants": [
+        "ignore-TERM",
+        "slow-close",
+        "publisher-failure",
+        "probe-survives-cutoff",
+        "terminal-publication-blocked",
+        "IO-publication-unavailable",
+        "IO-publication-partial",
+        "IO-publication-after-cutoff"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C17",
+      "nativeAssessment": "Synthetic prior receipts reach gate.complete; retain real original require and mutate only one actual outer/pin/time field, never active authority.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "gate.py:79-124",
+      "target": "gate.complete",
+      "variantCount": 5,
+      "variants": [
+        "missing-outer",
+        "stale-attempt",
+        "late-whole",
+        "wrong-watchdog-hash",
+        "wrong-exit-hash"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C18",
+      "nativeAssessment": "Missing/extra keys/prefix/bootstrap predicates precede source work. Actual guard/Git are not invoked by unit fixtures.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "gate.py:148-172",
+      "target": "gate.load_gate",
+      "variantCount": 4,
+      "variants": [
+        "missing-key",
+        "unknown-key",
+        "out-of-order",
+        "bootstrap-reuse"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C19",
+      "nativeAssessment": "Exact Git responses are synthetic returned DATA only; real681 source bytes and protected predicates remain original. No false new HEAD observation.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "gate.py:30-56",
+      "target": "source_check/tools_check",
+      "variantCount": 8,
+      "variants": [
+        "source-map",
+        "HEAD",
+        "tree",
+        "dirty-scope",
+        "staged",
+        "untracked",
+        "binary-patch",
+        "tool-drift"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C20",
+      "nativeAssessment": "Actual top-level root archive field is compared by gate.load_gate; nested leaf cannot substitute for it.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "gate.py:173-179",
+      "target": "gate.load_gate archive barrier",
+      "variantCount": 2,
+      "variants": [
+        "nested-only-leaf",
+        "wrong-tar-hash"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C21",
+      "nativeAssessment": "Tiny confined synthetic archives can reach actual unsafe/duplicate/membership/source-byte checks with only upstream gate IO facades; no pack/install runs.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "packages.py:20-47",
+      "target": "packages tar mode",
+      "variantCount": 5,
+      "variants": [
+        "unsafe-member",
+        "duplicate-member",
+        "missing-member",
+        "extra-member",
+        "altered-built-bytes"
+      ]
+    },
+    {
+      "findingIds": [
+        "CNH-N1"
+      ],
+      "id": "C22",
+      "nativeAssessment": "Consumer graph/lock/link/entry/payload seams exist; wrong-settings construction currently removes its comparison (N1). Wrong payload is correctly redirected to actual carrier-audit33, not a fabricated package comparison.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "packages.py:57-115;gate.py:131-139,177-182;carrier-audit.mjs:33 (wrong-payload only)",
+      "target": "consumer provenance/package modes + actual served-versus-proved payload comparison for wrong-payload only",
+      "variantCount": 7,
+      "variants": [
+        "wrong-lock",
+        "wrong-manifest",
+        "wrong-settings",
+        "wrong-graph",
+        "escape-link",
+        "wrong-entry",
+        "wrong-payload"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C23",
+      "nativeAssessment": "Worker compiler refusal raw1 is distinct from bind_emit adapter17. TSFILE/catalog/link mutations target actual inventories without a compiler run.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "worker.py:68-73;private_emit.py:23-45",
+      "target": "compiler-result and bind_emit",
+      "variantCount": 4,
+      "variants": [
+        "compiler-nonzero",
+        "missing-TSFILE",
+        "extra-link",
+        "catalog-drift"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C24",
+      "nativeAssessment": "Actual locked parser must process static fixture edges before any factory import; dynamic imports/require aliases/conditional exports/unpinned dependencies have explicit refusal sites.",
+      "requiresGenuineFactoryBaseline": true,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "private-graph.mjs:37-62",
+      "target": "actual graph helper byte-copy with unit upstream facade",
+      "variantCount": 4,
+      "variants": [
+        "dynamic-import",
+        "require-alias",
+        "conditional-export",
+        "unpinned-dependency"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C25",
+      "nativeAssessment": "Actual CJS cache and workspace-versus-consumer file bytes are separate graph checks; accepted genuine graph/tool/consumer prerequisite remains unresolved.",
+      "requiresGenuineFactoryBaseline": true,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "private-graph.mjs:17-25,64-73;carrier-audit.mjs:44",
+      "target": "actual graph helper",
+      "variantCount": 2,
+      "variants": [
+        "extra-CJS-cache",
+        "runtime-byte-mismatch"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C26",
+      "nativeAssessment": "Actual prepare_carrier_audit owns preexec umask, group terminal, stdio and original mode checks. Synthetic receipts never become product observations.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "audit.py:40-68;scanner.py:97-115",
+      "target": "prepare_carrier_audit",
+      "variantCount": 5,
+      "variants": [
+        "missing-umask",
+        "bad-mode",
+        "missing-stdio-EOF",
+        "unobserved-primary",
+        "remaining-group"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C27",
+      "nativeAssessment": "Actual full carrier audit requires complete nine-key serialization,24 ordered sessions, source/entry/artifact/configuration equality. Genuine factories and full synthetic baseline must reach intended phase first.",
+      "requiresGenuineFactoryBaseline": true,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "carrier-audit.mjs:6-36",
+      "target": "actual full carrier audit + genuine pure factories",
+      "variantCount": 7,
+      "variants": [
+        "wrapper-keys",
+        "wrapper-key-order",
+        "session-count",
+        "metadata",
+        "artifact-bytes",
+        "source-commit",
+        "entry-identity"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C28",
+      "nativeAssessment": "Attempt/final byte equality and full canonical verifier checks are not replaced by adapter. Both actual emitted same-module factories remain prerequisite, no fake brands.",
+      "requiresGenuineFactoryBaseline": true,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "audit.py:58-65;carrier-audit.mjs:19-43",
+      "target": "full original-byte/genuine verifier path",
+      "variantCount": 5,
+      "variants": [
+        "attempt-summary-differ",
+        "missing-summary",
+        "invalid-canonical",
+        "envelope-extra-key",
+        "owner-row-omission"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C29",
+      "nativeAssessment": "Raw wrapper SHA and canonical result SHA are distinct; 256 row inventory cannot be replaced by17. Rejection may occur in genuine verifier before later redundant checks, not proof of an unreachable later line.",
+      "requiresGenuineFactoryBaseline": true,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "carrier-audit.mjs:37-43",
+      "target": "full raw-versus-derived audit",
+      "variantCount": 3,
+      "variants": [
+        "normalized-raw-digest",
+        "result-only-digest",
+        "seventeen-row-substitution"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C30",
+      "nativeAssessment": "Mutated claim/qualification/ownership must be rejected by full verifier/envelope comparison. No artificial verified ownership or whole-law credit.",
+      "requiresGenuineFactoryBaseline": true,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "carrier-audit.mjs:39-45",
+      "target": "actual no-credit verifier boundary",
+      "variantCount": 3,
+      "variants": [
+        "claim-true",
+        "qualification-ready",
+        "cleanup-ownership-upgrade"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C31",
+      "nativeAssessment": "Exclusive existing receipt/root refusal preserves history. Actual105 work overrun remains bounded and requires honest failed outcome; no clock fast-forward.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "worker.py:29-33,51,99-109",
+      "target": "actual worker admission/cutoff",
+      "variantCount": 3,
+      "variants": [
+        "existing-attempt-root",
+        "existing-stage-receipt",
+        "postwork-no-fit"
+      ]
+    },
+    {
+      "findingIds": [],
+      "id": "C32",
+      "nativeAssessment": "Gate failure before stage setup leaves started/exit/source-after absent/UNKNOWN, with actual outer raw/pipes only; no reconstructed fields.",
+      "requiresGenuineFactoryBaseline": false,
+      "runtimeReachability": "UNKNOWN/UNEXECUTED",
+      "sourceAnchor": "worker.py:24-33,102-109;run.py:16-19",
+      "target": "setup-before-stage-receipt",
+      "variantCount": 1,
+      "variants": [
+        "pre-stage-setup-failure"
+      ]
+    }
+  ],
+  "notExecutableAcceptance": true,
+  "variants": 128
+}

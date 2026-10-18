@@ -1,0 +1,36 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/source-body-proof.json
++++ /dev/null
+@@ -1,33 +0,0 @@
+-{
+-  "HEREImplicitNewParent": true,
+-  "after": {
+-    "lines": 149,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/capture.py",
+-    "sha256": "3aa2ef7f41600604e0fab7844b70ae6e1277f56a99a6e175f3b7f8baecb046cb"
+-  },
+-  "allFunctionBodiesAndCallSitesByteExact": true,
+-  "before": {
+-    "lines": 149,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/capture.py",
+-    "sha256": "a288d73db1ab2ab21bdb5942b1f4207e82308b0854c1a0dd0788cd396c956bc5"
+-  },
+-  "guardPathAndAllClockCapErrorStdioPolicyUnchanged": true,
+-  "method": "Exact source-text/byte comparison only, no Python subject evaluation or compilecheck",
+-  "nativeArgvOnlyFinalCandidatePathChanged": true,
+-  "noH4RetryOrOutputReuse": true,
+-  "onlyLiteralSubstitutions": [
+-    {
+-      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5",
+-      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4",
+-      "line": 9,
+-      "occurrences": 1
+-    },
+-    {
+-      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-2/release.json",
+-      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-1/release.json",
+-      "line": 10,
+-      "occurrences": 1
+-    }
+-  ],
+-  "reverseEntire149LineBodyByteExact": true
+-}

@@ -1,0 +1,53 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/static-verification.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/static-verification.json
+@@ -1,30 +1,22 @@
+ {
+-  "H5AvailabilityAttemptAbsent": true,
+-  "allActualH5Outcomes": "UNKNOWN",
+-  "caller1Original52PlusActual6": true,
+-  "callerAttemptAbsent": true,
+-  "callerLines": 149,
+-  "callerOnlyTwoLiteralSubstitutions": true,
+-  "candidateExactKeys": 10,
+-  "copiedOrigins": 28,
+-  "entireInverseByteExact1": true,
+-  "externalPins": 6088,
+-  "futureExecutionRelease2Absent": true,
+-  "futureExecutionReleaseExactKeys": 14,
+-  "helper4FlatFiles": 857,
+-  "histories": [
+-    58,
+-    110,
+-    143,
+-    153,
+-    3
+-  ],
+-  "inheritedHistoriesFullRehashed": true,
+-  "nativeArgvOnlyFinalCandidateLiteral": true,
+-  "protectedFiles": 678,
+-  "sourceFiles": 679,
+-  "sourceProductGitGateMutations": false,
+-  "state": "Author own static source/DATA checks only; not independent approval",
+-  "subjectEvaluationOrCompileCheck": false,
+-  "toolIdentities": 13
++  "additionalGuardTools": 2,
++  "allActualAvailabilityOutcomes": "UNKNOWN",
++  "allAttemptsAbsent": true,
++  "authorityExactKeys": 10,
++  "bothH4GatesClosed": true,
++  "clockDomainVerified": false,
++  "copiedOrigins": 22,
++  "currentToolIdentities": 11,
++  "directNativeClosureSha256": "ac43d3bfd86d98c35907bf9297bf30d1752dbf432905c22029e9b231dd23f5e1",
++  "directStaticRootAcceptanceSha256": "633eee1e09a016ce709e1e4818d6eb67245283385e1d0f64958d04264aa6925b",
++  "externalPinsVerified": 5608,
++  "futureExecutionReleaseKeys": 14,
++  "harnessFlatFilesVerified": 89,
++  "historyH4": 92,
++  "historyNative": 100,
++  "nativePerlOrHelperEvaluation": false,
++  "noFutureExecutionRelease": true,
++  "pythonASTOnly": 1,
++  "sourceFilesRehashed": 679,
++  "state": "Author AST/JSON/bytes only, not independent acceptance"
+ }

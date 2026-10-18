@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-18T17:10:54.792796+00:00",
+  "state": "CLOSED14-key execution authority proposal DATA only; external release2 absent",
+  "rootStaticAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-caller2-root-static-acceptance-1/acceptance.json",
+    "sha256": "5b0c255376bd5ef96db92186e84854941497de76818138cf5605036e099dac67"
+  },
+  "candidateRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-proposed-authority-2/release.proposed.json",
+    "sha256": "034d4e93823965e006e6e059bc50cab634a9dcd1a9026546539faa02ac96fdcb"
+  },
+  "foundationPublicationAttribution": "d5a770b143ef710644c3c63f38cd40a01ea6dfb2 binds caller2/H5 accepted static inputs; native caller2+root+this exact proposal require NEW durable publication/readback before activation. Final execution release then separately published/readback; later outer dispatch records exact release publication. This field is prior foundation attribution, never self-referential future commit.",
+  "beforeActual": [
+    "FULL OTHER-native all14 actual predicates and normal/error/cleanup precision",
+    "root full acceptance and durable publication/readback",
+    "byte exact external release2 activation then publication/readback",
+    "ONE exact caller-command2 with actual root raw terminal/BOTH pipeEOF/whole<115",
+    "FULL independent actual audit, fresh full known PID/group census raw0/BOTHEOF/empty stderr, root disposition"
+  ],
+  "noH4Retry": true,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "actualAvailability": "UNKNOWN/unattempted"
+}
