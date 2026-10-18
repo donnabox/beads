@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 17, 2026, 4:11 PM PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 17, 2026, 5:04 PM PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The Memory outcomes below are candidates to stage across previews toward V2, not a claim that every one is a Preview 3 cutline or has passed qualification; workstreams enter a preview cutline only by explicit decision.
 
@@ -351,3 +351,9 @@ Root's targeted `gms_pure_go` command tests passed embedded; installed Dolt 2.1.
 ## 2026-10-17 — **Memory V1** release name supersedes **Memory Launch**
 
 Donna renamed the first supported, release-quality, broadly default-on combined Memory release **Memory V1**. This names the coherent Beads/gth release that assembles new, existing, and modified features; individual components and proposal contracts may independently be V2 or later. Earlier dated entries retain the former naming history. Public [#7656](https://github.com/gastownhall/beads/issues/7656) now uses **Memory V1** at the top and in MEM-DEC-003. This naming change does not alter the **Preview 3** cutline, code-flow holds, scenario status, CI protection, default-on evidence, or the red ship verdict.
+
+## 2026-10-17 17:04 PDT — common Memory and Association `status` decision
+
+Donna directly selected optional, nonblank, open-string `status` on both the common Memory and Association bases in Melinda’s third review. Every proposed specialization inherits it; no closed enum, default, implicit workflow, approval, scheduling, activation or visibility effect follows. Example strings are conventions, not ratified values. Existing Issue workflow status and Dependency behavior remain separate. The public [#7656 decision register](https://github.com/gastownhall/beads/issues/7656) records this as **MEM-DEC-006**, with Melinda’s [published handoff receipt](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6243480309) and [draft PR143 at `c064cc33`](https://github.com/gastownhall/bdp/pull/143).
+
+PR143’s seven proposed Bead and six proposed Link Types, per-Type examples, literal search/order and command spellings remain design review material; 102 property cases validate draft schemas only. Trish reconciles the single F0 lane before any adoption. No source activation, Memory V2 scenario completion, **Memory V1** default-on proof, qualified feature merge or release action follows from this decision.
