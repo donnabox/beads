@@ -1,0 +1,17 @@
+$ vitest run scripts/e2e-ready.test.mjs --reporter=verbose
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration
+
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 52ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 126ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 1ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 0ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 2ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 91ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 194ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  23:46:11
+   Duration  668ms (transform 92ms, setup 17ms, import 126ms, tests 467ms, environment 0ms)
+

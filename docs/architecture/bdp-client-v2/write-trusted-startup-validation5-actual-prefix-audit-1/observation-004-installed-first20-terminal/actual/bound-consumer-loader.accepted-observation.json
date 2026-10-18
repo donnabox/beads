@@ -1,0 +1,32 @@
+{
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "observation": {
+    "event": "startup.bound-consumer-loader",
+    "outcome": "passed",
+    "profiles": [
+      "read-update",
+      "transactional"
+    ],
+    "loaderCalls": 6,
+    "accepted": 2,
+    "contractRefusals": 4,
+    "privateSpecifierCount": 71,
+    "publicExports": [
+      "ReferenceDeploymentError",
+      "loadReferenceDeployment"
+    ],
+    "configuredPortAcquisitionExcluded": true,
+    "storeDirectoriesAbsent": true,
+    "entryRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/reference-deployment.js",
+    "entrySha256": "6ca64806925227deb8b364037598915979cb7a77e8f5b8c81ea8702c829693bd",
+    "provenanceSha256": "0be13365ffc85d58176e051687ffbc96b306b2a80a1a6c8f520d0aa295e5bd2d",
+    "workTimedOut": false,
+    "cleanupUnknown": false,
+    "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-bound-consumer-loader-oy2rjxjy/bdp-bound-loader-52VdJs",
+    "temporaryDirectoryRemoved": true,
+    "sourceLimitation": "Root-bound dirty source/build/archive/lock/entry provenance; loader does not attest source or payload digest",
+    "observationLimitation": "Occupied intended port excludes successful acquisition, not bind attempts; no installed per-FD or kernel socket census; no service/public profile claim"
+  },
+  "qualification": false,
+  "limitations": "Owned occupied intended port excludes successful acquisition, not attempted binds; no installed per-FD census or ordinary profile/service activation. Payload digest is independent provenance, not loader-attested."
+}

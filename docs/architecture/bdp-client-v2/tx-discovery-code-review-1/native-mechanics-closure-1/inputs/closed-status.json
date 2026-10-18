@@ -1,0 +1,28 @@
+{
+  "state": "FROZEN CLOSED FIRST D3a CODE preparation",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "preparedUtc": "2026-10-18T07:02:33.443567+00:00",
+  "sourceFiles": 679,
+  "ownedSourcePaths": 3,
+  "surroundingSourceCopies": 26,
+  "contextFiles": 123,
+  "artifactBindings": 21,
+  "packetFiles": 131,
+  "launchFlags": {
+    "binding.rootLaunchReleased": false,
+    "control.rootLaunchReleased": false
+  },
+  "sourceBindingFinalized": true,
+  "attemptPresent": false,
+  "reviewerOutputsPresent": false,
+  "reviewLaunched": false,
+  "nativeSourceAccepted": false,
+  "pendingNativeFindings": 3,
+  "nativeSourceIndexSha256": "50f80e2870728218972eb805188fd6dcb4c92e28772a4331362ca62ce33bfdc2",
+  "secondActualPlanAllowed": false,
+  "sourceAuthoringUnchanged": true,
+  "validationReleased": false,
+  "runtimeReviewerValidationHelperGitExecution": false,
+  "allowedRelease": "Only root may flip two rootLaunchReleased literal false\u2192true controls, preserving archived false bytes and exceptions. Source/prompt/args/parser/runner/supervisor/context remain frozen. One exclusive attempt only.",
+  "requiredNext": "Independent native mechanics/source review and root acceptance before single actual CODE release; no runtime validation authority."
+}

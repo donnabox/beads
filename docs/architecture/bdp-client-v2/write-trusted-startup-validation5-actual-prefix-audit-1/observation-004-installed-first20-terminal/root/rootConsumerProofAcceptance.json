@@ -1,0 +1,36 @@
+{
+  "accepted": true,
+  "acceptedUtc": "2026-10-18T06:41:48.838795+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de",
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/installed-provenance.json",
+    "sha256": "0be13365ffc85d58176e051687ffbc96b306b2a80a1a6c8f520d0aa295e5bd2d"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/installed-consumer-inventory.json",
+    "sha256": "e647f71298789702bf266b19a3e5645671ca444316be5e89e387afd0dd4b8eee"
+  },
+  "actualEighteenStagesPassed": true,
+  "memberBytesIndependentlyCompared": 329,
+  "inventoryFiles": 878,
+  "inventoryLinks": 17,
+  "versions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv-formats": "3.0.1",
+    "ajv": "8.17.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "payloadIdentity": "9ae5d1e3231284d4b4dd8bebef59dc0142dc557429a017904242843b5c3224cf",
+  "payloadRecursiveVisits": 14,
+  "payloadFileVisits": 477,
+  "entryRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/reference-deployment.js",
+  "entrySha256": "6ca64806925227deb8b364037598915979cb7a77e8f5b8c81ea8702c829693bd",
+  "qualification": false,
+  "next": "Only bound consumer pure loader and its immediate strict audit, no ordinary startup/service claim."
+}

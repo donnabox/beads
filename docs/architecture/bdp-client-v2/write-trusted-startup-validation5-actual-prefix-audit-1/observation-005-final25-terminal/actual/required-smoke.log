@@ -1,0 +1,20 @@
+$ node scripts/smoke-executables.mjs
+installed pure reference deployment loader: RU/TX, refusals and inert boundary passed
+bdp: installed --help, --version, and diagnostics passed
+bdptest: installed --help, --version, and diagnostics passed
+bdpbd: installed --help, --version, and diagnostics passed
+bdp: installed clean lifecycle passed
+bdptest: installed clean lifecycle passed
+bdpbd: installed clean lifecycle passed
+bdptest: profile/fixture/deployment path round-trip without opening deployment or serving
+bdpbd: server.advertisedProfile and bd.executable round-trip through tarball
+bdptest: --config alone remains lifecycle-only
+bdpbd: --config alone remains lifecycle-only
+bdptest: --serve --config remains fail-closed before bind
+bdpbd: --serve --config remains fail-closed before bind
+bdptest: public Read admission serves discovery and stops cleanly
+bdptest: public profile admission fails closed before bind
+bdpbd: public Read admission serves discovery and stops cleanly
+bdpbd: public profile admission fails closed before bind
+{"event":"installed.reference.observed","claimEligible":false,"configurationIdentity":"aa04a5c13bd0e38ea2b7326ba79135f4824b21dc10fbcf7acf5eb9686d1e5389","payloadIdentity":"9ae5d1e3231284d4b4dd8bebef59dc0142dc557429a017904242843b5c3224cf","artifactIdentity":"development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7","allNineTargets":true,"stableScope":"https://reference.invalid/acme/"}
+bdp: role isolation lifecycle ignores invalid bdptest/server values
