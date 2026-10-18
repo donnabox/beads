@@ -1,0 +1,50 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "D4 zero-product synthetic controls only",
+  "syntheticOnly": true,
+  "productReleased": false,
+  "harnessImplementationSha256": "7e5ec687e6c39447efc43d5ad905a20602510d9227db342b1fad01ba873ae5e8",
+  "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "approvedInvocations": [
+    "D02--unit",
+    "D03--unit",
+    "D04--unit",
+    "D05--unit",
+    "J01--unit",
+    "J02--unit",
+    "J03--unit",
+    "J04--unit",
+    "J05--unit",
+    "J06--unit",
+    "J07--unit",
+    "J08--unit",
+    "J09--unit",
+    "J10--unit",
+    "J11--unit",
+    "M07--unit",
+    "M08--unit",
+    "M09--unit",
+    "M10--unit",
+    "M11--unit",
+    "M12--unit",
+    "M13--unit",
+    "M14--unit",
+    "M15--unit",
+    "M16--unit",
+    "P07--unit",
+    "P13--unit"
+  ],
+  "nativeHarnessAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness5-native-mechanics-1/closure.json",
+    "sha256": "09f823deb3284a47cbc56ea00fb19f169f10d4ab6b6519699a4b560b4e264f76"
+  },
+  "availabilityAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-root-measured-acceptance-1/acceptance.json",
+    "sha256": "56f7690d14498343b20f6e15b276fc44d5886ad9211374db42a341afd931415f"
+  },
+  "durableRootRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-ordinary27-proposed-authority-1/disposition.json",
+    "sha256": "3cb3ddd9cff286dfcd36b955d9aaf872fff9cbdb6a8db319769463b6415e7c06"
+  },
+  "noRetry": true
+}

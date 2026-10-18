@@ -1,0 +1,935 @@
+{
+  "actualCounts": {
+    "Glob": 1,
+    "Grep": 25,
+    "Read": 34
+  },
+  "assistantToolCalls": {
+    "toolu_011cBZncf6mco7rtM48J7Qm4": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/schemas/bdp-v0.schema.json",
+        "limit": 30,
+        "offset": 4209
+      },
+      "name": "Read",
+      "ordinal": 1291
+    },
+    "toolu_011vDY7eqLMuwJCUHQ1xWMJo": {
+      "input": {
+        "-C": 10,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-http.ts",
+        "pattern": "minimum-position|developmentGap|isCurrentTransactionMinimumRead|currentReadMinimumKind|TransactionMinimumUnsupported|TransactionMinimumVisibilityGap"
+      },
+      "name": "Grep",
+      "ordinal": 689
+    },
+    "toolu_011z7iW4Uh8v4qmn2n9W19SP": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.ts"
+      },
+      "name": "Read",
+      "ordinal": 108
+    },
+    "toolu_012t3FpdRZqmrqLetKsbv51S": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/report.md"
+      },
+      "name": "Read",
+      "ordinal": 80
+    },
+    "toolu_0135PeJ7JPneyaW9rb5iHQJz": {
+      "input": {
+        "-C": 8,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/server/src/authority-read.ts",
+        "pattern": "^function prepare\\(|enter:|enter =|withRead"
+      },
+      "name": "Grep",
+      "ordinal": 3007
+    },
+    "toolu_014HjyJuSfHxxVh8kxYgDhN4": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-schema-http.test.ts",
+        "limit": 380,
+        "offset": 436
+      },
+      "name": "Read",
+      "ordinal": 898
+    },
+    "toolu_014LxMsLXjLFLPgx9r4byNDX": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/schemas/bdp-v0.schema.json",
+        "limit": 120,
+        "offset": 4234
+      },
+      "name": "Read",
+      "ordinal": 1347
+    },
+    "toolu_0152GKrXNqTYvpjdKTynh8qF": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/native-code-pending-finding/findings.json"
+      },
+      "name": "Read",
+      "ordinal": 3282
+    },
+    "toolu_016mPUnuVsg3z2gUvkrqGXid": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-http.ts",
+        "limit": 135,
+        "offset": 200
+      },
+      "name": "Read",
+      "ordinal": 1713
+    },
+    "toolu_0186kDZLBx4Lf5bbUqRMSoFq": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "limit": 185,
+        "offset": 813
+      },
+      "name": "Read",
+      "ordinal": 2594
+    },
+    "toolu_018HXLkujDkKxFFh4AdQy8V3": {
+      "input": {
+        "-A": 40,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/schemas/bdp-v0.schema.json",
+        "pattern": "\"directProblemCode\""
+      },
+      "name": "Grep",
+      "ordinal": 1312
+    },
+    "toolu_018XJtzcP5ttzQYf3LMroiVw": {
+      "input": {
+        "-C": 10,
+        "-n": true,
+        "head_limit": 120,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/server/src/transaction-read.ts",
+        "pattern": "checkCurrentReadMinimum|TransactionMinimumUnproved|missing|resource-not-found|notFound"
+      },
+      "name": "Grep",
+      "ordinal": 1805
+    },
+    "toolu_018ny2cveGygJnXX5eKAALTa": {
+      "input": {
+        "-n": true,
+        "head_limit": 30,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src",
+        "pattern": "304|412|406"
+      },
+      "name": "Grep",
+      "ordinal": 2694
+    },
+    "toolu_0199M51qMLtiFiTtMMn7Gsoh": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/tsconfig.base.json"
+      },
+      "name": "Read",
+      "ordinal": 1994
+    },
+    "toolu_019r48TP1JkjNzp9g9sjAncC": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-schema-http.ts"
+      },
+      "name": "Read",
+      "ordinal": 162
+    },
+    "toolu_01AAomG1Mhn6EuR8dUAf25YE": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "limit": 120,
+        "offset": 699
+      },
+      "name": "Read",
+      "ordinal": 1530
+    },
+    "toolu_01BUdmeZXJz1SPYT8YP33dmC": {
+      "input": {
+        "-A": 30,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/schemas/bdp-v0.schema.json",
+        "pattern": "\"transactionalProblem\""
+      },
+      "name": "Grep",
+      "ordinal": 1260
+    },
+    "toolu_01CDQgkNMZgDzyyfTXxGEmer": {
+      "input": {
+        "-C": 14,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-runtime.ts",
+        "pattern": "createTransactionSchemaHttp|schemaHttp|raw"
+      },
+      "name": "Grep",
+      "ordinal": 549
+    },
+    "toolu_01CdaeQ9Q3pQw5snhSDs4QkC": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "limit": 60,
+        "offset": 1186
+      },
+      "name": "Read",
+      "ordinal": 2666
+    },
+    "toolu_01DGC2adENrYv2bjuEznmijP": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-runtime.ts",
+        "limit": 90,
+        "offset": 185
+      },
+      "name": "Read",
+      "ordinal": 601
+    },
+    "toolu_01Dcurgq4U4AHN89kqNwEaAs": {
+      "input": {
+        "-C": 12,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-http.ts",
+        "pattern": "malformedTransactionMinimumHeaders|authorization.kind === \\\"unauthenticated\\\"|readPrincipals.set"
+      },
+      "name": "Grep",
+      "ordinal": 1751
+    },
+    "toolu_01EbDwnUobxQHD32sS43xyHw": {
+      "input": {
+        "-C": 4,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src",
+        "pattern": "minimumReadBudgetMs"
+      },
+      "name": "Grep",
+      "ordinal": 1850
+    },
+    "toolu_01F3jnfj8PnWS7Z1kbB8PM9X": {
+      "input": {
+        "-C": 4,
+        "-n": true,
+        "head_limit": 60,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/protocol/src",
+        "pattern": "temporarily-unavailable|cursor-expired|foreign-view"
+      },
+      "name": "Grep",
+      "ordinal": 1384
+    },
+    "toolu_01FDLYTBVL6hWbSkqfHusewJ": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-http.ts",
+        "limit": 200
+      },
+      "name": "Read",
+      "ordinal": 433
+    },
+    "toolu_01HCQziJMKKZYYA42pXd95QK": {
+      "input": {
+        "-A": 75,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/server/src/transaction-read.ts",
+        "pattern": "export function createTransactionReadPlane"
+      },
+      "name": "Grep",
+      "ordinal": 2900
+    },
+    "toolu_01JLVHZc6fXMZD4gwNKm8nP1": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.test.ts",
+        "limit": 60,
+        "offset": 59
+      },
+      "name": "Read",
+      "ordinal": 1138
+    },
+    "toolu_01JdFB5x8Cy1ccQ3QhRPwnvb": {
+      "input": {
+        "pattern": "**/tsconfig*.json"
+      },
+      "name": "Glob",
+      "ordinal": 1971
+    },
+    "toolu_01K91Y34KXK7r17dJjPo3zjC": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/server/src/read-http.ts"
+      },
+      "name": "Read",
+      "ordinal": 204
+    },
+    "toolu_01L8L4BxSYSYrJTYPtKZLxKQ": {
+      "input": {
+        "-A": 60,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/server/src/authority-read.ts",
+        "pattern": "export function createAuthorityReadPlane"
+      },
+      "name": "Grep",
+      "ordinal": 2952
+    },
+    "toolu_01LAowDRqWMVWxvpPG8ZE49s": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/tsconfig.check.json"
+      },
+      "name": "Read",
+      "ordinal": 2109
+    },
+    "toolu_01LE16z18Sd146uvPfahTsBp": {
+      "input": {
+        "-C": 8,
+        "-n": true,
+        "head_limit": 80,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.test.ts",
+        "pattern": "function fixture|const cleanup|options.file|withRead\\("
+      },
+      "name": "Grep",
+      "ordinal": 1082
+    },
+    "toolu_01LdUnkR4wxANWQf31pfLUtp": {
+      "input": {
+        "-A": 20,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/package.json",
+        "pattern": "\"exports\""
+      },
+      "name": "Grep",
+      "ordinal": 3133
+    },
+    "toolu_01MM1Vsv5QuRnHrmqNnqkKsB": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "limit": 36,
+        "offset": 346
+      },
+      "name": "Read",
+      "ordinal": 1608
+    },
+    "toolu_01MaoxQVHkrhtvUdCAKLUTTL": {
+      "input": {
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-http.ts",
+        "pattern": "raw|schema"
+      },
+      "name": "Grep",
+      "ordinal": 478
+    },
+    "toolu_01MjmqqyRKP9UknqT5RHwvbQ": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/root-git-basis/status.porcelain"
+      },
+      "name": "Read",
+      "ordinal": 47
+    },
+    "toolu_01MkBzA2QitrhE3V2gn29eda": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/root-git-basis/basis.json"
+      },
+      "name": "Read",
+      "ordinal": 32
+    },
+    "toolu_01N8iscuGZntjdPmJL9q5P8L": {
+      "input": {
+        "-A": 50,
+        "-n": true,
+        "head_limit": 60,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "pattern": "observation: \\\"|JSON.stringify\\(\\{"
+      },
+      "name": "Grep",
+      "ordinal": 2429
+    },
+    "toolu_01NCS2hfPZ1zCB8yXp4VW9RY": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-schema-http.test.ts",
+        "limit": 240
+      },
+      "name": "Read",
+      "ordinal": 760
+    },
+    "toolu_01NEYyuy7Lf5TmopZau6V1F9": {
+      "input": {
+        "-C": 14,
+        "-n": true,
+        "head_limit": 70,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "pattern": "ready:|ready\\."
+      },
+      "name": "Grep",
+      "ordinal": 2396
+    },
+    "toolu_01R67enZAyoTKcGmMHyYBmnS": {
+      "input": {
+        "-C": 20,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "pattern": "function executeExact|function canonicalHttpUrl|validateExactRunConfiguration|pathname \\+ |\\.search"
+      },
+      "name": "Grep",
+      "ordinal": 1488
+    },
+    "toolu_01RB7ZBsCgUHHXpY8YPtuSwE": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.test.ts",
+        "limit": 190,
+        "offset": 4305
+      },
+      "name": "Read",
+      "ordinal": 2143
+    },
+    "toolu_01Ry2xeZBX1HWdiaSg9eGjv4": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.test.ts",
+        "limit": 30,
+        "offset": 1478
+      },
+      "name": "Read",
+      "ordinal": 2825
+    },
+    "toolu_01S1AaePVHGz4oHAXEPzHkbf": {
+      "input": {
+        "-C": 3,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/index.ts",
+        "pattern": "transaction-http|transaction-schema-http|transaction-service|transaction-consistency"
+      },
+      "name": "Grep",
+      "ordinal": 1052
+    },
+    "toolu_01SUu3ezQMn52UvRnzZ4zGet": {
+      "input": {
+        "-C": 8,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "pattern": "RESERVED_FIELDS|isSecretHeaderName"
+      },
+      "name": "Grep",
+      "ordinal": 1558
+    },
+    "toolu_01Ssc663L8ba1uDVWL8ATgS2": {
+      "input": {
+        "-C": 10,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "pattern": "bodyOctets"
+      },
+      "name": "Grep",
+      "ordinal": 2308
+    },
+    "toolu_01SzxU2JZghuDANEFgrrDdgy": {
+      "input": {
+        "-A": 25,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/read-http-routing.ts",
+        "pattern": "export function jsonResponse|export function scopeDataResponse|export function createReadHttpRoute"
+      },
+      "name": "Grep",
+      "ordinal": 506
+    },
+    "toolu_01TmezLXkT4SStwJk3kKgtvR": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "limit": 135,
+        "offset": 679
+      },
+      "name": "Read",
+      "ordinal": 2353
+    },
+    "toolu_01U7Zqtw4AfT483Xww4ngU2J": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/server/src/transaction-consistency.ts"
+      },
+      "name": "Read",
+      "ordinal": 140
+    },
+    "toolu_01Ucpk35VSkqNNed8SnmpdCU": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/accepted-plan/plan.md"
+      },
+      "name": "Read",
+      "ordinal": 66
+    },
+    "toolu_01V8NzqU3BB2tQFwMM3cE2c3": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/index.ts"
+      },
+      "name": "Read",
+      "ordinal": 1117
+    },
+    "toolu_01VQWMGF2JD8VeK3bwM7RksX": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/source-cases.json"
+      },
+      "name": "Read",
+      "ordinal": 3301
+    },
+    "toolu_01VX7PnWMW4mTkZ2zbJkAfrB": {
+      "input": {
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/development.ts",
+        "pattern": "transaction-http|transaction-schema-http|transaction-service"
+      },
+      "name": "Grep",
+      "ordinal": 3110
+    },
+    "toolu_01VhzETcnNKDHbPQYEhkT61W": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-schema-http.test.ts",
+        "limit": 200,
+        "offset": 240
+      },
+      "name": "Read",
+      "ordinal": 822
+    },
+    "toolu_01WASSgjHfy32okYUdinmsrV": {
+      "input": {
+        "-C": 3,
+        "-n": true,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.test.ts",
+        "pattern": "minimumReads"
+      },
+      "name": "Grep",
+      "ordinal": 2094
+    },
+    "toolu_01XHAaWdLoWxnRUzGAuNbn5r": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/test-support/transactional-execution-binding.ts",
+        "limit": 50
+      },
+      "name": "Read",
+      "ordinal": 3336
+    },
+    "toolu_01XKyMusaKkgZdckkz12LAaC": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src/transaction-service.test.ts",
+        "limit": 90,
+        "offset": 3769
+      },
+      "name": "Read",
+      "ordinal": 2848
+    },
+    "toolu_01XSj75n5Y8E3vBv4DTMjQ3z": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "limit": 200
+      },
+      "name": "Read",
+      "ordinal": 1216
+    },
+    "toolu_01XpioKTopAJpHMCnd2P8mtA": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/full.patch"
+      },
+      "name": "Read",
+      "ordinal": 247
+    },
+    "toolu_01XtLPrHmcuQq2qvuMRqXCa5": {
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "limit": 220,
+        "offset": 460
+      },
+      "name": "Read",
+      "ordinal": 2228
+    },
+    "toolu_01XwA2bmpmxNgwA2tJtQqk7G": {
+      "input": {
+        "-C": 6,
+        "-n": true,
+        "head_limit": 150,
+        "output_mode": "content",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/claude-code-review/context/author-freeze/dependencies/packages/conformance/src/http-executor.ts",
+        "pattern": "wireResponseBytes|exactMode|maxWire|maximumWire|routes"
+      },
+      "name": "Grep",
+      "ordinal": 1442
+    }
+  },
+  "declaredAgentNamesInInitAreNotInvocations": true,
+  "init": {
+    "agents": [
+      "claude",
+      "Explore",
+      "general-purpose",
+      "Plan"
+    ],
+    "analytics_disabled": false,
+    "apiKeySource": "none",
+    "capabilities": [
+      "interrupt_receipt_v1",
+      "interrupt_cancel_queued_v1",
+      "msg_lifecycle_v1"
+    ],
+    "claude_code_version": "2.1.263",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "fast_mode_state": "off",
+    "mcp_servers": [],
+    "messaging_socket_path": "/tmp/cc-socks/53660.sock",
+    "model": "claude-opus-5[1m]",
+    "output_style": "default",
+    "permissionMode": "default",
+    "plugins": [],
+    "product_feedback_disabled": false,
+    "session_id": "41b8720f-654f-401f-8182-510ca34ed6a1",
+    "skills": [],
+    "slash_commands": [],
+    "subtype": "init",
+    "tools": [
+      "Glob",
+      "Grep",
+      "Read"
+    ],
+    "type": "system",
+    "uuid": "81adf2ef-0dce-4db6-966d-3d43c655c501"
+  },
+  "matchingToolResultMetadata": {
+    "toolu_011cBZncf6mco7rtM48J7Qm4": {
+      "contentSha256": "3c098de3f22a705b231c55a4b82f437b22d0c7e86311dd89d218f8ff019b8eca",
+      "is_error": false,
+      "ordinal": 1295
+    },
+    "toolu_011vDY7eqLMuwJCUHQ1xWMJo": {
+      "contentSha256": "953f6d20d01b20b248f636744a9bdb3c4e8e778a6afdd08067c6fb82f5ce88b3",
+      "is_error": false,
+      "ordinal": 693
+    },
+    "toolu_011z7iW4Uh8v4qmn2n9W19SP": {
+      "contentSha256": "f158ef31338f94394f915ee6e7ceac9e43a684c3a18a87226197a1cfc17872f4",
+      "is_error": false,
+      "ordinal": 112
+    },
+    "toolu_012t3FpdRZqmrqLetKsbv51S": {
+      "contentSha256": "71775e1c95233fb6fa7044c0243c4d8ff24cced3a4dd19001abfe6d87c20ceec",
+      "is_error": false,
+      "ordinal": 84
+    },
+    "toolu_0135PeJ7JPneyaW9rb5iHQJz": {
+      "contentSha256": "415ea55b76f3107a5565c08b5b99b82327e54b37a4ccbffe30896b1fa59725e4",
+      "is_error": false,
+      "ordinal": 3012
+    },
+    "toolu_014HjyJuSfHxxVh8kxYgDhN4": {
+      "contentSha256": "1ee3caf62431551426984ae7b991e087ceb59a59ec61d5c479118b43ec6495dc",
+      "is_error": false,
+      "ordinal": 902
+    },
+    "toolu_014LxMsLXjLFLPgx9r4byNDX": {
+      "contentSha256": "367fb04baea51ac606e5ded1bfd79850d6a43f07f7a36c651004f6bb701bca2e",
+      "is_error": false,
+      "ordinal": 1351
+    },
+    "toolu_0152GKrXNqTYvpjdKTynh8qF": {
+      "contentSha256": "723f1be90bbbe991b6caf7ec8c7533817a38f9c8e8e1028bf3513233c9bb555d",
+      "is_error": false,
+      "ordinal": 3286
+    },
+    "toolu_016mPUnuVsg3z2gUvkrqGXid": {
+      "contentSha256": "6b1721df2c46846c14e1d12e83dae276049a0382d46e6a04ff76e08569cc5122",
+      "is_error": false,
+      "ordinal": 1715
+    },
+    "toolu_0186kDZLBx4Lf5bbUqRMSoFq": {
+      "contentSha256": "22bf25d4cd8dbf1642b9b44ccdd0f6c12e969271631ae24818e30cf2ec66a5b9",
+      "is_error": false,
+      "ordinal": 2596
+    },
+    "toolu_018HXLkujDkKxFFh4AdQy8V3": {
+      "contentSha256": "2aa388833a229f931fc67787d291c21f984d68b0137701336c19efce2bfddef1",
+      "is_error": false,
+      "ordinal": 1316
+    },
+    "toolu_018XJtzcP5ttzQYf3LMroiVw": {
+      "contentSha256": "c807841bdd589424f0a734144eaa428d2b0ae7c4dcb48edf3f9c70bae5fbb39b",
+      "is_error": false,
+      "ordinal": 1809
+    },
+    "toolu_018ny2cveGygJnXX5eKAALTa": {
+      "contentSha256": "b934ab4c10f5b55355d631e92c225821b84a226069e22f99ad8e876e8747014b",
+      "is_error": false,
+      "ordinal": 2698
+    },
+    "toolu_0199M51qMLtiFiTtMMn7Gsoh": {
+      "contentSha256": "6c2388beeeaf1fde55806b33bc362bd65b6b37f90bcf2e103c52ff9c2e84dc84",
+      "is_error": false,
+      "ordinal": 1998
+    },
+    "toolu_019r48TP1JkjNzp9g9sjAncC": {
+      "contentSha256": "a9d5ce47de6d4c4657716275d2c9fc4cd3b698568d7302ffc01fd4373110e4fe",
+      "is_error": false,
+      "ordinal": 164
+    },
+    "toolu_01AAomG1Mhn6EuR8dUAf25YE": {
+      "contentSha256": "b6a015856eb141a6dd1e833106037875dfc288fda316ba9fac49a7abe17a5af9",
+      "is_error": false,
+      "ordinal": 1534
+    },
+    "toolu_01BUdmeZXJz1SPYT8YP33dmC": {
+      "contentSha256": "5474e9e49174cacbf0935f39bd51659f4bdd61aaa106f8b55a4ac9bd35dcccf4",
+      "is_error": false,
+      "ordinal": 1264
+    },
+    "toolu_01CDQgkNMZgDzyyfTXxGEmer": {
+      "contentSha256": "8e0f7b6666bc7d316ce3467a461e469ba985a27f0c751d95cf23f8f1103a56e8",
+      "is_error": false,
+      "ordinal": 553
+    },
+    "toolu_01CdaeQ9Q3pQw5snhSDs4QkC": {
+      "contentSha256": "d71e5806b95dc4ca5ed25d42fae2446e1245542bfd4753d48aa21ba5422b6640",
+      "is_error": false,
+      "ordinal": 2670
+    },
+    "toolu_01DGC2adENrYv2bjuEznmijP": {
+      "contentSha256": "d56bfdf34692c5a80d993a595bfb10eb4dfe6cd25accf32872ca944a3adc8a16",
+      "is_error": false,
+      "ordinal": 603
+    },
+    "toolu_01Dcurgq4U4AHN89kqNwEaAs": {
+      "contentSha256": "705bedc63ca20cb631ab27e57abb04108829aa9a6c0f986f2a764b2847fc1ce1",
+      "is_error": false,
+      "ordinal": 1755
+    },
+    "toolu_01EbDwnUobxQHD32sS43xyHw": {
+      "contentSha256": "7cf534185ea021a0cf1f7feae2931013c2ab346c5161f0e7f4e627fbc52a0edc",
+      "is_error": false,
+      "ordinal": 1854
+    },
+    "toolu_01F3jnfj8PnWS7Z1kbB8PM9X": {
+      "contentSha256": "072db0c793b30455650131617ba2e80a909d7403fd2efbe8c4478df802bf7e15",
+      "is_error": false,
+      "ordinal": 1388
+    },
+    "toolu_01FDLYTBVL6hWbSkqfHusewJ": {
+      "contentSha256": "a66a5d6c0f74267039c95bd35bdcedc4e05d5e304fe09cf4e83f82c22a6b70f5",
+      "is_error": false,
+      "ordinal": 435
+    },
+    "toolu_01HCQziJMKKZYYA42pXd95QK": {
+      "contentSha256": "33784b5b7569367d7acc91ed42d964224ef2684999a11b923ab0ce6e95c48dc1",
+      "is_error": false,
+      "ordinal": 2904
+    },
+    "toolu_01JLVHZc6fXMZD4gwNKm8nP1": {
+      "contentSha256": "57981352b4a47ca83179c36ab5123285a9451d3d9db512cc510a32ddf0abdb08",
+      "is_error": false,
+      "ordinal": 1142
+    },
+    "toolu_01JdFB5x8Cy1ccQ3QhRPwnvb": {
+      "contentSha256": "1716315b0e347c4b2e247e3920e2970262ac70ccc80060f9d0b292f9455011a0",
+      "is_error": false,
+      "ordinal": 1975
+    },
+    "toolu_01K91Y34KXK7r17dJjPo3zjC": {
+      "contentSha256": "75c343f688a35dd3fa50daa9d8c071960b11851e5052ce8d9b0358ae72a6b260",
+      "is_error": false,
+      "ordinal": 208
+    },
+    "toolu_01L8L4BxSYSYrJTYPtKZLxKQ": {
+      "contentSha256": "7cb426eb27b97e75f0d0901c6cb3e5e7c3e2eea03d9b1e0e4943ddcecf0bd061",
+      "is_error": false,
+      "ordinal": 2956
+    },
+    "toolu_01LAowDRqWMVWxvpPG8ZE49s": {
+      "contentSha256": "eaeddeaed15cead526ff8f232d3652e75dd0738f5c04166280f3e99a6118c005",
+      "is_error": false,
+      "ordinal": 2111
+    },
+    "toolu_01LE16z18Sd146uvPfahTsBp": {
+      "contentSha256": "e5473776f7b79f39fad55fc757b7ab957867cc0179a68697b3db949d56665eb9",
+      "is_error": false,
+      "ordinal": 1086
+    },
+    "toolu_01LdUnkR4wxANWQf31pfLUtp": {
+      "contentSha256": "d4e17594e591a59038b69055cfcd44b64eb6bbcfb02254fc30862bc815b0170e",
+      "is_error": false,
+      "ordinal": 3137
+    },
+    "toolu_01MM1Vsv5QuRnHrmqNnqkKsB": {
+      "contentSha256": "4a433337af69eb684f9125cd2b7b42e2fe4d2e9bc8e2486f7008025c1eb32303",
+      "is_error": false,
+      "ordinal": 1612
+    },
+    "toolu_01MaoxQVHkrhtvUdCAKLUTTL": {
+      "contentSha256": "f08d2e43f21215a7a10b9ddf09a257e50f1937e5e49409fc372b871e9e23a907",
+      "is_error": false,
+      "ordinal": 482
+    },
+    "toolu_01MjmqqyRKP9UknqT5RHwvbQ": {
+      "contentSha256": "488e2c7efba195bf5a1b6f6831f784038e2d5f4fb1ca55cfa76cce2eaf37b093",
+      "is_error": false,
+      "ordinal": 49
+    },
+    "toolu_01MkBzA2QitrhE3V2gn29eda": {
+      "contentSha256": "b2b1165a598aa6dcd378c1b79d01033f0221c127433b1c24a1e81d01a0960b6c",
+      "is_error": false,
+      "ordinal": 36
+    },
+    "toolu_01N8iscuGZntjdPmJL9q5P8L": {
+      "contentSha256": "42b5dafe404110e8696505d679793a9f992687204beed5aa4ab679340fe85838",
+      "is_error": false,
+      "ordinal": 2433
+    },
+    "toolu_01NCS2hfPZ1zCB8yXp4VW9RY": {
+      "contentSha256": "4ba4647a9a4c4318a9c7617513b84956ee4084e19f4501ada0e5acdc31c9f900",
+      "is_error": false,
+      "ordinal": 764
+    },
+    "toolu_01NEYyuy7Lf5TmopZau6V1F9": {
+      "contentSha256": "231fbbc2d487e58062c62b18846674d855d057bcf80ecddbb0af0f227db4f076",
+      "is_error": false,
+      "ordinal": 2398
+    },
+    "toolu_01R67enZAyoTKcGmMHyYBmnS": {
+      "contentSha256": "5a1e50f831c1faa192936d89969e8bb1ab06b621cec906a53755f6488becf7f9",
+      "is_error": false,
+      "ordinal": 1492
+    },
+    "toolu_01RB7ZBsCgUHHXpY8YPtuSwE": {
+      "contentSha256": "1426ff964590232ca641d453e5c701a56d446be91c00107690716b5782e6702f",
+      "is_error": false,
+      "ordinal": 2145
+    },
+    "toolu_01Ry2xeZBX1HWdiaSg9eGjv4": {
+      "contentSha256": "232e25502da34d656507657d44855f3533a16dad17b063c5fc88aab1897771ed",
+      "is_error": false,
+      "ordinal": 2829
+    },
+    "toolu_01S1AaePVHGz4oHAXEPzHkbf": {
+      "contentSha256": "a787abf7030a1ff6221793eb0512a97c4cd1f0720d0b737477d228978cea82d4",
+      "is_error": false,
+      "ordinal": 1056
+    },
+    "toolu_01SUu3ezQMn52UvRnzZ4zGet": {
+      "contentSha256": "8589f66c743d345423042c586facc19a2f8a8ac5ea16502d36ec4531b4340149",
+      "is_error": false,
+      "ordinal": 1562
+    },
+    "toolu_01Ssc663L8ba1uDVWL8ATgS2": {
+      "contentSha256": "be20059340ebcaa8360f54fd01a72d60077885a2fd97058c5234d36f614e7a9a",
+      "is_error": false,
+      "ordinal": 2312
+    },
+    "toolu_01SzxU2JZghuDANEFgrrDdgy": {
+      "contentSha256": "98abcde0f2f001b4a6c123e7ef846ac46becaba9351935682f0e4b62a8e57e41",
+      "is_error": false,
+      "ordinal": 510
+    },
+    "toolu_01TmezLXkT4SStwJk3kKgtvR": {
+      "contentSha256": "c189c3d18c51f84bfca06061deacaaf4203c5930c0762fc691f80165c1e2dc17",
+      "is_error": false,
+      "ordinal": 2357
+    },
+    "toolu_01U7Zqtw4AfT483Xww4ngU2J": {
+      "contentSha256": "c74297a9e6ea8f259f066502baf5458f3174f9c5f0798d065c7914ffb8851d8a",
+      "is_error": false,
+      "ordinal": 144
+    },
+    "toolu_01Ucpk35VSkqNNed8SnmpdCU": {
+      "contentSha256": "7ea83e54bacdf5088629f17ec29b0e4d89b7f2da183a8855e46d23353bd940c0",
+      "is_error": false,
+      "ordinal": 70
+    },
+    "toolu_01V8NzqU3BB2tQFwMM3cE2c3": {
+      "contentSha256": "85367bb536dff61fe079bc4926054afad62a7bc0369ad0fae30425f21c07e6dc",
+      "is_error": false,
+      "ordinal": 1123
+    },
+    "toolu_01VQWMGF2JD8VeK3bwM7RksX": {
+      "contentSha256": "b22931b1b05c61e57ee03ff0d354d9c14e619c58614a503155533fc66d1cdbb4",
+      "is_error": false,
+      "ordinal": 3303
+    },
+    "toolu_01VX7PnWMW4mTkZ2zbJkAfrB": {
+      "contentSha256": "a787abf7030a1ff6221793eb0512a97c4cd1f0720d0b737477d228978cea82d4",
+      "is_error": false,
+      "ordinal": 3114
+    },
+    "toolu_01VhzETcnNKDHbPQYEhkT61W": {
+      "contentSha256": "b4a6aa86dbd531c8f58f5b398eb16f927c478308dc61cf25e032c5bf49215adc",
+      "is_error": false,
+      "ordinal": 826
+    },
+    "toolu_01WASSgjHfy32okYUdinmsrV": {
+      "contentSha256": "913116d14c42954b6406259fc7d82122eeb4ce4f47fa7b6ed9833335bc9a91b1",
+      "is_error": false,
+      "ordinal": 2098
+    },
+    "toolu_01XHAaWdLoWxnRUzGAuNbn5r": {
+      "contentSha256": "57131f90a58c8a9fea9876ea9683dadeff15270cf431f76a151df0cf53713ab8",
+      "is_error": false,
+      "ordinal": 3338
+    },
+    "toolu_01XKyMusaKkgZdckkz12LAaC": {
+      "contentSha256": "0846fa4b403f0dad0f44803f989113e637b1e8a5628fc338c52639c5d6c7af1f",
+      "is_error": false,
+      "ordinal": 2852
+    },
+    "toolu_01XSj75n5Y8E3vBv4DTMjQ3z": {
+      "contentSha256": "8b5163cf143ade6305ed695aed6936a3f4085f16206ad6fadc222da4f830ca15",
+      "is_error": false,
+      "ordinal": 1218
+    },
+    "toolu_01XpioKTopAJpHMCnd2P8mtA": {
+      "contentSha256": "7360a80fcc9e29295812c9bbcdfd122bd945bf111bd2611920946cb91041c372",
+      "is_error": false,
+      "ordinal": 251
+    },
+    "toolu_01XtLPrHmcuQq2qvuMRqXCa5": {
+      "contentSha256": "6f06e9917da658da96e5b18bb2869f35bf2ba21290bffccb4a2148a1dd2876d7",
+      "is_error": false,
+      "ordinal": 2232
+    },
+    "toolu_01XwA2bmpmxNgwA2tJtQqk7G": {
+      "contentSha256": "92c03740a52fe1c6c49cf584b3304c6d369de51639874807daefef683b652560",
+      "is_error": false,
+      "ordinal": 1446
+    }
+  },
+  "noShellWriteAgentOrMcpInvocation": true,
+  "subagentStats": {
+    "by_type": {},
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "system": 0,
+      "user": 0
+    },
+    "max_depth": 0,
+    "refused": {
+      "budget": 0,
+      "concurrency_limit": 0,
+      "depth_limit": 0
+    },
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "spawned": 0,
+    "spawned_by_subagents": 0,
+    "started_in_background": 0
+  },
+  "toolErrors": []
+}

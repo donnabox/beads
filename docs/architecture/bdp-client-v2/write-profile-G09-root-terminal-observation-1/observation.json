@@ -1,0 +1,41 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "rootToolSession": 30006,
+  "actualRootToolExit": 0,
+  "actualInnerExit": 0,
+  "actualOuterExit": 0,
+  "independentTerminalAuditPending": true,
+  "sourceFrozen": true,
+  "validationReleased": false,
+  "noRetry": true,
+  "findingGroups": 9,
+  "nativeFindingCorroborated": 4,
+  "highStaticCompileFinding": 1,
+  "noObservedCompilerResult": true,
+  "files": {
+    "claude-code-review/exit.json": {
+      "sha256": "ff23246ca398b7f63a6061c3289766f86d1e24b5cbc850f91173beb0167f7b0f",
+      "bytes": 664
+    },
+    "claude-code-review/final-review.txt": {
+      "sha256": "a49746f6608cb88fd411afe3294dc8269c7aa0eef0d010f033f77925e37fe2a2",
+      "bytes": 20720
+    },
+    "claude-code-review/terminal-results.json": {
+      "sha256": "8c0b1ff17eea80fb9819b9fa86cc28f9f380cc80ceb4f8cde34a63c4b48c4efd",
+      "bytes": 24098
+    },
+    "launch-supervision/attempt/outer-exit.json": {
+      "sha256": "e8593c47c239d0778c4d5b19d8135574616f0061da1fb608ab92794e223bddd5",
+      "bytes": 45633
+    },
+    "launch-supervision/attempt/wrapper.stdout": {
+      "sha256": "e50cc930f8a9dd5a95e5b9ae9cac6cd939254184f67117bbea0f717c955f51cf",
+      "bytes": 617
+    },
+    "launch-supervision/attempt/wrapper.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

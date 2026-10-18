@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+  ],
+  "auditorPid": 97471,
+  "communicateReturned": true,
+  "directHandleReaped": true,
+  "elapsedSeconds": 0.04429683368653059,
+  "pid": 97764,
+  "rawExit": 0,
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderrEOF": true,
+  "stdout": {
+    "bytes": 212110,
+    "sha256": "7dfe19c2916353a915b237c10ef22f66b560b0a56a4850c783282f8acd65c7a3"
+  },
+  "stdoutEOF": true,
+  "utc": "2026-10-18T18:12:11.135137+00:00"
+}
