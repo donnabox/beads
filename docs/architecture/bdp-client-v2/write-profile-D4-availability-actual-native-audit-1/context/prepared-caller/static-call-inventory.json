@@ -1,0 +1,84 @@
+{
+  "KillOrAlarmCancellationSites": 0,
+  "PopenSites": 1,
+  "calls": [
+    {
+      "call": "before(120)",
+      "line": 43
+    },
+    {
+      "call": "before(120)",
+      "line": 45
+    },
+    {
+      "call": "before(120)",
+      "line": 50
+    },
+    {
+      "call": "before()",
+      "line": 56
+    },
+    {
+      "call": "subprocess.Popen(argv,cwd=cwd,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,umask=0o077)",
+      "line": 61
+    },
+    {
+      "call": "p.terminate()",
+      "line": 78
+    },
+    {
+      "call": "before()",
+      "line": 86
+    },
+    {
+      "call": "before()",
+      "line": 98
+    },
+    {
+      "call": "before()",
+      "line": 99
+    },
+    {
+      "call": "before()",
+      "line": 100
+    },
+    {
+      "call": "before()",
+      "line": 103
+    },
+    {
+      "call": "capture('guard',[PYTHON,'-I','-B',str(GUARD),'/usr/bin/true'],str(HERE),30)",
+      "line": 106
+    },
+    {
+      "call": "before()",
+      "line": 107
+    },
+    {
+      "call": "capture('native',argv,str(H),120)",
+      "line": 109
+    },
+    {
+      "call": "before()",
+      "line": 111
+    },
+    {
+      "call": "before()",
+      "line": 116
+    },
+    {
+      "call": "st['proc'].terminate()",
+      "line": 122
+    },
+    {
+      "call": "before(120)",
+      "line": 138
+    },
+    {
+      "call": "before(120)",
+      "line": 144
+    }
+  ],
+  "guardAndNativeOnly": "One shared literal Popen capture site used exactly for pinned guard then one native AVAIL; no workers/product/finite controls",
+  "method": "AST DATA only; never import/evaluate capture/native/helper/Perl"
+}

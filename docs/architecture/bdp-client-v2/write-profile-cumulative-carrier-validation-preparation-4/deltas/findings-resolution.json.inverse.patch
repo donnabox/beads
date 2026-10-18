@@ -1,0 +1,42 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/findings-resolution.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/findings-resolution.json
+@@ -1,16 +1,28 @@
+ {
+-  "CV2N1": "Unchanged3 failurePrefix+censusIoFailurePrefix and positive-null gate; no exception/ownership correction added",
+-  "correction": "Exact existing pinned99ddab2e DATA template copied at previously missing local path; helpers untouched.",
++  "correction": [
++    "reset current probe state before Popen/setup",
++    "retain each acquired direct Popen identity immediately",
++    "fixed-class ordinary acquisition/setup/read/poll exceptions refresh current actual counts/EOF/observed terminal without polling again",
++    "preserve FIRST failurePrefix and distinct current censusIoFailurePrefix",
++    "same-clock best-effort finish(1) before existing finally; no further probe/retry",
++    "strict exact terminal keys plus positive new field null"
++  ],
+   "executionReleased": false,
+-  "finding": "CV3-N1 Medium",
++  "finding": "CV2-N1 Medium",
+   "otherNativeAndRootRequired": true,
+   "rootAcceptedFinding": true,
+-  "rootDispositionSha256": "a0022f462b5cd886412ff9d18cd21c1bde5c3ce48a54b7ed386d36002ea5fc6a",
+-  "rootReleaseSha256": "f4cfb58d38bd423fdcc70e0ef53bcd7d72d9a355b971b26355790fcc213fe68b",
+-  "state": "AUTHOR preparation4 only, independent acceptance PENDING",
+-  "template": {
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/context/accepted-contract2/private-emit-project.template.json",
+-    "path": "context/accepted-contract2/private-emit-project.template.json",
+-    "sha256": "99ddab2e2e51f3ca82933bcef9cb266cfc454a4f9ee94f5a3f81f7a87bc47183"
+-  }
++  "rootDispositionSha256": "1f0e7a4a42824e9e73a27a0204e97cc7965bb88b65b10bbe7e60bdb667d0717f",
++  "rootReleaseSha256": "7c1a4b94d2eaea95e7d823783609e1669315ebd37ae7399e2f3cfed792038bbb",
++  "state": "AUTHOR correction proposal implemented in CLOSED successor3; OTHER-native/root not yet accepted",
++  "unchanged": [
++    "all normal both-EOF/raw-terminal parsing/ownership/quiet/root all PID-PGID absence predicates",
++    "all clean/dirty source tuple checks and attribution",
++    "all source/product callbacks/selection/schema/workload/budgets/caps",
++    "all genuine brands/private compiler graph/auth-policy limitations/unknown cleanup"
++  ],
++  "unknowns": [
++    "publication can fail or be partial; no guaranteed host durability",
++    "existing cleanup is not new per-child closure proof",
++    "all synthetic/runtime outcomes unexecuted"
++  ]
+ }

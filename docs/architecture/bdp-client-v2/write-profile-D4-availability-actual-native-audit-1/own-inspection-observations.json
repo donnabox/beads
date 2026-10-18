@@ -1,0 +1,15 @@
+{
+  "notSubjectFailures": true,
+  "observations": [
+    {
+      "detail": "Inner Python executable path omitted @; guard validated then failed FileNotFoundError before pure-data script began. Corrected next read. No subject or probe ran.",
+      "kind": "own guarded read command typo",
+      "toolChunk": "99da7a"
+    },
+    {
+      "detail": "Initially assumed10-column lstart table; actual root census has5 fields. Assertion stopped without writes/evaluation. Correct5-field parser was then matched to root actual invocation observation; no subject data changed.",
+      "kind": "own read-only row parser assumption",
+      "toolChunk": "d8b409"
+    }
+  ]
+}

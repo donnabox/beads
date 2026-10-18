@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-18T16:31:42.696886+00:00",
+  "scope": "Additive truthful observation of EXISTING root fresh process census; no new probe",
+  "existingAbsencePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-fresh-absence-1/absence.json",
+  "existingAbsenceSha256": "39bdc252ae4fc9d69cc5ab192021fe5aa84f925f3e805216f07fe8ffb4e64d32",
+  "literalInvocation": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,comm="
+  ],
+  "api": "subprocess.check_output(argv,timeout=10), stderr inherited to outer root tool",
+  "actualRootCommandExitCodeObserved": 0,
+  "actualRootToolOutputContainedExpectedAbsenceSummary": true,
+  "psRawExit": "0 SOURCE-ATTRIBUTED by successful check_output return, not separately retained per-ps receipt",
+  "psStdoutEOF": "SOURCE-ATTRIBUTED by complete check_output capture",
+  "psStderrEOF": "UNRETAINED/UNKNOWN, not separately PIPE captured",
+  "psStderrBytes": "UNRETAINED/UNKNOWN",
+  "separatePerPsTerminalReceiptExisted": false,
+  "newCensusOrProbe": false,
+  "originalRawCensusUnchanged": true,
+  "availabilityAccepted": false,
+  "clockDomainVerified": false,
+  "noRetry": true,
+  "limitation": "Numerical absence independently parseable from saved5field rows. No separate complete-stderr, birth/live-identity/all-transient/socket proof is reconstructed; original caller1/native215stderr failure preserved."
+}

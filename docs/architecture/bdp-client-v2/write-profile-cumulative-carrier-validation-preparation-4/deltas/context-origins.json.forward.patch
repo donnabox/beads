@@ -1,0 +1,379 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context-origins.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/context-origins.json
+@@ -1,224 +1,302 @@
+ {
+   "audit-common.mjs": {
+     "bytes": 5676,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/audit-common.mjs",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/audit-common.mjs",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "8e7c940a256dd6a2cc17be99d19a934a2c92169c2532a52089960283fd0d486c"
+   },
+   "audit.py": {
+     "bytes": 11495,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/audit.py",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/audit.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "1b8169b352d5ce1aaea5cb9d72f066b3e4cb389c96e38e60b4864f0e242894f4"
++  },
++  "author-receipt-precision.json": {
++    "bytes": 1089,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/author-receipt-precision.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
++    "sha256": "959b17aa844a85e0a179e17e215afb210ea4882fa2b7c4d01180ca92821ee949"
+   },
+   "base-tools.candidate.json": {
+     "bytes": 143578,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/base-tools.candidate.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/base-tools.candidate.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "abfc06dc4b4ebad67a1141e773b0ac3ba3521033e4e0c7e06e57defe90d2b7d5"
+   },
+   "carrier-audit.mjs": {
+     "bytes": 13848,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/carrier-audit.mjs",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/carrier-audit.mjs",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "c49e8447ffc6c6a74a9a33a67675540418bb6576a2a8c75ade77a32971d41005"
++  },
++  "census-probe-contract.json": {
++    "bytes": 5443,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/census-probe-contract.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
++    "sha256": "e26ce0550c6b211b60cfb715d13fb7b44e3a580e98ce2b57182a8bc25180a01e"
+   },
+   "clean-attribution-contract.json": {
+     "bytes": 848,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/clean-attribution-contract.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/clean-attribution-contract.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "5ab6b0dfe0d94df579f6db2c68d6c526d4c532235639466e95dcc39ad9a18eed"
++  },
++  "context/accepted-contract2/private-emit-project.template.json": {
++    "bytes": 525,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/context/accepted-contract2/private-emit-project.template.json",
++    "role": "exact existing pinned DATA template99ddab2e; only missing local input correction",
++    "sha256": "99ddab2e2e51f3ca82933bcef9cb266cfc454a4f9ee94f5a3f81f7a87bc47183"
+   },
+   "context/current-source/apps/bdptest/src/transactional-matrix.test.ts": {
+     "bytes": 189817,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/current-source/apps/bdptest/src/transactional-matrix.test.ts",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/current-source/apps/bdptest/src/transactional-matrix.test.ts",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "cf9ba0c7cb9331826ac42303ca9de70c80af70e1066d8a4948ad3b27df37b06f"
+   },
+   "context/current-source/apps/bdptest/test-support/read-update-artifact-execution.ts": {
+     "bytes": 31650,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/current-source/apps/bdptest/test-support/read-update-artifact-execution.ts",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/current-source/apps/bdptest/test-support/read-update-artifact-execution.ts",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "4102e1d1f0e2d35f2a23d5a090b06131ddbd12c71a8d756940e6b40bd6e158ca"
+   },
+   "context/current-source/packages/conformance/test-support/profile-evidence.test.ts": {
+     "bytes": 72746,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/current-source/packages/conformance/test-support/profile-evidence.test.ts",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/current-source/packages/conformance/test-support/profile-evidence.test.ts",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "566e3c8b8d2c939611ac0a40b55e184b2cb3d6acdbd8dfe47155dcb06fa77ba2"
+   },
+   "context/current-source/packages/conformance/test-support/profile-evidence.ts": {
+     "bytes": 43292,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/current-source/packages/conformance/test-support/profile-evidence.ts",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/current-source/packages/conformance/test-support/profile-evidence.ts",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "c8cb626093c21fd14326071d10a11eefac979176aacdd8e585f491187201bfb3"
+   },
+   "context/write-profile-cumulative-carrier-probe-retention-clarification-1/clarification.json": {
+     "bytes": 2337,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-probe-retention-clarification-1/clarification.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-probe-retention-clarification-1/clarification.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "0173cce3ef6a41c24492382bd60009ad9bd00cfdb2cdd17237f6662750cad4f7"
+   },
+   "context/write-profile-cumulative-carrier-probe-retention-clarification-1/index.json": {
+     "bytes": 144,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-probe-retention-clarification-1/index.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-probe-retention-clarification-1/index.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "5edfc7decf1814b44ad80fcea9829b176975d91184f2462d22922988ab154abb"
+   },
+   "context/write-profile-cumulative-carrier-validation1-native-mechanics-1/closure.json": {
+     "bytes": 1254,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/closure.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/closure.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "a50437f91120063ee7b449f028762ce195032de72c248964f18f02f167dc46bf"
+   },
+   "context/write-profile-cumulative-carrier-validation1-native-mechanics-1/findings.json": {
+     "bytes": 3789,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/findings.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/findings.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "f3527a50d32ff2f5f9fbfedc25fd0a4e73078b26d7dabe0abd7dd80d47ffe7fc"
+   },
+   "context/write-profile-cumulative-carrier-validation1-native-mechanics-1/index.json": {
+     "bytes": 178194,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/index.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/index.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "90c0f2198c1d48530dec3da96c46d4a7deb80fe8bb2f82bf2516f3d8a157b710"
+   },
+   "context/write-profile-cumulative-carrier-validation1-native-mechanics-1/report.md": {
+     "bytes": 7035,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/report.md",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-native-mechanics-1/report.md",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "ade8eb91401d34d939dc1e8aa72d9b3dd265a51c2b2476a401be83baede10c45"
+   },
+   "context/write-profile-cumulative-carrier-validation1-root-disposition-1/disposition.json": {
+     "bytes": 2051,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-root-disposition-1/disposition.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-root-disposition-1/disposition.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "84ba7f26e71f75dbf50b508f70ee7ed0bd5954b684596071979d4d0481e9a0eb"
+   },
+   "context/write-profile-cumulative-carrier-validation1-root-disposition-1/index.json": {
+     "bytes": 230,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-root-disposition-1/index.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-root-disposition-1/index.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "17abfd2720e4f6be57941a518c67f42cf7b462bb0b55fa7d342c65d6eb57061c"
+   },
+   "context/write-profile-cumulative-carrier-validation1-root-disposition-1/release.json": {
+     "bytes": 3014,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/context/write-profile-cumulative-carrier-validation1-root-disposition-1/release.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation1-root-disposition-1/release.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "5a336ac2280d2ec76c552055fd93d4673e804d69e9008291a6b9ce4132c9afcd"
+   },
+   "context/write-profile-cumulative-carrier-validation2-native-mechanics-1/closure.json": {
+     "bytes": 1509,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/closure.json",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-native-mechanics-1/closure.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "3df85154962f53082c32e5d69d3c97090270114c556e4f84cd391ca18a2a396c"
+   },
+   "context/write-profile-cumulative-carrier-validation2-native-mechanics-1/findings.json": {
+     "bytes": 3132,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/findings.json",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-native-mechanics-1/findings.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "46ca89a9e8c8c033ce3218b5644ecb4d1018ca4547b8bde8fb4c9a95484a8215"
+   },
+   "context/write-profile-cumulative-carrier-validation2-native-mechanics-1/index.json": {
+     "bytes": 20141,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/index.json",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-native-mechanics-1/index.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "d85cba8f096603ad086468b38050c181de69bdf55ba92876ac43fc20f95e1db2"
+   },
+   "context/write-profile-cumulative-carrier-validation2-native-mechanics-1/report.md": {
+     "bytes": 9015,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/report.md",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-native-mechanics-1/report.md",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "0fd7e73b8c1821bf5a94b82a4c3bedf852473c2e6f5a3ff62cb5d58e04929481"
+   },
+   "context/write-profile-cumulative-carrier-validation2-root-disposition-1/disposition.json": {
+     "bytes": 1277,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-root-disposition-1/disposition.json",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-root-disposition-1/disposition.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "1f0e7a4a42824e9e73a27a0204e97cc7965bb88b65b10bbe7e60bdb667d0717f"
+   },
+   "context/write-profile-cumulative-carrier-validation2-root-disposition-1/index.json": {
+     "bytes": 290,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-root-disposition-1/index.json",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-root-disposition-1/index.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "4c2da7de0ddac5bd59506593e92472303b49ad4b9fabcf3137b055018a8b4f91"
+   },
+   "context/write-profile-cumulative-carrier-validation2-root-disposition-1/release.json": {
+     "bytes": 2794,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-root-disposition-1/release.json",
+-    "role": "root author-only authority or independent finding; not future acceptance",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/write-profile-cumulative-carrier-validation2-root-disposition-1/release.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "7c1a4b94d2eaea95e7d823783609e1669315ebd37ae7399e2f3cfed792038bbb"
++  },
++  "context/write-profile-cumulative-carrier-validation3-native-mechanics-1/closure.json": {
++    "bytes": 885,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/closure.json",
++    "role": "immediate independent FULL review3, historical rejected preparation, not independent acceptance4",
++    "sha256": "5273bca2161b020a891c535047e0e96882b4744787e4d92091e3699b1db8c677"
++  },
++  "context/write-profile-cumulative-carrier-validation3-native-mechanics-1/findings.json": {
++    "bytes": 2123,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/findings.json",
++    "role": "immediate independent FULL review3, historical rejected preparation, not independent acceptance4",
++    "sha256": "9c3e986c6ad1a6c73fc49bb0fb6e95e352ba3f467e87424f5c1600663225049d"
++  },
++  "context/write-profile-cumulative-carrier-validation3-native-mechanics-1/index.json": {
++    "bytes": 19787,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/index.json",
++    "role": "immediate independent FULL review3, historical rejected preparation, not independent acceptance4",
++    "sha256": "0db71b2ebbf7f667502dfb9102c892b0206a7b73d1ba819389027df2afff273e"
++  },
++  "context/write-profile-cumulative-carrier-validation3-native-mechanics-1/report.md": {
++    "bytes": 5969,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/report.md",
++    "role": "immediate independent FULL review3, historical rejected preparation, not independent acceptance4",
++    "sha256": "aea7fc0b1c790ab755dc61163fa2c95d4bcda6831a8fd6ac89a25a21fe59aad1"
++  },
++  "context/write-profile-cumulative-carrier-validation3-root-disposition-1/disposition.json": {
++    "bytes": 1494,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-root-disposition-1/disposition.json",
++    "role": "durable root author-only CV3-N1 release; no runtime authority",
++    "sha256": "a0022f462b5cd886412ff9d18cd21c1bde5c3ce48a54b7ed386d36002ea5fc6a"
++  },
++  "context/write-profile-cumulative-carrier-validation3-root-disposition-1/index.json": {
++    "bytes": 290,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-root-disposition-1/index.json",
++    "role": "durable root author-only CV3-N1 release; no runtime authority",
++    "sha256": "96aab535d8623e5cb52aa2d6d59ae4ec4b48f0437c656ed07dd84bc6b84a2a95"
++  },
++  "context/write-profile-cumulative-carrier-validation3-root-disposition-1/release.json": {
++    "bytes": 2381,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-root-disposition-1/release.json",
++    "role": "durable root author-only CV3-N1 release; no runtime authority",
++    "sha256": "f4cfb58d38bd423fdcc70e0ef53bcd7d72d9a355b971b26355790fcc213fe68b"
+   },
+   "expected-source-map.json": {
+     "bytes": 88133,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/expected-source-map.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/expected-source-map.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "919829b131a0521c455a4fba968ae25edcda55c27c371b354e2af1c84a7fb096"
+   },
+   "gate-keys.json": {
+     "bytes": 574,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/gate-keys.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/gate-keys.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "5d270e2a03b832c12db655902982a99376298af832b5b56e0d4e57a55a47273e"
++  },
++  "gate.py": {
++    "bytes": 20624,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/gate.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
++    "sha256": "4f724009f01cad60171ad47e321f188be7d03d56af2192f2a13841c498b53191"
+   },
+   "guarded-action-session-20261018-021624-549f.py": {
+     "bytes": 946,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/guarded-action-session-20261018-021624-549f.py",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/guarded-action-session-20261018-021624-549f.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+   },
+   "packages.py": {
+     "bytes": 9010,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/packages.py",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/packages.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "acda7bcaee8b9a7422bb78ecca5b6dd895437f2aed6357de0e2be7508acb0345"
+   },
+   "private-graph.mjs": {
+     "bytes": 11680,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/private-graph.mjs",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/private-graph.mjs",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "8d2c0020cebe47cf916164bf457d46e6c4e94c58f9ef507d7881b895cd5674ac"
+   },
+   "private_emit.py": {
+     "bytes": 6079,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/private_emit.py",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/private_emit.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "342491a1479d742ea23cd2b48760d8c3817d5c613738208e974214815c9aff89"
++  },
++  "prospective-negative-controls.json": {
++    "bytes": 9154,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/prospective-negative-controls.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
++    "sha256": "c18cda06137480261a72ce30f3b9b451a13e96c5f21ef02a807cc7ba554c9ce3"
+   },
+   "report-audit-contract.json": {
+     "bytes": 3914,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/report-audit-contract.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/report-audit-contract.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "cb8e97891ec5d2e24e8796a79afb13551572b502db02c1e8b5cb4679012d0dd1"
++  },
++  "run.py": {
++    "bytes": 21980,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
++    "sha256": "76c384af408a3184df3256ee3568898a60126633328b82f292887f5367485335"
+   },
+   "scanner.py": {
+     "bytes": 7611,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/scanner.py",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/scanner.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "c1227c030f6f409cbc1812a361caf4a269b9b583e15f226822add1488ce83770"
+   },
+   "semantic-source-scope.json": {
+     "bytes": 1679,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/semantic-source-scope.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/semantic-source-scope.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "a1cd75f346a1c924056b35245079feeb8a85ef5169983aea5dba7ccc67077976"
+   },
+   "source-binding.template.json": {
+     "bytes": 90504,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/source-binding.template.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/source-binding.template.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "4599d8b8d5163d15f64745fea8bdf40cb83708a192807c38ca285783eb4d9e6e"
+   },
+   "unresolved-inputs.json": {
+     "bytes": 1028,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/unresolved-inputs.json",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/unresolved-inputs.json",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "232e4ae925bb6f5b88f07f862004fc41b8c45958624cfc769ec632c51eba67ec"
+   },
+   "worker.py": {
+     "bytes": 11409,
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/worker.py",
+-    "role": "byte-exact predecessor active input/helper copy",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/worker.py",
++    "role": "exact immediate predecessor input, unless separately delta-bound below",
+     "sha256": "3a41999eaea1edccc37097e59e1a37516a283db79283a10bb00ca34cae56da76"
+   }
+ }

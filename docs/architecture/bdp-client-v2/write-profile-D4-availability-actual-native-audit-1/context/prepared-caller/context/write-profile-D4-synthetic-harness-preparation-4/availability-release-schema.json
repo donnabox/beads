@@ -1,0 +1,29 @@
+{
+  "state": "DATA only; no released document",
+  "exactKeys": [
+    "session",
+    "scope",
+    "availabilityOnly",
+    "syntheticReleased",
+    "productReleased",
+    "harnessImplementationSha256",
+    "approvedInvocations",
+    "nativeHarnessAcceptance",
+    "durableRootRelease",
+    "noRetry"
+  ],
+  "fixedValues": {
+    "session": "2026-10-18T02:16:24Z-549f",
+    "scope": "D4 zero-product clock/bootstrap availability only",
+    "availabilityOnly": true,
+    "syntheticReleased": false,
+    "productReleased": false,
+    "approvedInvocations": [
+      "AVAIL--availability"
+    ],
+    "noRetry": true
+  },
+  "nativeAcceptance": "pinned path+SHA document: accepted=true, availabilityStaticAcceptance=true, exact harnessImplementationSha256; no clockDomainVerified prerequisite/invented measured proof",
+  "durableRootRelease": "pinned path+SHA document: accepted=true, availabilityOnly=true, syntheticReleased=false, productReleased=false, exact implementation",
+  "controlReleaseAddition": "Existing strict finite-control release gains availabilityAcceptance path+SHA. It must pin separate actual root acceptance with accepted/availabilityOnly/clockDomainVerified/ownershipBootstrapAccepted/nativeLimiterTerminalVerified/freshAllObservedProcessesAbsent/bothTerminalBefore115/samePinnedTools=true, syntheticReleased/productReleased=false and exact harnessImplementationSha256. Existing static native acceptance keeps hardLimiterStaticAcceptance and ownershipBootstrapAccepted; no false clock measurement in static review."
+}

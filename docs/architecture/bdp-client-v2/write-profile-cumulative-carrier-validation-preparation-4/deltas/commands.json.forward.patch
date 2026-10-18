@@ -1,0 +1,152 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/commands.json
+@@ -8,9 +8,9 @@
+       ],
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/carrier-audit.mjs",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/carrier-audit.mjs",
+         "--contract",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/auditor-control.json"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/auditor-control.json"
+       ],
+       "automaticRetries": 0,
+       "cleanupInclusiveSeconds": 10,
+@@ -31,7 +31,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/audit.py",
+         "source-data-48"
+       ],
+       "automaticRetries": 0,
+@@ -49,7 +49,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/audit.py",
+         "build"
+       ],
+       "automaticRetries": 0,
+@@ -67,7 +67,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/audit.py",
+         "tools"
+       ],
+       "automaticRetries": 0,
+@@ -94,7 +94,7 @@
+       ],
+       "automaticRetries": 0,
+       "cleanupInclusiveSeconds": 10,
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/run/consumer",
+       "id": "consumer-install",
+       "killAtSeconds": 119,
+       "outerSeconds": 120,
+@@ -195,7 +195,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/run/packages"
+       ],
+       "automaticRetries": 0,
+       "cleanupInclusiveSeconds": 10,
+@@ -217,7 +217,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/run/packages"
+       ],
+       "automaticRetries": 0,
+       "cleanupInclusiveSeconds": 10,
+@@ -253,7 +253,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/packages.py",
+         "consumer"
+       ],
+       "automaticRetries": 0,
+@@ -271,7 +271,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/packages.py",
+         "directory"
+       ],
+       "automaticRetries": 0,
+@@ -290,7 +290,7 @@
+       "argv": [
+         "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc",
+         "--project",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run/attempt-private-verifier-emit/compiler-project.json",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/run/attempt-private-verifier-emit/compiler-project.json",
+         "--pretty",
+         "false",
+         "--listEmittedFiles"
+@@ -311,9 +311,9 @@
+       ],
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/private-graph.mjs",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/private-graph.mjs",
+         "--contract",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/private-emit-control.json"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/private-emit-control.json"
+       ],
+       "automaticRetries": 0,
+       "cleanupInclusiveSeconds": 10,
+@@ -427,7 +427,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run/single-installed-positive17.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/run/single-installed-positive17.results.json",
+         "--testNamePattern",
+         "^observes seventeen partial Transactional contracts through packed-capable actual installed HTTP$"
+       ],
+@@ -479,7 +479,7 @@
+         "--maxWorkers=2",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run/source-data-48.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/run/source-data-48.results.json",
+         "--testNamePattern",
+         "^private profile data (?:V0[1-6]|R(?:0[1-9]|1[0-9]|2[0-4])|S0[1-8]|L(?:0[1-9]|10))$"
+       ],
+@@ -626,7 +626,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/packages.py",
+         "tar"
+       ],
+       "automaticRetries": 0,
+@@ -644,7 +644,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/packages.py",
+         "installed"
+       ],
+       "automaticRetries": 0,
+@@ -679,7 +679,7 @@
+   },
+   "configurationFinalized": true,
+   "executionReleased": false,
+-  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4",
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+     "@bdp/server": "0.0.0",

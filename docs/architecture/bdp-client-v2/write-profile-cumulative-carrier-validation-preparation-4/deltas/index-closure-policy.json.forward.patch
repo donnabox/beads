@@ -1,0 +1,18 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/index-closure-policy.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/index-closure-policy.json
+@@ -1,5 +1,5 @@
+ {
+-  "history": "Full immediate137+153 plus inherited838+850 INPLACE exact inventories/mirrors/pins. No recursive historical recopy or old pass/consumer reuse. Old failure reports remain historical, not active outcome.",
++  "history": "Full immediate141+152 and inherited838+850+137+153 INPLACE exact censuses/mirrors/pins. No recursive copying or old pass/consumer reuse.",
+   "implementationExclusions": [
+     "implementation-hashes.json",
+     "preparation-index.json",
+@@ -8,6 +8,6 @@
+     "execution-gate.json",
+     "execution-gate.closed.json"
+   ],
+-  "onlyFuturePermittedMutation": "Root-owned active execution-gate.json after OTHER-native/root exact durable authority; all other bytes immutable, closed gate preserved. Future source/root/tool/build/proof records external actual facts.",
+-  "state": "Exact self-reference exclusions; excluded controls still indexed by final preparation index"
++  "onlyFuturePermittedMutation": "Root-owned active execution-gate.json only after separately reviewed durable exact authority. Closed gate preserved; future source/root/tool/build/proof records external actual facts.",
++  "state": "Exact six self-reference exclusions; final preparation index covers every control"
+ }

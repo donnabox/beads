@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-18T16:24:44.424044+00:00",
+  "acceptedFinding": true,
+  "mechanicsAccepted": false,
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/index.json",
+    "sha256": "0db71b2ebbf7f667502dfb9102c892b0206a7b73d1ba819389027df2afff273e"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/closure.json",
+    "sha256": "5273bca2161b020a891c535047e0e96882b4744787e4d92091e3699b1db8c677"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation3-native-mechanics-1/report.md",
+    "sha256": "aea7fc0b1c790ab755dc61163fa2c95d4bcda6831a8fd6ac89a25a21fe59aad1"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 151,
+  "finding": "CV3-N1 Medium accepted: private_emit.py13 required local template absent. Predicted FileNotFoundError before compiler, no runtime evaluated. Preserve exact existing template instead of changing compiler/helper/schema semantics.",
+  "templateOrigin": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/context/accepted-contract2/private-emit-project.template.json",
+    "sha256": "99ddab2e2e51f3ca82933bcef9cb266cfc454a4f9ee94f5a3f81f7a87bc47183"
+  },
+  "CV2N1StaticCorrectionAccepted": true,
+  "executionReleased": false
+}

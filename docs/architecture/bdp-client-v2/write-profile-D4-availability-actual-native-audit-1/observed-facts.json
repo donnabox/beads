@@ -1,0 +1,124 @@
+{
+  "actualCallerRawExit": 1,
+  "actualCallerStderrEOF": true,
+  "actualCallerStdoutEOF": true,
+  "actualOuterStderrBytes": 0,
+  "actualOuterStdoutBytes": 0,
+  "actualRootTool": 46536,
+  "actualRootToolExit": 1,
+  "actualWholeCallerSeconds": 1.7082564579322934,
+  "callerFailureClass": "RuntimeError",
+  "callerProvisionalSeconds": 1.6775044589303434,
+  "clockDomainVerified": false,
+  "controlsReleased": false,
+  "exceptionReasonItselfLogged": false,
+  "freshAbsence": {
+    "psRawExit": "0 source-attributed by successful check_output, not retained per-ps receipt",
+    "rawRows": 1396,
+    "recordedPgids": [
+      6548,
+      6549,
+      6553,
+      6555
+    ],
+    "recordedPids": [
+      6539,
+      6548,
+      6549,
+      6553,
+      6555,
+      6556,
+      6557
+    ],
+    "remainingRecordedRows": 0,
+    "stderrBytes": "UNRETAINED/UNKNOWN",
+    "stderrEOF": "UNRETAINED/UNKNOWN",
+    "stdoutEOF": "source-attributed by successful check_output"
+  },
+  "guard": {
+    "bothEOF": true,
+    "pgid": 6549,
+    "pid": 6549,
+    "rawExit": 0,
+    "stderrBytes": 0,
+    "stdoutBytes": 0
+  },
+  "journals": {
+    "caller": 14,
+    "kill": 7,
+    "term": 8
+  },
+  "killPeer": {
+    "atSeconds": 0.15916187595576048,
+    "bootstrapAck": true,
+    "peer": null,
+    "pgid": 6555,
+    "pid": 6557,
+    "rawExit": -9,
+    "role": "kill",
+    "stderrBytes": 0,
+    "stderrEof": true,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 0,
+    "stdoutEof": true,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "native": {
+    "bothEOF": true,
+    "forced": false,
+    "pgid": 6553,
+    "pid": 6553,
+    "rawExit": 0,
+    "seconds": 0.170755166560411,
+    "stderrBytes": 215,
+    "stdoutBytes": 1810
+  },
+  "nativeInvocations": 1,
+  "nativePopenObserved": true,
+  "overallAvailabilityAccepted": false,
+  "owner": {
+    "clockInfo": {
+      "adjustable": false,
+      "implementation": "mach_absolute_time()",
+      "monotonic": true,
+      "resolution": 4.166666666666666e-08
+    },
+    "directPeersReaped": true,
+    "pgid": 6555,
+    "pid": 6555,
+    "pythonFirstMinusNative": 0.031432501040399075,
+    "pythonLastMinusNative": 0.15946546010673046,
+    "rawExitSource": "native rawOwnerExit0"
+  },
+  "productReleased": false,
+  "termPeer": {
+    "atSeconds": 0.10651854332536459,
+    "bootstrapAck": true,
+    "peer": {
+      "event": "availability-peer",
+      "firstMonotonic": 2226561.465550791,
+      "lastMonotonic": 2226561.466972625,
+      "nativeOrigin": 2226561.37027754,
+      "nonce": "e9ade55486ef9176eaad61f8c0493700",
+      "observedSignals": [
+        15
+      ],
+      "parent": 6555,
+      "pgid": 6555,
+      "pid": 6556,
+      "productCalls": 0,
+      "role": "term",
+      "termIntUnblocked": true
+    },
+    "pgid": 6555,
+    "pid": 6556,
+    "rawExit": 0,
+    "role": "term",
+    "stderrBytes": 0,
+    "stderrEof": true,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 289,
+    "stdoutEof": true,
+    "stdoutSha256": "72af6f75b2342ae09c3c02a15ea7846c82637cf01d844c27cbda8e0b02808cba"
+  }
+}
