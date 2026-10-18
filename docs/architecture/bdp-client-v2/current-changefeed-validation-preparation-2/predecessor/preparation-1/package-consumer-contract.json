@@ -1,0 +1,28 @@
+{
+  "state": "All final package/build/consumer identities UNRESOLVED",
+  "patternOnly": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/packages.py",
+  "requiredChain": [
+    "Frozen authored complete source+actual lock/tool maps",
+    "Fresh build exit/log and full output map",
+    "Fresh protocol/server archive rawhash+safe complete members; compare bytes to build/source",
+    "New external consumer manifest/settings refer only to actual fresh archives",
+    "Actual offline ignore-scripts production install",
+    "ROOT ACCEPTS ACTUAL GENERATED LOCK before installedverification",
+    "Independent member/dependencygraph/lock/inventory/payload/entry proof",
+    "ROOT ACCEPTS ACTUAL PROOF before any installedchild"
+  ],
+  "versionCandidatesOnly": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "versionPolicy": "Read actual frozen source lock/dependencies before accepting expected closure; these baseline candidates do not bind future install. Report any change instead of silently substituting.",
+  "archivePolicy": "Complete safe members, no traversal/duplicates/unexpectedlinks; expected metadata rewrite only; derive counts, never copy Event321tar/476build or other historical totals.",
+  "consumerPolicy": "Exclusively owned externalroot; all package/dependency realpaths contained,full packageclosure+symlinkmap, actual source/consumerlockhash; reproducible path-sensitive recursive payload; literal/resolved entry/hash. No prior consumer/proof identity reuse.",
+  "rootGates": "Actual consumer lock acceptance and actual proof acceptance are separate required stages; no archive/build/source commit can stand in for actual lock/proof."
+}
