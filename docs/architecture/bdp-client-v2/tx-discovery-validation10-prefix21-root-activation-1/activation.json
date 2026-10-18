@@ -1,0 +1,49 @@
+{
+  "utc": "2026-10-18T16:18:24.244268+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "activated": true,
+  "executionDispatched": false,
+  "authorityPublicationReadback": "25d0a0d18b5f83645f09d772322054969df26479",
+  "rootRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-root-acceptance-1/release.json",
+    "sha256": "d6a57d0dc3779c480d5332870ceaaa8527d397314f7de3b5fb77622b06c7d423"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-1/index.json",
+    "sha256": "0481c68c029f0bc38e05ef2b9cf3e6e07344acfdb85b95d440f2c35da661d822"
+  },
+  "nativeErratumIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-erratum-1/index.json",
+    "sha256": "e19f7518b7623243b48930b7384fb709c993744e4195c936d62ec9f28d05f302"
+  },
+  "beforeSha256": "0f5cdeb46a8098d00242fa61801ecc57e7f5ea41205090341ef400d4c31c08e7",
+  "afterSha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429",
+  "byteExactIndependentlyReviewedCandidate": true,
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "actualFirst17Pass": true,
+  "next4Unknown": true,
+  "requiresActivationPublicationReadbackBeforeDispatch": true,
+  "noRetry": true
+}
