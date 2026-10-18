@@ -1,0 +1,408 @@
+{
+  "pairs": [
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-01",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 12,
+        "exact": 12,
+        "raw": 0,
+        "scheduled": 12
+      },
+      "observationKind": "legacy-owner-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery owner regression successor"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 87,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery owner regression successor"
+      },
+      "stage": "installed-01",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-02",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 43,
+        "exact": 43,
+        "raw": 0,
+        "scheduled": 43
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed cold resource-alias"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1161,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed cold resource-alias"
+      },
+      "stage": "installed-02",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-03",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 28,
+        "exact": 28,
+        "raw": 0,
+        "scheduled": 28
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed cold transactional-carriers"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1338,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed cold transactional-carriers"
+      },
+      "stage": "installed-03",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-04",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 21,
+        "exact": 21,
+        "raw": 0,
+        "scheduled": 21
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed raw receiving and minimum syntax"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1523,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed raw receiving and minimum syntax"
+      },
+      "stage": "installed-04",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-05",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 26,
+        "exact": 25,
+        "raw": 1,
+        "scheduled": 26
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery methods auth and transport"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1573,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery methods auth and transport"
+      },
+      "stage": "installed-05",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-06",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 15,
+        "exact": 15,
+        "raw": 0,
+        "scheduled": 15
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery minimum ordering scope"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1652,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery minimum ordering ${routeName}"
+      },
+      "stage": "installed-06",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-07",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 1,
+        "completed": 4,
+        "exact": 4,
+        "raw": 1,
+        "scheduled": 5
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery close pending scope"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1763,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery close pending ${routeName}"
+      },
+      "stage": "installed-07",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-08",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 15,
+        "exact": 15,
+        "raw": 0,
+        "scheduled": 15
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery minimum ordering descriptor"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1652,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery minimum ordering ${routeName}"
+      },
+      "stage": "installed-08",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-09",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 1,
+        "completed": 4,
+        "exact": 4,
+        "raw": 1,
+        "scheduled": 5
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery close pending descriptor"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1763,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery close pending ${routeName}"
+      },
+      "stage": "installed-09",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-10",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 15,
+        "exact": 15,
+        "raw": 0,
+        "scheduled": 15
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery minimum ordering directory"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1652,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery minimum ordering ${routeName}"
+      },
+      "stage": "installed-10",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-installed-11",
+      "callbackMs": 60000,
+      "expectedCounts": {
+        "aborts": 1,
+        "completed": 4,
+        "exact": 4,
+        "raw": 1,
+        "scheduled": 5
+      },
+      "observationKind": "D3-installed",
+      "requestMs": 5000,
+      "requiresCurrentConsumerProof": true,
+      "selectedFullNames": [
+        "private installed discovery close pending directory"
+      ],
+      "sourceWitness": {
+        "collectionEvaluated": false,
+        "line": 1763,
+        "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+        "sourceFile": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "text": "private installed discovery close pending ${routeName}"
+      },
+      "stage": "installed-11",
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    {
+      "actualOutcome": "UNATTEMPTED",
+      "audit": "audit-schema-installed-positive",
+      "callbackMs": 120000,
+      "inheritedBudgetException": "actual legacy source90swork/120scallback retained; outer120/TERM115 remains fail-closed, may stop before callback cap",
+      "outerSeconds": 120,
+      "selectedFullNames": [
+        "traverses installed local schema bytes with current context within14requests"
+      ],
+      "stage": "schema-installed-positive",
+      "termAtSeconds": 115,
+      "totalCleanupMs": "existing child.close launcher bound; no new aggregate bound inferred",
+      "wire": 14,
+      "workMs": 90000
+    }
+  ],
+  "required": {
+    "required-check-boundaries": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-check-boundaries",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-e2e-ready-preflight": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-e2e-ready-preflight",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-evidence-verify": {
+      "acceptedRawExitCodes": [
+        0,
+        2
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-evidence-verify",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "rawExitMeaning": {
+        "0": "Existing claimed Read evidence verified only for its bound claim",
+        "1": "Claimed but unproved: failure",
+        "2": "No evidence claim; explicit fail-closed no-claim accepted by current CI policy, never Write/RU/TX qualification",
+        "3": "Unable to inspect claim/stale build: failure"
+      },
+      "termAtSeconds": 115
+    },
+    "required-smoke": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "smoke"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-smoke",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    }
+  }
+}

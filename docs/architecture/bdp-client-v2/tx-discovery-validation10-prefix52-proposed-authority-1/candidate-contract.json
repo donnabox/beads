@@ -1,0 +1,66 @@
+{
+  "utc": "2026-10-18T16:54:34.963020+00:00",
+  "state": "CLOSED exact52authority DATA only, active24 unchanged",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "2ca39c3614baf7e8c22acb7ac1f276aa9f5a64f4cf7ac03e1f416bf03cb9ab87"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-proposed-authority-1/disposition.json",
+    "sha256": "8be4ac6ab50b834b08bb0be5745e5a5655b0512639922eb38a573c10fd65799f"
+  },
+  "changedKeys": [
+    "approvedStages",
+    "rootDisposition",
+    "installedProvenance",
+    "consumerInventory",
+    "rootConsumerProofAcceptance"
+  ],
+  "rootActualFullProof": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-consumer-proof-acceptance-1/acceptance.json",
+    "sha256": "183f0ef434e6fb421522ee87df3c412c80a70845639a1895c10cedd39198884b"
+  },
+  "next28": [
+    "installed-01",
+    "audit-installed-01",
+    "installed-02",
+    "audit-installed-02",
+    "installed-03",
+    "audit-installed-03",
+    "installed-04",
+    "audit-installed-04",
+    "installed-05",
+    "audit-installed-05",
+    "installed-06",
+    "audit-installed-06",
+    "installed-07",
+    "audit-installed-07",
+    "installed-08",
+    "audit-installed-08",
+    "installed-09",
+    "audit-installed-09",
+    "installed-10",
+    "audit-installed-10",
+    "installed-11",
+    "audit-installed-11",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "prospectiveInstalled11": {
+    "aborts": 3,
+    "completed": 187,
+    "exact": 186,
+    "raw": 4,
+    "scheduled": 190
+  },
+  "separateSchemaPositiveWire14": true,
+  "noRetry": true,
+  "fullIndependent26Keys59PredicatesAndAll28SelectorsAuditPairsBeforeActivation": true,
+  "durablePublicationReadbackBeforeExactActivationAndDispatch": true,
+  "executionAuthorized": false,
+  "wholeWriteAuthority": false
+}

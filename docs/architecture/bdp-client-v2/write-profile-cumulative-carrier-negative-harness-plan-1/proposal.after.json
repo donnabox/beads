@@ -1,0 +1,2232 @@
+{
+  "ids": 32,
+  "variants": 128,
+  "controls": [
+    {
+      "id": "C01",
+      "originalDescription": {
+        "expected": "fixed duplicate-json-key refusal before full tree acceptance",
+        "id": "C01",
+        "input": "duplicate root or nested key",
+        "observed": "UNEXECUTED",
+        "target": "scanner.strict_json"
+      },
+      "faultLocation": "scanner.py:15-19,21-70",
+      "target": "scanner.strict_json",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "root-key",
+          "kind": "Python-DATA",
+          "construction": "UTF8 bytes {\"a\":0,\"a\":1} and {\"a\":{\"b\":0,\"b\":1}}; pass full bytes with maximum4194304",
+          "expectedRefusalOrOrdering": "duplicate-json-key",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "nested-key",
+          "kind": "Python-DATA",
+          "construction": "UTF8 bytes {\"a\":0,\"a\":1} and {\"a\":{\"b\":0,\"b\":1}}; pass full bytes with maximum4194304",
+          "expectedRefusalOrOrdering": "duplicate-json-key",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C02",
+      "originalDescription": {
+        "expected": "refuse and preserve raw",
+        "id": "C02",
+        "input": "invalid UTF8 or trailing JSON",
+        "observed": "UNEXECUTED",
+        "target": "scanner.strict_json"
+      },
+      "faultLocation": "scanner.py:21-25,58-60",
+      "target": "scanner.strict_json",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "invalid-utf8",
+          "kind": "Python-DATA",
+          "construction": "bytes ff or ASCII {}{}; immutable input file hash and hex prefix retained",
+          "expectedRefusalOrOrdering": "UnicodeDecodeError/json-trailing",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "trailing-json",
+          "kind": "Python-DATA",
+          "construction": "bytes ff or ASCII {}{}; immutable input file hash and hex prefix retained",
+          "expectedRefusalOrOrdering": "UnicodeDecodeError/json-trailing",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C03",
+      "originalDescription": {
+        "expected": "refuse before full tree allocation",
+        "id": "C03",
+        "input": "nonfinite numeric or >128 container depth",
+        "observed": "UNEXECUTED",
+        "target": "scanner.strict_json"
+      },
+      "faultLocation": "scanner.py:39-57",
+      "target": "scanner.strict_json",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "nonfinite-number",
+          "kind": "Python-DATA",
+          "construction": "ASCII1e309; exactly129 nested arrays around0 (259bytes), no oversized unrelated fixture",
+          "expectedRefusalOrOrdering": "nonfinite-json/json-depth-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "depth129",
+          "kind": "Python-DATA",
+          "construction": "ASCII1e309; exactly129 nested arrays around0 (259bytes), no oversized unrelated fixture",
+          "expectedRefusalOrOrdering": "nonfinite-json/json-depth-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C04",
+      "originalDescription": {
+        "expected": "refuse bounded structure",
+        "id": "C04",
+        "input": "100001 values or10001-entry object/array",
+        "observed": "UNEXECUTED",
+        "target": "scanner.strict_json"
+      },
+      "faultLocation": "scanner.py:41-49",
+      "target": "scanner.strict_json",
+      "variantCount": 3,
+      "variants": [
+        {
+          "name": "nodes100001",
+          "kind": "Python-DATA",
+          "construction": "100 arrays of999 zeros =>100001 nodes; object10001 distinct ASCII keys; array10001 zeros; byte cap4194304 unchanged",
+          "expectedRefusalOrOrdering": "json-node-limit/json-container-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "object10001",
+          "kind": "Python-DATA",
+          "construction": "100 arrays of999 zeros =>100001 nodes; object10001 distinct ASCII keys; array10001 zeros; byte cap4194304 unchanged",
+          "expectedRefusalOrOrdering": "json-node-limit/json-container-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "array10001",
+          "kind": "Python-DATA",
+          "construction": "100 arrays of999 zeros =>100001 nodes; object10001 distinct ASCII keys; array10001 zeros; byte cap4194304 unchanged",
+          "expectedRefusalOrOrdering": "json-node-limit/json-container-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C05",
+      "originalDescription": {
+        "expected": "no positive acquisition/no chmod",
+        "id": "C05",
+        "input": "preexisting destination/symlink/directory/mode0644/wronguid",
+        "observed": "UNEXECUTED",
+        "target": "scanner.secure_read"
+      },
+      "faultLocation": "worker.py:39-42;scanner.py:97-115",
+      "target": "secure original acquisition + prelaunch destination check",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "preexisting-destination",
+          "kind": "Python-worker-admission",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "symlink",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "directory",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "mode0644",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-uid",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C06",
+      "originalDescription": {
+        "expected": "refuse identity race",
+        "id": "C06",
+        "input": "inode/mode/time/bytes change during read",
+        "observed": "UNEXECUTED",
+        "target": "scanner.secure_read"
+      },
+      "faultLocation": "scanner.py:103-115",
+      "target": "scanner.secure_read",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "inode-race",
+          "kind": "Python-DATA",
+          "construction": "Deterministic socket barrier after first actual read; controlled peer alters ONLY synthetic leaf before final fstat/lstat; preserve before/after actual stat and bytes",
+          "expectedRefusalOrOrdering": "private-evidence-open-identity/private-evidence-read-identity/private-evidence-final-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "mode-race",
+          "kind": "Python-DATA",
+          "construction": "Deterministic socket barrier after first actual read; controlled peer alters ONLY synthetic leaf before final fstat/lstat; preserve before/after actual stat and bytes",
+          "expectedRefusalOrOrdering": "private-evidence-open-identity/private-evidence-read-identity/private-evidence-final-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "time-race",
+          "kind": "Python-DATA",
+          "construction": "Deterministic socket barrier after first actual read; controlled peer alters ONLY synthetic leaf before final fstat/lstat; preserve before/after actual stat and bytes",
+          "expectedRefusalOrOrdering": "private-evidence-open-identity/private-evidence-read-identity/private-evidence-final-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "bytes-race",
+          "kind": "Python-DATA",
+          "construction": "Deterministic socket barrier after first actual read; controlled peer alters ONLY synthetic leaf before final fstat/lstat; preserve before/after actual stat and bytes",
+          "expectedRefusalOrOrdering": "private-evidence-open-identity/private-evidence-read-identity/private-evidence-final-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C07",
+      "originalDescription": {
+        "expected": "refuse no guessed terminal",
+        "id": "C07",
+        "input": "two summaries or incomplete final line",
+        "observed": "UNEXECUTED",
+        "target": "SummaryScanner"
+      },
+      "faultLocation": "scanner.py:72-95",
+      "target": "SummaryScanner",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "duplicate-summary",
+          "kind": "Python-DATA",
+          "construction": "Two complete newline kind=installed-tx-seventeen-partial-summary objects; or one object without final newline; stream original exact chunks",
+          "expectedRefusalOrOrdering": "duplicate-positive-summary/incomplete-final-log-line",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "incomplete-final-line",
+          "kind": "Python-DATA",
+          "construction": "Two complete newline kind=installed-tx-seventeen-partial-summary objects; or one object without final newline; stream original exact chunks",
+          "expectedRefusalOrOrdering": "duplicate-positive-summary/incomplete-final-log-line",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C08",
+      "originalDescription": {
+        "expected": "retain partial raw and fail, no truncated acceptance",
+        "id": "C08",
+        "input": "summary object>1MiB or combined log>64MiB",
+        "observed": "UNEXECUTED",
+        "target": "SummaryScanner"
+      },
+      "faultLocation": "scanner.py:75-95;worker.py:62-67",
+      "target": "scanner + owned raw sink",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "object-line-over1MiB",
+          "kind": "Python-DATA",
+          "construction": "Feed complete actual chunks<=65536; object line begins { and crosses1048576; raw non-object stream crosses67108864. Preserve received crossing chunk before overflow refusal in synthetic raw sink, never call that prefix an accepted complete log.",
+          "expectedRefusalOrOrdering": "object-line-limit/raw-log-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "combined-log-over64MiB",
+          "kind": "Python-DATA",
+          "construction": "Feed complete actual chunks<=65536; object line begins { and crosses1048576; raw non-object stream crosses67108864. Preserve received crossing chunk before overflow refusal in synthetic raw sink, never call that prefix an accepted complete log.",
+          "expectedRefusalOrOrdering": "object-line-limit/raw-log-limit",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C09",
+      "originalDescription": {
+        "expected": "refuse exact multiset",
+        "id": "C09",
+        "input": "missing/extra/duplicate fullName or wrong source file",
+        "observed": "UNEXECUTED",
+        "target": "selected_results"
+      },
+      "faultLocation": "audit.py:13-39",
+      "target": "selected_results",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "missing-name",
+          "kind": "Python-DATA",
+          "construction": "Synthetic closed Vitest JSON baseline from commands selectedFullNames; change exactly one callback name occurrence/multiplicity/source path with coherent counters unless count mismatch is selected fault",
+          "expectedRefusalOrOrdering": "selected-exactly-once/unselected-not-executed/selected-file-identity",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "extra-name",
+          "kind": "Python-DATA",
+          "construction": "Synthetic closed Vitest JSON baseline from commands selectedFullNames; change exactly one callback name occurrence/multiplicity/source path with coherent counters unless count mismatch is selected fault",
+          "expectedRefusalOrOrdering": "selected-exactly-once/unselected-not-executed/selected-file-identity",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "duplicate-name",
+          "kind": "Python-DATA",
+          "construction": "Synthetic closed Vitest JSON baseline from commands selectedFullNames; change exactly one callback name occurrence/multiplicity/source path with coherent counters unless count mismatch is selected fault",
+          "expectedRefusalOrOrdering": "selected-exactly-once/unselected-not-executed/selected-file-identity",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-file",
+          "kind": "Python-DATA",
+          "construction": "Synthetic closed Vitest JSON baseline from commands selectedFullNames; change exactly one callback name occurrence/multiplicity/source path with coherent counters unless count mismatch is selected fault",
+          "expectedRefusalOrOrdering": "selected-exactly-once/unselected-not-executed/selected-file-identity",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C10",
+      "originalDescription": {
+        "expected": "refuse even with process0",
+        "id": "C10",
+        "input": "root or case failed/mandatory typedzero absent/boolzero",
+        "observed": "UNEXECUTED",
+        "target": "selected_results"
+      },
+      "faultLocation": "audit.py:14-30",
+      "target": "selected_results",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "root-failed",
+          "kind": "Python-DATA",
+          "construction": "One-leaf root success=false, selected status=failed, delete numFailedTests, replace numFailedTestSuites0 with false; preserve all other fields",
+          "expectedRefusalOrOrdering": "test-run-success/selected-pass/missing-extra-report-key/typed-zero",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "case-failed",
+          "kind": "Python-DATA",
+          "construction": "One-leaf root success=false, selected status=failed, delete numFailedTests, replace numFailedTestSuites0 with false; preserve all other fields",
+          "expectedRefusalOrOrdering": "test-run-success/selected-pass/missing-extra-report-key/typed-zero",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-mandatory-zero",
+          "kind": "Python-DATA",
+          "construction": "One-leaf root success=false, selected status=failed, delete numFailedTests, replace numFailedTestSuites0 with false; preserve all other fields",
+          "expectedRefusalOrOrdering": "test-run-success/selected-pass/missing-extra-report-key/typed-zero",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "bool-zero",
+          "kind": "Python-DATA",
+          "construction": "One-leaf root success=false, selected status=failed, delete numFailedTests, replace numFailedTestSuites0 with false; preserve all other fields",
+          "expectedRefusalOrOrdering": "test-run-success/selected-pass/missing-extra-report-key/typed-zero",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C11",
+      "originalDescription": {
+        "expected": "no positive credit",
+        "id": "C11",
+        "input": "unselected passed callback/snapshot changed/Unhandled diagnostic",
+        "observed": "UNEXECUTED",
+        "target": "selected_results"
+      },
+      "faultLocation": "audit.py:31-38,83-87;scanner.py:75,95",
+      "target": "selected_results + diagnostic scan",
+      "variantCount": 3,
+      "variants": [
+        {
+          "name": "unselected-pass",
+          "kind": "Python-DATA",
+          "construction": "One unselected passed case, snapshot.updated1, or original log containing Unhandled Rejection split across chunk boundary; no failed-result relabel",
+          "expectedRefusalOrOrdering": "unselected-not-executed/typed-zero/unhandled-runtime-diagnostic",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "snapshot-change",
+          "kind": "Python-DATA",
+          "construction": "One unselected passed case, snapshot.updated1, or original log containing Unhandled Rejection split across chunk boundary; no failed-result relabel",
+          "expectedRefusalOrOrdering": "unselected-not-executed/typed-zero/unhandled-runtime-diagnostic",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "unhandled-diagnostic",
+          "kind": "Python-DATA",
+          "construction": "One unselected passed case, snapshot.updated1, or original log containing Unhandled Rejection split across chunk boundary; no failed-result relabel",
+          "expectedRefusalOrOrdering": "unselected-not-executed/typed-zero/unhandled-runtime-diagnostic",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C12",
+      "originalDescription": {
+        "expected": "responsive parent original105/115/119/120 boundaries",
+        "id": "C12",
+        "input": "gate/hash/compiler/private parser blocks",
+        "observed": "UNEXECUTED",
+        "target": "run.py"
+      },
+      "faultLocation": "run.py:5,14-19,140-213",
+      "target": "actual watchdog main with controlled worker",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "blocked-gate",
+          "kind": "watchdog-OS",
+          "construction": "Exact worker-Popen substitution only to controlled zero-product peer; block designated worker phase beyond original105; no actual Git/compiler/parser/product work or clock monkeypatch. Real root/native deadlines apply.",
+          "expectedRefusalOrOrdering": "work-cutoff then owned escalation/raw failure",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "blocked-hash",
+          "kind": "watchdog-OS",
+          "construction": "Exact worker-Popen substitution only to controlled zero-product peer; block designated worker phase beyond original105; no actual Git/compiler/parser/product work or clock monkeypatch. Real root/native deadlines apply.",
+          "expectedRefusalOrOrdering": "work-cutoff then owned escalation/raw failure",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "blocked-compiler",
+          "kind": "watchdog-OS",
+          "construction": "Exact worker-Popen substitution only to controlled zero-product peer; block designated worker phase beyond original105; no actual Git/compiler/parser/product work or clock monkeypatch. Real root/native deadlines apply.",
+          "expectedRefusalOrOrdering": "work-cutoff then owned escalation/raw failure",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "blocked-private-parser",
+          "kind": "watchdog-OS",
+          "construction": "Exact worker-Popen substitution only to controlled zero-product peer; block designated worker phase beyond original105; no actual Git/compiler/parser/product work or clock monkeypatch. Real root/native deadlines apply.",
+          "expectedRefusalOrOrdering": "work-cutoff then owned escalation/raw failure",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C13",
+      "originalDescription": {
+        "expected": "register direct handle and preserve worker anchor, no group-wide quiet exclusion; both actual pipe EOF+raw terminal before ANY census use, complete retained probe registry; current reset/no old-buffer attribution, observed acquired identity retained even if setup fails",
+        "id": "C13",
+        "input": "worker/primary/group spawn before ack and descendant quiet race; native census EAGAIN then final complete-row suffix+exit; finite setup exception after current acquired handle and a later Popen failure after a prior completed probe",
+        "observed": "UNEXECUTED",
+        "target": "run.py"
+      },
+      "faultLocation": "run.py:16-19,64-122,214-287",
+      "target": "actual watchdog + real peers/probes",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "spawn-before-ack",
+          "kind": "watchdog-OS",
+          "construction": "Real retained Popen handles. Intercept only exact worker/publisher/ps argv at declared launch seams; map to fixed no-product peers. Read/fileno wrappers target only recorded probe FDs. Final suffix withheld by ACK not a timer; acquisition-failure variant follows one actual complete probe.",
+          "expectedRefusalOrOrdering": "no premature census/quiet; setup/Popen census-io failure preserves actual association",
+          "expectedSubjectRawExitCodes": [
+            0
+          ],
+          "orderingContrastMaySettle0": true,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "quiet-descendant-race",
+          "kind": "watchdog-OS",
+          "construction": "Real retained Popen handles. Intercept only exact worker/publisher/ps argv at declared launch seams; map to fixed no-product peers. Read/fileno wrappers target only recorded probe FDs. Final suffix withheld by ACK not a timer; acquisition-failure variant follows one actual complete probe.",
+          "expectedRefusalOrOrdering": "no premature census/quiet; setup/Popen census-io failure preserves actual association",
+          "expectedSubjectRawExitCodes": [
+            0
+          ],
+          "orderingContrastMaySettle0": true,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "EAGAIN-final-suffix",
+          "kind": "watchdog-OS",
+          "construction": "Real retained Popen handles. Intercept only exact worker/publisher/ps argv at declared launch seams; map to fixed no-product peers. Read/fileno wrappers target only recorded probe FDs. Final suffix withheld by ACK not a timer; acquisition-failure variant follows one actual complete probe.",
+          "expectedRefusalOrOrdering": "no premature census/quiet; setup/Popen census-io failure preserves actual association",
+          "expectedSubjectRawExitCodes": [
+            0
+          ],
+          "orderingContrastMaySettle0": true,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "setup-io-after-handle",
+          "kind": "watchdog-OS",
+          "construction": "Real retained Popen handles. Intercept only exact worker/publisher/ps argv at declared launch seams; map to fixed no-product peers. Read/fileno wrappers target only recorded probe FDs. Final suffix withheld by ACK not a timer; acquisition-failure variant follows one actual complete probe.",
+          "expectedRefusalOrOrdering": "no premature census/quiet; setup/Popen census-io failure preserves actual association",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "new-Popen-failure-after-complete",
+          "kind": "watchdog-OS",
+          "construction": "Real retained Popen handles. Intercept only exact worker/publisher/ps argv at declared launch seams; map to fixed no-product peers. Read/fileno wrappers target only recorded probe FDs. Final suffix withheld by ACK not a timer; acquisition-failure variant follows one actual complete probe.",
+          "expectedRefusalOrOrdering": "no premature census/quiet; setup/Popen census-io failure preserves actual association",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C14",
+      "originalDescription": {
+        "expected": "zombie is not absence; fresh known-group absence before root acceptance",
+        "id": "C14",
+        "input": "prior-live authenticated zombie then reaped leader",
+        "observed": "UNEXECUTED",
+        "target": "run.py"
+      },
+      "faultLocation": "run.py:59-122,268-285",
+      "target": "actual watchdog + held waitpid peer",
+      "variantCount": 1,
+      "variants": [
+        {
+          "name": "prior-live-zombie-then-reap",
+          "kind": "watchdog-OS",
+          "construction": "Real owned peer forks/ACKs and exits; parent deliberately holds waitpid until one real ps row shows same birth/PGID Z, then reaps. Never treat Z as absence.",
+          "expectedRefusalOrOrdering": "No early completion; later fresh absence may permit unit success",
+          "expectedSubjectRawExitCodes": [
+            0
+          ],
+          "orderingContrastMaySettle0": true,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C15",
+      "originalDescription": {
+        "expected": "sticky unknown/refuse, no unsafe historical barePGID signaling; retain exact received failure prefix/UNKNOWN suffix, no partial-prefix census; preserve first failurePrefix AND separate current censusIoFailurePrefix/last complete/full registry best effort before cleanup, positive null requirement",
+        "id": "C15",
+        "input": "unknown birth/changed livecomm/census failure/known group unanchored; native census missing EOF/held writer/late last bytes/nonzero stderr; non-EAGAIN read or poll exception after actual partial acquisition, including after an earlier refused probe",
+        "observed": "UNEXECUTED",
+        "target": "run.py"
+      },
+      "faultLocation": "run.py:30-55,59-135,225-286",
+      "target": "watchdog census/ordinary IO",
+      "variantCount": 9,
+      "variants": [
+        {
+          "name": "changed-birth",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "changed-live-comm",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "known-group-unanchored",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-EOF-held-writer",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "late-final-bytes",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "nonzero-stderr",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "partial-read-EIO",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "post-EOF-poll-ValueError",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "first-refusal-then-current-IO",
+          "kind": "watchdog-OS",
+          "construction": "Each variant changes one explicit row/FD/peer event; never a real unowned signal. Read-EIO follows an actual retained chunk. Poll error only after BOTH actual EOF. Last variant retains first refused probe raw and a distinct later current IO probe prefix.",
+          "expectedRefusalOrOrdering": "ownership-unknown/census-deadline/census-failed/census-io; no positive gate",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C16",
+      "originalDescription": {
+        "expected": "bounded repeated owned escalation; raw failure or UNKNOWN, never retry; immediate direct probe ownership and bounded terminal evidence, fresh root absence of ALL recorded task/probe PIDs/groups; actual missing facts UNKNOWN, no guaranteed durability or cleanup, no new probe after finish",
+        "id": "C16",
+        "input": "SIGTERM ignored/slow closure/publisher failure; census probe survives cutoff or parent terminal publication blocks; ordinary I/O failure publication itself unavailable/partial or after cutoff",
+        "observed": "UNEXECUTED",
+        "target": "run.py"
+      },
+      "faultLocation": "run.py:34-55,123-135,210-300",
+      "target": "watchdog cleanup/publication",
+      "variantCount": 8,
+      "variants": [
+        {
+          "name": "ignore-TERM",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "slow-close",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "publisher-failure",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "probe-survives-cutoff",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "terminal-publication-blocked",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "IO-publication-unavailable",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "IO-publication-partial",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "IO-publication-after-cutoff",
+          "kind": "watchdog-OS",
+          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+          "expectedSubjectRawExitCodes": [
+            1,
+            -15,
+            -9
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C17",
+      "originalDescription": {
+        "expected": "refuse downstream prefix",
+        "id": "C17",
+        "input": "missing/stale outer receipt/late elapsed or wrong watchdog/exit SHA",
+        "observed": "UNEXECUTED",
+        "target": "gate.complete"
+      },
+      "faultLocation": "gate.py:79-124",
+      "target": "gate.complete",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "missing-outer",
+          "kind": "Python-DATA",
+          "construction": "Synthetic prior-stage fixture only, one pin/attempt/whole115 or digest leaf changed. No active actual gate writes or invented product proof",
+          "expectedRefusalOrOrdering": "actual outer receipt absent/late/mismatch",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "stale-attempt",
+          "kind": "Python-DATA",
+          "construction": "Synthetic prior-stage fixture only, one pin/attempt/whole115 or digest leaf changed. No active actual gate writes or invented product proof",
+          "expectedRefusalOrOrdering": "actual outer receipt absent/late/mismatch",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "late-whole",
+          "kind": "Python-DATA",
+          "construction": "Synthetic prior-stage fixture only, one pin/attempt/whole115 or digest leaf changed. No active actual gate writes or invented product proof",
+          "expectedRefusalOrOrdering": "actual outer receipt absent/late/mismatch",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-watchdog-hash",
+          "kind": "Python-DATA",
+          "construction": "Synthetic prior-stage fixture only, one pin/attempt/whole115 or digest leaf changed. No active actual gate writes or invented product proof",
+          "expectedRefusalOrOrdering": "actual outer receipt absent/late/mismatch",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-exit-hash",
+          "kind": "Python-DATA",
+          "construction": "Synthetic prior-stage fixture only, one pin/attempt/whole115 or digest leaf changed. No active actual gate writes or invented product proof",
+          "expectedRefusalOrOrdering": "actual outer receipt absent/late/mismatch",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C18",
+      "originalDescription": {
+        "expected": "refuse before stage product child",
+        "id": "C18",
+        "input": "unknown/missing gate key or out-of-order approvals/bootstrap reuse",
+        "observed": "UNEXECUTED",
+        "target": "gate.load_gate"
+      },
+      "faultLocation": "gate.py:148-172",
+      "target": "gate.load_gate",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "missing-key",
+          "kind": "Python-DATA",
+          "construction": "Unit gate copy only; missing released, extra sentinel, approved prefix reversed, bootstrapReuse nonempty. Stub upstream IO receipts only; guard/actual source/Git not invoked in these precondition tests",
+          "expectedRefusalOrOrdering": "Missing/extra root execution gate key/Fresh ordered prefix not released/No bootstrap",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "unknown-key",
+          "kind": "Python-DATA",
+          "construction": "Unit gate copy only; missing released, extra sentinel, approved prefix reversed, bootstrapReuse nonempty. Stub upstream IO receipts only; guard/actual source/Git not invoked in these precondition tests",
+          "expectedRefusalOrOrdering": "Missing/extra root execution gate key/Fresh ordered prefix not released/No bootstrap",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "out-of-order",
+          "kind": "Python-DATA",
+          "construction": "Unit gate copy only; missing released, extra sentinel, approved prefix reversed, bootstrapReuse nonempty. Stub upstream IO receipts only; guard/actual source/Git not invoked in these precondition tests",
+          "expectedRefusalOrOrdering": "Missing/extra root execution gate key/Fresh ordered prefix not released/No bootstrap",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "bootstrap-reuse",
+          "kind": "Python-DATA",
+          "construction": "Unit gate copy only; missing released, extra sentinel, approved prefix reversed, bootstrapReuse nonempty. Stub upstream IO receipts only; guard/actual source/Git not invoked in these precondition tests",
+          "expectedRefusalOrOrdering": "Missing/extra root execution gate key/Fresh ordered prefix not released/No bootstrap",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C19",
+      "originalDescription": {
+        "expected": "refuse exact source mapping",
+        "id": "C19",
+        "input": "source681/HEAD/tree/dirty/staged/untracked/binary/tool drift",
+        "observed": "UNEXECUTED",
+        "target": "gate.source_check"
+      },
+      "faultLocation": "gate.py:30-56",
+      "target": "source_check/tools_check",
+      "variantCount": 8,
+      "variants": [
+        {
+          "name": "source-map",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "HEAD",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "tree",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "dirty-scope",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "staged",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "untracked",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "binary-patch",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "tool-drift",
+          "kind": "Python-DATA",
+          "construction": "Recorded Git-response fixture plus read-only681 source bytes; mutate exactly one return/data leaf in isolated module globals. No real Git/no source mutation. All synthetic Git responses explicitly fixture, never new actual HEAD authority.",
+          "expectedRefusalOrOrdering": "Exact source/identity/staged/untracked/patch/tool refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C20",
+      "originalDescription": {
+        "expected": "same strict top-level refusal; no alias",
+        "id": "C20",
+        "input": "root archive leaf only nested or wrong new tar hash",
+        "observed": "UNEXECUTED",
+        "target": "gate.load_gate"
+      },
+      "faultLocation": "gate.py:173-179",
+      "target": "gate.load_gate archive barrier",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "nested-only-leaf",
+          "kind": "Python-DATA",
+          "construction": "Unit rootArchiveAcceptance document has only nested packages.tarProvenanceSha256 or wrong TOPLEVEL hash; all upstream unit fixtures unchanged",
+          "expectedRefusalOrOrdering": "Root actual archive acceptance absent",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-tar-hash",
+          "kind": "Python-DATA",
+          "construction": "Unit rootArchiveAcceptance document has only nested packages.tarProvenanceSha256 or wrong TOPLEVEL hash; all upstream unit fixtures unchanged",
+          "expectedRefusalOrOrdering": "Root actual archive acceptance absent",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C21",
+      "originalDescription": {
+        "expected": "refuse full membership/provenance",
+        "id": "C21",
+        "input": "unsafe/duplicate/missing/extra archive member or altered built bytes",
+        "observed": "UNEXECUTED",
+        "target": "packages.py"
+      },
+      "faultLocation": "packages.py:20-47",
+      "target": "packages tar mode",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "unsafe-member",
+          "kind": "Python-DATA",
+          "construction": "Tiny synthetic tarballs/owned build fixture; traverse original helper via runpy with gate facade only upstream. Include ../escape, duplicate path, omitted required member, extra member or byte flip; never pack/install actual package",
+          "expectedRefusalOrOrdering": "assert/require original member/membership/byte refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "duplicate-member",
+          "kind": "Python-DATA",
+          "construction": "Tiny synthetic tarballs/owned build fixture; traverse original helper via runpy with gate facade only upstream. Include ../escape, duplicate path, omitted required member, extra member or byte flip; never pack/install actual package",
+          "expectedRefusalOrOrdering": "assert/require original member/membership/byte refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-member",
+          "kind": "Python-DATA",
+          "construction": "Tiny synthetic tarballs/owned build fixture; traverse original helper via runpy with gate facade only upstream. Include ../escape, duplicate path, omitted required member, extra member or byte flip; never pack/install actual package",
+          "expectedRefusalOrOrdering": "assert/require original member/membership/byte refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "extra-member",
+          "kind": "Python-DATA",
+          "construction": "Tiny synthetic tarballs/owned build fixture; traverse original helper via runpy with gate facade only upstream. Include ../escape, duplicate path, omitted required member, extra member or byte flip; never pack/install actual package",
+          "expectedRefusalOrOrdering": "assert/require original member/membership/byte refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "altered-built-bytes",
+          "kind": "Python-DATA",
+          "construction": "Tiny synthetic tarballs/owned build fixture; traverse original helper via runpy with gate facade only upstream. Include ../escape, duplicate path, omitted required member, extra member or byte flip; never pack/install actual package",
+          "expectedRefusalOrOrdering": "assert/require original member/membership/byte refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C22",
+      "originalDescription": {
+        "expected": "refuse proof before installed callback",
+        "id": "C22",
+        "input": "wrong generated consumer lock/manifest/settings/graph/link/entry/payload",
+        "observed": "UNEXECUTED",
+        "target": "packages.py"
+      },
+      "faultLocation": "packages.py:57-115;gate.py:131-139,177-182;carrier-audit.mjs:33 (wrong-payload only)",
+      "target": "consumer provenance/package modes + actual served-versus-proved payload comparison for wrong-payload only",
+      "variantCount": 7,
+      "variants": [
+        {
+          "name": "wrong-lock",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-manifest",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-settings",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-graph",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "escape-link",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-entry",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-payload",
+          "kind": "JS-private-DATA",
+          "construction": "Use actual packages.py emitted synthetic payload digest from fixed fixture as the independent value; supply a different digest in the synthetic served baseline to actual carrier-audit.mjs:33. The packages helper computes a digest, it does not accept/validate a caller-supplied payload leaf. No real installed callback or product call.",
+          "expectedRefusalOrOrdering": "independent-known-baseline-fields at carrier-audit.mjs33, compared against independently reproduced fixed-fixture recursive payload hash",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C23",
+      "originalDescription": {
+        "expected": "no private runtime projection",
+        "id": "C23",
+        "input": "compiler nonzero/missing actual TSFILE output/newlink/sourcecatalog drift",
+        "observed": "UNEXECUTED",
+        "target": "private_emit.py"
+      },
+      "faultLocation": "worker.py:68-73;private_emit.py:23-45",
+      "target": "compiler-result and bind_emit",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "compiler-nonzero",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-TSFILE",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "extra-link",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "catalog-drift",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C24",
+      "originalDescription": {
+        "expected": "refuse before factory imports",
+        "id": "C24",
+        "input": "unresolved dynamic import/require alias/conditional resolver/unpinned dependency",
+        "observed": "UNEXECUTED",
+        "target": "private-graph.mjs"
+      },
+      "faultLocation": "private-graph.mjs:37-62",
+      "target": "actual graph helper byte-copy with unit upstream facade",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "dynamic-import",
+          "kind": "JS-private-DATA",
+          "construction": "Known synthetic emitted JS fixture contains nonliteral import(x), alias require, unproved conditional exports or unpinned package. Real parser uses separately accepted fresh tool proof; factory import tripwire must remain0",
+          "expectedRefusalOrOrdering": "no-unresolved-dynamic-import/unresolved-require-alias/no-unproved-conditional-exports/fixed-private-runtime-package",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "require-alias",
+          "kind": "JS-private-DATA",
+          "construction": "Known synthetic emitted JS fixture contains nonliteral import(x), alias require, unproved conditional exports or unpinned package. Real parser uses separately accepted fresh tool proof; factory import tripwire must remain0",
+          "expectedRefusalOrOrdering": "no-unresolved-dynamic-import/unresolved-require-alias/no-unproved-conditional-exports/fixed-private-runtime-package",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "conditional-export",
+          "kind": "JS-private-DATA",
+          "construction": "Known synthetic emitted JS fixture contains nonliteral import(x), alias require, unproved conditional exports or unpinned package. Real parser uses separately accepted fresh tool proof; factory import tripwire must remain0",
+          "expectedRefusalOrOrdering": "no-unresolved-dynamic-import/unresolved-require-alias/no-unproved-conditional-exports/fixed-private-runtime-package",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "unpinned-dependency",
+          "kind": "JS-private-DATA",
+          "construction": "Known synthetic emitted JS fixture contains nonliteral import(x), alias require, unproved conditional exports or unpinned package. Real parser uses separately accepted fresh tool proof; factory import tripwire must remain0",
+          "expectedRefusalOrOrdering": "no-unresolved-dynamic-import/unresolved-require-alias/no-unproved-conditional-exports/fixed-private-runtime-package",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C25",
+      "originalDescription": {
+        "expected": "refuse graph proof",
+        "id": "C25",
+        "input": "actual CJS cache/import file not in graph or runtime bytes differ from consumer",
+        "observed": "UNEXECUTED",
+        "target": "private-graph.mjs"
+      },
+      "faultLocation": "private-graph.mjs:17-25,64-73;carrier-audit.mjs:44",
+      "target": "actual graph helper",
+      "variantCount": 2,
+      "variants": [
+        {
+          "name": "extra-CJS-cache",
+          "kind": "JS-private-DATA",
+          "construction": "One allowlisted owned inert CJS fixture is loaded into actual cache before graph check; or one workspace synthetic byte differs from bound synthetic consumer. No untrusted module, server/listener or resolver fallback",
+          "expectedRefusalOrOrdering": "unproved-actual-cjs-module/workspace-runtime-vs-proved-consumer-bytes",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "runtime-byte-mismatch",
+          "kind": "JS-private-DATA",
+          "construction": "One allowlisted owned inert CJS fixture is loaded into actual cache before graph check; or one workspace synthetic byte differs from bound synthetic consumer. No untrusted module, server/listener or resolver fallback",
+          "expectedRefusalOrOrdering": "unproved-actual-cjs-module/workspace-runtime-vs-proved-consumer-bytes",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C26",
+      "originalDescription": {
+        "expected": "refuse original-byte audit even callback0",
+        "id": "C26",
+        "input": "missing umask receipt/actual mode/stdio EOF/authenticated primary/group terminal",
+        "observed": "UNEXECUTED",
+        "target": "prepare_carrier_audit"
+      },
+      "faultLocation": "audit.py:40-68;scanner.py:97-115",
+      "target": "prepare_carrier_audit",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "missing-umask",
+          "kind": "Python-DATA",
+          "construction": "Synthetic positive prerequisite receipts and original owned0600 files, never actual product records. Delete launch setting, mode0644, stdioEOF=false, primary observed=false or recorded live controlled group. Root outer real closure still mandatory.",
+          "expectedRefusalOrOrdering": "Exact positive pre-exec/owned umask/Actual positive stdio/child identity/prior stage refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "bad-mode",
+          "kind": "Python-DATA",
+          "construction": "Synthetic positive prerequisite receipts and original owned0600 files, never actual product records. Delete launch setting, mode0644, stdioEOF=false, primary observed=false or recorded live controlled group. Root outer real closure still mandatory.",
+          "expectedRefusalOrOrdering": "Exact positive pre-exec/owned umask/Actual positive stdio/child identity/prior stage refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-stdio-EOF",
+          "kind": "Python-DATA",
+          "construction": "Synthetic positive prerequisite receipts and original owned0600 files, never actual product records. Delete launch setting, mode0644, stdioEOF=false, primary observed=false or recorded live controlled group. Root outer real closure still mandatory.",
+          "expectedRefusalOrOrdering": "Exact positive pre-exec/owned umask/Actual positive stdio/child identity/prior stage refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "unobserved-primary",
+          "kind": "Python-DATA",
+          "construction": "Synthetic positive prerequisite receipts and original owned0600 files, never actual product records. Delete launch setting, mode0644, stdioEOF=false, primary observed=false or recorded live controlled group. Root outer real closure still mandatory.",
+          "expectedRefusalOrOrdering": "Exact positive pre-exec/owned umask/Actual positive stdio/child identity/prior stage refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "remaining-group",
+          "kind": "Python-DATA",
+          "construction": "Synthetic positive prerequisite receipts and original owned0600 files, never actual product records. Delete launch setting, mode0644, stdioEOF=false, primary observed=false or recorded live controlled group. Root outer real closure still mandatory.",
+          "expectedRefusalOrOrdering": "Exact positive pre-exec/owned umask/Actual positive stdio/child identity/prior stage refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C27",
+      "originalDescription": {
+        "expected": "refuse same full wrapper/fresh trusted binding",
+        "id": "C27",
+        "input": "wrapper9 keys/order/session count or metadata/artifact/source/entry mismatch",
+        "observed": "UNEXECUTED",
+        "target": "carrier-audit.mjs"
+      },
+      "faultLocation": "carrier-audit.mjs:6-36",
+      "target": "actual full carrier audit + genuine pure factories",
+      "variantCount": 7,
+      "variants": [
+        {
+          "name": "wrapper-keys",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrapper-key-order",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "session-count",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "metadata",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "artifact-bytes",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "source-commit",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "entry-identity",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic full wrapper/ready/session fixtures derived from existing pure DATA builders; one selected leaf mutated. Same actual emitted factory brands, no fake assertion ownership or installed-child claim. Exact selected helper module bytes unchanged.",
+          "expectedRefusalOrOrdering": "closed-keys/original-wrapper-nine-key-order/actual24sessions/independent-known-baseline/actual-exact-artifact/actual-source-and-external-entry",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C28",
+      "originalDescription": {
+        "expected": "real same-module verifier refuses, no rebuilt evidence",
+        "id": "C28",
+        "input": "attempt/summary bytes differ/missing summary/invalid canonical/envelope/row omission",
+        "observed": "UNEXECUTED",
+        "target": "carrier-audit.mjs"
+      },
+      "faultLocation": "audit.py:58-65;carrier-audit.mjs:19-43",
+      "target": "full original-byte/genuine verifier path",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "attempt-summary-differ",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic original0600 files; mutate one byte/evidence row only. Real emitted verifyProfileEvidence called where required, genuine branded configuration/bundle via actual factories. No normalized replacement or reconstructed original",
+          "expectedRefusalOrOrdering": "actual-final-attempt-summary-byte-equality/positive-summary-missing/full-canonical-expected-evidence/closed-keys/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-summary",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic original0600 files; mutate one byte/evidence row only. Real emitted verifyProfileEvidence called where required, genuine branded configuration/bundle via actual factories. No normalized replacement or reconstructed original",
+          "expectedRefusalOrOrdering": "actual-final-attempt-summary-byte-equality/positive-summary-missing/full-canonical-expected-evidence/closed-keys/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "invalid-canonical",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic original0600 files; mutate one byte/evidence row only. Real emitted verifyProfileEvidence called where required, genuine branded configuration/bundle via actual factories. No normalized replacement or reconstructed original",
+          "expectedRefusalOrOrdering": "actual-final-attempt-summary-byte-equality/positive-summary-missing/full-canonical-expected-evidence/closed-keys/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "envelope-extra-key",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic original0600 files; mutate one byte/evidence row only. Real emitted verifyProfileEvidence called where required, genuine branded configuration/bundle via actual factories. No normalized replacement or reconstructed original",
+          "expectedRefusalOrOrdering": "actual-final-attempt-summary-byte-equality/positive-summary-missing/full-canonical-expected-evidence/closed-keys/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "owner-row-omission",
+          "kind": "JS-private-DATA",
+          "construction": "Synthetic original0600 files; mutate one byte/evidence row only. Real emitted verifyProfileEvidence called where required, genuine branded configuration/bundle via actual factories. No normalized replacement or reconstructed original",
+          "expectedRefusalOrOrdering": "actual-final-attempt-summary-byte-equality/positive-summary-missing/full-canonical-expected-evidence/closed-keys/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C29",
+      "originalDescription": {
+        "expected": "refuse raw-vs-derived/256row/full verifier proof",
+        "id": "C29",
+        "input": "normalized raw digest/result-only digest/17-row substitution",
+        "observed": "UNEXECUTED",
+        "target": "carrier-audit.mjs"
+      },
+      "faultLocation": "carrier-audit.mjs:37-43",
+      "target": "full raw-versus-derived audit",
+      "variantCount": 3,
+      "variants": [
+        {
+          "name": "normalized-raw-digest",
+          "kind": "JS-private-DATA",
+          "construction": "Canonicalize synthetic original wrapper bytes but retain former raw SHA, substitute result digest for raw-wrapper digest, or cut256 rows to17; preserve prior ordinary fixtures so failure is at raw/derived/fullness check",
+          "expectedRefusalOrOrdering": "raw-vs-derived-and-unverified-cleanup/actual-full-original-result-not17-row-substitution/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "result-only-digest",
+          "kind": "JS-private-DATA",
+          "construction": "Canonicalize synthetic original wrapper bytes but retain former raw SHA, substitute result digest for raw-wrapper digest, or cut256 rows to17; preserve prior ordinary fixtures so failure is at raw/derived/fullness check",
+          "expectedRefusalOrOrdering": "raw-vs-derived-and-unverified-cleanup/actual-full-original-result-not17-row-substitution/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "seventeen-row-substitution",
+          "kind": "JS-private-DATA",
+          "construction": "Canonicalize synthetic original wrapper bytes but retain former raw SHA, substitute result digest for raw-wrapper digest, or cut256 rows to17; preserve prior ordinary fixtures so failure is at raw/derived/fullness check",
+          "expectedRefusalOrOrdering": "raw-vs-derived-and-unverified-cleanup/actual-full-original-result-not17-row-substitution/genuine verifier refusal",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C30",
+      "originalDescription": {
+        "expected": "refuse claim/qualification/ownership changes; retain reported-complete/unverified and explicit no offline token regeneration limitation",
+        "id": "C30",
+        "input": "claim true/qualification ready/cleanupownership upgraded",
+        "observed": "UNEXECUTED",
+        "target": "carrier-audit.mjs"
+      },
+      "faultLocation": "carrier-audit.mjs:39-45",
+      "target": "actual no-credit verifier boundary",
+      "variantCount": 3,
+      "variants": [
+        {
+          "name": "claim-true",
+          "kind": "JS-private-DATA",
+          "construction": "One false→true claim/qualification leaf or unverified→verified ownership replacement in synthetic sidecar; actual verifier recomputes expected envelope, no patched brand",
+          "expectedRefusalOrOrdering": "full-canonical-expected-evidence/no-whole-clause-or-missing-owner-credit/raw-vs-derived-and-unverified-cleanup",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "qualification-ready",
+          "kind": "JS-private-DATA",
+          "construction": "One false→true claim/qualification leaf or unverified→verified ownership replacement in synthetic sidecar; actual verifier recomputes expected envelope, no patched brand",
+          "expectedRefusalOrOrdering": "full-canonical-expected-evidence/no-whole-clause-or-missing-owner-credit/raw-vs-derived-and-unverified-cleanup",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "cleanup-ownership-upgrade",
+          "kind": "JS-private-DATA",
+          "construction": "One false→true claim/qualification leaf or unverified→verified ownership replacement in synthetic sidecar; actual verifier recomputes expected envelope, no patched brand",
+          "expectedRefusalOrOrdering": "full-canonical-expected-evidence/no-whole-clause-or-missing-owner-credit/raw-vs-derived-and-unverified-cleanup",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C31",
+      "originalDescription": {
+        "expected": "preserve failed attempt; no retry or widening",
+        "id": "C31",
+        "input": "existing attempt directory/receipts or postwork nofit",
+        "observed": "UNEXECUTED",
+        "target": "all stages"
+      },
+      "faultLocation": "worker.py:29-33,51,99-109",
+      "target": "actual worker admission/cutoff",
+      "variantCount": 3,
+      "variants": [
+        {
+          "name": "existing-attempt-root",
+          "kind": "Python-DATA",
+          "construction": "Owned synthetic namespace precontains attempt dir or exclusive receipt; for no-fit actual original clock reaches105 before verification ends. No deletion/retry or time substitution",
+          "expectedRefusalOrOrdering": "Preserve previous stage/no retry/exclusive mkdir/Verification exceeded original work window",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "existing-stage-receipt",
+          "kind": "Python-DATA",
+          "construction": "Owned synthetic namespace precontains attempt dir or exclusive receipt; for no-fit actual original clock reaches105 before verification ends. No deletion/retry or time substitution",
+          "expectedRefusalOrOrdering": "Preserve previous stage/no retry/exclusive mkdir/Verification exceeded original work window",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "postwork-no-fit",
+          "kind": "Python-DATA",
+          "construction": "Owned synthetic namespace precontains attempt dir or exclusive receipt; for no-fit actual original clock reaches105 before verification ends. No deletion/retry or time substitution",
+          "expectedRefusalOrOrdering": "Preserve previous stage/no retry/exclusive mkdir/Verification exceeded original work window",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C32",
+      "originalDescription": {
+        "expected": "outer failure only; missing stage fields remain UNKNOWN, never reconstruct",
+        "id": "C32",
+        "input": "failure during setup before stage receipt",
+        "observed": "UNEXECUTED",
+        "target": "all stages"
+      },
+      "faultLocation": "worker.py:24-33,102-109;run.py:16-19",
+      "target": "setup-before-stage-receipt",
+      "variantCount": 1,
+      "variants": [
+        {
+          "name": "pre-stage-setup-failure",
+          "kind": "watchdog-OS",
+          "construction": "Finite gate-read exception before E/attempt exists; capture actual outer/worker failure and absence of inner started/exit artifacts. Do not invent source-after/stage/terminal or repair missing logs",
+          "expectedRefusalOrOrdering": "outer failure only; stage fields UNKNOWN",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    }
+  ],
+  "sourceAuthoringReleased": false,
+  "evaluationReleased": false
+}

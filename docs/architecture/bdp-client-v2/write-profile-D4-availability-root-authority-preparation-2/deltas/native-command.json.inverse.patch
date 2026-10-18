@@ -1,0 +1,49 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/native-command.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/native-command.json
+@@ -20,17 +20,17 @@
+     "/usr/bin/perl5.34",
+     "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+     "-I/System/Library/Perl/5.34",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_limit.pl",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl",
+     "AVAIL",
+     "availability",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/availability-release.proposed.json"
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/availability-release.proposed.json"
+   ],
+   "authoritySequence": [
+-    "FULL OTHER-native H5 mechanics and root static acceptance",
+-    "Separately named CLOSED exact H5 caller and native10-key authority; independent caller/native authority precision",
+-    "Separate independent full14-key root proposed execution authority review and durable exact release/readback",
+-    "ONE new exact-H5 availability attempt with actual PIPE/EOF/raw/whole-clock/fresh-process audit; H4 never retry/relabel",
+-    "Only separately measured root availability acceptance may establish clockDomainVerified; finite controls/product remain separately CLOSED"
++    "OTHER-native FULL H3 including actual availability code",
++    "separately durable root availability-only release bound to exact H3 and pinned tools",
++    "one actual availability invocation and independent fresh terminal/PID/PGID/raw audit",
++    "root measured availability acceptance; clockDomainVerified may only now become true in separate immutable acceptance",
++    "separate durable finite-control release; no automatic suite/product"
+   ],
+   "clock": {
+     "KILL": 119,
+@@ -39,16 +39,16 @@
+     "bothNormalTerminalsStrictBefore": 115,
+     "whole": 120
+   },
+-  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5",
+-  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability-attempt",
++  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4",
++  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt",
+   "executed": false,
+   "finiteControlCalls": 0,
+-  "futureRootCaller": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/capture.py",
+-  "futureSeparateExecutionRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-2/release.json",
++  "futureRootCaller": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/capture.py",
++  "futureSeparateExecutionRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-1/release.json",
+   "noRetry": true,
+   "productCalls": 0,
+   "rootFreshAbsence": "UNRESOLVED",
+   "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+-  "state": "CLOSED exact H5 native argv, no invocation",
++  "state": "CLOSED exact future native argv; NO invocation",
+   "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect"
+ }

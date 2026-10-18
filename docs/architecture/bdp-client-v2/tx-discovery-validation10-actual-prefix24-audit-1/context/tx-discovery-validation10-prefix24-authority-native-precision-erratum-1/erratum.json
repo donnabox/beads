@@ -1,0 +1,31 @@
+{
+  "state": "FROZEN additive native predicate-applicability erratum only",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "originalNativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix24-authority-native-precision-1/index.json",
+    "sha256": "a0fd213e8c74ea7993a8606cedb2178ff6975786d5d1834697a286fbba01093c"
+  },
+  "origin": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix24-authority-native-precision-1/gate-59-predicate-assessment.json",
+    "sha256": "91d557bc17843c8c4852f8542bc9554674f87c5f6311b54aaa3888d3c8e763fe"
+  },
+  "predicate": {
+    "line": 63,
+    "function": "consumer_inventory",
+    "expression": "q.is_relative_to(C.resolve())"
+  },
+  "exactChange": {
+    "field": "assessment",
+    "before": "OUTSIDE prefix24; remains UNKNOWN and mandatory at its actual later consumer/archive stage; not waived",
+    "after": "APPLICABLE TO PROSPECTIVE stage24 proof producer: packages.py installed calls gate.consumer_inventory() while publishing installed-consumer-inventory.json. Every encountered symlink must resolve inside current consumer. This remains a mandatory future full-tree check; prior actual23 only establishes actual manifest/metadata resolution, not completed full inventory."
+  },
+  "inverse": {
+    "before": "APPLICABLE TO PROSPECTIVE stage24 proof producer: packages.py installed calls gate.consumer_inventory() while publishing installed-consumer-inventory.json. Every encountered symlink must resolve inside current consumer. This remains a mandatory future full-tree check; prior actual23 only establishes actual manifest/metadata resolution, not completed full inventory.",
+    "after": "OUTSIDE prefix24; remains UNKNOWN and mandatory at its actual later consumer/archive stage; not waived"
+  },
+  "reason": "Final call-site reread found inherited outside-prefix JSON label. Full main report already correctly states stage24 inventory checks confined links. Original97-file review remains immutable. Read with this additive correction; other58 site assessments and all26 keys/counts/candidate/source identities unchanged.",
+  "candidateGateSha256": "51bbb118604339c7a2cb029343b751112827e8122c7aca858d5b1b05e98829be",
+  "acceptedForExactProposedAuthorityData": true,
+  "executionAuthorized": false,
+  "candidateOrHelperOrGateOrSourceChanged": false
+}
