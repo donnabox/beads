@@ -1,0 +1,50 @@
+{
+  "actualInit": {
+    "agents": [
+      "claude",
+      "Explore",
+      "general-purpose",
+      "Plan"
+    ],
+    "claude_code_version": "2.1.263",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum",
+    "mcp_servers": [],
+    "model": "claude-opus-5[1m]",
+    "permissionMode": "default",
+    "plugins": [
+      {
+        "name": "plugin-authoring",
+        "path": "builtin",
+        "source": "plugin-authoring@builtin"
+      }
+    ],
+    "tools": [
+      "Glob",
+      "Grep",
+      "Read"
+    ]
+  },
+  "advertisedBuiltinAgentsNotAgentToolInvocation": "Init advertises builtins; configured and actual tool calls are Read/Glob/Grep only, no Agent tool call.",
+  "bytes": 2390451,
+  "cliRawExit": "UNKNOWN",
+  "cliStderrRetainedBytes": 0,
+  "configuredProviderDefaultNoModelArgument": true,
+  "finalFindingsAvailable": false,
+  "invalidRecords": 0,
+  "lastEventType": "content_block_delta",
+  "lastRecordType": "stream_event",
+  "newlineTerminated": true,
+  "providerReviewComplete": false,
+  "rawMeaning": "Exact retained file bytes after actual failure; no reconstructed missing result or presumed unobserved tail",
+  "recordTypes": {
+    "assistant": 99,
+    "rate_limit_event": 2,
+    "stream_event": 2317,
+    "system": 712,
+    "user": 61
+  },
+  "resultCount": 0,
+  "sha256": "f2d3e73937af78b98c0fdb2dd19b67658c7e23f57c37ca7c8138322a96105805",
+  "successfulResultCount": 0,
+  "validJsonlRecords": 3191
+}

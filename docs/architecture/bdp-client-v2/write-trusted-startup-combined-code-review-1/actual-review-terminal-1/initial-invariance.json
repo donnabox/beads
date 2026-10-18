@@ -1,0 +1,25 @@
+{
+  "allMatch": true,
+  "artifacts": 24,
+  "authorizedExceptions": {
+    "claude-code-review/binding.json": {
+      "after": "4804303deb850530d345a81ccf252d3c9f4acd04b9dd8fe0e204445f781028a3",
+      "before": "2ba4a50604aa6934d20243cf9e650fd26df8a610a63b5d5cf25df7ad31423b1c",
+      "onlyChange": "rootLaunchReleased false\u2192true"
+    },
+    "launch-supervision/control.json": {
+      "after": "6fbb277b532cc42891fc6980f08a0c751094e6e0a5dd2cc8583adea8e67b68c3",
+      "before": "fe3153dd8c65be91dcc4770b36a25a7f0531c1775153676dba7cbebac0186301",
+      "onlyChange": "rootLaunchReleased false\u2192true"
+    }
+  },
+  "context": 834,
+  "gitExecuted": false,
+  "literalTwoFlagTransitionsOnly": true,
+  "liveNotTerminal": true,
+  "observedUtc": "2026-10-18T19:00:48.653127+00:00",
+  "origins": 836,
+  "preparationIndexSha256": "60bde3c263d7d25bab26a2dbd75e9fd6e1e302b9fefefb846202b23f9a3700da",
+  "preparedInputsVerified": 864,
+  "sourceActual": 686
+}
