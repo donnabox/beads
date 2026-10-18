@@ -1,0 +1,7 @@
+$ tsc -p tsconfig.check.json
+packages/server/src/transaction-sse.test.ts(1511,22): error TS18048: 'head' is possibly 'undefined'.
+packages/server/src/transaction-sse.test.ts(1512,22): error TS18048: 'head' is possibly 'undefined'.
+packages/server/src/transaction-sse.test.ts(1513,17): error TS18048: 'get' is possibly 'undefined'.
+packages/server/src/transaction-sse.test.ts(1515,22): error TS18048: 'get' is possibly 'undefined'.
+packages/server/src/transaction-sse.test.ts(1516,24): error TS18048: 'get' is possibly 'undefined'.
+[ELIFECYCLE] Command failed with exit code 1.

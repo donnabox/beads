@@ -1,0 +1,31 @@
+{
+  "accepted": true,
+  "acceptedAt": "2026-10-18T04:45:51.265048+00:00",
+  "sourceBindingSha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+  "sourceIdentity": "bada68a4268fa521b7651b8afca3c68b2c8f8f741fcf9795464d51455c914d68",
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/run/workspace-tools.json",
+    "sha256": "b2dfdfdcb144aa1c516117fadd6bec5f97fec4c5502f44fd62b624f4c47432f1"
+  },
+  "actualToolCount": 11,
+  "actualStages": {
+    "node-version": "f862ea05f4c6fe27175050384bb66f5c8416b48f4e409f73d48367487aaa3e99",
+    "pnpm-version": "07d824a66df5ed2b70c45c6beb3fd1425c9be789725c19d43e6d9e1c6b7b57b6",
+    "workspace-install": "8f087f9e5f2ad0c5e31406b2737585211c6ea0c159b189818e06c1b084d675e8",
+    "bind-workspace-tools": "66f0c567ad4e59a3255b7a4167783bcd333f1ff3f05a22ec5ed3f768213877b1"
+  },
+  "allSampledPidsAbsent": true,
+  "noRuntimeResidue": true,
+  "nextApprovedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "nextBarrier": "root actual fresh build acceptance before focused-source"
+}
