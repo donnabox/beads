@@ -91,13 +91,16 @@ including an already-ended driver transaction, does not provide a verified
 rollback acknowledgment. Inspect the destination after that error before
 deciding what to do next.
 
-Cancellation and the import's five-minute storage deadline currently use
-`capability_unavailable` (exit 5), with the interrupted operation in the message.
-An interrupted freshness inspection does not diagnose a damaged or nonempty
-workspace. A definite rollback acknowledgment permits retrying the operation;
+During freshness and prefix inspection, cancellation or the import's five-minute
+storage deadline uses `capability_unavailable` (exit 5), with the inspected plane
+in the message. These interrupted inspections do not diagnose a damaged or
+nonempty workspace. Shared binding/schema admission precedes these checks and
+currently hides some underlying error causes: interruption there can still
+report `invalid_store`. This inherited limitation is not a schema-repair verdict
+established by the importer. A definite rollback acknowledgment permits retrying the operation;
 if the error also reports `outcome_unknown`, inspect the destination first as
-described above. A missing or unreadable required schema/configuration record
-without cancellation instead uses `invalid_store`; import does not repair it.
+described above. A definitely missing or unreadable prerequisite also uses
+`invalid_store`; import does not repair it.
 
 This is a fresh-workspace interchange operation. It does not migrate an
 existing workspace in place or carry full backup/restore history.

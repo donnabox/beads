@@ -218,7 +218,8 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Binding/Types, migration cursors, ordinary workflow/routing settings and
 	// repository/clone bookkeeping (metadata/local_metadata) are configuration,
 	// not resource allocations. They remain permitted and are not a proof of an
-	// unused workspace. See the explicit schema inventory in the import evidence.
+	// unused workspace. See engdocs/evidence/
+	// legacy-import-preview3-preparation-2026-10-18/freshness-inventory.md.
 	tables = append(tables, issueops.DeleteCascadeTables(false)...)
 	tables = append(tables, issueops.DeleteCascadeTables(true)...)
 	seen := make(map[string]bool, len(tables))
@@ -269,8 +270,15 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 // An interrupted inspection establishes no verdict about the destination.
 // Preserve all causes without advising schema repair for caller cancellation.
 func legacyTargetInspectionError(ctx context.Context, plane string, cause error) error {
-	if ctx.Err() != nil || errors.Is(cause, context.Canceled) || errors.Is(cause, context.DeadlineExceeded) {
-		return fmt.Errorf("inspect legacy import target %s: %w", plane, errors.Join(cause, ctx.Err()))
+	contextErr := ctx.Err()
+	if contextErr != nil && !errors.Is(cause, contextErr) {
+		return fmt.Errorf("inspect legacy import target %s: %w (%w)", plane, cause, contextErr)
+	}
+	if contextErr != nil || errors.Is(cause, context.Canceled) || errors.Is(cause, context.DeadlineExceeded) {
+		return fmt.Errorf("inspect legacy import target %s: %w", plane, cause)
+	}
+	if plane == "config.issue_prefix" {
+		return fmt.Errorf("%w: fresh workspace Issue prefix configuration is missing or unreadable: %w", ErrInvalidStore, cause)
 	}
 	return fmt.Errorf("%w: cannot establish workspace freshness from %s; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, plane, cause)
 }

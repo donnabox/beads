@@ -59,7 +59,11 @@ func TestLegacyImportFreshnessQueryErrors(t *testing.T) {
 					}
 				}()
 				err = requireEmptyLegacyTarget(t.Context(), tx)
-				if !connector.failed || errors.Is(err, ErrInvalidStore) != failure.invalidStore || !errors.Is(err, failure.cause) || !strings.Contains(err.Error(), test.plane) {
+				planeContext := "inspect legacy import target " + test.plane + ":"
+				if failure.invalidStore {
+					planeContext = "from " + test.plane + ";"
+				}
+				if !connector.failed || errors.Is(err, ErrInvalidStore) != failure.invalidStore || !errors.Is(err, failure.cause) || !strings.Contains(err.Error(), planeContext) {
 					t.Fatalf("freshness error lost classification, plane or cause: reached=%t err=%v", connector.failed, err)
 				}
 				if repairAdvice := strings.Contains(err.Error(), "use a fully initialized fresh graph workspace"); repairAdvice != failure.invalidStore {
@@ -81,8 +85,11 @@ func TestLegacyImportInterruptedInspection(t *testing.T) {
 	cancel()
 	cause := errors.New("driver interrupted during scan")
 	err := legacyTargetInspectionError(ctx, "config.issue_prefix", cause)
-	if !errors.Is(err, context.Canceled) || !errors.Is(err, cause) || errors.Is(err, ErrInvalidStore) {
+	if !errors.Is(err, context.Canceled) || !errors.Is(err, cause) || errors.Is(err, ErrInvalidStore) || strings.ContainsAny(err.Error(), "\r\n") {
 		t.Fatalf("interrupted inspection lost context or driver cause: %v", err)
+	}
+	if got := legacyTargetInspectionError(t.Context(), "config.issue_prefix", sql.ErrNoRows); !errors.Is(got, ErrInvalidStore) || !errors.Is(got, sql.ErrNoRows) || !strings.Contains(got.Error(), "Issue prefix configuration is missing or unreadable") {
+		t.Fatalf("missing prefix lost its configuration diagnostic: %v", got)
 	}
 }
 
