@@ -1,0 +1,158 @@
+{
+  "state": "STATIC AST PROOF; no helper execution",
+  "baseSupervisorSha256": "e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b",
+  "supervisor5Sha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "approvedPatchSha256": "131909864bda0b4cf0d5d717fda9dee90acf11aa8c4a7c39ff839d55d3de0955",
+  "baseAstSha256": "8998531e39d68717dd3f20cc8ba39558cb59cbdf45800bf0151241350f359861",
+  "diagnosticsStrippedAstSha256": "8998531e39d68717dd3f20cc8ba39558cb59cbdf45800bf0151241350f359861",
+  "equalAfterRemovingOnlyApprovedDiagnostics": true,
+  "removed": {
+    "assignments": [
+      {
+        "name": "reviewer_stage",
+        "value": "'record_decode'"
+      },
+      {
+        "name": "reviewer_row",
+        "value": "None"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'record_pid_pgid'"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'record_argv'"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'record_started_parse'"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'record_freshness'"
+      },
+      {
+        "name": "reviewer_row",
+        "value": "dict(row)"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'row_started_parse'"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'row_pid_pgid_start'"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'row_bound_zombie'"
+      },
+      {
+        "name": "reviewer_stage",
+        "value": "'row_executable'"
+      }
+    ],
+    "firstFailureBranch": 1,
+    "dictionaryFields": 2
+  },
+  "protectedCallSequences": {
+    "require": {
+      "identical": true,
+      "calls": 22,
+      "sourceOrderExpressionSha256": "59f7d6cadb160e8e7dc1f505c5b25e0a781523733df74bb2e2be807e3cd5b487"
+    },
+    "subprocess.Popen": {
+      "identical": true,
+      "calls": 2,
+      "sourceOrderExpressionSha256": "e9e7ab53e18ec1cdf9f23828b61dae8b4eea896f5db69a5efc5297867b59260f"
+    },
+    "subprocess.check_output": {
+      "identical": true,
+      "calls": 1,
+      "sourceOrderExpressionSha256": "72ce24a540fc87b3a92080db1787b5605e65fa3e370d7c1038f9d81d41039cff"
+    },
+    "os.killpg": {
+      "identical": true,
+      "calls": 1,
+      "sourceOrderExpressionSha256": "cce5b53e27f583a0a5af2c3afd492aabc9e1f09639e769d689543c48fa192884"
+    },
+    "os.getpgid": {
+      "identical": true,
+      "calls": 1,
+      "sourceOrderExpressionSha256": "636080f2bb4d19894f2bb672528bbe5a7115116b49bdd74011902d83e4b28e0a"
+    },
+    "poll_direct": {
+      "identical": true,
+      "calls": 7,
+      "sourceOrderExpressionSha256": "479d9d19ef18e717fab81984b1f645edf679de4c451df5fdd8281c315941bfcb"
+    },
+    "register_direct": {
+      "identical": true,
+      "calls": 2,
+      "sourceOrderExpressionSha256": "4bd1246bc2d37965c6836830d8cb89e434437d684d38e0e511a7370ceca5e2ff"
+    },
+    "collect": {
+      "identical": true,
+      "calls": 8,
+      "sourceOrderExpressionSha256": "30c7fb03159c8a4c19e1bd405164acda67c90ae93bef2e4c970e2b720f3a35d8"
+    },
+    "check_session": {
+      "identical": true,
+      "calls": 3,
+      "sourceOrderExpressionSha256": "04ba890b49adf9ca37121fc5c959b82cc9c79dce0ef1b98c3b51d7d04a4b625e"
+    },
+    "wait_check": {
+      "identical": true,
+      "calls": 3,
+      "sourceOrderExpressionSha256": "f15f9fd4d92ebe5eace19a3fc00df5ffce6a549d855c884b4636c3909ff18b68"
+    },
+    "send_owned": {
+      "identical": true,
+      "calls": 8,
+      "sourceOrderExpressionSha256": "88ada8bc02b168ecf94302af080225fef7c2d9082d91c815e0a81fffbde8feff"
+    },
+    "fail": {
+      "identical": true,
+      "calls": 7,
+      "sourceOrderExpressionSha256": "7debe59498b2828f1c9992dff31850ee282f7c409e7623ab4bee4e35353c3499"
+    },
+    "inventory": {
+      "identical": true,
+      "calls": 1,
+      "sourceOrderExpressionSha256": "bed4a6835e1ed6cb3be4eda6339ef3ce5b26e19e1b67eaed63ed0b40c6ba5730"
+    },
+    "log": {
+      "identical": true,
+      "calls": 7,
+      "sourceOrderExpressionSha256": "e4fb3e772878c2863e73a0c9ecb3c8422b12a8b58e6599ade7ae91ce568f3aaf"
+    },
+    "time.sleep": {
+      "identical": true,
+      "calls": 5,
+      "sourceOrderExpressionSha256": "5a160f778518027406a543978a991bb77683b255852e82c8249fc983abd4d8fc"
+    },
+    "finished.wait": {
+      "identical": true,
+      "calls": 1,
+      "sourceOrderExpressionSha256": "c8c0c66ad2683510e2d8a09d1fb107edd82599207cc15018081da2bf88da0f8d"
+    },
+    "timer.join": {
+      "identical": true,
+      "calls": 1,
+      "sourceOrderExpressionSha256": "d4b5527a824466c24b50c7bbc9d8ca49f9e069745d72e34cb5f040ef6abf5ca5"
+    }
+  },
+  "controlChangedKeysOnly": [
+    "authority",
+    "predecessorIndexSha256",
+    "rootDispositionSha256"
+  ],
+  "allRuntimeControlFieldsIdentical": true,
+  "extraQuerySignalFileWriteCalls": 0,
+  "addedClockReads": 1,
+  "addedClockPurpose": "first-failure diagnostic elapsed timestamp only",
+  "astIsBehavioralQualification": false,
+  "supervisorExecuted": false,
+  "attemptExists": false
+}

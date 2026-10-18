@@ -1,0 +1,21 @@
+{
+  "kind": "root-future-supervisor-observability-only-disposition",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdUtc": "2026-10-18T05:22:32.595762+00:00",
+  "decision": "Accept independently inspected observability-only proposal for a separately named CLOSED supervisor5. No execution or retry authority.",
+  "proposalSha256": "131909864bda0b4cf0d5d717fda9dee90acf11aa8c4a7c39ff839d55d3de0955",
+  "nativeClosureSha256": "6fb3147f31cd46d19829e261961a5dc4a0d5717d949eff5444f6aa20b6f057ce",
+  "baseSupervisorSha256": "e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b",
+  "authorizedWriter": "tx_discovery_next_plan",
+  "scope": "Copy generic supervisor4 and apply exactly approved diagnostic delta as new-session-launch-supervision-5; immutable original/predecessors, CLOSED control, exact genuine forward/inverse patches, index, mirror and AST proof removing only diagnostic assignments/slot/output yields exact original AST.",
+  "constraints": [
+    "All22requires and ownership/predicate/signal/query/log call sequences unchanged",
+    "1800/1790/1798 and no retries unchanged",
+    "No extra process query/write/signal",
+    "Fixed first-failure stage/class/time/already-fetched no-arguments row only; no exception text/argv/process record",
+    "Original startup CODE failed finalization remains failed; exact triggering predicate unknown",
+    "No packet/reviewer/helper execution, no product source or Git/flags changes"
+  ],
+  "requires": "Independent native actual new-byte closure and root acceptance before any future packet rebind/release",
+  "executionReleased": false
+}

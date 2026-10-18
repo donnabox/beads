@@ -1,0 +1,53 @@
+{
+  "indexedArtifactsVerified": 132,
+  "indexAndAllMirrorsVerified": true,
+  "originCopyPairsVerified": 97,
+  "publishedSourceFilesRehashed": 679,
+  "actualCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "actualTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "actualSoleParent": [
+    "a56254d682cf4623cab22a552e3d2f695f691795"
+  ],
+  "actualCleanStatusAndTrackedInventoryVerified": true,
+  "actualCommittedDiffEqualsRootTestedPatch": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
+  "priorActualPaths": 45,
+  "activeActualPaths": 47,
+  "twoNewReadOnlyContexts": [
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-read.ts"
+  ],
+  "onlyChangedAmongPrior45": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "protocolSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "unchangedContracts": {
+    "cold-input-contract.json": "7a62b0eca649f19316b7d4346db2d9cbcda0a281df480f30f1e93d9ff0730245",
+    "cold-positive-requests.json": "ee4001be667ed8851c1330028da5fa20893c060446ac34fb432a49b694b157de",
+    "source-callbacks.json": "329ccfe8cd8cae2f828a720297398bee89822cb184328a2bf6d5f89130518d33",
+    "installed-callbacks.json": "b1e57845d067d64304adaf0efefbb281019a21838ba61db9d59d850ba176876e",
+    "counterfactuals.json": "af575aacce1b68f9d780dead626924083a367e436b2036af323e500e2f353087",
+    "observation-contract.json": "8194b07f75a0dc3cfb32075bd89edd09a834adea596d0c13aff46466d272a4fc"
+  },
+  "genuineDeltaInversePairsVerified": 7,
+  "inspectionHttpServiceDiffsVerified": 2,
+  "discoveryObservedMethodByteIdentical": true,
+  "sourceCallbacks": 21,
+  "sourceDirectCalls": 94,
+  "sourceWireRequests": 14,
+  "coldRequestRows": [
+    43,
+    28
+  ],
+  "directoryOperationNames": 12,
+  "installedCallbacks": 11,
+  "installedScheduledRequests": 190,
+  "installedCompletedResponses": 187,
+  "installedExpectedTransportAborts": 3,
+  "countsAreProspective": true,
+  "allAuthoringLaunchRuntimeGatesFalse": true,
+  "testsBuildInstallRuntimeFormatterReviewExecuted": false,
+  "readOnlyGitIdentityStatusInventoryDiffUsed": true,
+  "gitMutations": false,
+  "inspectionFailureRecord": "Initial report assembly looked for predecessor source under source/; actual predecessor snapshots are context/source/. FileNotFoundError remained in tool transcript; no report files had been written. Corrected static comparisons passed."
+}

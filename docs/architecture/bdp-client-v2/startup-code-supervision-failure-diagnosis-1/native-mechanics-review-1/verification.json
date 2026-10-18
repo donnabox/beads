@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-18T05:13:59.967080+00:00",
+  "frozenIndexSha256": "7757a3b6e2fb71f1c9e2048c2dd451c909ab45eacf580e2b0b5742e4cd90df9d",
+  "indexedFilesVerified": 70,
+  "mirroredFilesVerified": 71,
+  "originAndCopyBindingsVerified": 52,
+  "proposalPatchSha256": "131909864bda0b4cf0d5d717fda9dee90acf11aa8c4a7c39ff839d55d3de0955",
+  "beforeHelperSha256": "e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b",
+  "proposedTextSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "genuinePatchInverse": true,
+  "astAfterRemovingOnlyNewDiagnosticStateEqualsOriginal": true,
+  "protectedCallSequences": {
+    "require": {
+      "count": 22,
+      "identical": true
+    },
+    "subprocess.Popen": {
+      "count": 2,
+      "identical": true
+    },
+    "subprocess.check_output": {
+      "count": 1,
+      "identical": true
+    },
+    "os.killpg": {
+      "count": 1,
+      "identical": true
+    },
+    "os.getpgid": {
+      "count": 1,
+      "identical": true
+    },
+    "poll_direct": {
+      "count": 7,
+      "identical": true
+    },
+    "check_session": {
+      "count": 3,
+      "identical": true
+    },
+    "wait_check": {
+      "count": 3,
+      "identical": true
+    },
+    "send_owned": {
+      "count": 8,
+      "identical": true
+    },
+    "fail": {
+      "count": 7,
+      "identical": true
+    },
+    "inventory": {
+      "count": 1,
+      "identical": true
+    },
+    "log": {
+      "count": 7,
+      "identical": true
+    }
+  },
+  "recordedPsRows": 7651,
+  "outerReviewerRows": 3401,
+  "cases": {
+    "startup": {
+      "rawRecords": 2519,
+      "results": 1,
+      "outerReviewerRows": 613,
+      "runnerReviewerRows": 22,
+      "latestRow": {
+        "pid": 51716,
+        "ppid": 51688,
+        "pgid": 51716,
+        "state": "Z",
+        "start": "Sat Oct 17 21:31:57 2026",
+        "comm": "<defunct>"
+      },
+      "latestHelperBranchPass": true,
+      "classification": "process_ownership_or_cleanup_failure",
+      "roleCheckCount": 42,
+      "recordedRoleChecksAllZero": true
+    },
+    "d1-code": {
+      "rawRecords": 6613,
+      "results": 1,
+      "outerReviewerRows": 1724,
+      "runnerReviewerRows": 60,
+      "latestRow": {
+        "pid": 73969,
+        "ppid": 73942,
+        "pgid": 73969,
+        "state": "Z",
+        "start": "Sat Oct 17 20:53:25 2026",
+        "comm": "<defunct>"
+      },
+      "latestHelperBranchPass": true,
+      "classification": "review_complete_pending_root_adjudication",
+      "roleCheckCount": 117,
+      "recordedRoleChecksAllZero": true
+    },
+    "d1-plan": {
+      "rawRecords": 4500,
+      "results": 1,
+      "outerReviewerRows": 1064,
+      "runnerReviewerRows": 38,
+      "latestRow": {
+        "pid": 5366,
+        "ppid": 5342,
+        "pgid": 5366,
+        "start": "Sat Oct 17 20:05:04 2026",
+        "comm": "<defunct>"
+      },
+      "latestHelperBranchPass": false,
+      "classification": "process_ownership_or_cleanup_failure",
+      "roleCheckCount": 74,
+      "recordedRoleChecksAllZero": true
+    }
+  },
+  "largestSavedStringBytes": {
+    "comm": 124,
+    "state": 2,
+    "start": 24
+  },
+  "replayProgramExecutedByReviewer": false,
+  "proposedSupervisorExecutedOrWritten": false,
+  "sensitiveScope": "One already-fetched six-key OS inventory row (numeric IDs/state/start/executable comm), fixed stage, elapsed time, exception class; no arguments, process record, prompt or exception message. Bounded record cardinality, no explicit byte truncation for comm. Executable paths are local metadata, not a universal secrecy guarantee.",
+  "causalConclusion": "Exact first failing inventory/predicate remains unproven; LA timezone assumption and final process record limit replay."
+}

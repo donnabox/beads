@@ -1,0 +1,44 @@
+{
+  "freshBuildRequired": true,
+  "freshArchives": [
+    "@bdp/protocol",
+    "@bdp/server"
+  ],
+  "packDestination": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/packages",
+  "directoryExclusive": true,
+  "completeTarMembership": "All members regular package/ files; unique safe relative paths; exactly LICENSE/package.json/dist and protocol full schemas inventory; bytes equal actual build/source except approved server workspace:* ->0.0.0 metadata rewrite",
+  "actualArchiveHashes": "UNRESOLVED",
+  "externalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/consumer",
+  "install": [
+    "install",
+    "--offline",
+    "--ignore-scripts",
+    "--no-frozen-lockfile",
+    "--prod"
+  ],
+  "actualGeneratedLock": "UNRESOLVED; root inspects generated lock/manifest/workspace overrides before proof",
+  "dependencyVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "overrides": {
+    "@bdp/protocol": "actual just-packed local file",
+    "fast-uri": "3.1.5"
+  },
+  "actualProof": "All installed protocol/server members match archives/source; actual production graph exactly frozen versions; symlinks stay within consumer; actual loader entry hash/realpath; consumer lock/manifest/settings hashes; recursive graph payload digest. No preset runtime hashes.",
+  "barriers": [
+    "Root exact-source corrected wrapper acceptance before any run",
+    "fresh version/offline install + actual tools before typecheck",
+    "root actual fresh build before source collection",
+    "root actual complete archive proof before consumer preparation",
+    "root actual generated lock acceptance before installed proof",
+    "root actual proof/inventory/loader entry acceptance before copied external witness"
+  ],
+  "provenanceDoesNotMean": "Loader/source/commit attestation, service installation or stock smoke consumer identity"
+}

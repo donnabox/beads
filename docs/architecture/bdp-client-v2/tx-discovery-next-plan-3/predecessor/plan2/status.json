@@ -1,0 +1,34 @@
+{
+  "state": "CLOSED precision preparation complete",
+  "preparedUtc": "2026-10-18T04:21:28.724934+00:00",
+  "ownedFutureFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+  ],
+  "predecessorPlanSha256": "5a335cdb5f0a5c31ad590948dc19a0ee9fa9fc9be5b9cd1c4e7bddc00ef3e952",
+  "originalInputsVerified": 31,
+  "additionalInputs": 14,
+  "sourceFilesPerBasis": 679,
+  "futureAuthoringBasis": "UNRESOLVED pending D1 reviews/validation and root one-file serialization",
+  "sourceCallbacks": 21,
+  "sourceDirectHandlerCalls": 94,
+  "sourceWireRequests": 14,
+  "retainedLegacySourceWireRequests": 7,
+  "installedCallbacks": 11,
+  "installedScheduledRequests": 190,
+  "installedCompletedResponses": 187,
+  "installedExpectedTransportAborts": 3,
+  "coldPositiveRequests": [
+    43,
+    28
+  ],
+  "counterfactualApplications": 8,
+  "allCountsProspective": true,
+  "sourceEdits": false,
+  "testsBuildInstallRuntimeReviewFormatterExecuted": false,
+  "gitMutationCoordinationDesignLaunchEdits": false,
+  "authoringReleased": false,
+  "reviewLaunched": false,
+  "publicActivationReleased": false
+}

@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-18T04:56:30.672293+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "indexSha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576",
+  "sourceBindingSha256": "0af33f0428cbafaa8d9be9acd0570a3bb661d6b7a576b901fb9e1e9a3f5678cc",
+  "fullPatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+  "basisPatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "correctionsPatchSha256": "dca455b9ded0e1dfeb957cba10d7932e0be45d739ea2d1c37b8ff880f04a2799",
+  "inverseSha256": "888e3e2d7f5294d8e797f0e3c419dfb225cba6b0e90fd005a704990d534894e2",
+  "indexedArtifacts": 48,
+  "mirroredFiles": 49,
+  "sourceCount": 682,
+  "changedPaths": [
+    "docs/design/startup-configuration.md",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "otherOwnedUnchanged": 9,
+  "nonownedUnchanged": 670,
+  "protectedD1Sources": 679,
+  "protectedOriginalSources": 679,
+  "liveSourceMapsAllMatch": true,
+  "sourceBasisMatchesActualReview": true,
+  "genuineDeltaInverseReproduced": true,
+  "bothFullPatchesAppliedPureDataTo12Copies": true,
+  "statusPrefixPreserved": true,
+  "liveGitStatusRecomputed": false,
+  "heads": [
+    {
+      "root": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+      "head": "a56254d682cf4623cab22a552e3d2f695f691795"
+    },
+    {
+      "root": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+      "head": "a56254d682cf4623cab22a552e3d2f695f691795"
+    },
+    {
+      "root": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "head": "a56254d682cf4623cab22a552e3d2f695f691795"
+    }
+  ],
+  "historical": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-authoring-1/index.json",
+      "sha256": "c7820100b6a6a550ee0d0789f8c73ebc37fe6f418d8d5d177e9f042866e842d1",
+      "indexedFilesChecked": 55
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-authoring-2/index.json",
+      "sha256": "d690bb937adfb5ad33198fe6d3870411ff314c88142fb4c43950c888f26dfce8",
+      "indexedFilesChecked": 55
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/preparation-index.json",
+      "sha256": "92ad271d0d6f548db4cc3aed26f1f8e152ab41243ad7fb5f61ccb6ab221f273c",
+      "indexedFilesChecked": null
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-actual-terminal-1/index.json",
+      "sha256": "12bd2c053b8a0a00daac44688518f2d87305bf4d1addc992e6f819d63313a6e9",
+      "indexedFilesChecked": null
+    }
+  ],
+  "productExecution": false,
+  "reviewerAttempted": false,
+  "flagsMutated": false,
+  "frozenReviewContext98Artifact9Unchanged": true,
+  "frozenPreparation124EntriesPreservedWithExactTwoReleaseExceptions": true,
+  "frozenReviewMirrorPreserved": true,
+  "priorActualAudit9EntriesPreservedAndMirrored": true,
+  "missingActualFinalReviewTxtExitAfterRemainAbsent": true
+}
