@@ -1,0 +1,39 @@
+{
+  "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+  "realpath": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+  "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+  "version": "2.5.7",
+  "action": "format --write exactly six owned files, no check/lint/unsafe",
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+  ],
+  "execution": {
+    "invocations": 2,
+    "argvTail": [
+      "format",
+      "--write",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-store.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-sse.test.ts",
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+    ],
+    "results": [
+      {
+        "exit": 0,
+        "stdout": "Formatted 6 files in 17ms. Fixed 4 files."
+      },
+      {
+        "exit": 0,
+        "stdout": "Formatted 6 files in 13ms. No fixes applied.",
+        "reason": "F2 actual-finite-drain snapshot refinement after first formatting; same six-file formatter only, no checks/tests/lint/unsafe"
+      }
+    ]
+  }
+}

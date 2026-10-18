@@ -1,0 +1,81 @@
+{
+  "status": "planned report contracts; not actual authored schemas or observations",
+  "shared": {
+    "outcome": "passed|failed from failure aggregation",
+    "failureCount": "actual collected errors",
+    "claimEligible": false
+  },
+  "reports": {
+    "current-changefeed-minimum-owner": {
+      "records": "18 ordered actual call records; baseline/table role,after,tag,tupleFrozen,outcome/errorClass/reason,actual context or null",
+      "commits": 2,
+      "ownerLifetimes": 2,
+      "offlineDeletes": 1
+    },
+    "current-changefeed-minimum-capture": {
+      "label": [
+        "start-now-unknown",
+        "genesis-unknown",
+        "retained-unknown",
+        "retained-pos-01"
+      ],
+      "reads": "4 actual records",
+      "captures": "1 only start-now else0",
+      "waits": 1,
+      "clocks": 4,
+      "commits": 2,
+      "closes": 1,
+      "originalAfter": "actual token",
+      "positiveGroup": "actual full returned group",
+      "failureCount": 0
+    },
+    "current-changefeed-minimum-drain": {
+      "label": [
+        "start-now",
+        "retained"
+      ],
+      "readsBeforeClosedProbe": 2,
+      "rawClosedProbes": 1,
+      "serviceClosedProbes": 1,
+      "waits": 1,
+      "clocks": 2,
+      "captures": "1 now else0",
+      "closes": 1,
+      "order": [
+        "wait-entered",
+        "abort",
+        "wait-released",
+        "owner-close",
+        "close-resolved"
+      ],
+      "failureCount": 0
+    },
+    "current-changefeed-minimum-preflight": {
+      "rows": "4 actual isolated outcome/capture/read/wait/clock/close records; no aggregate inferred calls"
+    },
+    "current-changefeed-minimum-http": {
+      "attempted": 32,
+      "completed": "32 on success",
+      "records": "ordinal/method/canonical target/raw-safe control fields/status/context/media/body bytes/hash; wire hash only actual raw recorder",
+      "stream": "exact group2 frame+CP2,liveBeforeClose,afterDrain,ready/status/headers",
+      "elapsedMs": "actual includes cleanup, <4000 on success",
+      "runtimeClosed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    "private-installed-current-changefeed-minimum": {
+      "attempted": 10,
+      "settledFiniteExchanges": 9,
+      "responses": "9 actual finite response records, ordered schema/status/context/body/wire evidence",
+      "stream": "request10/status200/actual group2/CP2/live before intentionalclose/one exactframe afterdrain",
+      "binding": "actual launch ready+installedTransactionBinding",
+      "source": "declared commit, witness source hash + tracked diff limitation, externally bound consumer separate",
+      "entry": "actual literal/resolved/hash",
+      "child": "actualpid/exit/close/closed/stopUnknown",
+      "pendingOperationsAtReport": 0,
+      "directoryRemoved": true,
+      "failureCount": 0
+    }
+  },
+  "historicalReports": "Do not add new fields to existing callbacks or require new fields in their audits. Existing raw source/installed report schemas remain separately inspected and bound."
+}

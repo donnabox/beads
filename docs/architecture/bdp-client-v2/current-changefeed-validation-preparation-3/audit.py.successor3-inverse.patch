@@ -1,0 +1,30 @@
+--- preparation-3/audit.py
++++ preparation-2/audit.py
+@@ -137,7 +137,7 @@
+    require(r['errorClass']==('ScopeServerOperationAbortedError' if label=='already-aborted' else 'Error' if label=='throwing-clock' else 'TypeError'),'Preflight actual error class')
+    cleanup(r,'bdp-current-feed-')
+   d=grouped['current-changefeed-minimum-http'][0]
+-  scalars(d,{'attempted':32,'observedResponses':32,'completed':32,'runtimeClosed':True,'stopUnknown':False,'workDeadlineFired':False,'pendingOperationsAtReport':0,'directoryAbsent':True})
++  scalars(d,{'attempted':32,'completed':32,'runtimeClosed':True,'stopUnknown':False,'workDeadlineFired':False,'pendingOperationsAtReport':0,'directoryAbsent':True})
+   require(type(d['elapsedMs']) in [int,float] and math.isfinite(d['elapsedMs']) and 0<=d['elapsedMs']<4000,'Absolute cleanup-inclusive D budget')
+   directory_absent(d['directory'],'bdp-current-feed-http-');rr=rows(d,'records',32)
+   wants=ex['workload']['DRequests'];scope='https://sse.invalid/acme/'
+@@ -166,10 +166,6 @@
+   require(len(expected_headers)==32,'Complete D request header oracle')
+   for r,want in zip(rr,wants):
+    i=want['ordinal'];scalars(r,{'ordinal':i,'method':want['method'],'status':want['expectedStatus']})
+-   scalars(r,{'readyObserved':True,'drained':True,'bodyState':'drained',
+-    'transportClosedObserved':None if i<=2 else True,
+-    'drainKind':'seed-body' if i<=2 else 'intentional-live' if i==30 else 'finite-body',
+-    'availability':{'status':True,'headers':True,'body':True,'wire':i>2}})
+    require(r['requestHeaders']==expected_headers[i-1],'Exact literal D header multiplicity/control tuple')
+    suffix=want['suffix'].replace('CP1',cp1).replace('STALE',stale).replace('FOREIGN_VIEW',foreign).replace('FUTURE',future)
+    require(r['url']==scope+suffix,'Exact D canonical target sequence');count(r['bodyOctets']);fingerprint(r['bodySha256'])
+@@ -218,7 +214,6 @@
+    directory_absent(life['directory'],'bdp-changefeed-opaque-installed-')
+   else:
+    scalars(o,{'attempted':10,'settledFiniteExchanges':9,'cleanClose':True,'closed':True,'stopUnknown':False,'lateCleanupRejectionObserved':False,'pendingDrained':True,'streamDrained':True,'pendingOperationsAtReport':0,'directoryRemoved':True,'directoryAbsent':True,'launchAttempted':True,'assertionsCompleted':True,'deadlineFired':False,'failureCategories':[],'failureCount':0})
+-   scalars(o,{'trackedDiffUnavailableReason':None});fingerprint(o['trackedDiffSha256'])
+    require(o['entryLiteral']==proof['entryRealpath'] and o['witnessSourceSha256']==g['_sourceBinding']['trackedSourceFiles']['apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts'] and o['trackedDiffSha256']==sha(git('diff','--binary','HEAD')),'New actual entry literal/witness')
+    scalars(o['processEvents'],{'exit':{'code':0,'signal':None},'close':{'code':0,'signal':None}})
+    require(o['ready']['payloadIdentity']==proof['payloadIdentity'] and o['ready']['runtimeConfigurationIdentity']==binding['runtimeConfigurationIdentity'],'Actual ready identity')

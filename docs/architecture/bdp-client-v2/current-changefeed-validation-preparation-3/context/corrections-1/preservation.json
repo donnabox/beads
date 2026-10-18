@@ -1,0 +1,45 @@
+{
+  "protectedCheckouts": {
+    "original": {
+      "files": 679,
+      "allBytesUnchanged": true,
+      "statusUnchanged": true,
+      "root": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "head": "a56254d682cf4623cab22a552e3d2f695f691795"
+    },
+    "startup": {
+      "files": 682,
+      "allBytesUnchanged": true,
+      "statusUnchanged": true,
+      "root": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+      "head": "a56254d682cf4623cab22a552e3d2f695f691795"
+    }
+  },
+  "historicalPrefixes": {
+    "packages/server/src/transaction-sse.test.ts": {
+      "bytes": 33419,
+      "sha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+      "matchesCommittedHEADAndAuthorBefore": true
+    },
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+      "bytes": 33116,
+      "sha256": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b",
+      "matchesCommittedHEADAndAuthorBefore": true
+    }
+  },
+  "unchangedOtherTrackedFiles": 673,
+  "sourceSelectionUnchanged": true,
+  "oldLegacy500To503Delta": "Only the two previously accepted transaction-changefeed.test.ts503 rows and status vector remain; no new legacy behavior change",
+  "controls": [
+    "unsupported owner sentinel",
+    "receiving syntax fence",
+    "finite-start-now default compatibility",
+    "cursor-before-minimum and capture-before-waiter",
+    "same original deadlines and no retries",
+    "unknown ownership retains stores",
+    "source15 callbacks/new9 + selectedlegacy2; parameter-context unselected",
+    "installed3 separately bounded callbacks (historical10,finite4,new10)"
+  ],
+  "preparation2UntouchedByThisTask": true,
+  "validationReleased": false
+}

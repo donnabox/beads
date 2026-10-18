@@ -1,0 +1,41 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-1/source-audit-contract.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/source-audit-contract.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "Expected prospective audit contract; actual report schema binding UNRESOLVED",
++  "state": "Authored source-bound contract, execution CLOSED",
+   "exactSourceCallbacks": 15,
+   "callbackSelection": [
+     {
+@@ -168,14 +168,15 @@
+   },
+   "newSourceReports": 9,
+   "historicalInventory": {
+-    "acceptedWorkloadClaimsExistingReports": 2,
+-    "currentSelectedSourceObservedObservationKeys": [
+-      "private-source-changefeed-parameter-context",
++    "status": "RESOLVED by actual owning callback inspection2; predecessor discrepancy preserved",
++    "selectedReports": [
+       "changefeed-opaque-boundaries",
+       "changefeed-opaque-http"
+     ],
+-    "status": "UNRESOLVED discrepancy; preserve accepted workload and reconcile actual final source schema/title attribution before acceptance",
+-    "policy": "Preserve every emitted historical report and validate its real historical schema; never silently discard third record or require newer-only fields."
++    "unselectedReport": "private-source-changefeed-parameter-context",
++    "selectedHistoricalReports": 2,
++    "newSelectedReports": 9,
++    "policy": "Reject a third selected historical output; do not expand selector or relabel unselected ordinary full-CI coverage."
+   },
+   "prospectiveTotals": {
+     "callbacks": 15,
+@@ -187,5 +188,9 @@
+     "newReports": 9,
+     "legacyReports": 2
+   },
+-  "sourceVsWire": "60HTTP and18stores/19ownerlifetimes/23commits are prospective source-derived inventories. Emitted actual report counters/context/frames must be independently parsed; no whole-workload wire census or invented response/wire bytes. Fetch seeds do not provide raw-wire hash."
++  "sourceVsWire": "60HTTP and18stores/19ownerlifetimes/23commits are prospective source-derived inventories. Emitted actual report counters/context/frames must be independently parsed; no whole-workload wire census or invented response/wire bytes. Fetch seeds do not provide raw-wire hash.",
++  "actualAuthoredReportBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/report-schemas.json",
++    "sha256": "9a35ee47add02370d5980e2d937c5909645b9bdb049b2bcd7ad22d33d19f5346"
++  }
+ }
