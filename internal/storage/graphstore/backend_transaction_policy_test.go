@@ -121,7 +121,60 @@ func TestTransactionPolicyContextBeforeOpen(t *testing.T) {
 	}
 }
 
+func TestTransactionPolicyAdmissionBeforeBegin(t *testing.T) {
+	setFault := errors.New("session setting unavailable")
+	for _, tc := range []struct {
+		name   string
+		setErr error
+		branch string
+		want   error
+	}{
+		{name: "session-setting-failure", setErr: setFault, want: setFault},
+		{name: "branch-mismatch", branch: "feature", want: ErrInvalidStore},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			s, mock := transactionPolicyConnection(t)
+			for i, statement := range []string{"SET @@dolt_transaction_commit = 0", "SET @@dolt_force_transaction_commit = 0", "SET @@dolt_allow_commit_conflicts = 0", "SET @@time_zone = '+00:00'"} {
+				if tc.setErr != nil && i == 2 {
+					mock.ExpectExec(statement).WillReturnError(tc.setErr)
+					break
+				}
+				mock.ExpectExec(statement).WillReturnResult(sqlmock.NewResult(0, 0))
+			}
+			if tc.setErr == nil {
+				mock.ExpectQuery("SELECT active_branch()").WillReturnRows(sqlmock.NewRows([]string{"branch"}).AddRow(tc.branch))
+			}
+			// No BEGIN, COMMIT or ROLLBACK is expected: admission must release
+			// the checked-out connection without starting a transaction.
+			attempts := 0
+			err := s.withTxPolicy(context.Background(), txPolicy{mayWrite: true}, func(*sql.Tx) error {
+				attempts++
+				return nil
+			})
+			if attempts != 0 || s.db.Stats().InUse != 0 {
+				t.Fatalf("pre-BEGIN admission leaked execution or connection: attempts=%d in-use=%d", attempts, s.db.Stats().InUse)
+			}
+			if !errors.Is(err, tc.want) || errors.Is(err, ErrOutcomeUnknown) || errors.Is(err, ErrConflict) {
+				t.Fatalf("pre-BEGIN admission lost cause or changed outcome classification: %v", err)
+			}
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
 func transactionPolicyMock(t *testing.T) (*Store, sqlmock.Sqlmock) {
+	t.Helper()
+	s, mock := transactionPolicyConnection(t)
+	for _, statement := range []string{"SET @@dolt_transaction_commit = 0", "SET @@dolt_force_transaction_commit = 0", "SET @@dolt_allow_commit_conflicts = 0", "SET @@time_zone = '+00:00'"} {
+		mock.ExpectExec(statement).WillReturnResult(sqlmock.NewResult(0, 0))
+	}
+	mock.ExpectQuery("SELECT active_branch()").WillReturnRows(sqlmock.NewRows([]string{"branch"}).AddRow("main"))
+	return s, mock
+}
+
+func transactionPolicyConnection(t *testing.T) (*Store, sqlmock.Sqlmock) {
 	t.Helper()
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {
@@ -136,9 +189,5 @@ func transactionPolicyMock(t *testing.T) (*Store, sqlmock.Sqlmock) {
 			t.Error(err)
 		}
 	})
-	for _, statement := range []string{"SET @@dolt_transaction_commit = 0", "SET @@dolt_force_transaction_commit = 0", "SET @@dolt_allow_commit_conflicts = 0", "SET @@time_zone = '+00:00'"} {
-		mock.ExpectExec(statement).WillReturnResult(sqlmock.NewResult(0, 0))
-	}
-	mock.ExpectQuery("SELECT active_branch()").WillReturnRows(sqlmock.NewRows([]string{"branch"}).AddRow("main"))
 	return &Store{db: db}, mock
 }

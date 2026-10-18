@@ -75,7 +75,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 			prefix := prepared.prefix
 			var previous string
 			if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&previous); err != nil {
-				return fmt.Errorf("%w: fresh workspace Issue prefix configuration is missing or unreadable: %w", ErrInvalidStore, err)
+				return legacyTargetInspectionError(ctx, "config.issue_prefix", err)
 			}
 			if _, err := tx.ExecContext(ctx, "UPDATE config SET value=? WHERE `key`='issue_prefix'", prefix); err != nil {
 				return err
@@ -215,6 +215,10 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// counters. Missing tables fail closed; import never repairs the schema.
 	// Reuse the native ownership inventory so orphan history and counters cannot
 	// attach themselves to newly imported identities.
+	// Binding/Types, migration cursors, ordinary workflow/routing settings and
+	// repository/clone bookkeeping (metadata/local_metadata) are configuration,
+	// not resource allocations. They remain permitted and are not a proof of an
+	// unused workspace. See the explicit schema inventory in the import evidence.
 	tables = append(tables, issueops.DeleteCascadeTables(false)...)
 	tables = append(tables, issueops.DeleteCascadeTables(true)...)
 	seen := make(map[string]bool, len(tables))
@@ -226,7 +230,7 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 		var count int
 		//nolint:gosec // G201: fixed graph tables and native deletion inventory.
 		if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil {
-			return fmt.Errorf("%w: cannot establish workspace freshness from %s; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, table, err)
+			return legacyTargetInspectionError(ctx, table, err)
 		}
 		if count != 0 {
 			return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %s is occupied (repeat imports do not update or duplicate data)", storage.ErrValidation, table)
@@ -236,7 +240,7 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// A consumed sequence still records prior history after journal deletion.
 	var usedSequence int
 	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM bd_events_seq WHERE id<>0 OR next_seq<>0").Scan(&usedSequence); err != nil {
-		return fmt.Errorf("%w: cannot establish workspace freshness from bd_events_seq; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, err)
+		return legacyTargetInspectionError(ctx, "bd_events_seq", err)
 	}
 	if usedSequence != 0 {
 		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; bd_events_seq is occupied (prior journal sequence allocation)", storage.ErrValidation)
@@ -245,7 +249,7 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// or its durable markers records prior use even after resource deletion.
 	var changedEpoch int
 	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM store_epoch WHERE id<>1 OR epoch<>1 OR bumped_at IS NOT NULL OR bumped_reason IS NOT NULL").Scan(&changedEpoch); err != nil {
-		return fmt.Errorf("%w: cannot establish workspace freshness from store_epoch; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, err)
+		return legacyTargetInspectionError(ctx, "store_epoch", err)
 	}
 	if changedEpoch != 0 {
 		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; store_epoch is occupied (prior epoch transition)", storage.ErrValidation)
@@ -254,12 +258,21 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Infrastructure configuration alone does not make a destination occupied.
 	var memories int
 	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM config WHERE LEFT(`key`,?)=?", utf8.RuneCountInString(kvkeys.MemoryConfigKeyPrefix), kvkeys.MemoryConfigKeyPrefix).Scan(&memories); err != nil {
-		return fmt.Errorf("%w: cannot establish workspace freshness from config; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, err)
+		return legacyTargetInspectionError(ctx, "config", err)
 	}
 	if memories != 0 {
 		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %d legacy KV Memories are present in config under %q; use a newly initialized empty graph workspace", storage.ErrValidation, memories, kvkeys.MemoryConfigKeyPrefix)
 	}
 	return nil
+}
+
+// An interrupted inspection establishes no verdict about the destination.
+// Preserve all causes without advising schema repair for caller cancellation.
+func legacyTargetInspectionError(ctx context.Context, plane string, cause error) error {
+	if ctx.Err() != nil || errors.Is(cause, context.Canceled) || errors.Is(cause, context.DeadlineExceeded) {
+		return fmt.Errorf("inspect legacy import target %s: %w", plane, errors.Join(cause, ctx.Err()))
+	}
+	return fmt.Errorf("%w: cannot establish workspace freshness from %s; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, plane, cause)
 }
 
 // LegacyImportCommentLimit bounds native comment persistence independently of

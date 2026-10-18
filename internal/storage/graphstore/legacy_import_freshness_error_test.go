@@ -6,12 +6,15 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/legacyimport"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -29,30 +32,101 @@ func TestLegacyImportFreshnessQueryErrors(t *testing.T) {
 		{"epoch-state", legacyFreshnessChangedEpochQuery, "store_epoch"},
 		{"config", "SELECT COUNT(*) FROM config WHERE LEFT(`key`,?)=?", "config"},
 	} {
-		t.Run(test.name, func(t *testing.T) {
-			cause := errors.New("freshness query unavailable")
-			connector := &legacyFreshnessCountDriver{query: test.query, cause: cause}
-			db := sql.OpenDB(connector)
-			t.Cleanup(func() {
-				if err := db.Close(); err != nil {
-					t.Error(err)
+		for _, failure := range []struct {
+			name         string
+			cause        error
+			invalidStore bool
+		}{
+			{"unreadable", errors.New("freshness query unavailable"), true},
+			{"canceled", context.Canceled, false},
+			{"deadline", context.DeadlineExceeded, false},
+		} {
+			t.Run(test.name+"/"+failure.name, func(t *testing.T) {
+				connector := &legacyFreshnessCountDriver{query: test.query, cause: failure.cause}
+				db := sql.OpenDB(connector)
+				t.Cleanup(func() {
+					if err := db.Close(); err != nil {
+						t.Error(err)
+					}
+				})
+				tx, err := db.BeginTx(t.Context(), nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer func() {
+					if err := tx.Rollback(); err != nil {
+						t.Error(err)
+					}
+				}()
+				err = requireEmptyLegacyTarget(t.Context(), tx)
+				if !connector.failed || errors.Is(err, ErrInvalidStore) != failure.invalidStore || !errors.Is(err, failure.cause) || !strings.Contains(err.Error(), test.plane) {
+					t.Fatalf("freshness error lost classification, plane or cause: reached=%t err=%v", connector.failed, err)
+				}
+				if repairAdvice := strings.Contains(err.Error(), "use a fully initialized fresh graph workspace"); repairAdvice != failure.invalidStore {
+					t.Fatalf("freshness error has wrong repair advice: %v", err)
 				}
 			})
-			tx, err := db.BeginTx(t.Context(), nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer func() {
-				if err := tx.Rollback(); err != nil {
-					t.Error(err)
-				}
-			}()
-			err = requireEmptyLegacyTarget(t.Context(), tx)
-			if !connector.failed || !errors.Is(err, ErrInvalidStore) || !errors.Is(err, cause) || !strings.Contains(err.Error(), "from "+test.plane+";") {
-				t.Fatalf("freshness error lost plane or cause: reached=%t err=%v", connector.failed, err)
-			}
-		})
+		}
 	}
+}
+
+func TestLegacyImportInterruptedInspection(t *testing.T) {
+	for _, cause := range []error{context.Canceled, context.DeadlineExceeded} {
+		err := legacyTargetInspectionError(t.Context(), "config.issue_prefix", cause)
+		if !errors.Is(err, cause) || errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), "config.issue_prefix") || strings.Contains(err.Error(), "repair schema") {
+			t.Fatalf("prefix inspection misdiagnosed interrupted query: %v", err)
+		}
+	}
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	cause := errors.New("driver interrupted during scan")
+	err := legacyTargetInspectionError(ctx, "config.issue_prefix", cause)
+	if !errors.Is(err, context.Canceled) || !errors.Is(err, cause) || errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("interrupted inspection lost context or driver cause: %v", err)
+	}
+}
+
+// Keep additions to native input structs from bypassing original-string
+// validation before the JSON clone can replace malformed UTF-8. A new shape
+// must deliberately extend admission rather than silently taking the default.
+func TestLegacyImportUTF8ShapeCoverage(t *testing.T) {
+	seen := map[reflect.Type]bool{}
+	var check func(reflect.Type, string)
+	check = func(shape reflect.Type, path string) {
+		if shape == reflect.TypeOf(json.RawMessage{}) {
+			if path != "Batch.Issues[].Metadata" {
+				t.Errorf("new raw JSON field needs original-byte validation: %s", path)
+			}
+			return // Issue.Metadata is explicitly checked before cloning.
+		}
+		if seen[shape] {
+			return
+		}
+		seen[shape] = true
+		switch shape.Kind() {
+		case reflect.String, reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64:
+			return
+		case reflect.Pointer:
+			check(shape.Elem(), path)
+		case reflect.Struct:
+			for i := 0; i < shape.NumField(); i++ {
+				field := shape.Field(i)
+				if field.PkgPath == "" {
+					check(field.Type, path+"."+field.Name)
+				}
+			}
+		case reflect.Slice:
+			if shape.Elem().Kind() == reflect.Uint8 {
+				t.Errorf("new byte field needs explicit admission: %s", path)
+				return
+			}
+			check(shape.Elem(), path+"[]")
+		default:
+			t.Errorf("new input shape needs UTF-8 admission coverage: %s (%s)", path, shape)
+		}
+	}
+	check(reflect.TypeOf(legacyimport.Batch{}), "Batch")
 }
 
 const legacyFreshnessChangedEpochQuery = "SELECT COUNT(*) FROM store_epoch WHERE id<>1 OR epoch<>1 OR bumped_at IS NOT NULL OR bumped_reason IS NOT NULL"

@@ -36,11 +36,16 @@ workspace initialized with `--server --external`.
 The destination must be empty and fresh: existing Beads, Links, native rows or
 reserved/deleted identities refuse import. This includes orphan graph payloads
 and Links, native labels, event/provenance feeds, journals, leases, snapshots,
-previous identity/sequence allocations, counters and wisp
-auxiliary rows, and classic KV Memories even
+previous identity/sequence allocations (including retained minted epoch addresses),
+interaction records, counters and wisp auxiliary rows, and classic KV Memories even
 when their values are empty. Import preserves these rows by refusing the
 destination; it does not repair or adopt them. Ordinary infrastructure
-configuration is allowed. Repeating a successful import
+configuration is allowed, including repository/clone bookkeeping, routing and
+workflow settings. These settings are not proof that a workspace has never been
+used; the gate checks the retained data and identity planes listed above.
+The store epoch may be absent or initialized to epoch 1 without bump markers.
+A changed epoch or any recorded bump marker refuses import even if all resources
+were deleted. Repeating a successful import
 refuses without updating or duplicating anything. `--allow-stale` and `--dedup`
 are unavailable in graph mode. Read-only invocations and migration freezes
 refuse both apply and dry-run. Dry-run validates by staging the same operations
@@ -85,6 +90,14 @@ commit. If commit or rollback cleanup is uncertain, import conservatively report
 including an already-ended driver transaction, does not provide a verified
 rollback acknowledgment. Inspect the destination after that error before
 deciding what to do next.
+
+Cancellation and the import's five-minute storage deadline currently use
+`capability_unavailable` (exit 5), with the interrupted operation in the message.
+An interrupted freshness inspection does not diagnose a damaged or nonempty
+workspace. A definite rollback acknowledgment permits retrying the operation;
+if the error also reports `outcome_unknown`, inspect the destination first as
+described above. A missing or unreadable required schema/configuration record
+without cancellation instead uses `invalid_store`; import does not repair it.
 
 This is a fresh-workspace interchange operation. It does not migrate an
 existing workspace in place or carry full backup/restore history.

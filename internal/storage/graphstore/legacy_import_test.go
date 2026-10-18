@@ -351,7 +351,15 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, options := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, options)
+			// Initialization and earlier probes must not consume later operation
+			// or verification budgets. Preserve values but renew each bound.
+			operationContext := func(t *testing.T) context.Context {
+				t.Helper()
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				return operation
+			}
+			s, err := OpenExisting(operationContext(t), options)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -362,11 +370,11 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 			})
 			batch := parseLegacyFixture(t, legacyImportFixture)
 			var epochSeed int
-			if err := s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM store_epoch").Scan(&epochSeed); err != nil {
+			if err := s.db.QueryRowContext(operationContext(t), "SELECT COUNT(*) FROM store_epoch").Scan(&epochSeed); err != nil {
 				t.Fatal(err)
 			}
 			var changedEpoch int
-			if err := s.db.QueryRowContext(ctx, legacyFreshnessChangedEpochQuery).Scan(&changedEpoch); err != nil || changedEpoch != 0 {
+			if err := s.db.QueryRowContext(operationContext(t), legacyFreshnessChangedEpochQuery).Scan(&changedEpoch); err != nil || changedEpoch != 0 {
 				t.Fatalf("fresh Init has nonpristine epoch state: count=%d err=%v", changedEpoch, err)
 			}
 			restoreEpoch := "DELETE FROM store_epoch WHERE id=1"
@@ -412,9 +420,6 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 			}
 			for _, test := range cases {
 				t.Run(test.name, func(t *testing.T) {
-					// Init's deadline must not become the cumulative matrix budget.
-					operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
-					t.Cleanup(cancel)
 					// Register before insertion so Fatal and an expired case still
 					// remove its fixture using a separate, live cleanup context.
 					t.Cleanup(func() {
@@ -424,13 +429,13 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 							t.Errorf("remove %s fixture: %v", test.name, err)
 						}
 					})
-					if err := legacyImportContaminate(operation, s, test.insert, test.orphan); err != nil {
+					if err := legacyImportContaminate(operationContext(t), s, test.insert, test.orphan); err != nil {
 						t.Fatal(err)
 					}
-					before := legacyImportState(t, operation, s)
+					before := legacyImportState(t, operationContext(t), s)
 					for _, dry := range []bool{true, false} {
 						t.Run(fmt.Sprintf("dry=%t", dry), func(t *testing.T) {
-							got, err := s.ImportLegacy(operation, batch, "importer", dry)
+							got, err := s.ImportLegacy(operationContext(t), batch, "importer", dry)
 							message := "; " + test.message + " is occupied"
 							if strings.Contains(test.message, "KV Memories") {
 								message = test.message + " are present in config"
@@ -438,7 +443,7 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 							if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), message) || !reflect.DeepEqual(got, LegacyImportResult{}) {
 								t.Fatalf("occupied plane admitted or result leaked: %+v %v", got, err)
 							}
-							if !reflect.DeepEqual(before, legacyImportState(t, operation, s)) {
+							if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 								t.Fatal("refusal changed existing rows, prefix or writer token")
 							}
 						})
@@ -446,8 +451,6 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 				})
 			}
 			t.Run("pristine-epoch-seed", func(t *testing.T) {
-				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
-				t.Cleanup(cancel)
 				t.Cleanup(func() {
 					cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
 					defer stop()
@@ -455,22 +458,20 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 						t.Error(err)
 					}
 				})
-				if _, err := s.db.ExecContext(operation, "INSERT IGNORE INTO store_epoch(id,epoch) VALUES(1,1)"); err != nil {
+				if _, err := s.db.ExecContext(operationContext(t), "INSERT IGNORE INTO store_epoch(id,epoch) VALUES(1,1)"); err != nil {
 					t.Fatal(err)
 				}
-				before := legacyImportState(t, operation, s)
-				if _, err := s.ImportLegacy(operation, batch, "importer", true); err != nil {
+				before := legacyImportState(t, operationContext(t), s)
+				if _, err := s.ImportLegacy(operationContext(t), batch, "importer", true); err != nil {
 					t.Fatalf("pristine epoch seed disqualified fresh destination: %v", err)
 				}
-				if !reflect.DeepEqual(before, legacyImportState(t, operation, s)) {
+				if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 					t.Fatal("dry-run changed pristine epoch seed")
 				}
 			})
 			// Similar configuration keys are not Memories. Ordinary config does
 			// not disqualify the fresh destination or get overwritten by dry-run.
 			t.Run("ordinary-config", func(t *testing.T) {
-				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
-				t.Cleanup(cancel)
 				t.Cleanup(func() {
 					cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
 					defer stop()
@@ -478,22 +479,22 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 						t.Errorf("remove ordinary config fixtures: %v", err)
 					}
 				})
-				if _, err := s.db.ExecContext(operation, "INSERT INTO config (`key`,value) VALUES('kv.memoryx.retained','ordinary config'),('iris.test.setting','kept')"); err != nil {
+				if _, err := s.db.ExecContext(operationContext(t), "INSERT INTO config (`key`,value) VALUES('kv.memoryx.retained','ordinary config'),('iris.test.setting','kept')"); err != nil {
 					t.Fatal(err)
 				}
-				before := legacyImportState(t, operation, s)
-				if _, err := s.ImportLegacy(operation, batch, "importer", true); err != nil {
+				before := legacyImportState(t, operationContext(t), s)
+				if _, err := s.ImportLegacy(operationContext(t), batch, "importer", true); err != nil {
 					t.Fatalf("ordinary configuration disqualified fresh destination: %v", err)
 				}
-				if !reflect.DeepEqual(before, legacyImportState(t, operation, s)) {
+				if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 					t.Fatal("dry-run changed ordinary configuration")
 				}
-				if _, err := s.ImportLegacy(operation, batch, "importer", false); err != nil {
+				if _, err := s.ImportLegacy(operationContext(t), batch, "importer", false); err != nil {
 					t.Fatalf("ordinary configuration disqualified apply: %v", err)
 				}
 				for key, want := range map[string]string{"kv.memoryx.retained": "ordinary config", "iris.test.setting": "kept", "issue_prefix": "old"} {
 					var value string
-					if err := s.db.QueryRowContext(operation, "SELECT value FROM config WHERE `key`=?", key).Scan(&value); err != nil || value != want {
+					if err := s.db.QueryRowContext(operationContext(t), "SELECT value FROM config WHERE `key`=?", key).Scan(&value); err != nil || value != want {
 						t.Fatalf("apply changed allowed configuration %q: %q %v", key, value, err)
 					}
 				}
@@ -931,7 +932,15 @@ func TestLegacyImportCurrentReadLimitRollsBack(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, o)
+			// Large-write refusal and its full-state inspections each need their
+			// own bound after initialization, as does the later count refusal.
+			operationContext := func(t *testing.T) context.Context {
+				t.Helper()
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				return operation
+			}
+			s, err := OpenExisting(operationContext(t), o)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -940,20 +949,20 @@ func TestLegacyImportCurrentReadLimitRollsBack(t *testing.T) {
 					t.Error(err)
 				}
 			})
-			before := legacyImportState(t, ctx, s)
+			before := legacyImportState(t, operationContext(t), s)
 			batch := parseLegacyFixture(t, `{"id":"old-a","title":"Large","description":"`+strings.Repeat("x", 9*1024*1024)+`"}`)
-			_, err = s.ImportLegacy(ctx, batch, "importer", false)
+			_, err = s.ImportLegacy(operationContext(t), batch, "importer", false)
 			if !errors.Is(err, ErrLimitExceeded) {
 				t.Fatalf("read-budget error: %v", err)
 			}
-			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+			if !reflect.DeepEqual(before, legacyImportState(t, operationContext(t), s)) {
 				t.Fatal("read-budget refusal left data or prefix")
 			}
 			many := legacyimport.Batch{}
 			for i := 0; i <= PreviewSnapshotLimit; i++ {
 				many.Memories = append(many.Memories, legacyimport.Memory{Key: fmt.Sprintf("key-%d", i), Value: "value"})
 			}
-			if _, err := s.ImportLegacy(ctx, many, "importer", false); !errors.Is(err, ErrLimitExceeded) {
+			if _, err := s.ImportLegacy(operationContext(t), many, "importer", false); !errors.Is(err, ErrLimitExceeded) {
 				t.Fatalf("count-budget error: %v", err)
 			}
 		})

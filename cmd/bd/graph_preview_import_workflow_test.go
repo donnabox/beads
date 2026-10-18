@@ -61,13 +61,15 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			call(string(fixture), "capability_unavailable", "import", "-", "--allow-stale")
 			call(string(fixture), "capability_unavailable", "import", "-", "--dedup")
 			call(string(fixture), "capability_unavailable", "import", "-", "--global")
+			call(string(fixture), "invalid_properties", "import", "-", "--source-prefix", "")
+			call(string(fixture), "invalid_properties", "import", "-", "--source-prefix", "wrong", "--dry-run")
 			call("", "invalid_selector", "import", "one", "two")
 			call("", "invalid_properties", "import", "one", "--input", "two")
 			call(strings.Repeat(" ", 16*1024*1024+1), "capability_unavailable", "import", "-")
 			call(string(fixture), "permission_denied", "import", "-", "--readonly")
 			call(string(fixture), "invalid_properties", "import")
-			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--dry-run"))
-			if !preview.DryRun || preview.Issues != 2 || preview.Dependencies != 1 || preview.Comments != 1 || preview.Memories != 1 {
+			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--source-prefix", "legacy", "--dry-run"))
+			if !preview.DryRun || preview.IssuePrefix != "legacy" || preview.Issues != 2 || preview.Dependencies != 1 || preview.Comments != 1 || preview.Memories != 1 {
 				t.Fatalf("preview=%+v", preview)
 			}
 			if call("", "", "list", "--all", "--format", "records-json") != before {
