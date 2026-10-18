@@ -1,0 +1,302 @@
+{
+  "authorityScope": "Existing source only, no added interface rules",
+  "gateSha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+  "noEvaluation": true,
+  "predicates": [
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 27,
+      "source": "require(type(record) is dict and set(record)=={'path','sha256'},'Unknown/missing document pin key')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 28,
+      "source": "require(p.is_absolute() and p.is_file() and not p.is_symlink() and sha(p.read_bytes())==record['sha256'],'Document absent/changed '+str(p))"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 30,
+      "source": "require(b['worktree']==str(W) and b['head']==INTEGRATION and git('branch','--show-current').decode().strip()==b['branch'],'Wrong source binding')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 31,
+      "source": "require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Git identity changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 33,
+      "source": "require(actual==b['trackedSourceFiles'],'Source files changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 34,
+      "source": "require(sorted(git('diff','--name-only','HEAD').decode().splitlines())==b['dirtyPaths']==sorted(b['ownedFiles']) and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 35,
+      "source": "require(all(actual[p]==v['afterSha256'] and sha(git('show','HEAD:'+p))==v['beforeSha256'] for p,v in b['ownedFiles'].items()),'Owned source binding differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 36,
+      "source": "require(not git('diff','--cached','--binary').strip(),'Staged source is forbidden')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 37,
+      "source": "require(len(actual)==679 and len(b['ownedFiles'])==6,'Exact tracked/owned counts')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 38,
+      "source": "require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Source patch changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 39,
+      "source": "require(all(sha(git('show','HEAD:'+f))==v for f,v in actual.items() if f not in b['ownedFiles']),'Other tracked source differs from HEAD')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 43,
+      "source": "require(str(p.resolve(strict=True))==binding['realpath'] and sha(p.read_bytes())==binding['sha256'],'Tool changed '+name)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 49,
+      "source": "require(dist.is_dir(),'Missing dist '+str(dist))"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 51,
+      "source": "require(not p.is_symlink(),'Linked build output')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 54,
+      "source": "require(not p.is_symlink(),'Linked artifact')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 56,
+      "source": "require(result,'Empty build inventory')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 63,
+      "source": "require(q.is_relative_to(C.resolve()),'Consumer link escapes')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 68,
+      "source": "require(v['accepted'] and v['exit'] in read(P/'commands.json')['commands'][name].get('acceptedRawExitCodes',[0]) and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 69,
+      "source": "require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 70,
+      "source": "require(sha((E/(name+'.log')).read_bytes())==v['logSha256'],'Prior log changed '+name)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 74,
+      "source": "require(b['head']==g['finalHead'] and b['tree']==g['finalTree'] and b['sourceIdentity']==g['_sourceIdentity'],'Build source differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 75,
+      "source": "require(b['artifacts']==inventory(),'Build outputs changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 77,
+      "source": "require(sha(Path(item['path']).read_bytes())==item['sha256'],'Build record changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 80,
+      "source": "require(expected==consumer_inventory(),'Consumer changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 81,
+      "source": "require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'] and proof['sourceIdentity']==g['_sourceIdentity'] and proof['sourceBindingSha256']==g['sourceBinding']['sha256'],'Consumer source differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 82,
+      "source": "require(sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==proof['consumerLockSha256'],'Consumer lock changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 83,
+      "source": "require(sha((E/'tar-source-provenance.json').read_bytes())==proof['tarProvenanceSha256'],'Tar provenance changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 84,
+      "source": "require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 85,
+      "source": "require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 88,
+      "source": "require(__debug__,'Assertions required')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 90,
+      "source": "require(set(g)=={'rootExactSourceAccepted', 'session', 'rootArchiveAcceptance', 'knownOriginalActualCodeTerminal', 'consumerInventory', 'consumerLockSha256', 'workspaceTools', 'implementationIndexSha256', 'approvedStages', 'sourceBinding', 'actualClaudeReviewDisposed', 'installedProvenance', 'actualCodeDisposition', 'staticValidationAuthorized', 'released', 'baseTools', 'rootConsumerProofAcceptance', 'mode', 'bootstrapReuse', 'rootConsumerLockAcceptance', 'nativeCodeDisposition', 'rootPlanAccepted', 'rootDisposition', 'rootBuildAcceptance', 'knownCorrectedSourceFreeze', 'nativeCodeReviewDisposed'},'Unknown/missing gate key')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 91,
+      "source": "require(all(type(g[k]) is bool for k in ['released','rootPlanAccepted','rootExactSourceAccepted','actualClaudeReviewDisposed','nativeCodeReviewDisposed','staticValidationAuthorized']),'Gate boolean type')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 92,
+      "source": "require(read(P/'commands.json').get('configurationFinalized') is True,'Authored current changefeed source/selection not finalized')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 93,
+      "source": "require(read(P/'audit-expectations.json').get('finalized') is True,'Actual current changefeed observation contracts not finalized')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 94,
+      "source": "require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 95,
+      "source": "require(g['mode']==MODE,'Wrong phase')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 98,
+      "source": "require(os.environ.get('TX_DISCOVERY_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('TX_DISCOVERY_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 99,
+      "source": "require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 100,
+      "source": "require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 101,
+      "source": "require(sha((P/f).read_bytes())==h,'Implementation changed '+f)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 102,
+      "source": "require(sha(Path(f).read_bytes())==h,'Reference changed '+f)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 104,
+      "source": "require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 106,
+      "source": "require(type(approved) is list and all(type(n) is str for n in approved),'Approved stage list type')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 107,
+      "source": "require(approved==order[:len(approved)] and name in approved,'Stage not released')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 108,
+      "source": "require(spec['outerSeconds']==120 and spec.get('termAtSeconds')==115 and spec['automaticRetries']==0,'Limits changed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 109,
+      "source": "require(not any('UNRESOLVED' in arg or ('$'+'{') in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 110,
+      "source": "require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 112,
+      "source": "require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 115,
+      "source": "require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool binding differs')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 116,
+      "source": "require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 117,
+      "source": "require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both CODE review dispositions remain required before validation')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 119,
+      "source": "require(d.get('accepted') is True and d.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'CODE disposition differs '+label)"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 120,
+      "source": "require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 124,
+      "source": "require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root actual build acceptance missing')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 127,
+      "source": "require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance missing')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 130,
+      "source": "require(lock.get('accepted') is True and lock.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual lock acceptance missing')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 131,
+      "source": "require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==lock['consumerLockSha256'],'Consumer lock not root-pinned')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 132,
+      "source": "require(lock.get('consumerManifestSha256')==sha((E/'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256')==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Root actual consumer manifest/settings acceptance missing')"
+    },
+    {
+      "kind": "actual unchanged callable predicate, static only",
+      "line": 135,
+      "source": "require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('installedProvenance')==g['installedProvenance'] and accepted.get('consumerInventory')==g['consumerInventory'],'Root actual proof acceptance missing')"
+    }
+  ]
+}

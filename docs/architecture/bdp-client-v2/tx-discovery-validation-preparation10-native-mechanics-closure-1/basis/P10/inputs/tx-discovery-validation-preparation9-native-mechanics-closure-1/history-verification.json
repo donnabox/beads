@@ -1,0 +1,33 @@
+{
+  "actualP8Archives": 2,
+  "actualP8FlatFiles": 95,
+  "actualP8Outcome": {
+    "acceptedStages": 21,
+    "laterUnattempted": 30,
+    "refusalBeforeStartedReceiptAndProductPopen": true,
+    "refusedWrapper": "prepare-consumer",
+    "wrapperExit": 1
+  },
+  "allOtherPreparedEntriesExact": true,
+  "allP9Outcomes": "UNKNOWN",
+  "archiveRootRecordFailure": "Top-level tarProvenanceSha256 absent; correct nested pin cannot satisfy gate.py127; raw RuntimeError preserved. Missing stage artifacts/consumer remain missing.",
+  "bootstrapReuse": [],
+  "boundedHistoricalSubsetFiles": 3277,
+  "copiedP8TreeIncludingActual": 2937,
+  "dispatches": 5,
+  "freshP9RunAbsent": true,
+  "nativeTerminalFiles": 241,
+  "oldConsumers": "870files17links historical INPLACE metadata only, no P9 consumer/proof or pass reuse; all retained external pins checked",
+  "originalIndexUnchanged": true,
+  "preparedP8Files": 2840,
+  "solePreparedIndexException": [
+    {
+      "consumedClosedSha256": "5dfcbd2a5a48d0ed43cc6f77d3398cb5fe1dd9d45c561ef29859efd1dba89dd8",
+      "copiedConsumedAt": "predecessor8/execution-gate.json",
+      "originalIndexPreservedVerbatim": "predecessor8/preparation-index.json",
+      "originalPreparedBytesAt": "predecessor8-original-active-gate.json",
+      "originalPreparedSha256": "ee9cefbf47ccbcbdac37e4415c8e6365319ad011cc39d2441c738c855d0c368b",
+      "path": "execution-gate.json"
+    }
+  ]
+}

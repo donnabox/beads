@@ -1,0 +1,37 @@
+{
+  "state": "CLOSED DATA candidate; NO execution authority until independent precision and root release",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/execution-gate.proposed.json",
+    "sha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/disposition.json",
+    "sha256": "85eb1d06d9ffc52bdf694ce26ac1b5180600ef77710b1fcfc7fcc5c847ad700f"
+  },
+  "activeGateMustRemain": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.json",
+    "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+  },
+  "closedGateSnapshot": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.closed.json",
+    "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+  },
+  "rootAuthorityInterface": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation9-actual-terminal-audit-1/root-authority-interface.json",
+    "sha256": "3794d64cc477970ce236b95b1fd5cc02cf39852863ee13fbed38de23fa4fe24d"
+  },
+  "firstPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "sourcePaths": 679,
+  "nativeFilesVerified": 181,
+  "all26CommonSourceToolReviewPrefixAndConditionalArtifactPredicatesRequireOtherNativePrecision": true,
+  "helperOrSchemaEvaluation": false,
+  "activationPerformed": false,
+  "futureArtifacts": "UNKNOWN; no later prefix released",
+  "nativePrecisionRequiredBeforeActivation": true,
+  "activationMustBeByteExactProposedGate": true
+}

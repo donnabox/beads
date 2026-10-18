@@ -1,0 +1,30 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/control-matrix.json
++++ control-matrix.json
+@@ -550,7 +550,26 @@
+       "variants": [
+         "unit"
+       ],
+-      "declaredSubcases": [],
++      "declaredSubcases": [
++        {
++          "id": "J10-aggregate-below",
++          "input": "split stdout/stderr total below 256MiB, each stream individually below cap; exact saved/hash crossing bytes",
++          "scope": "actual shared IO primitive called directly, no kernel pipe scheduling/product claim",
++          "status": "UNEXECUTED"
++        },
++        {
++          "id": "J10-aggregate-equal",
++          "input": "split stdout/stderr total equal 256MiB, each stream individually below cap; exact saved/hash crossing bytes",
++          "scope": "actual shared IO primitive called directly, no kernel pipe scheduling/product claim",
++          "status": "UNEXECUTED"
++        },
++        {
++          "id": "J10-aggregate-over",
++          "input": "split stdout/stderr total over 256MiB, each stream individually below cap; exact saved/hash crossing bytes",
++          "scope": "actual shared IO primitive called directly, no kernel pipe scheduling/product claim",
++          "status": "UNEXECUTED"
++        }
++      ],
+       "remainingUnsupported": [],
+       "status": "UNEXECUTED",
+       "productCalls": 0,

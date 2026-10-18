@@ -1,0 +1,44 @@
+{
+  "error": "Root release absent",
+  "failureOwner": "ROOT",
+  "noCallOrPredicateWasEvaluated": true,
+  "noHelperProductDefect": true,
+  "notReached": [
+    "implementation/reference checks",
+    "source_check/Git calls",
+    "base/workspace tools checks",
+    "root disposition/CODE documents",
+    "artifact barriers",
+    "in-helper session guard",
+    "run E.mkdir/start/temp/Popen"
+  ],
+  "secondRequiredFalse": "rootExactSourceAccepted",
+  "shortCircuitFirstFalse": "rootPlanAccepted",
+  "source": "gate.py94",
+  "truthRows": [
+    {
+      "actual": true,
+      "field": "released",
+      "matches": true,
+      "required": true
+    },
+    {
+      "actual": false,
+      "field": "rootPlanAccepted",
+      "matches": false,
+      "required": true
+    },
+    {
+      "actual": false,
+      "field": "rootExactSourceAccepted",
+      "matches": false,
+      "required": true
+    },
+    {
+      "actual": "2026-10-18T02:16:24Z-549f",
+      "field": "session",
+      "matches": true,
+      "required": "2026-10-18T02:16:24Z-549f"
+    }
+  ]
+}

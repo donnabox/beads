@@ -1,0 +1,110 @@
+{
+  "gateInterface": {
+    "codeDispositionRequirement": "Both actualClaudeReviewDisposed/nativeCodeReviewDisposed true plus each accepted pinned source-bound CODE disposition. Original039d actual CODE scope cannot become future-byte external approval.",
+    "commonRequiredConjunction": {
+      "released": true,
+      "rootExactSourceAccepted": true,
+      "rootPlanAccepted": true,
+      "session": "2026-10-18T02:16:24Z-549f"
+    },
+    "exactKeys": [
+      "actualClaudeReviewDisposed",
+      "actualCodeDisposition",
+      "approvedStages",
+      "baseTools",
+      "bootstrapReuse",
+      "consumerInventory",
+      "consumerLockSha256",
+      "implementationIndexSha256",
+      "installedProvenance",
+      "knownCorrectedSourceFreeze",
+      "knownOriginalActualCodeTerminal",
+      "mode",
+      "nativeCodeDisposition",
+      "nativeCodeReviewDisposed",
+      "released",
+      "rootArchiveAcceptance",
+      "rootBuildAcceptance",
+      "rootConsumerLockAcceptance",
+      "rootConsumerProofAcceptance",
+      "rootDisposition",
+      "rootExactSourceAccepted",
+      "rootPlanAccepted",
+      "session",
+      "sourceBinding",
+      "staticValidationAuthorized",
+      "workspaceTools"
+    ],
+    "predicateCallSitesCheckedAgainstActualCode": 59,
+    "rootArtifactChecks": "Actual buildMapSha256, TOP-LEVEL tarProvenanceSha256, consumerLockSha256/manifest/settings, and exact active installedProvenance/consumerInventory pin objects remain mandatory at applicable stage. No fallback/normalization.",
+    "rootDocs": "Exact path/sha256 document pins with absolute nonsymlink file/hash; acceptance records may retain supplementary metadata. Field shape is necessary, not semantic/process/provenance proof.",
+    "staticVsRuntime": "For typecheck/format-check/lint the ROOT DISPOSITION staticValidationAuthorized must be true; all other stages require root disposition runtimeValidationAuthorized true. Top-gate staticValidationAuthorized is typed but does not substitute for the disposition.",
+    "typedBooleans": [
+      "released",
+      "rootPlanAccepted",
+      "rootExactSourceAccepted",
+      "actualClaudeReviewDisposed",
+      "nativeCodeReviewDisposed",
+      "staticValidationAuthorized"
+    ]
+  },
+  "processLimitations": "Original stage child clock begins after synchronous checked preflight. Root separately adjudicates whole-wrapper elapsed/source/process absence; no hard-real-time, every-transient-process or first4 timing fit guarantee is inferred from static review. Existing TERM115/KILL cleanup up to119/outer120/noRetry remain.",
+  "reviewedScope": [
+    "Full unchanged run/gate/audit/package/guard behavior, source/readiness/cleanup boundaries",
+    "Complete current commands, exact selectors/files, source/installed/schema report contracts and actual nested ordered grammars",
+    "Fresh tools/build/beforecollection/archive/newconsumer actual-lock/fullgraph-entry-payload barriers",
+    "All26 root gate keys/sixboolean types/common conjunction and all59 actual gate predicate call sites",
+    "Existing four root artifact record families and stage applicability",
+    "P9 actual malformed gate/raw wrapper pre-stage refusal and all52 unexecuted outcomes",
+    "Full actual INPLACE3934 P9/3950native/66terminal trees, original+activated+consumed gate distinction",
+    "All167 subject/156flat/69originpairs/19388externalpins/39 genuine or identitypairs/679source/docs mirror"
+  ],
+  "runtimeDependencies": "All active helper data paths are present top-level or absolute source/proof/reference pins. No active P/context or predecessor runtime read requires the old recursive context copy. Retained relative labels inside copied historical audit data keep original-origin meaning, not current helper authority.",
+  "stageSelection": {
+    "D3Installed": {
+      "aborts": 3,
+      "callbacks": 11,
+      "completed": 187,
+      "exact": 186,
+      "raw": 4,
+      "scheduled": 190
+    },
+    "commands": 52,
+    "immediatePairs": 16,
+    "separateLegacySchema": {
+      "callbackMs": 120000,
+      "children": 1,
+      "wire": 14,
+      "workMs": 90000
+    },
+    "source": [
+      21,
+      32,
+      9,
+      1
+    ],
+    "sourceD3": {
+      "baselines": 20,
+      "directStarted": 96,
+      "rawFingerprints": 14,
+      "returned": 90,
+      "zeroWireClones": 9
+    }
+  },
+  "truthfulPartialAndUnknown": "Raw availability/status/chronology/fingerprints vs unretained bodies remain exact; missing/duplicate/unselected/invalid tuple/URL/status/field/body/lifecycle data fails. Unknown/missing process or directory closure cannot pass. No synthesized receipts, partial-to-positive upgrade or pass pooling.",
+  "unchangedBudgets": {
+    "automaticRetries": 0,
+    "installedCallbackMs": 60000,
+    "installedTotalCleanupMs": 10000,
+    "installedWorkMs": 45000,
+    "newDCleanupInclusiveStopMs": 4000,
+    "newDWorkMs": 3000,
+    "outerStageMs": 120000,
+    "recorderMs": 5000,
+    "requestMs": 5000,
+    "sourceDefaultCallbackMs": 5000,
+    "sourceDrainMs": 1000,
+    "sourceLatchMs": 1000,
+    "termAtMs": 115000
+  }
+}
