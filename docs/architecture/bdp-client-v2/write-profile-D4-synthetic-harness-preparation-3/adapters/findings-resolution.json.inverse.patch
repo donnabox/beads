@@ -1,0 +1,44 @@
+--- findings-resolution.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/findings-resolution.json
+@@ -1,16 +1,30 @@
+ {
+-  "H2-N1": {
+-    "authored": "bootstrap resets TERM/INT only after nonce/PID ACK and before role exec; parent critical regions/original run.main handlers unchanged",
+-    "validation": "unexecuted P01 actual pending-term predicate remains mandatory; availability masks/signals separate"
++  "state": "AUTHOR-DISPOSITION only; independent review required",
++  "originalNativeIndexSha256": "7a9d53950cbc2d7e339a0b06f3bb48b6df29b81503c49fe18f5165369f572071",
++  "rootAuthorOnlyReleaseSha256": "cd61265e7c7d83ea914fa31649131e721a822b5b2f1ac71dd808428eb440dd64",
++  "SH-N1": {
++    "authorChange": "EOF fixed refusal, actual consumed hex/byte count and bounded real empty/partial/outer-bootstrap EOF fixtures",
++    "runtimeVerified": false
+   },
+-  "H2-N2": {
+-    "authored": "single aggregate constant, crossing bytes write/flush/hash before overflow; IO handles TERM to continue on-clock drain, owner failure/escalation unchanged",
+-    "validation": "J10 below/equal/over split streams against actual shared retain_block; kernel blocked-writer/EOF remains actual host domain, incomplete full hash UNKNOWN"
++  "SH-N2": {
++    "authorChange": "same-case full positive baseline before mutations and exact RuntimeError reason; no broad ValueError/UnicodeError oracle for those full negatives",
++    "payloadReasonPrecision": "initialReady.payloadIdentity reaches typed-report-value BEFORE configuration equality; runtimeConfigurationIdentity reaches same-live-configuration",
++    "runtimeVerified": false
+   },
+-  "H2-N3": {
+-    "authored": "predecessor map explicitly historical, current13 Python source hashes+AST definitions/calls regenerated",
+-    "validation": "static attribution only; zero executed coverage"
++  "SH-N3": {
++    "authorChange": "scope/residuals corrected; exact reached model/host reason saved, no source/late-receipt/console-results credit",
++    "runtimeVerified": false
+   },
+-  "knownLastOwnerGap": "explicit conditional intact-last-owner scope under exact root disposition, not fixed/waived or globally proven",
+-  "noRuntimeValidation": true
++  "remainingBlockers": [
++    "BLOCK-HARD-ISOLATION",
++    "BLOCK-BOOTSTRAP-AVAILABILITY",
++    "BLOCK-NATIVE",
++    "SOURCE-ENV",
++    "PROTOCOL-AJV",
++    "FRESH-PROVENANCE",
++    "HOST-REMAINING",
++    "HOST-PIPE-SCOPE",
++    "PRODUCT-TIMING"
++  ],
++  "aggregateAccepted": false
+ }

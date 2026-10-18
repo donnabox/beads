@@ -1,0 +1,29 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-9/index-closure-policy.json
++++ index-closure-policy.json
+@@ -1,18 +1,17 @@
+ {
+-  "historicalIndicesIncluded": true,
+   "implementationExclusions": [
+     "implementation-hashes.json",
+     "preparation-index.json",
+     "execution-gate.json",
+     "execution-gate.closed.json",
+-    "execution-gate.json.successor9.patch",
+-    "execution-gate.json.successor9.inverse.patch",
+-    "execution-gate.closed.json.successor9.patch",
+-    "execution-gate.closed.json.successor9.inverse.patch",
+-    "implementation-hashes.json.successor9.patch",
+-    "implementation-hashes.json.successor9.inverse.patch",
++    "execution-gate.json.successor10.patch",
++    "execution-gate.json.successor10.inverse.patch",
++    "execution-gate.closed.json.successor10.patch",
++    "execution-gate.closed.json.successor10.inverse.patch",
++    "implementation-hashes.json.successor10.patch",
++    "implementation-hashes.json.successor10.inverse.patch",
+     "successor-delta.json"
+   ],
+-  "onlyReleaseMutationLater": "Root active execution-gate.json only after separately reviewed/durable explicit release; no closed snapshot/history edits.",
+-  "reason": "Exact11 self-referential controls/deltas, same framework. All other files including history/origins/referencepins are included. Original P8 prepared index retains explicit ee9 vs consumed5df exception."
++  "onlyReleaseMutationLater": "Root execution-gate.json only, AFTER independent full proposed authority candidate review/durable publication and explicit staged execution release; original closed/history immutable.",
++  "reason": "Same11 self-referential controls/deltas only. Minimal packet body plus complete in-place censuses/pins are bound; every other file included. P9 original prepared/activated/consumed gates distinguished without repaired index."
+ }

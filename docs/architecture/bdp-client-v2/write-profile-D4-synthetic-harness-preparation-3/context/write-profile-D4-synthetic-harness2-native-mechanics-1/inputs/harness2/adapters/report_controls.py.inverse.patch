@@ -1,0 +1,52 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/report_controls.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/report_controls.py
+@@ -8,12 +8,6 @@
+ from scanner_controls import refusal
+ SCOPE='https://reference.invalid/acme/'
+ CATEGORIES=['abort','configuration','timeout','disconnect','header-limit','body-limit','invalid-body','network','unavailable']
+-def exact_refusal(call,expected):
+- try:call()
+- except RuntimeError as exc:
+-  assert str(exc)==expected,('wrong-full-auditor-predicate',expected,str(exc))
+-  return {'refused':True,'exceptionType':'RuntimeError','reason':str(exc),'sameCasePositiveBaselineRequired':True}
+- raise AssertionError('full auditor accepted counterfactual')
+ def wire(row,body):
+  text=json.dumps(body,separators=(',',':'));headers={'content-length':str(len(text.encode())),'bdp-scope-epoch':'unit-epoch','bdp-authorization-view':'unit-view','bdp-scope-position':'unit-pos'}
+  raw=('HTTP/1.1 '+str(row['status'])+' Unit\r\n'+''.join(k+': '+v+'\r\n'for k,v in headers.items())+'\r\n'+text).encode()
+@@ -82,7 +76,6 @@
+   second=partial(base+[baseline,row(5,'operations/delete-where',receipt_body:=dict(status='completed',next=SCOPE+'r/next',results=[{}]*32),payloads['8']),row(6,'r/next',{'results':[{}],'next':None})],traversals,{'receiptPages':[32,1],'receiptComplete':True,'receiptEntries':33})
+   return {'divergent':check(divergent),'unsupportedFinal':unsupported,'assignmentBeforeAssertion':[check(first),check(second)]}
+  if case=='D03':
+-  baseline=full(o);assert baseline['actualExchanges']==32 and baseline['claimEligible']is False
+   outcomes=[]
+   for s in [False,True]:
+    for r in [False,True]:
+@@ -109,13 +102,12 @@
+    if mutate=='wire':p['observations'][0]['wireResponseBase64']=None
+    elif mutate=='body':p['observations'][7]['body']='{}'
+    else:wire(p['observations'][21],{'revision':'wrong','properties':{}})
+-   exact_refusal(lambda p=p:full(p),{'wire':'wire-base64-type','body':'wire-body','postimage':'owned-inline-metadata'}[mutate])
++   refusal(lambda p=p:full(p))
+   return {'stateControls':outcomes,'declared20StateSubcases':20,'scope':'remaining semantic checks still required; failure classifications never positive'}
+  if case=='D04':
+-  baseline=full(o);assert baseline['actualExchanges']==32 and baseline['claimEligible']is False
+   receipts=[]
+   for change in [{'observedClose':None},{'closePromiseSucceeded':False},{'pid':None}]:
+-   p=copy.deepcopy(o);p['lifecycle']['children'][0].update(change);receipts.append(exact_refusal(lambda p=p:full(p),'actual-child-pid'if 'pid'in change else'typed-report-value'))
++   p=copy.deepcopy(o);p['lifecycle']['children'][0].update(change);receipts.append(refusal(lambda p=p:full(p)))
+   return {'subcases':receipts}
+  if case=='D05':
+   full(o)
+@@ -123,11 +115,10 @@
+   assert all(not any(k in r for k in ['authorization','idempotency-key','requestHeaders'])for r in o['observations'])
+   p=copy.deepcopy(o);p['observations'][2]['requestBody']='{}';return refusal(lambda:full(p),'actual-request-body-presence')
+  if case=='D06':
+-  baseline=full(o);assert baseline['actualExchanges']==32 and baseline['claimEligible']is False
+   receipts=[]
+   for path in [('source',),('metadata','fixtureSha256'),('initialReady','payloadIdentity'),('initialReady','runtimeConfigurationIdentity'),('binding','served','sourceCommit')]:
+    p=copy.deepcopy(o);parent=p
+    for key in path[:-1]:parent=parent[key]
+-   parent[path[-1]]='f'*64;expected='fixture-proof'if path==('metadata','fixtureSha256')else'same-live-configuration'if path==('initialReady','runtimeConfigurationIdentity')else'typed-report-value';receipts.append(exact_refusal(lambda p=p:full(p),expected))
++   parent[path[-1]]='f'*64;receipts.append(refusal(lambda p=p:full(p)))
+   return {'bindingRefusals':receipts,'unresolved':['actual archive/build/source before-after verification requires future fresh measured inventory; fake proof is not archive evidence']}
+  raise AssertionError('unregistered report control')

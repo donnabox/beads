@@ -1,0 +1,41 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-1/execution-contract.json
++++ execution-contract.json
+@@ -45,9 +45,10 @@
+     "publicHeaderBytes": 65536,
+     "publicRawWireBytes": 2097152,
+     "requestMs": 5000,
+-    "existingPositiveCallbackMs": 63000,
++    "existingPositiveCallbackMs": 120000,
+     "sourceDataCallbackMs": 5000,
+-    "noWidening": true
++    "noWidening": true,
++    "existingPositiveElapsedAssertionMs": 63000
+   },
+   "stages": [
+     {
+@@ -67,7 +68,7 @@
+     },
+     {
+       "id": "CAPACITY_AND_CLOCK_PROOF",
+-      "requirement": "Independent actual bounded parser and collection checks on exact frozen combined manifest, all conditional cases/source/report sizes and whole callback63s. Failure or lack of fit blocks; no cap/deadline widening",
++      "requirement": "Independent actual bounded parser and collection checks on exact frozen combined manifest, all conditional cases/source/report sizes and actual callback timeout120000ms and separate elapsed assertion63000ms. Failure or lack of fit blocks; no cap/deadline widening",
+       "released": false
+     },
+     {
+@@ -133,13 +134,14 @@
+   "existingLifecycleBudgets": {
+     "observeDefaultWorkMs": 90000,
+     "maximumObserveWorkMs": 90000,
+-    "actualPositiveCallbackTimeoutMs": 63000,
++    "actualPositiveCallbackTimeoutMs": 120000,
+     "prepareMs": 10000,
+     "cleanupMs": 10000,
+     "requestMs": 5000,
+     "sourceDefaultMs": 5000,
+     "newBoundIntroduced": false,
+-    "effectiveFit": "UNKNOWN; callback63s is not extended to observe90s, cleanup/postchecks/publication must finish within actual independently enforced attempt. No claim a90s work allowance fits63s."
++    "effectiveFit": "UNKNOWN. Actual Vitest callback timeout120000ms and elapsed assertion63000ms are distinct unchanged source constraints; observe work90000ms, prepare10000ms, cleanup10000ms and request5000ms remain separate. Future outer supervision must independently include setup/cleanup/postchecks/publication; no cap/deadline widening or measured fit claim.",
++    "positiveElapsedAssertionMs": 63000
+   },
+   "lifecycleRequired": [
+     "one stable callback capture of existing principals/tokens/policy/artifacts; no per-session regeneration",

@@ -1,0 +1,200 @@
+{
+  "state": "genuine immutable2\u2192minimal3 pairs",
+  "count": 15,
+  "pairs": [
+    {
+      "path": "gate.py",
+      "before": "predecessor2/gate.py",
+      "after": "gate.py",
+      "beforeSha256": "643bf91061c9ea0da1f097e6ebd3b2b8d8594d6cfbf9b24782aaee34647de2cb",
+      "afterSha256": "a2fea355b99968b588a085f7590ada6d945e9e8487fdb2a5a7612ff744277931",
+      "forward": "adaptations/gate.py.patch",
+      "forwardSha256": "4adbee189c4847915c5799b497413f630288642082ae8f0cfbef38228b57d1ac",
+      "inverse": "adaptations/gate.py.inverse.patch",
+      "inverseSha256": "bdcc8fa63c514b529e4cbef4ad47157d38dc7c94bdbe35ffed3e1087e21d7f16",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "run.py",
+      "before": "predecessor2/run.py",
+      "after": "run.py",
+      "beforeSha256": "8d566e38d3bd2d8fa25ed1ee666aabd6df41dd50abe78239873fec580cddb25b",
+      "afterSha256": "2a60b483b696984633fd41f42b5de57b20674d58a7fd1f1c82fe0241a17ebadb",
+      "forward": "adaptations/run.py.patch",
+      "forwardSha256": "94b5ff5504dd5c244a73108e7bf2cdf58a99a2c064ce9d54765bf9cfe56e4f07",
+      "inverse": "adaptations/run.py.inverse.patch",
+      "inverseSha256": "d89b4d466c7f58be407c2e48d042751a21d5d3d632fb79b7e8f047a8a2f54960",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "audit.py",
+      "before": "predecessor2/audit.py",
+      "after": "audit.py",
+      "beforeSha256": "6385959f7b4eee3f8f3a55c06050e0ff6bf49b33bd127f3325d01dfc0fa23883",
+      "afterSha256": "8f6f3fa03ae91ba16c7928f37533fc774482d62fdbfda4b29d0ea2b255a7b257",
+      "forward": "adaptations/audit.py.patch",
+      "forwardSha256": "e66f4399a3a0e25849cdc1c0d7afc2bf44c539d2deafa25f17db3beca358ddcc",
+      "inverse": "adaptations/audit.py.inverse.patch",
+      "inverseSha256": "fb795058c804e2d2d0b4bbcee47c7c8c9dedeede520f2590e7fc219f194c95a9",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "commands.json",
+      "before": "predecessor2/commands.json",
+      "after": "commands.json",
+      "beforeSha256": "9a1c47c7058bca7909617d727fe616cc54898786eb91ed5cb9041ffdf61bb916",
+      "afterSha256": "04697e4339dfbd35672a0c488fe93d180cc0c44b3be76945afdeee3b04edfad3",
+      "forward": "adaptations/commands.json.patch",
+      "forwardSha256": "231d2acd762c8cdd39f1ab1e27bcc9c0ae912b043f3f479b6731f1fd8b3d611c",
+      "inverse": "adaptations/commands.json.inverse.patch",
+      "inverseSha256": "f6ac4d4f518398958382bf25f8a8d40019964a8badca50fbe8608e98625829d1",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "synthetic-controls-plan.json",
+      "before": "predecessor2/synthetic-controls-plan.json",
+      "after": "synthetic-controls-plan.json",
+      "beforeSha256": "8582d4ea6d5f0fed2651d4f128dd542a8c734dd17b7c7744026591aead2ad0b1",
+      "afterSha256": "23715d762eb0d901b68c2f1c7a0464c791c2a8c6b52a70d49c5e1424329182fa",
+      "forward": "adaptations/synthetic-controls-plan.json.patch",
+      "forwardSha256": "7a7f9e96f6833fe92adac6f68aa9b167147d6ed9ccbfd591f7a9c5c2edaa00b5",
+      "inverse": "adaptations/synthetic-controls-plan.json.inverse.patch",
+      "inverseSha256": "3336179b742fa6bee8b41ed91c37b9dc8dbb79c2af0ebaa9268088af2ec5531e",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "README.md",
+      "before": "predecessor2/README.md",
+      "after": "README.md",
+      "beforeSha256": "040a17d588564765b0808fb86730684bc62048ed843b63f4b7c2fd60f3dfc59d",
+      "afterSha256": "c2adac5cdbaea916df1a10ff68512e0a31f5b864538b3f0f968eeb70c7ced6ec",
+      "forward": "adaptations/README.md.patch",
+      "forwardSha256": "48cb816cd32057ae1c99f04c41314000eed7bdfbd98fa8caaa27f130cf51d8b1",
+      "inverse": "adaptations/README.md.inverse.patch",
+      "inverseSha256": "30783c1cee90fbc76f9bc9842aca3d1211b8a4a2fe265ae6a9be67d19c8928a7",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "reconciliation.json",
+      "before": "predecessor2/reconciliation.json",
+      "after": "reconciliation.json",
+      "beforeSha256": "dc5d38ec5903b2e67176dd08adcc2d48fa9dcd6f7e458962e2aa5af181637927",
+      "afterSha256": "040875bd56311566dd52f1b5bd47c5fd1259e481f3d378a118d8831a17e739d1",
+      "forward": "adaptations/reconciliation.json.patch",
+      "forwardSha256": "ca8f88bce61026c0aaaddfc8f9fa47f8d4c1b1fa3bcdd4864efb3d748fee9050",
+      "inverse": "adaptations/reconciliation.json.inverse.patch",
+      "inverseSha256": "b6d11fb96b5f17316145bc34a24ccbd9b9db005ac630002840d13af00b49bf86",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "report.md",
+      "before": "predecessor2/report.md",
+      "after": "report.md",
+      "beforeSha256": "219580e38265d55ecacdb7e853ee4c307e2d8ab9c0793d614a95264d3b46253a",
+      "afterSha256": "1426baf7cf68c0093668c09d8c63d1f8df1d4817496041a94f2008e88dee1fbd",
+      "forward": "adaptations/report.md.patch",
+      "forwardSha256": "69b8940ea3393c490d9bec1f61f37e6345373f149859f05de3e0d242a11118c9",
+      "inverse": "adaptations/report.md.inverse.patch",
+      "inverseSha256": "cc1264a39ea8fffa1ce33cd6476917c7f1cc6c6b7ceec2da447587e9b4b5247f",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "static-inspection.json",
+      "before": "predecessor2/static-inspection.json",
+      "after": "static-inspection.json",
+      "beforeSha256": "e0b2eb35764da15979ab338ac61225389b98c40946496c2c6600b753c0971d96",
+      "afterSha256": "03f9e94f8471131761001546ea85ee35daa52813484b6f977a4a782e81fbb8e4",
+      "forward": "adaptations/static-inspection.json.patch",
+      "forwardSha256": "55d136058d4429baf18504dbded00eb57edb455c37122769b1f367e99d6894fa",
+      "inverse": "adaptations/static-inspection.json.inverse.patch",
+      "inverseSha256": "dfd7cdd2f5c664209b97d6edc0c17b6cc967ca4426125db7de779343d5a478c1",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "WIP-status.json",
+      "before": "predecessor2/WIP-status.json",
+      "after": "WIP-status.json",
+      "beforeSha256": "067be1004c47ccc189201aca5e08d5504e0da3806ea90293cd85362ec56ae470",
+      "afterSha256": "4961f2bb47775a1fe060e01226e9e4fdb805fbbeb88c93570b12ae11f89065cb",
+      "forward": "adaptations/WIP-status.json.patch",
+      "forwardSha256": "11487b901b2ac72188c03300cb97cb1e6095b0fd43499d3f551cfc50b4dc7c82",
+      "inverse": "adaptations/WIP-status.json.inverse.patch",
+      "inverseSha256": "d69b92746b353f423587fffbb65bac753599130cf36790d453c83bbb28116832",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "findings-map.json",
+      "before": "predecessor2/findings-map.json",
+      "after": "findings-map.json",
+      "beforeSha256": "e670a3121f00a092aaca6be0b24941ef683681e2f9a30ce45171afdeadb13612",
+      "afterSha256": "5e7fdded4b97476a89e72d451e03f18c62830eedd88ca4f414a120bc7fb397d3",
+      "forward": "adaptations/findings-map.json.patch",
+      "forwardSha256": "0f9d2628b43deee1fd34135737449e3fa1032ec6ad5ae0d26fae8dd5706e5b0b",
+      "inverse": "adaptations/findings-map.json.inverse.patch",
+      "inverseSha256": "bf872e482c0e10bc50b9dc87b5c8478e33dceb2eccd515cfca510fd98e2b5007",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "predecessor-preservation.json",
+      "before": "predecessor2/predecessor-preservation.json",
+      "after": "predecessor-preservation.json",
+      "beforeSha256": "bc360f32bbf2b25f6dc21be1aeed0ad74049bd9025779adab5ccc00c29301339",
+      "afterSha256": "be21f8a0aace58a16d45995488d921d859b245dde0f7e79169a60cdf6d6d29f5",
+      "forward": "adaptations/predecessor-preservation.json.patch",
+      "forwardSha256": "2cde1c9d6fdb51cbb55257040da182ee7caca4a670bfca722c1e1d226054af0c",
+      "inverse": "adaptations/predecessor-preservation.json.inverse.patch",
+      "inverseSha256": "a5dabb00fd77483fe9d238ce211a2d7c0ad4f3262b74c1efb000121f685cb29a",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "control-namespace-delta.json",
+      "before": "predecessor2/control-namespace-delta.json",
+      "after": "control-namespace-delta.json",
+      "beforeSha256": "a79752a702f5fe1e96c674b7374d0873bdc4e36890d716d2d7f44569c43893a4",
+      "afterSha256": "14f0acfd3ccca0d9dd8a0c3b5d8b8e36ec8add42e9b64a9ad404081a1f25debe",
+      "forward": "adaptations/control-namespace-delta.json.patch",
+      "forwardSha256": "cc8f0822b651b9723b20c524ffcf39c82c7c9bea430f10df2cd627b50e00a610",
+      "inverse": "adaptations/control-namespace-delta.json.inverse.patch",
+      "inverseSha256": "052b7f456ece46f78f793775482742734d7b7dc11c333a02c5241e1e54b12093",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "origins.json",
+      "before": "predecessor2/origins.json",
+      "after": "origins.json",
+      "beforeSha256": "d65589072b14e264dec26fde0831dc5f766045d566279cda3a2b4659b25e661d",
+      "afterSha256": "1da43f4042aba2afcaebbd046a65fc119451d1edc627488cf5a978be966d3695",
+      "forward": "adaptations/origins.json.patch",
+      "forwardSha256": "19a96827f571d6e42968e3e0c1d7ca498f885a344005ba4e54df26b1914d197a",
+      "inverse": "adaptations/origins.json.inverse.patch",
+      "inverseSha256": "2289bbcbefb632e999c9307dfd8291ff58a29356cfc37df5853fa45a88a031b2",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "reference-pins.json",
+      "before": "predecessor2/reference-pins.json",
+      "after": "reference-pins.json",
+      "beforeSha256": "f5e66ba4575fce5b06c64bf9ec46ec50cdb327b02502f71a9b74e45617630360",
+      "afterSha256": "c0bfad572dca32db859ad9693f3a162339a53a115a836aa3cd005be303456189",
+      "forward": "adaptations/reference-pins.json.patch",
+      "forwardSha256": "5e47d737602059e3e73188783170e946bda7d28553667f012ec2d3493ce51945",
+      "inverse": "adaptations/reference-pins.json.inverse.patch",
+      "inverseSha256": "8275469592458d97c1ebbda80af1ee75258764cbad9c93d74b485f65ddc73019",
+      "genuineDiffRecomputed": true
+    }
+  ],
+  "helperSemanticDeltas": [
+    "gate.py",
+    "run.py",
+    "audit.py"
+  ],
+  "unchangedHelperBytes": [
+    "worker.py",
+    "scanner.py",
+    "packages.py",
+    "schema-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "historicalPairs": "predecessor2/adaptations plus predecessor2/historical-template-adaptations unchanged",
+  "controlRebinding": "namespace paths then final implementation hash, six self-reference/control exclusions/allbooleansfalse"
+}

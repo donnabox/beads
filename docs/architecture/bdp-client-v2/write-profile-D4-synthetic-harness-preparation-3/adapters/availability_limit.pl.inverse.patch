@@ -1,0 +1,32 @@
+--- availability_limit.pl
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/hard_limit.pl
+@@ -11,8 +11,9 @@
+ use POSIX qw(setsid WNOHANG _exit);
+ use Fcntl qw(F_GETFL F_SETFL O_NONBLOCK);
+ my ($case,$variant,$release)=@ARGV;
+-exit 1 unless @ARGV==3 && $case eq 'AVAIL' && $variant eq 'availability' && $release =~ m{\A/};
+-my ($whole,$term,$kill)=(120,115,119);
++exit 1 unless @ARGV==3 && defined($case) && $case =~ /\A(?:M(?:0[1-9]|1[0-6])|J(?:0[1-9]|1[0-2])|P(?:0[1-9]|1[0-4])|D0[1-6])\z/ && $variant =~ /\A[a-z0-9-]{1,80}\z/ && $release =~ m{\A/};
++my $host = $variant =~ /\Ahost-/;
++my ($whole,$term,$kill)= $host ? (150,145,149) : (120,115,119);
+ exit 1 unless -p STDOUT && -p STDERR; # root must capture pipes, no TTY/file/network sink.
+ my $child;
+ my $reaped=0;
+@@ -38,7 +39,7 @@
+  $SIG{ALRM}='DEFAULT';alarm(0);
+  POSIX::setsid() >= 0 or POSIX::_exit(126);
+  $ENV{D4_NATIVE_LIMITER}="$limiter";
+- exec '/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/availability_owner.py',"$ORIGIN",$release,"$limiter";
++ exec '/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/outer_host.py','--limited-owner',"$ORIGIN",$case,$variant,$release,"$limiter";
+  POSIX::_exit(126);
+ }
+ # PID direct ownership exists immediately after fork, before metadata or IO.
+@@ -60,7 +61,7 @@
+ my $ok=(!$forced && $exit==0 && $elapsed<$term)?1:0;
+ my $flags=fcntl(STDOUT,F_GETFL,0);
+ POSIX::_exit(125) unless defined($flags) && fcntl(STDOUT,F_SETFL,$flags|O_NONBLOCK);
+-my $line='{"event":"availability-native-limiter-terminal","limiterPid":'.$limiter.',"ownerPid":'.$child.',"rawOwnerExit":'.$exit.',"elapsedSeconds":'.$elapsed.',"forced":'.($forced?'true':'false').',"localStatus":'.($ok?'"SETTLED_PENDING_ROOT_AUDIT"':'"FAILED"').',"syntheticAcceptance":false,"requiresFreshRootGroupAudit":true}' . "\n";
++my $line='{"event":"native-limiter-terminal","limiterPid":'.$limiter.',"ownerPid":'.$child.',"rawOwnerExit":'.$exit.',"elapsedSeconds":'.$elapsed.',"forced":'.($forced?'true':'false').',"localStatus":'.($ok?'"SETTLED_PENDING_ROOT_AUDIT"':'"FAILED"').',"syntheticAcceptance":false,"requiresFreshRootGroupAudit":true}' . "\n";
+ my $count=syswrite(STDOUT,$line);
+ POSIX::_exit(125) unless defined($count) && $count==length($line);
+ POSIX::_exit(1) if clock_gettime(8)-$ORIGIN >= $term;

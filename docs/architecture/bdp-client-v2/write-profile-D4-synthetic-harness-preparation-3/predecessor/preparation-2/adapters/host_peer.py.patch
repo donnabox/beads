@@ -1,0 +1,70 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_peer.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/host_peer.py
+@@ -5,11 +5,27 @@
+ import time
+ import json,os,signal,socket,subprocess,sys
+ from pathlib import Path
++sys.path.insert(0,str(Path(__file__).resolve().parent))
++import owned_spawn as B
+ 
+ def write(path,value):
+  with Path(path).open('x')as f:json.dump(value,f,allow_nan=False);f.write('\n')
+ def wait_until(deadline):
+  while time.monotonic()<deadline:time.sleep(min(.02,max(0,deadline-time.monotonic())))
++def receive_control(channel,directory,origin,expected):
++ raw=b'';deadline=min(origin+144,time.monotonic()+5)
++ while b'\n'not in raw:
++  remaining=deadline-time.monotonic()
++  if remaining<=0:
++   write(directory/'peer-control-deadline.json',{'reason':'peer-control-deadline','receivedHex':raw.hex(),'receivedBytes':len(raw),'expected':expected,'atSeconds':time.monotonic()-origin});raise RuntimeError('peer-control-deadline')
++  channel.settimeout(remaining)
++  block=channel.recv(4096)
++  if not block:
++   write(directory/'peer-eof.json',{'reason':'peer-control-eof','receivedHex':raw.hex(),'receivedBytes':len(raw),'atSeconds':time.monotonic()-origin,'expected':expected});raise RuntimeError('peer-control-eof')
++  raw+=block
++  if len(raw)>8192:raise RuntimeError('peer-control-capacity')
++ value=json.loads(raw.split(b'\n')[0]);assert value['event']==expected;return value
++
+ def main():
+  role=sys.argv[1]
+  if role=='census-block':time.sleep(1);return 0
+@@ -23,6 +39,7 @@
+   sys.stdout.write('zero-product pipe witness\n');sys.stdout.flush();time.sleep(.4);return 0
+  fd=int(sys.argv[2]);directory=Path(sys.argv[3]);scenario=sys.argv[4];origin=float(sys.argv[5]);channel=socket.socket(fileno=fd)
+  signal.pthread_sigmask(signal.SIG_SETMASK,set())
++ if role=='eof-control':receive_control(channel,directory,origin,'creation-ack');return 1
+  if role=='publish':
+   if scenario=='publisher-block':wait_until(min(origin+144,time.monotonic()+12));return 1
+   raw=b''
+@@ -35,12 +52,7 @@
+   return 1 if scenario=='publisher-fail'else 0
+  def note(event,**fields):
+   raw=(json.dumps({'event':event,**fields})+'\n').encode();assert len(raw)<=4096;channel.sendall(raw)
+- def receive(expected):
+-  raw=b'';channel.settimeout(max(.01,min(5,origin+144-time.monotonic())))
+-  while b'\n'not in raw:
+-   raw+=channel.recv(4096)
+-   if len(raw)>8192:raise RuntimeError('peer-control-capacity')
+-  value=json.loads(raw.split(b'\n')[0]);assert value['event']==expected;return value
++ def receive(expected):return receive_control(channel,directory,origin,expected)
+  note('attempt',attemptId='c'*32,sourceBindingSha256='d'*64)
+  write(directory/'worker-ready.json',{'pid':os.getpid(),'pgid':os.getpgrp(),'origin':origin,'scenario':scenario})
+  if scenario=='blocked-preflight':time.sleep(12);return 1
+@@ -49,7 +61,7 @@
+   note('phase',phase='callback-start');time.sleep(.2);note('phase',phase='callback-end');time.sleep(7);return 1
+  note('phase',phase='callback-start')
+  member_mode='linger'if scenario in ['leader-exit-before-created','leader-exit-after-created']else'pipe'
+- p=subprocess.Popen([sys.executable,'-I','-B',str(Path(__file__).resolve()),'member',str(origin),str(directory/'member.json'),member_mode],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
++ p=B.spawn([sys.executable,'-I','-B',str(Path(__file__).resolve()),'member',str(origin),str(directory/'member.json'),member_mode],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  if scenario=='leader-exit-before-created':
+   # Child exists in the worker's new session before any created notification.
+   time.sleep(.2);note('failed');os._exit(1)
+@@ -61,7 +73,7 @@
+  note('phase',phase='callback-end');note('leader-exit',pid=p.pid,code=0);note('need-quiet');receive('quiet')
+  # Zero-product schema-check role exercises actual creation/check settlement
+  # protocol only; it never runs schema validation and cannot claim that credit.
+- check=subprocess.Popen([sys.executable,'-I','-B',str(Path(__file__).resolve()),'member',str(origin),str(directory/'check.json'),'pipe'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
++ check=B.spawn([sys.executable,'-I','-B',str(Path(__file__).resolve()),'member',str(origin),str(directory/'check.json'),'pipe'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  note('check-created',pid=check.pid,pgid=os.getpgrp(),ppid=os.getpid(),role='pinned-schema-audit')
+  out,err=check.communicate(timeout=2);assert check.returncode==0 and not err;note('check-exit',pid=check.pid,code=0)
+  note('verified');receive('finalize');note('published');return 0

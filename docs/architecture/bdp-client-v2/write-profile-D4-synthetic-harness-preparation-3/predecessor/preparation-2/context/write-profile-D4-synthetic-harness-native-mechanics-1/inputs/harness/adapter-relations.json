@@ -1,0 +1,71 @@
+{
+  "pairs": [
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "gate_controls.py",
+      "before": null,
+      "afterSha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+      "forward": "adapters/gate_controls.py.patch",
+      "inverse": "adapters/gate_controls.py.inverse.patch"
+    },
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "harness.py",
+      "before": null,
+      "afterSha256": "7a7b2e27e554d57dcb2fe411740cc9a7b1d362e65628a70705b60e938aad3f0e",
+      "forward": "adapters/harness.py.patch",
+      "inverse": "adapters/harness.py.inverse.patch"
+    },
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "host_controls.py",
+      "before": null,
+      "afterSha256": "1ea700f6f369a097532e852f5feed1cbcc8585cb257acaf68b1bf99bde3e8714",
+      "forward": "adapters/host_controls.py.patch",
+      "inverse": "adapters/host_controls.py.inverse.patch"
+    },
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "host_peer.py",
+      "before": null,
+      "afterSha256": "36658b92223c50f40c455472f631a44c706ebabaf16febcf140d0d398ff46a02",
+      "forward": "adapters/host_peer.py.patch",
+      "inverse": "adapters/host_peer.py.inverse.patch"
+    },
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "report_controls.py",
+      "before": null,
+      "afterSha256": "575fb771d2c1af1103666576d7ea6576f5382641b8b773b26fe82b7a95ed77cd",
+      "forward": "adapters/report_controls.py.patch",
+      "inverse": "adapters/report_controls.py.inverse.patch"
+    },
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "scanner_controls.py",
+      "before": null,
+      "afterSha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "forward": "adapters/scanner_controls.py.patch",
+      "inverse": "adapters/scanner_controls.py.inverse.patch"
+    },
+    {
+      "kind": "new harness authoring, not copied subject",
+      "file": "watchdog_controls.py",
+      "before": null,
+      "afterSha256": "086d0c9be51ba49a18eb6c6c2e49618c7f08d03e9385d47524c74d01f7260731",
+      "forward": "adapters/watchdog_controls.py.patch",
+      "inverse": "adapters/watchdog_controls.py.inverse.patch"
+    },
+    {
+      "kind": "genuine data namespace/argv adaptation",
+      "before": "adapters/host.before.json",
+      "after": "adapters/host.after.json",
+      "forward": "adapters/host.patch",
+      "inverse": "adapters/host.inverse.patch"
+    }
+  ],
+  "subjectCodeChanges": [],
+  "moduleCopiesAreEvidenceOnly": true,
+  "actualSubjectLoadRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4",
+  "newHarnessIsNotAProvenExistingSupervisor": true
+}

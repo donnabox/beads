@@ -1,0 +1,69 @@
+--- outer_worker.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/outer_worker.py
+@@ -2,7 +2,7 @@
+ No product program is invoked. All blocking filesystem/hash/guard work is here.
+ """
+ import time
+-import hashlib,json,os,select,signal,socket,sys,array
++import hashlib,json,os,select,socket,sys,array
+ from pathlib import Path
+ HERE=Path(__file__).resolve().parent
+ sys.dont_write_bytecode=True
+@@ -27,15 +27,6 @@
+    return json.loads(line)
+  raise RuntimeError('owned-worker-deadline')
+ 
+-RAW_TOTAL=268435456
+-
+-def retain_block(stream,block,total):
+- # Actual IO and J10 call this same primitive. No caller-supplied capacity.
+- # Write and hash every received byte BEFORE reporting threshold overflow.
+- stream['file'].write(block);stream['file'].flush();stream['sha'].update(block);stream['bytes']+=len(block)
+- total+=len(block)
+- return total,total>RAW_TOTAL
+-
+ def main():
+  mode=sys.argv[1];attempt=Path(sys.argv[2]);channel=socket.socket(fileno=int(sys.argv[3]))
+  if mode=='control':
+@@ -51,10 +42,6 @@
+   B.note('control-finished',rawExit=raw)
+   return raw
+  if mode=='io':
+-  # Continue owned draining after the owner's overflow TERM. KILL/deadline stays unchanged.
+-  cleanup_signals=[]
+-  signal.signal(signal.SIGTERM,lambda sig,frame:cleanup_signals.append(int(sig)))
+-  signal.signal(signal.SIGINT,lambda sig,frame:cleanup_signals.append(int(sig)))
+   attempt.parent.mkdir(exist_ok=True);attempt.mkdir() # sole exclusive attempt, no retries.
+   started=json.loads(sys.argv[4]);write(attempt/'started.json',started)
+   B.note('io-ready')
+@@ -66,25 +53,17 @@
+    a=array.array('i');a.frombytes(value[:len(value)-len(value)%a.itemsize]);fds.extend(a)
+   if len(fds)!=2:raise RuntimeError('io-descriptor-count')
+   streams={fd:{'name':name,'file':(attempt/name).open('xb'),'sha':hashlib.sha256(),'bytes':0,'eof':False}for fd,name in zip(fds,['stdout.log','stderr.log'])}
+-  total=0;overflow=False
+   for fd in fds:os.set_blocking(fd,False)
+   while any(not s['eof']for s in streams.values()) and remaining()>0:
+    for fd in select.select([fd for fd,s in streams.items()if not s['eof']],[],[],.02)[0]:
+     block=os.read(fd,65536);s=streams[fd]
+     if not block:s['eof']=True;os.close(fd);s['file'].close();continue
+-    total,crossed=retain_block(s,block,total)
+-    if crossed and not overflow:
+-     overflow=True;B.note('io-overflow',aggregateBytes=total,limit=RAW_TOTAL)
+-    # Keep draining saved bytes on the original clock while the owner stops producers.
++    s['bytes']+=len(block)
++    if s['bytes']>268435456:raise RuntimeError('io-full-raw-capacity')
++    s['sha'].update(block);s['file'].write(block)
+   receipt={s['name']:{'bytes':s['bytes'],'sha256':s['sha'].hexdigest(),'eof':s['eof']}for s in streams.values()}
+-  # Partial prefix hashes are labelled honestly if a descriptor did not reach EOF.
+-  for stream in streams.values():
+-   if not stream['file'].closed:stream['file'].close()
+-  complete=all(s['eof']for s in streams.values())
+-  write(attempt/'stdio.json',{'streams':receipt,'aggregateBytes':total,'aggregateLimit':RAW_TOTAL,'overflow':overflow,'cleanupSignals':cleanup_signals,'allEof':complete,'hashScope':'complete received stream'if complete else'saved received prefix only; full stream UNKNOWN','accepted':False})
+-  if not complete:raise RuntimeError('io-eof-incomplete')
+-  if overflow:raise RuntimeError('io-full-raw-capacity')
+-  B.note('io-finished',stdio=receipt)
++  if not all(s['eof']for s in streams.values()):raise RuntimeError('io-eof-incomplete')
++  write(attempt/'stdio.json',receipt);B.note('io-finished',stdio=receipt)
+   # Keep IO/receipt worker unreaped until parent sends its final tentative
+   # census record. It does all remaining result hashing/publication on-clock.
+   record=receive(channel,1048576)

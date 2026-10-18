@@ -1,0 +1,30 @@
+{
+  "state": "AUTHOR-DISPOSITION only; independent review required",
+  "originalNativeIndexSha256": "7a9d53950cbc2d7e339a0b06f3bb48b6df29b81503c49fe18f5165369f572071",
+  "rootAuthorOnlyReleaseSha256": "cd61265e7c7d83ea914fa31649131e721a822b5b2f1ac71dd808428eb440dd64",
+  "SH-N1": {
+    "authorChange": "EOF fixed refusal, actual consumed hex/byte count and bounded real empty/partial/outer-bootstrap EOF fixtures",
+    "runtimeVerified": false
+  },
+  "SH-N2": {
+    "authorChange": "same-case full positive baseline before mutations and exact RuntimeError reason; no broad ValueError/UnicodeError oracle for those full negatives",
+    "payloadReasonPrecision": "initialReady.payloadIdentity reaches typed-report-value BEFORE configuration equality; runtimeConfigurationIdentity reaches same-live-configuration",
+    "runtimeVerified": false
+  },
+  "SH-N3": {
+    "authorChange": "scope/residuals corrected; exact reached model/host reason saved, no source/late-receipt/console-results credit",
+    "runtimeVerified": false
+  },
+  "remainingBlockers": [
+    "BLOCK-HARD-ISOLATION",
+    "BLOCK-BOOTSTRAP-AVAILABILITY",
+    "BLOCK-NATIVE",
+    "SOURCE-ENV",
+    "PROTOCOL-AJV",
+    "FRESH-PROVENANCE",
+    "HOST-REMAINING",
+    "HOST-PIPE-SCOPE",
+    "PRODUCT-TIMING"
+  ],
+  "aggregateAccepted": false
+}

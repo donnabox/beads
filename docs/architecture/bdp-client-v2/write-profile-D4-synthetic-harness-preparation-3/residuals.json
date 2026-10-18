@@ -1,0 +1,40 @@
+{
+  "BLOCK-HARD-ISOLATION": {
+    "blockingForDeliberateLastOwnerFaults": true,
+    "fact": "Root disposition accepts only intact-last-owner finite fault domain. Native limiter cannot independently authenticate/clean nested session groups after outer_host loss. Unexpected owner loss/stall is FAILED/UNKNOWN, no global guarantee. No current60 deliberately faults last outer owner.",
+    "mandatoryInnerFaultsRetained": true,
+    "deliberateLastOwnerFaultReleased": false
+  },
+  "BLOCK-BOOTSTRAP-AVAILABILITY": {
+    "blockingBeforeEvaluation": true,
+    "fact": "Perl5.34/Time::HiRes/XS module/header bytes were read and pinned, not loaded. Clock-id8 support, signal delivery, pipe contract and actual bootstrap latency remain unmeasured.",
+    "next": "Review new separate availability-only limiter/owner/peer, then root availability-only release. No control release or clockDomainVerified before actual receipts/root acceptance."
+  },
+  "BLOCK-NATIVE": {
+    "blockingBeforeEvaluation": true,
+    "fact": "H2 has no other-native acceptance or durable synthetic execution release. All executable flags remain false."
+  },
+  "SOURCE-ENV": {
+    "productDomain": true,
+    "fact": "M03/M04 scanner refusals cannot establish original source no-environment/malformed-environment behavior."
+  },
+  "PROTOCOL-AJV": {
+    "productDomain": true,
+    "fact": "D01 Python fixture and P05 artificial phase/check peers do not execute actual AJV or product console/results pipeline."
+  },
+  "FRESH-PROVENANCE": {
+    "productDomain": true,
+    "fact": "D06 fake unit proof is not a fresh installed package/archive/consumer/configuration proof."
+  },
+  "HOST-REMAINING": {
+    "blockingForAffectedControls": true,
+    "fact": "Original P02/P04/P08/P09/P10/P11/P12/P14 residuals remain: exact equality, actual escaped/reparented/zombie schedules, complete late-hash/results/console path and actual final publication clocks are not replaced by scripted booleans. All per-case residuals are retained."
+  },
+  "HOST-PIPE-SCOPE": {
+    "fact": "Single aggregate stdout+stderr256MiB acceptance threshold. Actual crossing bytes saved+hashed before overflow notification; owned IO keeps draining on unchanged clock while owner escalates cleanup. Incomplete EOF/hashes remain UNKNOWN; no truncation/disk maximum/grace. Original DEVNULL dispositions stay unavailable."
+  },
+  "PRODUCT-TIMING": {
+    "productDomain": true,
+    "fact": "No product callback, 32 exchanges, two BDP children, AJV, source tests, compiler/build/install or final timing fit was run. No Write admission or synthetic aggregate acceptance."
+  }
+}

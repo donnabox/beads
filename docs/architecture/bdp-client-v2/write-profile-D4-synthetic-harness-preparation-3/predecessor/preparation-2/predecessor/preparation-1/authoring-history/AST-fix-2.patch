@@ -1,0 +1,11 @@
+--- bad-AST-source
++++ watchdog_controls.py
+@@ -138,7 +138,7 @@
+   bindings=[(R,'ORIGIN',0.),(R.sys,'argv',['run.py','final','ordinary-stage'if self.ordinary else'installed-owned-set']),(R.time,'monotonic',self.monotonic),(R.time,'time',self.wall),(R.socket,'socketpair',self.pair),(R.subprocess,'Popen',self.popen),(R.os,'getpid',lambda:100),(R.os,'getpgrp',lambda:100),(R.os,'set_blocking',lambda *a:None),(R.os,'read',self.read),(R.os,'killpg',self.killpg),(R.signal,'signal',self.install),(R.signal,'pthread_sigmask',self.mask),(R.select,'select',self.select)]
+   old_trace=sys.gettrace()
+   def trace(frame,event,arg):
+-   if event=='call'and frame.f_code.co_filename==R.__file__and frame.f_code.co_name=='refuse'and len(self.refusals)<64:
++   if event=='call'and frame.f_code.co_filename==R.__file__ and frame.f_code.co_name=='refuse'and len(self.refusals)<64:
+     self.refusals.append({'reason':frame.f_locals.get('reason'),'mockAt':self.t})
+    return trace
+   with ExitStack()as stack:

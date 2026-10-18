@@ -1,0 +1,69 @@
+--- static-authoring-parse-final.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/static-authoring-parse-final.json
+@@ -1,20 +1,10 @@
+ {
+-  "method": "ast.parse candidate Python text only; no import/evaluation/bytecode/compiler/tests",
++  "method": "ast.parse only; NO import/evaluation/bytecode/syntax command",
+   "python": [
+     {
+-      "path": "availability_owner.py",
+-      "sha256": "db0abde1dcf4921bab3d830fc3bb8616fff4984e1cc2c211b5a2ee205be148e5",
+-      "astNodes": 2226
+-    },
+-    {
+-      "path": "availability_peer.py",
+-      "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7",
+-      "astNodes": 324
+-    },
+-    {
+       "path": "bootstrap.py",
+-      "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc",
+-      "astNodes": 523
++      "sha256": "ac3ea5619e2a2a72b6f471cf21e4e02bc1f9c56e6a07254d68c35edd63b4c5cc",
++      "astNodes": 492
+     },
+     {
+       "path": "gate_controls.py",
+@@ -23,8 +13,8 @@
+     },
+     {
+       "path": "harness.py",
+-      "sha256": "40d5b1a9da985fde2db27d5709eae831628b93771bb79d9401ee890177d048f5",
+-      "astNodes": 2036
++      "sha256": "ad7a8c61a591fdd2baa1370e065c145861798ba9ea4eb1a53e10f01c8ce5910e",
++      "astNodes": 1923
+     },
+     {
+       "path": "host_controls.py",
+@@ -43,8 +33,8 @@
+     },
+     {
+       "path": "outer_worker.py",
+-      "sha256": "c18a2e78dc8da96613b36cb909a8f1503091871200884dce313de6cc06c8f35b",
+-      "astNodes": 1345
++      "sha256": "bbf1845fe061a1be43752c4e9bd39eb0889ca026cc61c65a55feb5e5d4b98682",
++      "astNodes": 1152
+     },
+     {
+       "path": "owned_spawn.py",
+@@ -58,8 +48,8 @@
+     },
+     {
+       "path": "scanner_controls.py",
+-      "sha256": "25f2b4ccdc3691acb8726a4a4a868f2df5f8f657df40a83f82013dfca93c3b56",
+-      "astNodes": 2351
++      "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
++      "astNodes": 2011
+     },
+     {
+       "path": "watchdog_controls.py",
+@@ -67,7 +57,6 @@
+       "astNodes": 3451
+     }
+   ],
+-  "nativePerl": "two sources read only; no Perl parser/module loading/evaluation",
+-  "authoringGuardCompositionFailure": "authoring-command-error-1.json records failed attempt to parse system true binary; no candidate executed",
+-  "runtimeResult": "UNEXECUTED/UNKNOWN"
++  "perl": "source text authored/read only; NOT parsed or evaluated",
++  "runtimeResult": "UNKNOWN"
+ }

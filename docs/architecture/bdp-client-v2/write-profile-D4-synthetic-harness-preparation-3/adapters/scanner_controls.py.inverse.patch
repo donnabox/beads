@@ -1,0 +1,28 @@
+--- scanner_controls.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/scanner_controls.py
+@@ -96,24 +96,7 @@
+     try:s.feed(data)
+     except RuntimeError as exc:refused=str(exc);break
+   assert written==S.RAW+1 and p.stat().st_size==written and refused=='raw-log-limit'
+-  import outer_worker as O
+-  split=[]
+-  for label,aggregate in [('below',S.RAW-1),('equal',S.RAW),('over',S.RAW+1)]:
+-   directory=root/('split-'+label);directory.mkdir();states=[];total=0;crossed=False
+-   for streamname,size in [('stdout',S.RAW//2),('stderr',aggregate-S.RAW//2)]:
+-    path=directory/(streamname+'.log');state={'file':path.open('xb'),'sha':hashlib.sha256(),'bytes':0};states.append((path,state));left=size
+-    try:
+-     while left:
+-      block=b'y'*min(65536,left);total,overflow=O.retain_block(state,block,total);crossed=crossed or overflow;left-=len(block)
+-    finally:state['file'].close()
+-   assert total==aggregate and crossed==(label=='over')
+-   exact=[]
+-   for path,state in states:
+-    observed=S.file_hash(path);assert observed['bytes']==state['bytes'] and observed['sha256']==state['sha'].hexdigest()
+-    assert state['bytes']<S.RAW
+-    exact.append({'stream':path.name,**observed})
+-   split.append({'label':label,'aggregateBytes':total,'overflow':crossed,'savedReceivedBytesExact':True,'streams':exact,'scope':'actual shared retain_block filesystem/hash primitive; not pipe scheduling or product output'})
+-  return {'refused':True,'savedBytes':written,'sha256':S.file_hash(p)['sha256'],'splitStreamSubcases':split,'scope':'actual saved raw and shared aggregate primitive; no product log'}
++  return {'refused':True,'savedBytes':written,'sha256':S.file_hash(p)['sha256'],'scope':'actual saved raw bytes; no product log'}
+  if case=='J11':
+   p=root/'unrelated.raw';s=S.LogScanner(ATTEMPT);h=hashlib.sha256()
+   with p.open('xb')as output:

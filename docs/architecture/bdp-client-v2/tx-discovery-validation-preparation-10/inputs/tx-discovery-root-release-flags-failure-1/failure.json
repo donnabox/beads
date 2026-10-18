@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-18T14:32:57.772162+00:00",
+  "failureOwner": "ROOT",
+  "failure": "Rootrelease9 did not set existing required rootPlanAccepted and rootExactSourceAccepted true; unchanged gate.py94 refused correctly",
+  "actualWrapper": {
+    "stage": "node-version",
+    "wrapperExit": 1,
+    "elapsedSeconds": 0.06531066726893187,
+    "rootWholeElapsedWithin120": true,
+    "utc": "2026-10-18T14:30:16.826758+00:00"
+  },
+  "wrapperOutput": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation9-run-dispatch-1/node-version.wrapper-output.log",
+    "sha256": "403526e10499bff7ddb7760b51cdfd7a5997b95739a78c948adebdc4682c7904"
+  },
+  "rootReleaseRecord": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-9/release.json",
+    "sha256": "f684a4cfac07071bca3be863b8ec67c7e7cabf6bc91d0577021e69d6b8bc1ef5"
+  },
+  "runDirectoryAbsent": true,
+  "all52InnerStagesUnexecuted": true,
+  "innerNodeChild": "UNATTEMPTED",
+  "innerStageArtifacts": "MISSING and never reconstructed",
+  "source679Unchanged": true,
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+  "activeGateClosedSha256": "421d6377bb1ee7aa397797e353447ebdfec9c18f1a02fd80541b34b2faf62450",
+  "noInPlaceRetryOrRootRecordRepair": true,
+  "next": "Independent terminal audit then minimal separately named fresh successor preserving all history INPLACE, plus independent proposed-root-release DATA precision before activating flags",
+  "noProductOrHelperDefectInferred": true
+}

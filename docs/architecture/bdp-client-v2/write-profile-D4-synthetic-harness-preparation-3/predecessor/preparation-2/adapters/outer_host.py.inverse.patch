@@ -1,0 +1,276 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/outer_host.py
++++ /dev/null
+@@ -1,273 +0,0 @@
+-"""CLOSED independent responsive owner. File/hash/auth work is owned, not on loop.
+-The native external limiter MUST be the entry point; direct use refuses. This
+-new harness owner does not copy or replace the immutable watchdog under test.
+-"""
+-import time
+-import array,datetime,json,os,select,signal,socket,subprocess,sys
+-from pathlib import Path
+-HERE=Path(__file__).resolve().parent
+-PYTHON='/opt/homebrew/opt/python@3.14/bin/python3.14'
+-PS=['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm=']
+-
+-def main():
+- # Inherited native limiter clock begins before this interpreter/import/setup.
+- if len(sys.argv)!=7 or sys.argv[1]!='--limited-owner':return 1
+- origin=float(sys.argv[2]);case,variant,release=sys.argv[3:6];limiter_pid=int(sys.argv[6])
+- if os.getppid()!=limiter_pid or os.environ.get('D4_NATIVE_LIMITER')!=str(limiter_pid):return 1
+- host=variant.startswith('host-');whole,term,kill=(150,145,149)if host else(120,115,119)
+- if time.monotonic()-origin>=10:return 1
+- attempt=HERE/'attempts'/(case+'--'+variant)
+- # Case syntax only here; finite matrix/release/implementation/session checks
+- # happen in an owned worker before subject import or peer execution.
+- if case not in {f'M{i:02}'for i in range(1,17)}|{f'J{i:02}'for i in range(1,13)}|{f'P{i:02}'for i in range(1,15)}|{f'D{i:02}'for i in range(1,7)}:return 1
+- if not variant or len(variant)>80 or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-'for c in variant):return 1
+- bus,childbus=socket.socketpair(socket.AF_UNIX,socket.SOCK_DGRAM);bus.setblocking(False)
+- nonce=os.urandom(16).hex();env={**os.environ,'D4_OUTER_FD':str(childbus.fileno()),'D4_OUTER_NONCE':nonce,'D4_OUTER_ORIGIN':str(origin),'D4_OUTER_TERM':str(term),'PYTHONDONTWRITEBYTECODE':'1'}
+- direct={};groups={};identities={};closed=set();registrations=[];acks=[];signals=[];events=[];unknown=[];failure=None;failure_at=None;last_rows=[];last_at=None;generation=0;probe_receipts=[];census=None;census_at=0;psout=b'';pserr=b'';pseof=[False,False];next_ps=origin;pending=[];control=None;io=None;stdout=None;stderr=None;authorized=False;io_ready=False;io_done=False;published=False;control_raw=None;publication_sent=False;stdio=None
+- def fail(reason):
+-  nonlocal failure,failure_at
+-  if failure is None:failure=reason;failure_at=time.monotonic()
+- def uncertain(reason):
+-  if reason not in unknown and len(unknown)<128:unknown.append(reason)
+-  fail('ownership-unknown')
+- def elapsed():return time.monotonic()-origin
+- def registered(handle,kind,parent,pgid):
+-  direct[handle.pid]=handle # FIRST operation in caller after Popen.
+-  groups.setdefault(pgid,{'leader':pgid,'direct':pgid==handle.pid,'registeredAt':time.monotonic(),'observed':False})
+-  registrations.append({'pid':handle.pid,'parent':parent,'pgid':pgid,'kind':kind,'at':time.monotonic(),'createdEpoch':time.time(),'finalComm':sys.executable,'direct':True,'handle':handle,'ack':None,'authenticated':False})
+- def launch(mode,extra,stdio_pipe=False):
+-  parent,child=socket.socketpair();ack,boot=socket.socketpair()
+-  argv=[PYTHON,'-I','-B',str(HERE/'outer_worker.py'),mode,str(attempt),str(child.fileno()),*extra]
+-  mask=signal.pthread_sigmask(signal.SIG_BLOCK,{signal.SIGTERM,signal.SIGINT})
+-  try:
+-   handle=subprocess.Popen([PYTHON,'-I','-B',str(HERE/'bootstrap.py'),str(boot.fileno()),str(origin),str(term),nonce,*argv],pass_fds=[boot.fileno(),child.fileno(),childbus.fileno()],start_new_session=True,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE if stdio_pipe else subprocess.DEVNULL,stderr=subprocess.PIPE if stdio_pipe else subprocess.DEVNULL,env=env)
+-   direct[handle.pid]=handle # before socket closes, metadata, inventory, or hashes.
+-   registered(handle,mode,os.getpid(),handle.pid)
+-   registrations[-1]['ack']=ack;acks.append(ack)
+-  finally:signal.pthread_sigmask(signal.SIG_SETMASK,mask)
+-  boot.close();child.close();parent.setblocking(False)
+-  return handle,parent
+- def matches(row,old):
+-  if old['birth']!=row['birth']or old['pgid']!=row['pgid']:return False
+-  if row['state'].startswith('Z'):return True
+-  return not old['terminalSeen']and row['comm']in old['permittedComm']
+- def parse(raw):
+-  rows=[]
+-  for line in raw.decode('utf-8','strict').splitlines():
+-   p=line.split(None,9)
+-   if len(p)!=10 or len(rows)>=4096:raise ValueError('census-shape')
+-   rows.append({'pid':int(p[0]),'ppid':int(p[1]),'pgid':int(p[2]),'state':p[3],'birth':' '.join(p[4:9]),'comm':p[9]})
+-  return rows
+- def observe(rows,began):
+-  nonlocal last_rows,last_at,generation
+-  last_rows=rows;last_at=time.monotonic();generation+=1;byid={r['pid']:r for r in rows}
+-  for item in registrations:
+-   if item['authenticated']or item['kind']=='census':continue
+-   row=byid.get(item['pid'])
+-   if row is None:continue
+-   if row['ppid']!=item['parent']or row['pgid']!=item['pgid']or row['state'].startswith('Z')or Path(row['comm']).name not in {'python3.14','Python','python3'}:
+-    if time.monotonic()-item['at']>=.4:uncertain('bootstrap-identity')
+-    continue
+-   try:
+-    parts=row['birth'].split();hour,minute,second=map(int,parts[3].split(':'));month=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].index(parts[1])+1
+-    birth=datetime.datetime(int(parts[4]),month,int(parts[2]),hour,minute,second,tzinfo=datetime.timezone.utc).timestamp()
+-    if abs(birth-item['createdEpoch'])>=2:uncertain('bootstrap-birth');continue
+-   except (ValueError,KeyError):uncertain('bootstrap-birth-malformed');continue
+-   # Birth/argv/session nonce are bound before the ACK allows any peer exec.
+-   identities[row['pid']]={'birth':row['birth'],'pgid':row['pgid'],'permittedComm':{row['comm'],item['finalComm']},'terminalSeen':False}
+-   item['authenticated']=True;groups[item['pgid']]['observed']=True
+-   try:
+-    if item.get('stimulus')=='close-before-ack':
+-     if case!='P01'or variant!='host-bootstrap-close':fail('bootstrap-stimulus-not-released');continue
+-     item['ack'].send(b'{\"event\":');item['ack'].close();events.append({'event':'bootstrap-deliberate-ack-close','pid':row['pid'],'at':elapsed()});continue
+-    data=(json.dumps({'event':'execute','nonce':nonce,'pid':row['pid']},separators=(',',':'))+'\n').encode();item['ack'].setblocking(False)
+-    if item['ack'].send(data)!=len(data):fail('bootstrap-short-ack')
+-    item['ack'].close()
+-   except OSError:fail('bootstrap-ack-unavailable')
+-  owned=set()
+-  # Census EVERY known group even when its original leader is gone/reaped.
+-  for gid,state in groups.items():
+-   current=[r for r in rows if r['pgid']==gid]
+-   if not current:
+-    if began>=state['registeredAt']and(state['observed']or(direct.get(gid)is not None and direct[gid].returncode is not None)):closed.add(gid)
+-    continue
+-   if gid in closed:uncertain('closed-group-reappeared');continue
+-   h=direct.get(gid);anchor=h is not None and h.returncode is None
+-   anchor=anchor or any(r['pid']in identities and matches(r,identities[r['pid']])for r in current)
+-   if not anchor:uncertain('surviving-group-no-authenticated-anchor');continue
+-   owned.update(r['pid']for r in current)
+-  changed=True
+-  while changed:
+-   changed=False
+-   for row in rows:
+-    if row['pid']not in owned and row['ppid']in owned:owned.add(row['pid']);changed=True
+-  for row in rows:
+-   if row['pid']not in owned:continue
+-   old=identities.get(row['pid'])
+-   if old is not None and not matches(row,old):uncertain('owned-pid-start-group-executable-changed');continue
+-   if old is None:identities[row['pid']]={'birth':row['birth'],'pgid':row['pgid'],'permittedComm':{row['comm']},'terminalSeen':row['state'].startswith('Z')}
+-   elif row['state'].startswith('Z'):old['terminalSeen']=True
+-   if row['pgid']not in groups:
+-    if row['pgid']not in owned:uncertain('unregistered-escaped-group');continue
+-    groups[row['pgid']]={'leader':row['pgid'],'direct':False,'registeredAt':last_at,'observed':True}
+-  if len(groups)>256 or len(identities)>4096:uncertain('ownership-capacity')
+-  # Direct child handle remains unreaped until full same-group membership quiet.
+-  for pid,handle in list(direct.items()):
+-   if handle.returncode is not None:continue
+-   row=byid.get(pid);others=[r for r in rows if r['pgid']==pid and r['pid']!=pid]
+-   if not others and(row is None or row['state'].startswith('Z')):
+-    handle.poll() # subsequent fresh census must observe that group absent.
+- def signal_owned(sig):
+-  for gid,state in list(groups.items()):
+-   if gid==os.getpgrp():uncertain('supervisor-group');continue
+-   if gid in closed:continue
+-   h=direct.get(gid);direct_anchor=h is not None and h.returncode is None
+-   current=last_at is not None and time.monotonic()-last_at<=.2
+-   live=[r for r in last_rows if r['pgid']==gid and not r['state'].startswith('Z')]
+-   fresh_anchor=current and any(r['pid']in identities and matches(r,identities[r['pid']])for r in live)
+-   # Never signal an all-zombie group needlessly. A direct unseen leader is
+-   # still safe using its unreaped Popen handle; no historical numeric kills.
+-   if not(direct_anchor or fresh_anchor)or(current and not live):continue
+-   record={'pgid':gid,'signal':int(sig),'at':elapsed(),'attempted':True,'successful':False}
+-   if len(signals)>=512:fail('signal-receipt-capacity');return
+-   signals.append(record)
+-   try:os.killpg(gid,sig);record['successful']=True
+-   except ProcessLookupError:
+-    record['absentAtSignal']=True
+-    if direct_anchor:
+-     try:h.send_signal(sig);record['successfulDirectFallback']=True
+-     except ProcessLookupError:pass
+-     except OSError:uncertain('direct-fallback-error')
+-   except OSError as exc:record['error']=type(exc).__name__;uncertain('signal-error')
+- def ingest():
+-  nonlocal io_ready,io_done,authorized,published,control_raw,stdio
+-  for _ in range(8):
+-   try:data,anc,flags,_=bus.recvmsg(4096,socket.CMSG_SPACE(array.array('i').itemsize))
+-   except BlockingIOError:return
+-   if flags:fail('outer-datagram-truncated');return
+-   fds=[]
+-   for level,kind,value in anc:
+-    if level==socket.SOL_SOCKET and kind==socket.SCM_RIGHTS:
+-     a=array.array('i');a.frombytes(value[:len(value)-len(value)%a.itemsize]);fds.extend(a)
+-    else:fail('outer-ancillary-type')
+-   try:
+-    item=json.loads(data)
+-    if type(item)is not dict or item.get('nonce')!=nonce:raise ValueError('nonce')
+-    event=item.get('event')
+-    if event=='register':
+-     if len(fds)!=1 or len(registrations)>=4096:raise ValueError('register-fds')
+-     pid=item.get('pid');parent=item.get('parent');pgid=item.get('pgid')
+-     if any(type(v)is not int or v<=0 for v in [pid,parent,pgid])or parent not in identities:raise ValueError('register-identity')
+-     if item.get('finalComm')not in {PYTHON,sys.executable,'/bin/ps'}:raise ValueError('register-executable')
+-     ack=socket.socket(fileno=fds.pop());acks.append(ack)
+-     registrations.append({**item,'kind':'nested-zero-product','direct':False,'ack':ack,'authenticated':False})
+-     if pgid not in groups:
+-      if pgid!=pid:raise ValueError('unowned-shared-group')
+-      groups[pgid]={'leader':pid,'direct':False,'registeredAt':time.monotonic(),'observed':False}
+-    else:
+-     if fds or item.get('pid')not in direct:raise ValueError('worker-event-authority')
+-     if len(events)>=256:raise ValueError('event-capacity')
+-     events.append(item)
+-     if event=='io-ready'and io and item['pid']==io.pid:io_ready=True
+-     elif event=='authorized'and control and item['pid']==control.pid:authorized=True
+-     elif event=='control-finished'and control and item['pid']==control.pid:
+-      if type(item.get('rawExit'))is not int:raise ValueError('raw-exit')
+-      control_raw=item['rawExit']
+-     elif event=='io-finished'and io and item['pid']==io.pid:io_done=True;stdio=item['stdio']
+-     elif event=='publication-finished'and io and item['pid']==io.pid:published=True
+-     elif event=='worker-error':fail('owned-worker-error')
+-     else:raise ValueError('event-role')
+-   except (ValueError,TypeError,KeyError,OSError):fail('outer-control-invalid')
+-   finally:
+-    for fd in fds:os.close(fd)
+- def interrupt(sig,frame):fail('outer-interrupted')
+- signal.signal(signal.SIGTERM,interrupt);signal.signal(signal.SIGINT,interrupt)
+- started={'case':case,'variant':variant,'session':'2026-10-18T02:16:24Z-549f','clockOrigin':origin,'outerSeconds':whole,'termAt':term,'killAt':kill,'releasePath':release,'productCalls':0,'status':'STARTED','noRetry':True}
+- io_channel=None
+- last_term=origin;last_kill=origin
+- try:
+-  io,io_channel=launch('io',[json.dumps(started,separators=(',',':'))])
+-  while elapsed()<whole:
+-   now=time.monotonic();ingest()
+-   if elapsed()>=term:fail('outer-TERM-boundary')
+-   if control is None and io_ready and not failure:
+-    control,control_channel=launch('control',[case,variant,release],True);stdout=control.stdout;stderr=control.stderr
+-    io_channel.sendmsg([b'stdio\n'],[(socket.SOL_SOCKET,socket.SCM_RIGHTS,array.array('i',[stdout.fileno(),stderr.fileno()]))]);stdout.close();stderr.close()
+-   if authorized and control is not None and not any(p.get('kind')=='execute-control'for p in pending):
+-    if elapsed()>=10:fail('host-admission-expired')
+-    elif not failure:pending.append({'kind':'execute-control','socket':control_channel,'bytes':b'{"event":"execute-control"}\n'})
+-   for item in pending:
+-    if item['bytes']:
+-     try:n=item['socket'].send(item['bytes']);item['bytes']=item['bytes'][n:]
+-     except BlockingIOError:pass
+-     except OSError:fail('worker-command-unavailable')
+-   if failure and now-last_term>=.2:signal_owned(signal.SIGTERM);last_term=now
+-   if failure and now>=min(origin+kill-.5,failure_at+3.5)and now-last_kill>=.2:signal_owned(signal.SIGKILL);last_kill=now
+-   if census is None and now>=next_ps:
+-    census=subprocess.Popen(PS,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env={**os.environ,'LC_ALL':'C','TZ':'UTC'})
+-    direct[census.pid]=census # immediate ownership before any fallible work.
+-    census_at=time.monotonic();psout=b'';pserr=b'';pseof=[False,False]
+-    for stream in [census.stdout,census.stderr]:os.set_blocking(stream.fileno(),False)
+-   if census is not None:
+-    for i,stream in enumerate([census.stdout,census.stderr]):
+-     for _ in range(5):
+-      try:block=os.read(stream.fileno(),65536)
+-      except BlockingIOError:break
+-      if not block:pseof[i]=True;break
+-      if i:pserr+=block
+-      else:psout+=block
+-      if len(psout)>262144 or len(pserr)>4096:fail('census-capacity');census.kill();break
+-    if time.monotonic()-census_at>=.2 and census.returncode is None:
+-     # Direct safe child signal even if prior inventory failed; later polls
+-     # still retry escalation rather than marking a successful KILL early.
+-     try:census.kill()
+-     except ProcessLookupError:pass
+-     fail('census-deadline')
+-    code=census.poll() # ps has no descendants by exact native argv.
+-    if code is not None and all(pseof):
+-     if code!=0 or pserr:fail('census-failed')
+-     else:
+-      try:observe(parse(psout),census_at)
+-      except (ValueError,UnicodeError):fail('census-malformed')
+-     probe_receipts.append({'pid':census.pid,'pgid':census.pid,'rawExit':code,'stdoutEof':pseof[0],'stderrEof':pseof[1],'atSeconds':elapsed()})
+-     if len(probe_receipts)>2048:fail('census-count-capacity')
+-     direct.pop(census.pid,None)
+-     census.stdout.close();census.stderr.close();census=None;next_ps=time.monotonic()+.08
+-     # Per-probe native ps groups are terminal and must still appear absent in
+-     # a later inventory; retain groups but drop reaped handles, never reuse.
+-     for pid,h in list(direct.items()):
+-      if h.returncode is not None and pid in closed and h not in [io,control]:direct.pop(pid)
+-   control_absent=control is not None and control.returncode is not None and control.pid in closed
+-   other_absent=all(gid==io.pid or gid in closed for gid in groups)
+-   if io_done and control_absent and other_absent and not publication_sent and census is None:
+-    # Actual result raw/EOF remains in owned IO worker; missing or unresolved
+-    # control status cannot become aggregate/synthetic/product acceptance.
+-    record={'case':case,'variant':variant,'session':'2026-10-18T02:16:24Z-549f','rawControlExit':control.returncode,'controlReportedExit':control_raw,'ownerFailure':failure,'ownershipUnknown':unknown,'clockOrigin':origin,'elapsedSeconds':elapsed(),'signals':signals,'nativeSingleProcessCensusReceipts':probe_receipts,'stdio':stdio,'knownGroups':groups,'identityObservations':[{**v,'pid':pid,'permittedComm':sorted(v['permittedComm'])}for pid,v in identities.items()],'lastCensus':last_rows,'lastCensusAt':last_at,'lastCensusGeneration':generation,'allNonIOGroupsAbsent':True,'syntheticAcceptance':False,'profileCredit':False,'productCalls':0,'noRetry':True}
+-    data=(json.dumps(record,separators=(',',':'))+'\n').encode()
+-    if len(data)>1048576:fail('owner-publication-capacity')
+-    else:pending.append({'kind':'publication','socket':io_channel,'bytes':data});publication_sent=True
+-   if published and io.returncode is not None and all(gid in closed for gid in groups)and census is None:
+-    clean=not failure and not unknown and control is not None and control.returncode in [0,2]and control_raw==control.returncode and io.returncode==0 and elapsed()<term and stdio and all(v['eof']for v in stdio.values())
+-    # Small nonblocking console receipt; no file IO/hash/publication on loop.
+-    receipt={'event':'outer-owner-terminal','case':case,'variant':variant,'rawControlExit':control_raw,'ownerSettled':bool(clean),'elapsedSeconds':elapsed(),'allKnownGroupsAbsent':True,'ownershipUnknown':unknown,'ownerFailure':failure,'requiresLimiterExitAndRootAudit':True,'syntheticAcceptance':False,'productCalls':0}
+-    os.set_blocking(1,False);data=(json.dumps(receipt,separators=(',',':'))+'\n').encode()
+-    try:
+-     if os.write(1,data)!=len(data):return 1
+-    except (BlockingIOError,OSError):return 1
+-    return 0 if clean and elapsed()<term else 1
+-   select.select([bus],[],[],.01)
+-  fail('outer-hard-boundary');signal_owned(signal.SIGKILL);return 1
+- except BaseException as exc:
+-  fail('outer-exception:'+type(exc).__name__);return 1
+- finally:
+-  if failure:
+-   signal_owned(signal.SIGKILL)
+-   for handle in direct.values():
+-    if handle.returncode is None:
+-     try:handle.kill() # safe direct-child fallback even if richer registration failed.
+-     except ProcessLookupError:pass
+-  for s in acks:
+-   try:s.close()
+-   except OSError:pass
+-  bus.close();childbus.close()
+-if __name__=='__main__':raise SystemExit(main())

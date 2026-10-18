@@ -1,0 +1,28 @@
+{
+  "SH-N1": {
+    "assessment": "STATIC implementation addresses finding, not runtime verified",
+    "facts": "Immediate empty/partial EOF refusal records actual received bytes, finite deadline, no peer execution when ACK is missing. Two new finite P01 variants preserve existing IDs. Signal-mask finding remains separate.",
+    "source": [
+      "host_peer.py:15-27",
+      "bootstrap.py:15-34",
+      "host_controls.py:19-40"
+    ]
+  },
+  "SH-N2": {
+    "assessment": "STATIC implementation addresses intended-predicate/baseline issue, not runtime verified",
+    "facts": "D03/D04/D06 run full(o) same-case before mutations; exact RuntimeError reasons match inspected original auditor order. original scanner.Refusal is a RuntimeError subclass. Payload identity typed-report-value precedes config equality; runtime identity same-live-configuration. Other partial-only controls retain failed/no credit.",
+    "source": [
+      "report_controls.py:11-16,84-132",
+      "subject audit.py:135-179"
+    ]
+  },
+  "SH-N3": {
+    "assessment": "STATIC attribution corrected, no missing domain claimed done",
+    "facts": "M03 no-env source branch, scheduled late receipt and true console/results publication remain explicit. Exact first subject refusal captured for P03; no actual AJV/source/full-payload/host-equality proof.",
+    "source": [
+      "control-matrix.json",
+      "watchdog_controls.py:170-195",
+      "residuals.json"
+    ]
+  }
+}

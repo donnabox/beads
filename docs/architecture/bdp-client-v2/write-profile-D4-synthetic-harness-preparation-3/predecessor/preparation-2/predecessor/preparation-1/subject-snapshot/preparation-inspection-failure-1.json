@@ -1,0 +1,22 @@
+{
+  "state": "AUTHOR static inspection assertion failure only; no helper/product executed",
+  "commandResult": "Python own-data inspection exit1 AssertionError at line21; no reviewed module import/evaluation",
+  "cause": "Reviewer compared ownedFiles[path] nested beforeSha256/afterSha256 object with an after-hash string; actual key is ownedFiles[path].afterSha256",
+  "expectedAfterSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+  "actualOwnedRecord": {
+    "beforeSha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+    "afterSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85"
+  },
+  "correction": "Fix own static assertion to inspect afterSha256; no helper/source/schema/control change",
+  "provisionalFinalizationReceiptsRetainedAt": "preparation-history/finalization-inspection-1",
+  "provisionalReceiptSha256": {
+    "preparation-index.json": "64d25b335d1beb89cd8084ded520b8fbb90c163c29d1f51d645e80be76fe88e3",
+    "implementation-hashes.json": "0829574ca639c42e1c31ae18cf01f1c31854edec4d181bc9b4b0a6c5a43d54e9",
+    "preparation-binding.json": "e5fe02805d9adab17ee9bec0f461cad683b5bf94ee430d5b13444a181b0877f3",
+    "closure.json": "3716c1f6b4117f72887eb3ecd9c010bfe9c264e509d41c746e8fa72c151d36d8",
+    "execution-gate.json": "09bd6789abb6593458ae5716144f031844f7c9ce9b6ad3a337c69ce4604c7d79",
+    "execution-gate.closed.json": "09bd6789abb6593458ae5716144f031844f7c9ce9b6ad3a337c69ce4604c7d79"
+  },
+  "notHelperOrProductFailure": true,
+  "mirrorBeforeFailure": false
+}

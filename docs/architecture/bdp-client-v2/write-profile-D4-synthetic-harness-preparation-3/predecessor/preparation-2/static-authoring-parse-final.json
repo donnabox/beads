@@ -1,0 +1,62 @@
+{
+  "method": "ast.parse only; NO import/evaluation/bytecode/syntax command",
+  "python": [
+    {
+      "path": "bootstrap.py",
+      "sha256": "ac3ea5619e2a2a72b6f471cf21e4e02bc1f9c56e6a07254d68c35edd63b4c5cc",
+      "astNodes": 492
+    },
+    {
+      "path": "gate_controls.py",
+      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+      "astNodes": 1082
+    },
+    {
+      "path": "harness.py",
+      "sha256": "ad7a8c61a591fdd2baa1370e065c145861798ba9ea4eb1a53e10f01c8ce5910e",
+      "astNodes": 1923
+    },
+    {
+      "path": "host_controls.py",
+      "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+      "astNodes": 1961
+    },
+    {
+      "path": "host_peer.py",
+      "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+      "astNodes": 1283
+    },
+    {
+      "path": "outer_host.py",
+      "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
+      "astNodes": 4579
+    },
+    {
+      "path": "outer_worker.py",
+      "sha256": "bbf1845fe061a1be43752c4e9bd39eb0889ca026cc61c65a55feb5e5d4b98682",
+      "astNodes": 1152
+    },
+    {
+      "path": "owned_spawn.py",
+      "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+      "astNodes": 776
+    },
+    {
+      "path": "report_controls.py",
+      "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "astNodes": 3411
+    },
+    {
+      "path": "scanner_controls.py",
+      "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "astNodes": 2011
+    },
+    {
+      "path": "watchdog_controls.py",
+      "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "astNodes": 3451
+    }
+  ],
+  "perl": "source text authored/read only; NOT parsed or evaluated",
+  "runtimeResult": "UNKNOWN"
+}

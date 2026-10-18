@@ -1,0 +1,16 @@
+--- /dev/null
++++ authoring-command-error-1.json
+@@ -0,0 +1,13 @@
++{
++  "attemptedArgv": [
++    "/opt/homebrew/opt/python@3.14/bin/python3.14",
++    "/usr/bin/true"
++  ],
++  "exit": 1,
++  "error": "SyntaxError: Non-UTF-8 code starting with 0xca in file /usr/bin/true on line 1; no encoding declared",
++  "cause": "Worker omitted guarded-action script argument while composing a guard-only call. Python attempted to parse system Mach-O true; no candidate/helper/schema evaluated and no repo action followed this failed guard-only call.",
++  "subsequentExactRemoteGuard": "passed before this record write",
++  "candidateEvaluation": false,
++  "productExecution": false,
++  "sourceOrGateMutation": false
++}

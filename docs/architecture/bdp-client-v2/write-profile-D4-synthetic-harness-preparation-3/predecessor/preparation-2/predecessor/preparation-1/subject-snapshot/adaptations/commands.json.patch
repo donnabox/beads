@@ -1,0 +1,92 @@
+--- predecessor3/commands.json
++++ commands.json
+@@ -82,7 +82,7 @@
+       "id": "bind-workspace-tools",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+         "tools"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+@@ -167,7 +167,7 @@
+       "id": "bind-fresh-build",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+         "build"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+@@ -184,7 +184,7 @@
+       "id": "prepare-package-directory",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/packages.py",
+         "directory"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+@@ -206,7 +206,7 @@
+         "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/packages/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run/packages"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+       "outerSeconds": 120,
+@@ -227,7 +227,7 @@
+         "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/packages/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run/packages"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+       "outerSeconds": 120,
+@@ -243,7 +243,7 @@
+       "id": "verify-archives",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/packages.py",
+         "tar"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+@@ -260,7 +260,7 @@
+       "id": "prepare-consumer",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/packages.py",
+         "consumer"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+@@ -283,7 +283,7 @@
+         "--ignore-scripts",
+         "--prod"
+       ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run/consumer",
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+       "killAtSeconds": 119,
+@@ -297,7 +297,7 @@
+       "id": "verify-installed-consumer",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/packages.py",
+         "installed"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+@@ -324,7 +324,7 @@
+         "--reporter=verbose",
+         "--reporter=json",
+         "--outputFile",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/run/installed-owned-set.results.json"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run/installed-owned-set.results.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+       "outerSeconds": 150,

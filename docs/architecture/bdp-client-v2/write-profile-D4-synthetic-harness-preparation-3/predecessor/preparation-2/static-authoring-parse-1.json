@@ -1,0 +1,60 @@
+{
+  "method": "ast.parse only, no import/evaluation/compilation to bytecode",
+  "results": [
+    {
+      "name": "bootstrap.py",
+      "syntax": "parsed",
+      "nodes": 347
+    },
+    {
+      "name": "gate_controls.py",
+      "syntax": "parsed",
+      "nodes": 1082
+    },
+    {
+      "name": "harness.py",
+      "syntax": "parsed",
+      "nodes": 1896
+    },
+    {
+      "name": "host_controls.py",
+      "syntax": "parsed",
+      "nodes": 1684
+    },
+    {
+      "name": "host_peer.py",
+      "syntax": "parsed",
+      "nodes": 1200
+    },
+    {
+      "name": "outer_host.py",
+      "syntax": "parsed",
+      "nodes": 4297
+    },
+    {
+      "name": "outer_worker.py",
+      "syntax": "parsed",
+      "nodes": 1152
+    },
+    {
+      "name": "owned_spawn.py",
+      "syntax": "parsed",
+      "nodes": 644
+    },
+    {
+      "name": "report_controls.py",
+      "syntax": "parsed",
+      "nodes": 3366
+    },
+    {
+      "name": "scanner_controls.py",
+      "syntax": "parsed",
+      "nodes": 2011
+    },
+    {
+      "name": "watchdog_controls.py",
+      "syntax": "parsed",
+      "nodes": 3398
+    }
+  ]
+}

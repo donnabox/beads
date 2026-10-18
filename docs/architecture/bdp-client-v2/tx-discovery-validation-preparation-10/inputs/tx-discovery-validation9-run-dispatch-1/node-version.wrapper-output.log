@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-9/run.py", line 9, in <module>
+    name=sys.argv[2];g,spec=load_gate(name);E.mkdir(exist_ok=True)
+                            ~~~~~~~~~^^^^^^
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-9/gate.py", line 94, in load_gate
+    require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-9/gate.py", line 13, in require
+    if not ok:raise RuntimeError(message)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Root release absent
