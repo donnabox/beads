@@ -1,0 +1,37 @@
+{
+  "utc": "2026-10-18T11:45:01.082410+00:00",
+  "rootActualLockAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-consumer-lock-root-release-1/acceptance.json",
+    "sha256": "73a1a34a16d27b04f46fa890b7fd95a3fc5958d967448a6e514800eeabf72d4f"
+  },
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer"
+  ],
+  "gateSha256": "82fcb9eba52941c75a070b91967a6c1ab918d2e82328e5d8bfa13189549ce883",
+  "durablePushRequiredBeforeNextStage": true,
+  "nextScope": "verify-installed-consumer ONLY; no installed callback before root full graph/payload/inventory/entry proof.",
+  "noRetry": true
+}

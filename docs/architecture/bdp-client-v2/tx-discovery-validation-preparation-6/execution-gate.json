@@ -27,7 +27,8 @@
     "pack-server",
     "verify-archives",
     "prepare-consumer",
-    "consumer-install"
+    "consumer-install",
+    "verify-installed-consumer"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/base-tools.candidate.json",
@@ -38,7 +39,7 @@
     "path": "UNRESOLVED",
     "sha256": "UNRESOLVED"
   },
-  "consumerLockSha256": "UNRESOLVED",
+  "consumerLockSha256": "eec6a03edb6e53d749da7ea95ec8310ace6e2df046649d0674b10eb030508354",
   "implementationIndexSha256": "b53866b0483df6d941b3a7154f180dafffca394df35832ef31c64a3a4006bc73",
   "installedProvenance": {
     "path": "UNRESOLVED",
@@ -68,8 +69,8 @@
     "sha256": "7a985f78c19e5e7a06b7ad3f4484973e45f5c0d0291d8aa4262cd5f1e7de8987"
   },
   "rootConsumerLockAcceptance": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-consumer-lock-root-release-1/acceptance.json",
+    "sha256": "73a1a34a16d27b04f46fa890b7fd95a3fc5958d967448a6e514800eeabf72d4f"
   },
   "rootConsumerProofAcceptance": {
     "path": "UNRESOLVED",
