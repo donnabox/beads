@@ -1,0 +1,6 @@
+=== RUN   TestMarkInheritedCloexec_ChildDoesNotInherit
+    fdhygiene_unix_test.go:128: fd 4 still present in the child's fd table after marking
+--- FAIL: TestMarkInheritedCloexec_ChildDoesNotInherit (0.03s)
+FAIL
+FAIL	github.com/steveyegge/beads/internal/fdhygiene	0.224s
+FAIL

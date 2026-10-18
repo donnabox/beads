@@ -180,7 +180,18 @@ func OpenExisting(ctx context.Context, o Options) (*Store, error) {
 // withTx never replays fn. All graph writes, including conflict coordination
 // and retained bytes, use this single transaction. Only an explicit decoded
 // serialization rollback is a known conflict; other commit errors are unknown.
-func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) (err error) {
+func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) error {
+	return s.withTxPolicy(ctx, txPolicy{mayWrite: write, commit: write}, fn)
+}
+
+// txPolicy separates staged writes from publication: an import dry-run writes
+// for validation, then rolls back. Existing readers and writers use withTx.
+type txPolicy struct {
+	mayWrite bool
+	commit   bool
+}
+
+func (s *Store) withTxPolicy(ctx context.Context, policy txPolicy, fn func(*sql.Tx) error) (err error) {
 	if ctx == nil {
 		return errors.New("graph operation requires a context")
 	}
@@ -216,21 +227,24 @@ func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) 
 	if err != nil {
 		return err
 	}
+	rollback := func() error {
+		rollbackErr := tx.Rollback()
+		if policy.mayWrite && rollbackErr != nil {
+			return errors.Join(ErrOutcomeUnknown, rollbackErr)
+		}
+		return rollbackErr
+	}
 	finished := false
 	defer func() {
 		if !finished {
-			rollbackErr := tx.Rollback()
-			if write && rollbackErr != nil {
-				rollbackErr = errors.Join(ErrOutcomeUnknown, rollbackErr)
-			}
-			err = errors.Join(err, rollbackErr)
+			err = errors.Join(err, rollback())
 		}
 	}()
 	if err = fn(tx); err != nil {
 		return err
 	}
-	if !write {
-		err = tx.Rollback()
+	if !policy.commit {
+		err = rollback()
 		finished = true
 		return err
 	}

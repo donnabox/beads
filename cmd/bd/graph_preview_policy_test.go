@@ -334,7 +334,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		// read ONE token, this one enumerates them in order. It is distinct
 		// from historyExact, which stays false and describes the HTTP profile.
 		"versionList",
-		"memoryPropertiesPatch", "linkPropertiesPatch",
+		"memoryPropertiesPatch", "linkPropertiesPatch", "legacyImport",
 		"issueTodo", "issueHeartbeat", "issueReclaim", "issueStateRead", "issueStatus", "issueMergeSlot",
 	} {
 		wantEnabled[capability] = true
@@ -352,6 +352,8 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
+		{"import", "--source-prefix", "web-app"},
+		{"import", "--source-prefix="},
 		{"remember", "--update", "beads/plan", "--title", "Refused"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
