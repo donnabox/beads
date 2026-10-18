@@ -1,0 +1,47 @@
+{
+  "F6ExecutionGate": "CLOSED",
+  "fullWriteComplete": false,
+  "labels": [
+    {
+      "id": "F-A",
+      "severity": "Low",
+      "sourceLines": [
+        163,
+        175,
+        339
+      ],
+      "topic": "clean() lacks real PID conjunct; null PID can be labelled clean and removed"
+    },
+    {
+      "id": "F-B",
+      "severity": "Low",
+      "sourceLines": [
+        229,
+        235,
+        258,
+        260
+      ],
+      "topic": "workspace diff digest currently hashes decoded UTF8 string rather than original bytes"
+    },
+    {
+      "id": "F-C",
+      "severity": "Low",
+      "sourceLines": [
+        689,
+        690,
+        288,
+        355
+      ],
+      "subitems": 2,
+      "topic": "split pending drain versus28 received-row failure; move phase attribution after metadata capture"
+    }
+  ],
+  "reviewClaimedFindings": 3,
+  "rootDisposition": "UNRESOLVED; terminal success is not approval",
+  "severities": {
+    "High": 0,
+    "Low": 3,
+    "Medium": 0
+  },
+  "sourceCorrectionReleased": false
+}

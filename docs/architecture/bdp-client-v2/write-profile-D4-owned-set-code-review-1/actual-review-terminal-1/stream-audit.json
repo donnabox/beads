@@ -1,0 +1,71 @@
+{
+  "actualRunnerOutputExists": true,
+  "agentOrShellToolCalls": 0,
+  "allNonblankRecordsValidObjects": true,
+  "automaticReviewRetries": 0,
+  "bytes": 2621468,
+  "derivedReviewNeeded": false,
+  "observedInit": [
+    {
+      "claudeCodeVersion": "2.1.263",
+      "model": "claude-opus-5[1m]",
+      "permissionMode": "default"
+    }
+  ],
+  "permissionDenials": [],
+  "records": 4691,
+  "reviewTextBytes": 15006,
+  "reviewTextSha256": "484b0fba48b438a8f728b789e60d855b6f88455b6c75f017c1f84596b24cb3da",
+  "sha256": "7072f7a976bef4564dab32cd4582aa62e85ed54f82422642416cc31f1afc1bac",
+  "terminalIsLastRecord": true,
+  "terminalResultCount": 1,
+  "terminalSuccess": true,
+  "toolCalls": 62,
+  "toolErrors": [
+    {
+      "result": {
+        "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.",
+        "is_error": true,
+        "tool_use_id": "toolu_01KHbcjQ9D1gSuM8vAhyZL6E",
+        "type": "tool_result"
+      },
+      "tool": {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01KHbcjQ9D1gSuM8vAhyZL6E",
+        "input": {
+          "pattern": "/Users/dbox/repos/wt/vickie/*"
+        },
+        "name": "Glob",
+        "type": "tool_use"
+      }
+    },
+    {
+      "result": {
+        "content": "File does not exist. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum.",
+        "is_error": true,
+        "tool_use_id": "toolu_01D8cJ75TfWv9kgohZdGBfhQ",
+        "type": "tool_result"
+      },
+      "tool": {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01D8cJ75TfWv9kgohZdGBfhQ",
+        "input": {
+          "file_path": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/node_modules/ajv/package.json"
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    }
+  ],
+  "toolNames": {
+    "Glob": 10,
+    "Grep": 17,
+    "Read": 35
+  },
+  "toolResults": 62,
+  "trailingNewline": true
+}
