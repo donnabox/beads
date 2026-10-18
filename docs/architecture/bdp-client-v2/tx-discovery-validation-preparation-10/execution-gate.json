@@ -8,7 +8,12 @@
     "node-version",
     "pnpm-version",
     "workspace-install",
-    "bind-workspace-tools"
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/base-tools.candidate.json",
@@ -57,8 +62,8 @@
     "sha256": "UNRESOLVED"
   },
   "rootDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/disposition.json",
-    "sha256": "85eb1d06d9ffc52bdf694ce26ac1b5180600ef77710b1fcfc7fcc5c847ad700f"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix9-proposed-authority-1/disposition.json",
+    "sha256": "981b56789bb9cc1441abd1be97d38bb4f1cd17aef740c0491586a060546bfd78"
   },
   "rootExactSourceAccepted": true,
   "rootPlanAccepted": true,
@@ -69,7 +74,7 @@
   },
   "staticValidationAuthorized": true,
   "workspaceTools": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/workspace-tools.json",
+    "sha256": "72150ced3b46657e65e67557e60c10a835cb152dd49757cbe7844b2f729a681d"
   }
 }
