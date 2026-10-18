@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "format",
+    "--write",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+  "executableSha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+  "startedUtc": "2026-10-18T08:15:06.230495+00:00",
+  "permittedInvocations": 1,
+  "purpose": "format-only --write; no check/lint/unsafe fixes"
+}

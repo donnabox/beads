@@ -1,0 +1,58 @@
+--- plan2/report-contract.json
++++ plan1/report-contract.json
+@@ -3,43 +3,21 @@
+   "kind": "installed-valid-set-observation",
+   "reportVersion": 2,
+   "successRequired": [
+-    "explicit source commit/tree/full map and cached metadata mode: workspace bounded Git with actual diff SHA OR explicit-env external no-Git not-applicable-externally-bound disposition; the latter is not metadata failure/null",
+-    "external entry realpath/hash and fixture digest captured inside callback before launch; package archive/payload/consumer lock/proof identities independently verified by later root packet",
++    "explicit source commit/tree/full map and actual bounded diff SHA/cache disposition",
++    "external entry realpath/hash, package archive/payload/consumer lock/proof identities verified by root packet",
+     "initial/reopened full same served/runtime binding; claimEligible:false",
+-    "32 attempt rows/32 settled/32 actual response rows,11POST/21GET,30status200/2status404; per-row writeState complete; independent dispatch-cap32 not inferred as an observation",
+-    "two attempted launches/two returned child acquisitions with real PID+generation; two clean actual exit0/signalnull shutdown+SQLite-lock-release observations AND two actual close0/signalnull stdio/IPC-drain observations; both cached close promises settled; pending0",
+-    "counts.expected immutable inventory separated from counts.observed nullable/derived fields; actual receipt entries33/pages[32,1], actual suffix96/pages[32,32,32] and actual group count1 derived from captured bodies; staticLocalOracleCount5 labelled static, five clone-only oracles pass separately",
++    "32 attempt rows/32 settled/32 actual response rows, 11POST/21GET,30status200/2status404; per-row writeState complete",
++    "two launch attempts/two returned child acquisitions with real PID+generation; two clean exit+close events; both close promises settled; pending0",
++    "actual receipt33/pages32+1, actual suffix96/pages32+32+32,group1; five discriminating local oracles pass",
+     "all work within90s, final cleanup within10s, callback120s; no deadline violation",
+-    "owned directory removed only after known clean acquired-child exit+close and pending0; root terminal descendant audit passes; directory disposition does not fabricate store-file presence"
++    "store removed only after known clean closure and pending0; root terminal descendant audit also passes"
+   ],
+   "failureRequired": [
+-    "initialize and emit cached partial report after finally before throwing aggregate; throwing/IO capture is inside callback, never an unreportable owned module-scope fallback",
+-    "counts.expected separate from attempted/settled/received/validated and nullable body-derived counts.observed; missing fragments/invalid body leave affected aggregates null, not expected literals or zero-as-success; retain observed partial page lengths with completeness explicit",
+-    "response fields captured before status/schema/header assertions if returned; executor rejection records unavailable response and exposed fixed category/writeState only; full received wire retained under unchanged executor cap",
+-    "launch attempted distinct from acquired; fixed prelaunch-rejected versus prelaunch-cleanup-unsettled labels from actual error shape; reopen-refused-pre-ready phase distinct; acquisition/closure stays UNKNOWN with no handle/PID and directory retained",
+-    "bounded fixed stage labels include metadata-capture-failed, dispatch-cap-exceeded, reopen-refused-pre-ready, pending-unsettled, child-exit-failed, child-close-unobserved, cleanup-unsettled, directory-removal-failed; no token/auth request headers/raw exception/cause/configuration secret or exactRequest.headerLines serialization",
+-    "directory retained means owned DIRECTORY retained only; transaction.sqlite presence UNKNOWN unless actually observed. No new finally stat/readfile/Git requirement; actual provisioning can unlink failed created file"
++    "emit cached partial report after finally before throwing aggregate",
++    "expected counts separate from attempted/settled/received/validated; unknown/null never coerced to zero or clean",
++    "response fields captured before status/schema/header assertions if returned; executor rejection records unavailable response and exposed fixed category/writeState only",
++    "launch attempted distinct from acquired; pre-ready rejection acquisition/closure UNKNOWN; no deletion without root-owned closure",
++    "bounded failure-stage labels; no token/auth request headers/raw exception/configuration secret or exactRequest.headerLines serialization"
+   ],
+-  "historicalSchema": "Original c934 observation/report remain byte-identical; do not parse new fields by weakening/relabeling old schema. Later parser must require new success predicates and reject null metadata/unknown cleanup on pass.",
+-  "countDerivation": {
+-    "expected": "Frozen request-inventory expected33 receipt entries/[32,1],96 deletion Events/[32,32,32],1 group and five static clone-oracle definitions. Never initialize observed fields from these literals.",
+-    "receipt": "When both actually captured receipt.results and original next-page.results are available, derive entries = array(receipt.results).length + array(page.results).length and pages = those two actual lengths. Otherwise entries staysnull and partial per-page lengths/unavailable fields remain explicit. Record before count assertions; do not derive a33 actual total from intended pagination.",
+-    "deletionEvents": "Derive count/page lengths from actually captured deletion suffix Event bodies/accumulator; track whether traversal completed from actual next cursors. Missing/unparseable necessary input leaves affected aggregate null; observed partial fragments and incomplete status are not full96 credit.",
+-    "group": "array(actual captured finite feed.groups).length, with unavailable/unparseable body=null; never literal1 before observation.",
+-    "localOracles": "staticLocalOracleCount5 is inventory, not wire/observed count. Each clone-only local oracle outcome is recorded only if reached; failure before them cannot claim five actual passes."
+-  },
+-  "metadataModes": {
+-    "workspace": "Inside callback before launch: existing fallback source commit and workspace status/diff capture with explicit1000–2000ms timeout and maxBuffer<=1048576 per Git command; preserve ordinary fallback compatibility. Capture failure fixed metadata-capture-failed/nullReason, no launch, cached partial report.",
+-    "external": "When BDP_TRANSACTIONAL_INSTALLED_ENTRY is explicitly supplied, require BDP_TRANSACTIONAL_SOURCE_COMMIT, validate both inside callback and use NO Git command, including no git status/diff. workspaceDirty/diff cache disposition = fixed not-applicable-externally-bound, accepted on success only in this mode with actual external source/entry/payload proof. Actual local entry/fixture reads and hashes still required; unavailable capture is failure, not this N/A.",
+-    "finally": "Cached values only; no Git/readfile/metadata capture during finally; never synthesize actual hashes or call a null failure an externally bound success."
+-  },
+-  "wireRetention": {
+-    "policy": "Preserve existing full wireResponseBase64 and wireSha256 for every actual returned row including failed assertions; no truncation/hash-only substitute and no HTTPcap widening.",
+-    "perResponseWireBytes": 1179648,
+-    "maximumDispatches": 32,
+-    "maximumRawWireBytesAcrossRows": 37748736,
+-    "maximumBase64CharactersAcrossRows": 50331648,
+-    "duplication": "Existing response body (<=1048576bytes/row), response headers (<=65536wire bytes/row), bounded request body (<=65536bytes/row) and safe request metadata remain alongside full-wire base64. These are duplicate representations, not additional response credit; JSON string escaping/punctuation, metadata and cached partial report add serialized bytes.50331648 is the base64 component ceiling, NOT a complete JSON/report collector cap.",
+-    "futureCollector": "Separate future execution packet must bind actual full report retention/collector capacity accounting for all duplicate bounded fields and JSON escaping before release; no silent truncation, hash-only fallback, estimated capacity pass or automatic cap expansion. Actual future output size is UNRESOLVED."
+-  }
++  "historicalSchema": "Original c934 observation/report remain byte-identical; do not parse new fields by weakening/relabeling old schema. Later parser must require new success predicates and reject null metadata/unknown cleanup on pass."
+ }

@@ -1,0 +1,1676 @@
+{
+  "bootstrapReuse": [],
+  "bounds": {
+    "automaticRetries": 0,
+    "installedCallbackMs": 60000,
+    "installedTotalCleanupMs": 10000,
+    "installedWorkMs": 45000,
+    "newDCleanupInclusiveStopMs": 4000,
+    "newDWorkMs": 3000,
+    "outerStageMs": 120000,
+    "recorderMs": 5000,
+    "requestMs": 5000,
+    "sourceDefaultCallbackMs": 5000,
+    "sourceDrainMs": 1000,
+    "sourceLatchMs": 1000,
+    "termAtMs": 115000
+  },
+  "closedPreparation": true,
+  "commands": {
+    "audit-focused-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "focused-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-focused-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-installed-01": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-01"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-01",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-02": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-02"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-02",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-03": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-03"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-03",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-04": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-04"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-04",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-05": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-05"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-05",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-06": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-06"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-06",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-07": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-07"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-07",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-08": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-08"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-08",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-09": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-09"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-09",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-10": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-10"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-10",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-installed-11": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "installed-11"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-installed-11",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-legacy-changefeed-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "legacy-changefeed-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-legacy-changefeed-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-legacy-installed-contracts-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "legacy-installed-contracts-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-legacy-installed-contracts-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-schema-confinement-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "schema-confinement-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-schema-confinement-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-schema-installed-positive": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "schema-installed-positive"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact callback/results/source-bound report grammar, cleanup/process absence and attribution audit; zero credit on missing/extra/invalid records",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "audit-schema-installed-positive",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "bind-fresh-build": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "contract": "Fresh dist/map/package inventory binds authored source+actual build log/exit and tools; include full required dist exports and schema bytes. No old build/filecount/hash inference.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "bind-fresh-build",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "bind-workspace-tools": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+        "tools"
+      ],
+      "automaticRetries": 0,
+      "contract": "Bind actual completed install log/exit plus Biome/TypeScript/Vitest/package-manager tool identities and full dependency input invariance. Failure/timeout means stop, no online retry.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "bind-workspace-tools",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "consumer-install": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/consumer",
+      "id": "consumer-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "focused-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:D3\\ source\\ projection\\ scope|D3\\ source\\ receiving\\ scope|D3\\ source\\ minimum\\ order\\ scope|D3\\ source\\ catch\\-up\\ scope|D3\\ source\\ abort\\ scope|D3\\ source\\ close\\-drain\\ scope|D3\\ source\\ projection\\ descriptor|D3\\ source\\ receiving\\ descriptor|D3\\ source\\ minimum\\ order\\ descriptor|D3\\ source\\ catch\\-up\\ descriptor|D3\\ source\\ abort\\ descriptor|D3\\ source\\ close\\-drain\\ descriptor|D3\\ source\\ projection\\ directory|D3\\ source\\ receiving\\ directory|D3\\ source\\ minimum\\ order\\ directory|D3\\ source\\ catch\\-up\\ directory|D3\\ source\\ abort\\ directory|D3\\ source\\ close\\-drain\\ directory|D3\\ source\\ raw\\ receiving|D3\\ source\\ target\\ transport\\ boundary|D3\\ source\\ cold\\ oracle\\ counterfactual)$"
+      ],
+      "automaticRetries": 0,
+      "callbackDefaultMs": 5000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "focused-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 21,
+        "cloneWire": 0,
+        "clones": 9,
+        "direct": 96,
+        "wire": 14
+      },
+      "selectedFilesByFullName": {
+        "D3 source abort descriptor": "packages/server/src/transaction-http.test.ts",
+        "D3 source abort directory": "packages/server/src/transaction-http.test.ts",
+        "D3 source abort scope": "packages/server/src/transaction-http.test.ts",
+        "D3 source catch-up descriptor": "packages/server/src/transaction-http.test.ts",
+        "D3 source catch-up directory": "packages/server/src/transaction-http.test.ts",
+        "D3 source catch-up scope": "packages/server/src/transaction-http.test.ts",
+        "D3 source close-drain descriptor": "packages/server/src/transaction-http.test.ts",
+        "D3 source close-drain directory": "packages/server/src/transaction-http.test.ts",
+        "D3 source close-drain scope": "packages/server/src/transaction-http.test.ts",
+        "D3 source cold oracle counterfactual": "packages/server/src/transaction-http.test.ts",
+        "D3 source minimum order descriptor": "packages/server/src/transaction-http.test.ts",
+        "D3 source minimum order directory": "packages/server/src/transaction-http.test.ts",
+        "D3 source minimum order scope": "packages/server/src/transaction-http.test.ts",
+        "D3 source projection descriptor": "packages/server/src/transaction-http.test.ts",
+        "D3 source projection directory": "packages/server/src/transaction-http.test.ts",
+        "D3 source projection scope": "packages/server/src/transaction-http.test.ts",
+        "D3 source raw receiving": "packages/server/src/transaction-http.test.ts",
+        "D3 source receiving descriptor": "packages/server/src/transaction-http.test.ts",
+        "D3 source receiving directory": "packages/server/src/transaction-http.test.ts",
+        "D3 source receiving scope": "packages/server/src/transaction-http.test.ts",
+        "D3 source target transport boundary": "packages/server/src/transaction-http.test.ts"
+      },
+      "selectedFullNames": [
+        "D3 source projection scope",
+        "D3 source receiving scope",
+        "D3 source minimum order scope",
+        "D3 source catch-up scope",
+        "D3 source abort scope",
+        "D3 source close-drain scope",
+        "D3 source projection descriptor",
+        "D3 source receiving descriptor",
+        "D3 source minimum order descriptor",
+        "D3 source catch-up descriptor",
+        "D3 source abort descriptor",
+        "D3 source close-drain descriptor",
+        "D3 source projection directory",
+        "D3 source receiving directory",
+        "D3 source minimum order directory",
+        "D3 source catch-up directory",
+        "D3 source abort directory",
+        "D3 source close-drain directory",
+        "D3 source raw receiving",
+        "D3 source target transport boundary",
+        "D3 source cold oracle counterfactual"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 1000,
+      "workMs": 3000
+    },
+    "format-check": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "format-check",
+      "kind": "supervised-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "fresh-build": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "fresh-build",
+      "kind": "supervised-command",
+      "mustPrecede": "Any source test module collection or installed entry resolution; build script cleans then tsc -b",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "installed-01": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-01.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ owner\\ regression\\ successor)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 12,
+        "exact": 12,
+        "raw": 0,
+        "scheduled": 12
+      },
+      "expectedObservation": "private-installed-discovery-owner-regression",
+      "id": "installed-01",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 12,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 12,
+        "scheduledRequests": 12,
+        "title": "private installed discovery owner regression successor"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery owner regression successor": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery owner regression successor"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-02": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-02.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ cold\\ resource\\-alias)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 43,
+        "exact": 43,
+        "raw": 0,
+        "scheduled": 43
+      },
+      "expectedObservation": "private installed cold resource-alias",
+      "id": "installed-02",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 43,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 43,
+        "scheduledRequests": 43,
+        "title": "private installed cold resource-alias"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed cold resource-alias": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed cold resource-alias"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-03": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-03.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ cold\\ transactional\\-carriers)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 28,
+        "exact": 28,
+        "raw": 0,
+        "scheduled": 28
+      },
+      "expectedObservation": "private installed cold transactional-carriers",
+      "id": "installed-03",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 28,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 28,
+        "scheduledRequests": 28,
+        "title": "private installed cold transactional-carriers"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed cold transactional-carriers": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed cold transactional-carriers"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-04": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-04.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ raw\\ receiving\\ and\\ minimum\\ syntax)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 21,
+        "exact": 21,
+        "raw": 0,
+        "scheduled": 21
+      },
+      "expectedObservation": "private installed raw receiving and minimum syntax",
+      "id": "installed-04",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 21,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 21,
+        "scheduledRequests": 21,
+        "title": "private installed raw receiving and minimum syntax"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed raw receiving and minimum syntax": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed raw receiving and minimum syntax"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-05": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-05.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ methods\\ auth\\ and\\ transport)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 26,
+        "exact": 25,
+        "raw": 1,
+        "scheduled": 26
+      },
+      "expectedObservation": "private installed discovery methods auth and transport",
+      "id": "installed-05",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 26,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 25,
+        "scheduledRequests": 26,
+        "title": "private installed discovery methods auth and transport"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery methods auth and transport": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery methods auth and transport"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-06": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-06.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ minimum\\ ordering\\ scope)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 15,
+        "exact": 15,
+        "raw": 0,
+        "scheduled": 15
+      },
+      "expectedObservation": "private installed discovery minimum ordering scope",
+      "id": "installed-06",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 15,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 15,
+        "scheduledRequests": 15,
+        "title": "private installed discovery minimum ordering scope"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery minimum ordering scope": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery minimum ordering scope"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-07": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-07.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ close\\ pending\\ scope)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 1,
+        "completed": 4,
+        "exact": 4,
+        "raw": 1,
+        "scheduled": 5
+      },
+      "expectedObservation": "private installed discovery close pending scope",
+      "id": "installed-07",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 4,
+        "expectedCloseAborts": 1,
+        "prospective": true,
+        "publicExactRequests": 4,
+        "scheduledRequests": 5,
+        "title": "private installed discovery close pending scope"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery close pending scope": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery close pending scope"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-08": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-08.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ minimum\\ ordering\\ descriptor)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 15,
+        "exact": 15,
+        "raw": 0,
+        "scheduled": 15
+      },
+      "expectedObservation": "private installed discovery minimum ordering descriptor",
+      "id": "installed-08",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 15,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 15,
+        "scheduledRequests": 15,
+        "title": "private installed discovery minimum ordering descriptor"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery minimum ordering descriptor": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery minimum ordering descriptor"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-09": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-09.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ close\\ pending\\ descriptor)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 1,
+        "completed": 4,
+        "exact": 4,
+        "raw": 1,
+        "scheduled": 5
+      },
+      "expectedObservation": "private installed discovery close pending descriptor",
+      "id": "installed-09",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 4,
+        "expectedCloseAborts": 1,
+        "prospective": true,
+        "publicExactRequests": 4,
+        "scheduledRequests": 5,
+        "title": "private installed discovery close pending descriptor"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery close pending descriptor": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery close pending descriptor"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-10": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-10.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ minimum\\ ordering\\ directory)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 0,
+        "completed": 15,
+        "exact": 15,
+        "raw": 0,
+        "scheduled": 15
+      },
+      "expectedObservation": "private installed discovery minimum ordering directory",
+      "id": "installed-10",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 15,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 15,
+        "scheduledRequests": 15,
+        "title": "private installed discovery minimum ordering directory"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery minimum ordering directory": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery minimum ordering directory"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "installed-11": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/installed-11.results.json",
+        "--testNamePattern",
+        "^(?:private\\ installed\\ discovery\\ close\\ pending\\ directory)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedCounts": {
+        "aborts": 1,
+        "completed": 4,
+        "exact": 4,
+        "raw": 1,
+        "scheduled": 5
+      },
+      "expectedObservation": "private installed discovery close pending directory",
+      "id": "installed-11",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 4,
+        "expectedCloseAborts": 1,
+        "prospective": true,
+        "publicExactRequests": 4,
+        "scheduledRequests": 5,
+        "title": "private installed discovery close pending directory"
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "private installed discovery close pending directory": "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "private installed discovery close pending directory"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "legacy-changefeed-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/legacy-changefeed-source.results.json",
+        "--testNamePattern",
+        "^(?:serves\\ normalized\\ whole\\ groups\\ and\\ identical\\ Scope\\ facts\\ for\\ atomic\\ replica\\ reconstruction|replica\\ refuses\\ partial\\ publication,\\ gaps,\\ conflicts\\ and\\ owned\\ upsert/tombstone\\ disagreement|keeps\\ genesis\\ checkpoint\\ distinct\\ from\\ zero\\ position\\ and\\ resumes\\ after\\ an\\ empty\\ caught\\-up\\ page|uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|fails\\ closed\\ on\\ corrupt\\ stored\\ framing\\ without\\ renumbering\\ or\\ changing\\ graph\\ state|does\\ not\\ classify\\ a\\ missing\\ previously\\ committed\\ cursor\\ row\\ as\\ never\\ issued\\ or\\ skip\\ its\\ gap|serves128\\ Events\\ from32\\ selected\\ owned\\ Links\\ as\\ one\\ group\\ despite\\ a\\ two\\-item\\ receipt\\ page\\ setting|captures\\ feed\\ body\\ and\\ serving\\ context\\ inside\\ one\\ fenced\\ owner\\ entry|serves\\ representative\\ large\\ postimages\\ whole\\ without\\ importing\\ the\\ Event\\ page\\ byte\\ cap|refuses\\ feed\\ reads\\ after\\ uncertain\\ commit\\ fencing\\ and\\ recovers\\ the\\ committed\\ group\\ on\\ reopen|bounds\\ rendered\\ Scope/next\\ overhead\\ with\\ a\\ long\\ installed\\ Scope\\ and\\ no\\ long\\ cursor|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|serves\\ actual\\ HTTP\\ finite\\ GET/HEAD,\\ absolute\\ navigation,\\ native\\ conditions\\ and\\ restart|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP|aborts\\ fresh\\ finite\\ changefeed\\ opaque\\ waiting\\ before\\ close\\ drains|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|preserves\\ changefeed\\ cursor\\ precedence\\ under\\ current\\-admission\\ opaque\\ minima|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ start\\-now\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ genesis\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-pos\\-01|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ start\\-now|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ retained|preserves\\ current\\ changefeed\\ anchor\\ capture\\ before\\ waiter\\ preflight|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ unknown|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ pos\\-01|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ already\\-aborted|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ invalid\\-policy|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ throwing\\-clock|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ nonfinite\\-clock)$"
+      ],
+      "automaticRetries": 0,
+      "callbackBudgetAttribution": "repository default5s except preserved explicitly60s historical parameter/opaqueHTTP callbacks; no changes. Source D3 callbacks3swork+1scleanup inside4s remain distinct.",
+      "callbackDefaultMs": 5000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "existingSupersededExchanges": 1,
+      "id": "legacy-changefeed-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 32,
+        "fullAffectedSuite": true
+      },
+      "selectedFilesByFullName": {
+        "aborts fresh finite changefeed opaque waiting before close drains": "packages/server/src/transaction-changefeed.test.ts",
+        "bounds rendered Scope/next overhead with a long installed Scope and no long cursor": "packages/server/src/transaction-changefeed.test.ts",
+        "captures current changefeed admission once across owner entries: genesis-unknown": "packages/server/src/transaction-changefeed.test.ts",
+        "captures current changefeed admission once across owner entries: retained-pos-01": "packages/server/src/transaction-changefeed.test.ts",
+        "captures current changefeed admission once across owner entries: retained-unknown": "packages/server/src/transaction-changefeed.test.ts",
+        "captures current changefeed admission once across owner entries: start-now-unknown": "packages/server/src/transaction-changefeed.test.ts",
+        "captures feed body and serving context inside one fenced owner entry": "packages/server/src/transaction-changefeed.test.ts",
+        "decides actual HTTP minimum refusal before conditional shortcuts with final context": "packages/server/src/transaction-changefeed.test.ts",
+        "does not classify a missing previously committed cursor row as never issued or skip its gap": "packages/server/src/transaction-changefeed.test.ts",
+        "drains current changefeed admission before owner close: retained": "packages/server/src/transaction-changefeed.test.ts",
+        "drains current changefeed admission before owner close: start-now": "packages/server/src/transaction-changefeed.test.ts",
+        "fails closed on corrupt stored framing without renumbering or changing graph state": "packages/server/src/transaction-changefeed.test.ts",
+        "keeps direct and excluded changefeed minimum paths strict": "packages/server/src/transaction-changefeed.test.ts",
+        "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page": "packages/server/src/transaction-changefeed.test.ts",
+        "keeps start=now's original admission anchor through a minimum wait and drains on close": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves changefeed cursor precedence under current-admission opaque minima": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves current changefeed anchor capture before waiter preflight": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves current context on owner-observed changefeed parameter refusals over HTTP": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves fresh finite changefeed admission before wait preflight: already-aborted": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves fresh finite changefeed admission before wait preflight: invalid-policy": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock": "packages/server/src/transaction-changefeed.test.ts",
+        "preserves fresh finite changefeed admission before wait preflight: throwing-clock": "packages/server/src/transaction-changefeed.test.ts",
+        "refuses feed reads after uncertain commit fencing and recovers the committed group on reopen": "packages/server/src/transaction-changefeed.test.ts",
+        "replica refuses partial publication, gaps, conflicts and owned upsert/tombstone disagreement": "packages/server/src/transaction-changefeed.test.ts",
+        "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart": "packages/server/src/transaction-changefeed.test.ts",
+        "serves finite start-now opaque minima before HTTP shortcuts": "packages/server/src/transaction-changefeed.test.ts",
+        "serves normalized whole groups and identical Scope facts for atomic replica reconstruction": "packages/server/src/transaction-changefeed.test.ts",
+        "serves representative large postimages whole without importing the Event page byte cap": "packages/server/src/transaction-changefeed.test.ts",
+        "serves128 Events from32 selected owned Links as one group despite a two-item receipt page setting": "packages/server/src/transaction-changefeed.test.ts",
+        "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows": "packages/server/src/transaction-changefeed.test.ts",
+        "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01": "packages/server/src/transaction-changefeed.test.ts",
+        "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown": "packages/server/src/transaction-changefeed.test.ts"
+      },
+      "selectedFullNames": [
+        "serves normalized whole groups and identical Scope facts for atomic replica reconstruction",
+        "replica refuses partial publication, gaps, conflicts and owned upsert/tombstone disagreement",
+        "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page",
+        "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+        "fails closed on corrupt stored framing without renumbering or changing graph state",
+        "does not classify a missing previously committed cursor row as never issued or skip its gap",
+        "serves128 Events from32 selected owned Links as one group despite a two-item receipt page setting",
+        "captures feed body and serving context inside one fenced owner entry",
+        "serves representative large postimages whole without importing the Event page byte cap",
+        "refuses feed reads after uncertain commit fencing and recovers the committed group on reopen",
+        "bounds rendered Scope/next overhead with a long installed Scope and no long cursor",
+        "keeps start=now's original admission anchor through a minimum wait and drains on close",
+        "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart",
+        "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+        "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+        "aborts fresh finite changefeed opaque waiting before close drains",
+        "keeps direct and excluded changefeed minimum paths strict",
+        "serves finite start-now opaque minima before HTTP shortcuts",
+        "preserves changefeed cursor precedence under current-admission opaque minima",
+        "captures current changefeed admission once across owner entries: start-now-unknown",
+        "captures current changefeed admission once across owner entries: genesis-unknown",
+        "captures current changefeed admission once across owner entries: retained-unknown",
+        "captures current changefeed admission once across owner entries: retained-pos-01",
+        "drains current changefeed admission before owner close: start-now",
+        "drains current changefeed admission before owner close: retained",
+        "preserves current changefeed anchor capture before waiter preflight",
+        "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown",
+        "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01",
+        "preserves fresh finite changefeed admission before wait preflight: already-aborted",
+        "preserves fresh finite changefeed admission before wait preflight: invalid-policy",
+        "preserves fresh finite changefeed admission before wait preflight: throwing-clock",
+        "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock"
+      ],
+      "termAtSeconds": 115
+    },
+    "legacy-installed-contracts-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/legacy-installed-contracts-source.results.json",
+        "--testNamePattern",
+        "^(?:exposes\\ detached\\ frozen\\ exact\\ capture\\ without\\ changing\\ compiler\\ identity\\ and\\ reconstructs\\ offline|uses\\ inherited\\ schema\\ for\\ writes,\\ atomic\\ late\\ failures\\ and\\ staged\\ sets,\\ retaining\\ replay\\ after\\ graph\\ changes|retains\\ capture\\ through\\ deletion,\\ receipt\\ expiry\\ and\\ startup\\ cleanup\\ and\\ reads\\ the\\ same\\ installation|refuses\\ changed\\ artifact\\ identity,\\ artifact\\ limits\\ and\\ schema\\-free\\ fallback\\ on\\ a\\ compiled\\ installation|refuses\\ forged,\\ cross\\-module,\\ mismatched\\ and\\ nonlocal\\ authorities\\ before\\ provisioning|installs\\ a\\ complete\\ compiled\\ owning\\ descriptor\\ bundle\\ in\\ its\\ own\\ store|compiles\\ plain\\ runtime\\ artifacts\\ in\\ emitted\\ module\\ and\\ serves\\ same\\-owner\\ Types,\\ writes,\\ sequence\\ and\\ restart|bounds\\ runtime\\ artifact\\ input\\ and\\ requires\\ explicit\\ Scope\\ before\\ provisioning|rolls\\ back\\ earlier\\ selected\\ postimages\\ when\\ a\\ later\\ effective\\ contract\\ fails)$"
+      ],
+      "automaticRetries": 0,
+      "callbackDefaultMs": 5000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "existingSupersededExchanges": 12,
+      "id": "legacy-installed-contracts-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 9,
+        "fullAffectedSuite": true
+      },
+      "selectedFilesByFullName": {
+        "bounds runtime artifact input and requires explicit Scope before provisioning": "packages/server/src/transaction-installed-contracts.test.ts",
+        "compiles plain runtime artifacts in emitted module and serves same-owner Types, writes, sequence and restart": "packages/server/src/transaction-installed-contracts.test.ts",
+        "exposes detached frozen exact capture without changing compiler identity and reconstructs offline": "packages/server/src/transaction-installed-contracts.test.ts",
+        "installs a complete compiled owning descriptor bundle in its own store": "packages/server/src/transaction-installed-contracts.test.ts",
+        "refuses changed artifact identity, artifact limits and schema-free fallback on a compiled installation": "packages/server/src/transaction-installed-contracts.test.ts",
+        "refuses forged, cross-module, mismatched and nonlocal authorities before provisioning": "packages/server/src/transaction-installed-contracts.test.ts",
+        "retains capture through deletion, receipt expiry and startup cleanup and reads the same installation": "packages/server/src/transaction-installed-contracts.test.ts",
+        "rolls back earlier selected postimages when a later effective contract fails": "packages/server/src/transaction-installed-contracts.test.ts",
+        "uses inherited schema for writes, atomic late failures and staged sets, retaining replay after graph changes": "packages/server/src/transaction-installed-contracts.test.ts"
+      },
+      "selectedFullNames": [
+        "exposes detached frozen exact capture without changing compiler identity and reconstructs offline",
+        "uses inherited schema for writes, atomic late failures and staged sets, retaining replay after graph changes",
+        "retains capture through deletion, receipt expiry and startup cleanup and reads the same installation",
+        "refuses changed artifact identity, artifact limits and schema-free fallback on a compiled installation",
+        "refuses forged, cross-module, mismatched and nonlocal authorities before provisioning",
+        "installs a complete compiled owning descriptor bundle in its own store",
+        "compiles plain runtime artifacts in emitted module and serves same-owner Types, writes, sequence and restart",
+        "bounds runtime artifact input and requires explicit Scope before provisioning",
+        "rolls back earlier selected postimages when a later effective contract fails"
+      ],
+      "termAtSeconds": 115
+    },
+    "lint": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "lint",
+      "kind": "supervised-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "node-version": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedStdout": "v24.16.0",
+      "id": "node-version",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "pack-protocol": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/packages"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "pack-protocol",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "pack-server": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/packages"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "pack-server",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "pnpm-version": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--version"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedStdout": "11.20.0",
+      "id": "pnpm-version",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "prepare-consumer": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/packages.py",
+        "consumer"
+      ],
+      "automaticRetries": 0,
+      "contract": "Exclusively create ${EXECUTION_ROOT}/run/consumer outside workspace; manifest uses actual archive file paths and pnpm-workspace overrides for protocol and frozen transitive versions; actual closure derived from frozen lock. No old consumer/entry/lock reused.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "prepare-consumer",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "prepare-package-directory": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/packages.py",
+        "directory"
+      ],
+      "automaticRetries": 0,
+      "contract": "Exclusively create new task-owned ${EXECUTION_ROOT}/run/packages; refuse existing contents, no deletion/reuse.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "prepare-package-directory",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-check-boundaries": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-check-boundaries",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-e2e-ready-preflight": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-e2e-ready-preflight",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-evidence-verify": {
+      "acceptedRawExitCodes": [
+        0,
+        2
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-evidence-verify",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "rawExitMeaning": {
+        "0": "Existing claimed Read evidence verified only for its bound claim",
+        "1": "Claimed but unproved: failure",
+        "2": "No evidence claim; explicit fail-closed no-claim accepted by current CI policy, never Write/RU/TX qualification",
+        "3": "Unable to inspect claim/stale build: failure"
+      },
+      "termAtSeconds": 115
+    },
+    "required-smoke": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "smoke"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "required-smoke",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "schema-confinement-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/schema-confinement-source.results.json",
+        "--testNamePattern",
+        "^(?:confines\\ observed\\ Type\\ and\\ schema\\ traversal\\ to\\ exact\\ administrative\\ identities)$"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "schema-confinement-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 0,
+        "wire": 0
+      },
+      "selectedFilesByFullName": {
+        "confines observed Type and schema traversal to exact administrative identities": "apps/bdptest/src/transactional-schema-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "confines observed Type and schema traversal to exact administrative identities"
+      ],
+      "termAtSeconds": 115
+    },
+    "schema-installed-positive": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run/schema-installed-positive.results.json",
+        "--testNamePattern",
+        "^(?:traverses\\ installed\\ local\\ schema\\ bytes\\ with\\ current\\ context\\ within14requests)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 120000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedObservation": "private-installed-local-schemas",
+      "id": "schema-installed-positive",
+      "inheritedBudgetException": "actual legacy source90swork/120scallback retained; outer120/TERM115 remains fail-closed, may stop before callback cap",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "existingSupersededExchanges": 1,
+        "wire": 14
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "traverses installed local schema bytes with current context within14requests": "apps/bdptest/src/transactional-schema-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "traverses installed local schema bytes with current context within14requests"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": "existing child.close launcher bound; no new aggregate bound inferred",
+      "workMs": 90000
+    },
+    "typecheck": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "typecheck",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "verify-archives": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/packages.py",
+        "tar"
+      ],
+      "automaticRetries": 0,
+      "contract": "Rehash actual archives and safe members; compare complete expected fresh dist/schema/license/package metadata maps to frozen source/build. Only expected workspace-protocol dependency rewrite is allowed; no extraction traversal/duplicates/symlinks. Archive names/digests/member counts UNRESOLVED until actual pack.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "verify-archives",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "verify-installed-consumer": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/packages.py",
+        "installed"
+      ],
+      "automaticRetries": 0,
+      "contract": "Reproduce complete package-member linkage, resolved production dependency graph within owned consumer, actual lock and payload recursive hash; bind entry literal+realpath+bytes and full inventory/symlinks; no workspace fallback. Emit actual installed-provenance/inventory records.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "verify-installed-consumer",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "workspace-install": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "expectedSourceChange": "none; install outputs/tool maps separately measured",
+      "id": "workspace-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    }
+  },
+  "configurationFinalized": true,
+  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "finalOrder": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "installed-01",
+    "audit-installed-01",
+    "installed-02",
+    "audit-installed-02",
+    "installed-03",
+    "audit-installed-03",
+    "installed-04",
+    "audit-installed-04",
+    "installed-05",
+    "audit-installed-05",
+    "installed-06",
+    "audit-installed-06",
+    "installed-07",
+    "audit-installed-07",
+    "installed-08",
+    "audit-installed-08",
+    "installed-09",
+    "audit-installed-09",
+    "installed-10",
+    "audit-installed-10",
+    "installed-11",
+    "audit-installed-11",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "freshPipeline": true,
+  "rootBarriers": [
+    "independent corrected source native/root before any stage",
+    "fresh11tool acceptance after4",
+    "freshbuild acceptance after9",
+    "source immediate audits before packages",
+    "actual tar acceptance before consumer",
+    "actual lock acceptance before installed proof",
+    "actual consumer proof acceptance before every installed callback/audit",
+    "all52 local stages and root/native terminal acceptance before publication/exactCI"
+  ],
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum"
+}

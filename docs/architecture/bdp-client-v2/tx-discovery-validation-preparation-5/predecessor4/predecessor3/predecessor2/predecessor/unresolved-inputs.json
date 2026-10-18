@@ -1,0 +1,30 @@
+{
+  "actualResults": [
+    "all52stage starts/logs/exits/PIDs/BDPdirs",
+    "actualselected/excludedcollection counts",
+    "actual report outcomes/statuses/partialavailability",
+    "CI/publication"
+  ],
+  "executionReleased": false,
+  "knownStaticInputsResolved": {
+    "all679Map": true,
+    "correctedNativeAndRootSemantic": true,
+    "rootGitBinaryStatus": true,
+    "sourceAuthorFreeze": true
+  },
+  "noFabricatedBuildPackageConsumerIds": true,
+  "noRetry": true,
+  "requiredAtBarriers": [
+    "freshworkspace11tools",
+    "freshbuildartifacts+rootacceptance",
+    "actualarchives+rootacceptance",
+    "actualconsumerlock+manifest/settings+rootacceptance",
+    "actualinstalledproof+inventory+entry+rootacceptance"
+  ],
+  "requiredBeforeAnyAttempt": [
+    "independent helper mechanics acceptance",
+    "root exact-source execution disposition and originalactualCODE+correctednative honest wrapper",
+    "root base-tool acceptance and implementation index binding",
+    "explicit root approved ordered stage prefix/current session"
+  ]
+}

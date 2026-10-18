@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {
+      "stage": "reviewer own pure file-verification program parse",
+      "kind": "SyntaxError",
+      "detail": "One unmatched closing parenthesis in temporary reviewer script. It did not run; corrected locally. No candidate helper import/evaluation/execution."
+    },
+    {
+      "stage": "reviewer own provenance comparison",
+      "kind": "overbroad assumption",
+      "detail": "Initial pure comparison treated explicitly derived commands origin as byte-copy and active-gate forward delta as from closed snapshot. Actual origin role labels commands path-only, checked exact reversal; actual delta binds preserved failed active gate1f126524, verified all genuine hunks. Corrections made only to temporary reviewer comparisons; candidate untouched."
+    }
+  ],
+  "candidateMutation": false,
+  "runtimeRetry": false
+}

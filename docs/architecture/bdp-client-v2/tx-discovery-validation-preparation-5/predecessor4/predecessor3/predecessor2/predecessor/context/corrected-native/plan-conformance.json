@@ -1,0 +1,67 @@
+{
+  "acceptedStatic": true,
+  "findings": [],
+  "fixes": [
+    {
+      "id": "F1",
+      "references": "packages/server/src/transaction-changefeed.test.ts:688; packages/server/src/transaction-installed-contracts.test.ts:410; apps/bdptest/src/transactional-schema-installed.test.ts:340",
+      "assessment": "Same one descriptor request, six GET/HEAD per initial/reopen phase, and one ScopeGET. Descriptor and Directory canonical parsers, actual phase/context tuple and GET-derived HEAD representation lengths. Phase state resets on each function call; surrounding mutation/replay/schema/changefeed laws unchanged.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F2",
+      "references": "apps/bdptest/src/transactional-discovery-installed.test.ts:1589; packages/conformance/src/http-executor.ts:402",
+      "assessment": "Actual received createBead plus uppercase reserved %2C; comma is neither unreserved nor separator/control. Existing exact route URL allowlist and anonymous handle, same execute path, no raw bypass. Server exact operation lookup refuses suffix404. Source direct encoded spelling remains separate.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F3",
+      "references": "apps/bdptest/src/transactional-discovery-installed.test.ts:1770",
+      "assessment": "Explicit mutable [string,string] map return matches readonly-array-of-mutable-tuples localRaw parameter at744. No API widening or static typecheck result inferred.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F4 / N2",
+      "references": "apps/bdptest/src/transactional-discovery-installed.test.ts:1739",
+      "assessment": "Unconditional d3Context before branch asserts actual epoch/view/pos1 for all10 cases per route, including seven error cases \u00d73=21. Problem code, retry-after, missing Link/ETag and actual GET-derived HEAD lengths retained.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F5 / N1",
+      "references": "apps/bdptest/src/transactional-discovery-installed.test.ts:931",
+      "assessment": "Fresh frozen runtime object has only canonicalScope/send; send invokes genuine fixture.send once and creates a separate frozen response containing status, copied frozen headers and bodyText only. Both43/28 positive callbacks use adapter. Shared cold helpers accept narrow structural types; full fixtures remain structurally compatible for negative lanes. Trusted wrapper retains child/events/directory/request/wire/cleanup evidence; no exactRequest/credential/lifecycle field reaches cold work. Arbitrary served response contents are not asserted universally secret.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F6 / N3",
+      "references": "packages/server/src/transaction-http.test.ts:7132; apps/bdptest/src/transactional-discovery-installed.test.ts:819",
+      "assessment": "Both complete headers count split+4. Unterminated16KiB/header16KiB/body128KiB/derivedwire163840/request16KiB+64KiB and parent signal unchanged. Old source raw helper2s byte-preserved.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F7",
+      "references": "packages/server/src/transaction-http.ts:589; packages/server/src/transaction-http.test.ts:6863; apps/bdptest/src/transactional-discovery-installed.test.ts:984",
+      "assessment": "Only production correction is private,no-store on Scope204. Original service-desc spelling retained. Existing receiving/method/auth/minimum order and current owner observation feed one shared Read semantics application, which preserves privacy on HEAD/conditional variants. This is allowed local policy, not a new BDP law.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F8",
+      "references": "packages/server/src/transaction-http.test.ts:7344",
+      "assessment": "Unsafe Directory clone directly requires const parser refusal before general oracle. Separate schema-valid foreign operations-base clone still parses successfully then fails confinement. Exactly9 clones, no new callback/request.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F9",
+      "references": "apps/bdptest/src/transactional-discovery-installed.test.ts:353; apps/bdptest/src/transactional-discovery-installed.test.ts:1324",
+      "assessment": "Existing canonical currentBeadCollection compiled and checked on batch-after/set-update-after/final-state envelopes before current item/afterstate checks. No schema/artifact edits.",
+      "status": "implemented / static inspection"
+    },
+    {
+      "id": "F10",
+      "references": "packages/server/src/transaction-http.test.ts:6909",
+      "assessment": "Reader success expects direct HttpResponse pos0 with epoch/view; errors retain no disclosure. Eight direct calls per route and one observation unchanged; no relabeling as actual network wire.",
+      "status": "implemented / static inspection"
+    }
+  ],
+  "additionalReview": "Whole cumulative production composition, added source/installed callbacks, legacy changes and same-source dependencies inspected; no concrete additional finding. Compiler/runtime results unavailable."
+}

@@ -1,0 +1,87 @@
+--- current3/helper-static-inspection.json
++++ predecessor2/helper-static-inspection.json
+@@ -1,54 +1,32 @@
+ {
+-  "state": "STATIC ONLY reuse; no helper import/evaluation",
+-  "helperBytesAndASTIdentical": {
+-    "run.py": {
+-      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+-      "bytes": 5357
+-    },
+-    "gate.py": {
+-      "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+-      "bytes": 12588
+-    },
+-    "audit.py": {
+-      "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+-      "bytes": 34757
+-    },
+-    "packages.py": {
+-      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+-      "bytes": 8760
+-    },
+-    "guarded-action-session-20261018-021624-549f.py": {
+-      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+-      "bytes": 946
+-    }
+-  },
+-  "allDataSchemasSelectionAndGrammarsByteEquivalentAfterNamedPathRebind": true,
+-  "stages": 52,
+-  "immediateTestAuditPairs": 16,
+-  "sourceTestsProspective21Direct96Wire14Clone9ZeroWire": true,
+-  "installed11Scheduled190Complete187ExpectedAborts3Exact186Raw4": true,
+-  "legacyFullChangefeed32InstalledContracts9SchemaPure1ZeroWirePositive1HTTP14Child1": true,
+-  "budgetsUnchanged": {
+-    "automaticRetries": 0,
+-    "installedCallbackMs": 60000,
+-    "installedTotalCleanupMs": 10000,
+-    "installedWorkMs": 45000,
+-    "newDCleanupInclusiveStopMs": 4000,
+-    "newDWorkMs": 3000,
+-    "outerStageMs": 120000,
+-    "recorderMs": 5000,
+-    "requestMs": 5000,
+-    "sourceDefaultCallbackMs": 5000,
+-    "sourceDrainMs": 1000,
+-    "sourceLatchMs": 1000,
+-    "termAtMs": 115000
+-  },
+-  "noRunDirectory": true,
+-  "currentSourceFiles": 679,
+-  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+-  "allSourceHashesObserved": true,
+-  "sourceCorrectionOnlyThreeAnnotations": true,
+-  "freshAllStagesRequired": true,
+-  "parentPhysical": 347,
+-  "nativeMechanicsAcceptance": "UNRESOLVED"
++  "ASTParsedHelpers": 5,
++  "baseTools3RehashedNoExecution": true,
++  "basis": "ast.parse and actual file/data/hash reads only; no helper import/evaluation/execution or product command",
++  "immediateAuditPairs": 16,
++  "inheritedA_B_C_FBlockByteIdentical": true,
++  "inheritedBoundaryHTTPBlockByteIdentical": true,
++  "installedNewRows178PlusLegacy12": 190,
++  "legacyChangefeedReports": 18,
++  "protected673": true,
++  "runAbsent": true,
++  "runtimeResults": "UNRESOLVED",
++  "selectionByteIdentical": true,
++  "semanticHelperDelta": [
++    "audit.py"
++  ],
++  "source679CurrentExact": true,
++  "sourceBaselines": 20,
++  "sourceBinaryDiffSha256": "6458c66715de3b6d2e86ae9c0d10efd1b7c146d81ba53da8028037ca9d0e4e89",
++  "sourceDirectStarts": 96,
++  "sourceIdentity": "6bbcce5e8d6c107607822b24853bb8121f7d612137f00d3f0f173b747773f6ea",
++  "sourceRetainedReturns": 90,
++  "sourceWire": 14,
++  "sourceZeroWireClones": 9,
++  "stageOrder52NormalizedByteIdentical": true,
++  "unchangedHelpers": [
++    "run.py",
++    "gate.py",
++    "packages.py",
++    "guarded-action-session-20261018-021624-549f.py"
++  ]
+ }
