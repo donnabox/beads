@@ -1,0 +1,9 @@
+{
+  "activity": "pure-data packaging command",
+  "failure": "SyntaxError before ANY body execution: conditional expression else120 required whitespace",
+  "exit": 1,
+  "subjectOrHarnessRuntimeEvaluation": false,
+  "sourceOrGateChanges": false,
+  "correction": "packaging script lexical whitespace only; no control evaluated",
+  "notAControlResult": true
+}

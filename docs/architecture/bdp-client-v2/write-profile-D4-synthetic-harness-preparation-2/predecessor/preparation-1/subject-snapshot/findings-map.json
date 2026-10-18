@@ -1,0 +1,18 @@
+{
+  "authority": "context/root-helper4-author-release.json",
+  "authoritySha256": "8141ffb5cb57ce7b760eef5a2401fcc695d8b59ff36e2d7adf9936844a2ff584",
+  "native": "context/helper3-native/closure.json",
+  "finding": "D4-P3-N1",
+  "authoredCorrection": {
+    "file": "audit.py",
+    "newPredicateLabels": [
+      "failed-response-implies-settled",
+      "pending-category-write-state-null"
+    ],
+    "onlyTwoNeedExpressions": true,
+    "strippingNewPredicatesASTEqualsHelper3": true
+  },
+  "D03": "All existing fields/subcases retained plus exactly20 described source-state subcases; no new top-level ID",
+  "earlierFindings": "Helper3 resolved helper2 N1/N2/N3; original bytes/findings retained; not independently reaccepted by this author",
+  "executionOrNativeAcceptance": false
+}

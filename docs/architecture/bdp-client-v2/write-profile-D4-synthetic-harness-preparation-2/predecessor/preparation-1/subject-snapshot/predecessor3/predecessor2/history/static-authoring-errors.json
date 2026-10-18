@@ -1,0 +1,7 @@
+{
+  "stage": "author own ast.parse before freeze; helper never evaluated",
+  "failure": "SyntaxError token else115 in new whole-parent elapsed expression",
+  "correction": "keyword whitespace else 115; seven subsequent own AST parses succeed",
+  "previousGuardCommandPathErrors": "A few guarded read-only author scripts used nonexistent /opt/homebrew/opt/python3.14 path; those child commands never ran. Correct path retains python@3.14.",
+  "executionOccurred": false
+}

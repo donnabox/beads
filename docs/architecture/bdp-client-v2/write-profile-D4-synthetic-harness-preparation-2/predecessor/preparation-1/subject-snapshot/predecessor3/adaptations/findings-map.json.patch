@@ -1,0 +1,59 @@
+--- predecessor2/findings-map.json
++++ findings-map.json
+@@ -1,36 +1,28 @@
+ {
+-  "authority": "context/write-profile-D4-helper1-root-disposition-1/disposition.json",
+-  "executionAccepted": false,
+-  "findings": [
++  "authority": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-helper2-root-disposition-1/disposition.json",
++  "authoritySha256": "62bd59f2d6e9bd647880b7266e79a934f874f579d79aa9ad2b895e1ffaf409b0",
++  "fixes": [
+     {
+-      "correction": "source exact prospectiveWorkload tuple exists; no invented counts; P01 finite interface subcase",
+-      "id": "F6-N1",
+-      "paths": [
+-        "commands.json"
+-      ]
++      "id": "D4-P2-N1",
++      "file": "gate.py",
++      "change": "consume exact flat implementation mapping; no member/hash/exclusion bypass"
+     },
+     {
+-      "correction": "product inherits parent-registered worker PGID; acknowledgement; PID-only quiet; all direct reaping guarded through fresh descendant absence; P01/P08/P09 finite controls",
+-      "id": "F6-N2",
+-      "paths": [
+-        "run.py",
+-        "worker.py"
+-      ]
++      "id": "D4-P2-N2",
++      "file": "run.py",
++      "change": "both tentative/final acceptance compare actual current monotonic with min(flush+10,absoluteTERM), requiring product flush fact; ordinary115 path unchanged; no query/timer reset"
+     },
+     {
+-      "correction": "derive receipt/Event/group/pending source assignments; final Event ambiguity explicitly unsupported/nonconforming; fixed-class retained failure; D02/D03 controls",
+-      "id": "F6-N3",
+-      "paths": [
+-        "audit.py",
+-        "worker.py"
+-      ]
+-    },
+-    {
+-      "correction": "stat parsed; terminal-Z comm exception requires same birth+PGID, sticky terminal state; no live/PID/PGID reuse weakening; reap only no-descendant census then fresh absence",
+-      "id": "F6-N4",
+-      "paths": [
+-        "run.py"
+-      ]
++      "id": "D4-P2-N3",
++      "file": "audit.py",
++      "change": "settled/unreceived requires one existing nonnull finite category, unsettle may retainnull; same raw/no-credit"
+     }
+-  ]
++  ],
++  "controlsOnlySubcases": [
++    "P01",
++    "P12",
++    "P11",
++    "D03"
++  ],
++  "noRuntimeClaim": true
+ }

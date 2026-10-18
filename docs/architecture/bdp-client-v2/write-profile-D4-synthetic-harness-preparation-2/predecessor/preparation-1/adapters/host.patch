@@ -1,0 +1,48 @@
+--- host.before.json
++++ host.after.json
+@@ -1,7 +1,7 @@
+ {
+   "callable": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py:main",
+   "codeSha256": "2a60b483b696984633fd41f42b5de57b20674d58a7fd1f1c82fe0241a17ebadb",
+-  "ORIGIN": "original first-script monotonic clock",
++  "ORIGIN": "earlier recorded harness-parent origin, never reset per host subcase",
+   "sys.argv": [
+     "run.py",
+     "final",
+@@ -9,22 +9,26 @@
+   ],
+   "PopenWorker": [
+     "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/worker.py",
++    "-I",
++    "-B",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_peer.py",
++    "worker",
+     "FD",
+-    "installed-owned-set",
++    "OWN_HARNESS_CASE_DIRECTORY",
++    "DECLARED_SCENARIO",
+     "ORIGIN"
+   ],
+   "PopenPublisher": [
+     "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/worker.py",
++    "-I",
++    "-B",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_peer.py",
+     "publish",
+     "FD",
+-    "installed-owned-set"
++    "OWN_HARNESS_CASE_DIRECTORY",
++    "DECLARED_SCENARIO",
++    "ORIGIN"
+   ],
+-  "PopenCensus": [
+-    "/bin/ps",
+-    "-axo",
+-    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+-  ],
+-  "algorithms": "unchanged actual callable"
++  "PopenCensus": "original actual ps except P07 blocked-census actual zero-product probe peer",
++  "algorithms": "unchanged actual callable; only external stimuli/earlier origin adapted"
+ }

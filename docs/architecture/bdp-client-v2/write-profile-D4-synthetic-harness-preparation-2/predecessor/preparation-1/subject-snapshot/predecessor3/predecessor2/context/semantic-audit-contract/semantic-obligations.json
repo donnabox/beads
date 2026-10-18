@@ -1,0 +1,163 @@
+{
+  "existingSchemas": {
+    "path": "source/schemas/bdp-v0.schema.json",
+    "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "definitions": [
+      "mutationReceipt",
+      "mutationReceiptPage",
+      "eventPage",
+      "changeGroup"
+    ],
+    "rule": "Use exact pinned schema+required referenced defs/formats; no weakened replacement/count-only/type-only validator. Source validates every200POST receipt, actual pages and group. Extra independent checks here rederive same existing source semantic obligations; no new product law."
+  },
+  "checks": [
+    {
+      "id": "D4-SEED",
+      "rows": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "sourceLines": [
+        500,
+        546
+      ],
+      "must": "Exact three n0/stable Beads a,b,owner and32 ordinary Links l00..l31 a->b/n0 in finite payloads. Follow actual Event next chain to null; current success seed pages[32,32,32,3],99 actual Events and actual final primitive Event id feed deletion suffix. Schema-valid pages and no missing/duplicate/cursor-fabricated traversal; do not credit expected99 if traversal incomplete."
+    },
+    {
+      "id": "D4-DELETE-RECEIPT",
+      "rows": [
+        8,
+        9
+      ],
+      "sourceLines": [
+        549,
+        577
+      ],
+      "must": "Completed schema-valid receipt; first32 and original next-page1, nextnull. Combined EXACT33: first {operationIndex:0,outcome:matched,count:32}; then32 {operationIndex:0,outcome:deleted,deleted.resource.id} in linkIds l00..l31 canonicalorder. Original actual receipt.id/next and full bodies retained. No count-only proof."
+    },
+    {
+      "id": "D4-DELETE-EVENTS",
+      "rows": [
+        10,
+        11,
+        12
+      ],
+      "sourceLines": [
+        579,
+        599
+      ],
+      "must": "Use encodeURIComponent(actual last seed Event id), then actual next links. Three actual pages32 each, nextnull,96ordered facts. For each l00..l31: deleted(id),unlinked(id),unlinked(id), in that exact perLink/canonicalLink order. Existing full Event schemas and complete fields retained, not merely count/type projections."
+    },
+    {
+      "id": "D4-DELETE-GROUP",
+      "rows": [
+        7,
+        13,
+        14
+      ],
+      "sourceLines": [
+        547,
+        548,
+        600,
+        610
+      ],
+      "must": "Before-delete changes start=now groups[], retain actual after cursor. Later exact encodedcursor read has one schema-valid changeGroup, nextnull,96 Events and32 ordered tombstone Resource IDs l00..l31. GETl00 actual404. Full group/Events body remains actual evidence, not synthetic transcript."
+    },
+    {
+      "id": "D4-RETRY-NO-RESELECT",
+      "rows": [
+        15,
+        16,
+        17
+      ],
+      "sourceLines": [
+        612,
+        623
+      ],
+      "must": "Create later ordinary Link after deletion, retry exact original deleteWhere normalized operation with same writer/delete32; parsed full receipt deep-equals originalrow8; GETlater returns idscope+links/later. No new selection of later population."
+    },
+    {
+      "id": "D4-OWNED-TRANSITION",
+      "rows": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "sourceLines": [
+        624,
+        693
+      ],
+      "must": "Create one owned Link owner->b,n0; collect actualsource/linkprestaten0andstringrevisions. Requested literal owned Link n1 after update, metadata unchanged; source properties/metadata unchanged, both actual Link/source revisions advance. EffectPosition primitive string != row18requiredPosition; requiredPosition=effectPosition. Updated result[1].sourceRevision equals actual live owner revision; inline result.resource deep-equals actual live Link; liveSource.ownedLinks[ownedType] exactly[liveLink]. This is ONE ownedLink, not max32ownedcapacity."
+    },
+    {
+      "id": "D4-NOOP",
+      "rows": [
+        24
+      ],
+      "sourceLines": [
+        694,
+        696
+      ],
+      "must": "Same update with new generatedkey produces NO effectPosition property and exact same updated result entry fromrow21. Do not require whole new receipt/id/body bytes equal row21."
+    },
+    {
+      "id": "D4-ATOMIC-COMPILED-FAIL",
+      "rows": [
+        25,
+        26,
+        27,
+        28
+      ],
+      "sourceLines": [
+        697,
+        714
+      ],
+      "must": "Exact batch tentativecreate then owned n invalid string, keycompiled_fail; receiptstatusfailed/problemcodevalidation-failed/operationIndex1/pointer/operations/1/change; full schema. Actual liveOwner andLink deep-equal originalpostupdate rows22/23; GETtentative404 proves first operation did not persist. No ordinaryRU partial-sequence law imported."
+    },
+    {
+      "id": "D4-SAME-STORE-REOPEN-REPLAY",
+      "rows": [
+        29,
+        30,
+        31,
+        32
+      ],
+      "sourceLines": [
+        715,
+        747
+      ],
+      "must": "Only after pending0/28actualresponses/observed clean first child exit+stdio close+cachedclose, second child uses SAME directory/transaction.sqlite, Scope/types/schema/token association, createfalse. Full served/runtime binding equal; physical port may differ. Use actual original receipt.id/next, exact success/failure keys and operations:29deep-equalrow8,30deep-equalrow9,31deep-equalrow8,32deep-equalrow25. Compare parsed JSON objects, not necessarily wire/body byte equality; retain each actual digest independently. This is graceful same-store restart, not crash/restore."
+    }
+  ],
+  "counterfactuals": {
+    "sourceLines": [
+      578,
+      590,
+      599,
+      684,
+      693
+    ],
+    "exactIDs": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5"
+    ],
+    "positive": "All five source-recorded states pass in exact order, plus original Vitest callback actually passed under independent runner results. A report state alone is not external proof the assertion ran. No new product counterprobe or runtime mutant is authorized.",
+    "O1": "Omit final receipt result; exact ordered33-entry oracle rejects.",
+    "O2": "Omit first deletionEvent; exact96factsequence rejects.",
+    "O3": "Swap first two complete threeEvent Link groups; canonical fact order rejects.",
+    "O4": "Mutually consistent stale receipt/source/Link n0 prestate must fail specifically requested owned Link properties literaln1, not a merely unrelated throw.",
+    "O5": "Wrong sourceRevision rejected against actual live owner revision."
+  },
+  "bodyDigestVsEquality": "Hash exact retained UTF8/wire separately; use deep parsed JSON equality for original receipt/page/resource comparisons as source does. Never canonicalize and relabel bytes or force current serving position header to equal old receipt context.",
+  "noCredit": "No cold discovery/public startup/admission/cumulativewhole-Write/erasure/restore/wholegoverningclause qualification; ready targets are fixture routing metadata only."
+}

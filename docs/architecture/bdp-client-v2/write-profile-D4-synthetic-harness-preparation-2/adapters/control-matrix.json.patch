@@ -1,0 +1,63 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/control-matrix.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/control-matrix.json
+@@ -60,7 +60,9 @@
+         "unit"
+       ],
+       "declaredSubcases": [],
+-      "remainingUnsupported": [],
++      "remainingUnsupported": [
++        "source ordinary no-environment outcome is not executed; this case reaches scanner null-ID refusal only"
++      ],
+       "status": "UNEXECUTED",
+       "productCalls": 0,
+       "noRetry": true
+@@ -619,7 +621,9 @@
+       "variants": [
+         "unit",
+         "host-blocked-preflight",
+-        "host-pending-term"
++        "host-pending-term",
++        "host-close-before-ack",
++        "host-bootstrap-close"
+       ],
+       "declaredSubcases": [
+         {
+@@ -645,6 +649,16 @@
+           "input": "exact current flat implementation path-to-SHA index is consumed completely; missing wrapper is not invented, all hashes/six exclusions remain bound; data-only interface reaches original stage gate without product",
+           "scope": "actual-subject unit or listed host variant, not executed",
+           "status": "UNEXECUTED"
++        },
++        {
++          "name": "SH-N1 empty and partial close-before-ack",
++          "subject": "host_peer.receive_control",
++          "scope": "actual socket EOF and received bytes only; same outer clock; no immutable watchdog verdict inferred"
++        },
++        {
++          "name": "outer bootstrap partial ACK then actual EOF",
++          "subject": "bootstrap.py after independent outer identity authentication",
++          "scope": "actual sealed descriptor/partial bytes/EOF/no peer exec; not product admission"
+         }
+       ],
+       "remainingUnsupported": [
+@@ -695,7 +709,9 @@
+         "host-late-start"
+       ],
+       "declaredSubcases": [],
+-      "remainingUnsupported": [],
++      "remainingUnsupported": [
++        "scheduled late marker may lose to start-missing; exact reached refusal is recorded, no actual late-receipt claim"
++      ],
+       "status": "UNEXECUTED",
+       "productCalls": 0,
+       "noRetry": true
+@@ -740,7 +756,9 @@
+         "host-normal"
+       ],
+       "declaredSubcases": [],
+-      "remainingUnsupported": [],
++      "remainingUnsupported": [
++        "host normal exercises synthetic phases and actual pipe EOF, not real console-RPC/results artifact publication"
++      ],
+       "status": "UNEXECUTED",
+       "productCalls": 0,
+       "noRetry": true

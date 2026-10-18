@@ -1,0 +1,763 @@
+[
+  {
+    "path": "bootstrap.py",
+    "sha256": "ac3ea5619e2a2a72b6f471cf21e4e02bc1f9c56e6a07254d68c35edd63b4c5cc",
+    "staticCalls": [
+      {
+        "line": 18,
+        "call": "channel.recv"
+      },
+      {
+        "line": 21,
+        "call": "(json.dumps({'event': 'bootstrap-control-eof', 'pid': os.getpid(), 'receivedHex': raw.hex(), 'peerExecuted': False}, separators=(',', ':')) + '\\n').encode"
+      },
+      {
+        "line": 29,
+        "call": "json.loads"
+      },
+      {
+        "line": 17,
+        "call": "select.select"
+      },
+      {
+        "line": 22,
+        "call": "os.write"
+      },
+      {
+        "line": 33,
+        "call": "channel.send"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "gate_controls.py",
+    "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+    "staticCalls": [
+      {
+        "line": 13,
+        "call": "(directory / 'commands.json').write_bytes"
+      },
+      {
+        "line": 14,
+        "call": "(directory / (name + '.log')).write_bytes"
+      },
+      {
+        "line": 18,
+        "call": "(directory / (name + '.exit.json')).write_bytes"
+      },
+      {
+        "line": 18,
+        "call": "(directory / (name + '.watchdog.json')).write_bytes"
+      },
+      {
+        "line": 20,
+        "call": "path.write_bytes"
+      },
+      {
+        "line": 38,
+        "call": "lock.write_text"
+      },
+      {
+        "line": 38,
+        "call": "entry.write_text"
+      },
+      {
+        "line": 38,
+        "call": "archive.write_bytes"
+      },
+      {
+        "line": 39,
+        "call": "tarpath.write_bytes"
+      },
+      {
+        "line": 47,
+        "call": "archive.write_bytes"
+      },
+      {
+        "line": 47,
+        "call": "archive.write_bytes"
+      },
+      {
+        "line": 48,
+        "call": "lock.write_bytes"
+      },
+      {
+        "line": 48,
+        "call": "lock.write_bytes"
+      },
+      {
+        "line": 49,
+        "call": "entry.write_bytes"
+      },
+      {
+        "line": 49,
+        "call": "entry.write_bytes"
+      },
+      {
+        "line": 22,
+        "call": "path.write_bytes"
+      },
+      {
+        "line": 41,
+        "call": "p.write_bytes"
+      },
+      {
+        "line": 24,
+        "call": "(directory / (stage + suffix)).write_bytes"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "harness.py",
+    "sha256": "ad7a8c61a591fdd2baa1370e065c145861798ba9ea4eb1a53e10f01c8ce5910e",
+    "staticCalls": [
+      {
+        "line": 23,
+        "call": "json.loads"
+      },
+      {
+        "line": 58,
+        "call": "spec.loader.exec_module"
+      },
+      {
+        "line": 61,
+        "call": "authorized"
+      },
+      {
+        "line": 68,
+        "call": "load"
+      },
+      {
+        "line": 68,
+        "call": "load"
+      },
+      {
+        "line": 68,
+        "call": "load"
+      },
+      {
+        "line": 68,
+        "call": "load"
+      },
+      {
+        "line": 70,
+        "call": "load"
+      },
+      {
+        "line": 87,
+        "call": "write"
+      },
+      {
+        "line": 25,
+        "call": "output.write"
+      },
+      {
+        "line": 72,
+        "call": "load"
+      },
+      {
+        "line": 79,
+        "call": "load"
+      },
+      {
+        "line": 75,
+        "call": "load"
+      },
+      {
+        "line": 77,
+        "call": "load"
+      },
+      {
+        "line": 105,
+        "call": "write"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "host_controls.py",
+    "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+    "staticCalls": [
+      {
+        "line": 18,
+        "call": "json.loads"
+      },
+      {
+        "line": 22,
+        "call": "B.spawn"
+      },
+      {
+        "line": 24,
+        "call": "(directory / 'stdout.log').write_bytes"
+      },
+      {
+        "line": 24,
+        "call": "(directory / 'stderr.log').write_bytes"
+      },
+      {
+        "line": 25,
+        "call": "json.loads"
+      },
+      {
+        "line": 82,
+        "call": "B.spawn"
+      },
+      {
+        "line": 86,
+        "call": "(directory / 'fresh-ps.log').write_bytes"
+      },
+      {
+        "line": 86,
+        "call": "(directory / 'fresh-ps.stderr').write_bytes"
+      },
+      {
+        "line": 32,
+        "call": "B.spawn"
+      },
+      {
+        "line": 36,
+        "call": "(directory / 'stdout.log').write_bytes"
+      },
+      {
+        "line": 36,
+        "call": "(directory / 'stderr.log').write_bytes"
+      },
+      {
+        "line": 37,
+        "call": "json.loads"
+      },
+      {
+        "line": 54,
+        "call": "B.spawn"
+      },
+      {
+        "line": 79,
+        "call": "json.loads"
+      },
+      {
+        "line": 103,
+        "call": "json.loads"
+      },
+      {
+        "line": 34,
+        "call": "parent.sendall"
+      },
+      {
+        "line": 63,
+        "call": "os.kill"
+      },
+      {
+        "line": 85,
+        "call": "census.kill"
+      },
+      {
+        "line": 112,
+        "call": "json.loads"
+      },
+      {
+        "line": 78,
+        "call": "journal.write"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "host_peer.py",
+    "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+    "staticCalls": [
+      {
+        "line": 27,
+        "call": "json.loads"
+      },
+      {
+        "line": 41,
+        "call": "signal.pthread_sigmask"
+      },
+      {
+        "line": 57,
+        "call": "write"
+      },
+      {
+        "line": 64,
+        "call": "B.spawn"
+      },
+      {
+        "line": 68,
+        "call": "receive"
+      },
+      {
+        "line": 71,
+        "call": "write"
+      },
+      {
+        "line": 73,
+        "call": "receive"
+      },
+      {
+        "line": 76,
+        "call": "B.spawn"
+      },
+      {
+        "line": 79,
+        "call": "receive"
+      },
+      {
+        "line": 12,
+        "call": "f.write"
+      },
+      {
+        "line": 22,
+        "call": "channel.recv"
+      },
+      {
+        "line": 34,
+        "call": "write"
+      },
+      {
+        "line": 39,
+        "call": "sys.stdout.write"
+      },
+      {
+        "line": 42,
+        "call": "receive_control"
+      },
+      {
+        "line": 51,
+        "call": "json.loads"
+      },
+      {
+        "line": 51,
+        "call": "write"
+      },
+      {
+        "line": 54,
+        "call": "channel.sendall"
+      },
+      {
+        "line": 55,
+        "call": "receive_control"
+      },
+      {
+        "line": 59,
+        "call": "wait_until"
+      },
+      {
+        "line": 20,
+        "call": "write"
+      },
+      {
+        "line": 24,
+        "call": "write"
+      },
+      {
+        "line": 36,
+        "call": "signal.signal"
+      },
+      {
+        "line": 38,
+        "call": "wait_until"
+      },
+      {
+        "line": 44,
+        "call": "wait_until"
+      },
+      {
+        "line": 47,
+        "call": "channel.recv"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "outer_host.py",
+    "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
+    "staticCalls": [
+      {
+        "line": 184,
+        "call": "signal.signal"
+      },
+      {
+        "line": 184,
+        "call": "signal.signal"
+      },
+      {
+        "line": 41,
+        "call": "signal.pthread_sigmask"
+      },
+      {
+        "line": 259,
+        "call": "signal_owned"
+      },
+      {
+        "line": 43,
+        "call": "subprocess.Popen"
+      },
+      {
+        "line": 47,
+        "call": "signal.pthread_sigmask"
+      },
+      {
+        "line": 133,
+        "call": "signals.append"
+      },
+      {
+        "line": 258,
+        "call": "select.select"
+      },
+      {
+        "line": 264,
+        "call": "signal_owned"
+      },
+      {
+        "line": 119,
+        "call": "handle.poll"
+      },
+      {
+        "line": 134,
+        "call": "os.killpg"
+      },
+      {
+        "line": 145,
+        "call": "bus.recvmsg"
+      },
+      {
+        "line": 154,
+        "call": "json.loads"
+      },
+      {
+        "line": 195,
+        "call": "io_channel.sendmsg"
+      },
+      {
+        "line": 204,
+        "call": "signal_owned"
+      },
+      {
+        "line": 205,
+        "call": "signal_owned"
+      },
+      {
+        "line": 207,
+        "call": "subprocess.Popen"
+      },
+      {
+        "line": 226,
+        "call": "census.poll"
+      },
+      {
+        "line": 82,
+        "call": "item['ack'].send"
+      },
+      {
+        "line": 84,
+        "call": "item['ack'].send"
+      },
+      {
+        "line": 201,
+        "call": "item['socket'].send"
+      },
+      {
+        "line": 223,
+        "call": "census.kill"
+      },
+      {
+        "line": 255,
+        "call": "os.write"
+      },
+      {
+        "line": 267,
+        "call": "handle.kill"
+      },
+      {
+        "line": 138,
+        "call": "h.send_signal"
+      },
+      {
+        "line": 219,
+        "call": "census.kill"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "outer_worker.py",
+    "sha256": "bbf1845fe061a1be43752c4e9bd39eb0889ca026cc61c65a55feb5e5d4b98682",
+    "staticCalls": [
+      {
+        "line": 13,
+        "call": "stream.write"
+      },
+      {
+        "line": 37,
+        "call": "harness.authorized"
+      },
+      {
+        "line": 46,
+        "call": "json.loads"
+      },
+      {
+        "line": 46,
+        "call": "write"
+      },
+      {
+        "line": 48,
+        "call": "channel.recvmsg"
+      },
+      {
+        "line": 66,
+        "call": "write"
+      },
+      {
+        "line": 69,
+        "call": "receive"
+      },
+      {
+        "line": 78,
+        "call": "write"
+      },
+      {
+        "line": 19,
+        "call": "channel.recv"
+      },
+      {
+        "line": 27,
+        "call": "json.loads"
+      },
+      {
+        "line": 39,
+        "call": "receive"
+      },
+      {
+        "line": 75,
+        "call": "json.loads"
+      },
+      {
+        "line": 58,
+        "call": "select.select"
+      },
+      {
+        "line": 63,
+        "call": "s['file'].write"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "owned_spawn.py",
+    "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+    "staticCalls": [
+      {
+        "line": 50,
+        "call": "ack.recv"
+      },
+      {
+        "line": 22,
+        "call": "channel.send"
+      },
+      {
+        "line": 46,
+        "call": "channel.sendmsg"
+      },
+      {
+        "line": 51,
+        "call": "json.loads"
+      },
+      {
+        "line": 56,
+        "call": "handle.kill"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "report_controls.py",
+    "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+    "staticCalls": [
+      {
+        "line": 38,
+        "call": "json.loads"
+      },
+      {
+        "line": 39,
+        "call": "target.write_bytes"
+      },
+      {
+        "line": 40,
+        "call": "entry.write_text"
+      },
+      {
+        "line": 42,
+        "call": "json.loads"
+      },
+      {
+        "line": 49,
+        "call": "json.loads"
+      },
+      {
+        "line": 71,
+        "call": "A.audit_partial"
+      },
+      {
+        "line": 49,
+        "call": "(P / 'context/semantic-audit-contract/request-payloads.json').read_bytes"
+      },
+      {
+        "line": 60,
+        "call": "payloads.get"
+      },
+      {
+        "line": 69,
+        "call": "A.audit_d4"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "scanner_controls.py",
+    "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+    "staticCalls": [
+      {
+        "line": 49,
+        "call": "path.write_bytes"
+      },
+      {
+        "line": 78,
+        "call": "p.write_bytes"
+      },
+      {
+        "line": 109,
+        "call": "p.write_bytes"
+      },
+      {
+        "line": 105,
+        "call": "output.write"
+      },
+      {
+        "line": 95,
+        "call": "output.write"
+      },
+      {
+        "line": 104,
+        "call": "output.write"
+      },
+      {
+        "line": 116,
+        "call": "f.write"
+      }
+    ],
+    "method": "AST read only; not execution"
+  },
+  {
+    "path": "watchdog_controls.py",
+    "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+    "staticCalls": [
+      {
+        "line": 123,
+        "call": "self.signals.append"
+      },
+      {
+        "line": 170,
+        "call": "scenario"
+      },
+      {
+        "line": 172,
+        "call": "scenario"
+      },
+      {
+        "line": 173,
+        "call": "scenario"
+      },
+      {
+        "line": 174,
+        "call": "scenario"
+      },
+      {
+        "line": 176,
+        "call": "scenario"
+      },
+      {
+        "line": 186,
+        "call": "scenario"
+      },
+      {
+        "line": 195,
+        "call": "scenario"
+      },
+      {
+        "line": 25,
+        "call": "m.polls.append"
+      },
+      {
+        "line": 131,
+        "call": "self.handlers[signal.SIGTERM]"
+      },
+      {
+        "line": 175,
+        "call": "scenario"
+      },
+      {
+        "line": 181,
+        "call": "scenario"
+      },
+      {
+        "line": 168,
+        "call": "G.load_gate"
+      },
+      {
+        "line": 169,
+        "call": "scenario"
+      },
+      {
+        "line": 169,
+        "call": "scenario"
+      },
+      {
+        "line": 178,
+        "call": "scenario"
+      },
+      {
+        "line": 190,
+        "call": "scenario"
+      },
+      {
+        "line": 190,
+        "call": "scenario"
+      },
+      {
+        "line": 190,
+        "call": "scenario"
+      },
+      {
+        "line": 191,
+        "call": "scenario"
+      },
+      {
+        "line": 191,
+        "call": "scenario"
+      },
+      {
+        "line": 191,
+        "call": "scenario"
+      },
+      {
+        "line": 44,
+        "call": "json.loads"
+      },
+      {
+        "line": 194,
+        "call": "A.selected_results"
+      },
+      {
+        "line": 194,
+        "call": "A.received_wire"
+      },
+      {
+        "line": 44,
+        "call": "m.publisher.payload.split"
+      }
+    ],
+    "method": "AST read only; not execution"
+  }
+]

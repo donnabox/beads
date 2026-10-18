@@ -1,0 +1,28 @@
+{
+  "closedEnvelope": "Apply report-grammar plus strict duplicate-key/finite-number/UTF8 scanner; headers/raw body/ready are observed data, not trusted assertions. Malformed raw captured content is retained as failed/nonconforming evidence.",
+  "rowAlgebra": [
+    "ordinal exactly1..observations.length, no duplicates; max32 independent cap. generation sequence1then2, no third; successful rows1-28 generation1,29-32 generation2.",
+    "GET omits requestBody after JSON.stringify(undefined); POST requires primitive string representing exact finite authored payload on successful source path. No hidden request headers/key fields accepted.",
+    "validated true implies received true. received true implies retained actual integer status, full lowercased joined string headers and complete primitive body text before assertions; wire/hash may be null only as an honest failed observation, never success. errorCategory remains null for received rows.",
+    "received false implies validated false, status/headers/body/wire/base64/hash null; writeState can null or exact exposed finite state. If not settled, errorCategory may null. Settled rejected exchange carries actual fixed HttpTransportError category or unavailable, never fabricated response bytes/complete transmission.",
+    "counts.observed.attempted=observations.length; settled/received/validated are sums of actual booleans, not expected32. pendingRequests=attempted-settled at cached report time. received and settled are distinct; no received=>all later validation assumption.",
+    "A row with status200/validatedtrue is not automatically semantically successful. Independently check exact request path/body, schemas, typed opaque context and all cross-row laws. Wrong status/JSON/schema/body stays retained failure."
+  ],
+  "wireIntegrity": [
+    "Strict canonical base64 decode full original wire bytes; decoded length<=1179648 per row and total<=37748736; actual SHA256(decodedWire) must equal recorded wireSha256. No truncation/hash-only fallback.",
+    "Use pinned executor final-response/informational/framing semantics at source/http-executor.ts1100-1260 and full copied file, matching Latin1 header normalization/joining, CRLF status/head, content-length/chunked/no-ambiguous-framing and strict UTF8 body. Do not re-run/import product to audit.",
+    "Decoded final status equals row.status; complete decoded header map equals row.headers; framed decoded body UTF8 equals row.body EXACTLY. Then parse body separately under strict JSON for semantic obligations.",
+    "Derive audit-only bodyUtf8Sha256=SHA256(UTF8(row.body)), requestBodySha256 when present, fullWireSha256 and retained raw report hash. These are DERIVED audit fields, absent from source report; never require invented bodyDigest field or substitute canonical data digest for original wire/body bytes.",
+    "For expected200 require writeState complete, nonempty full wire, nonempty actual bdp-scope-epoch/bdp-authorization-view/bdp-scope-position strings. Apply current pinned schemas/opaque context rules, no numeric/lexical position ordering or current-header==historical receipt equality.404s still require actual complete write+wire/body; only200 carries source nonempty context assertion."
+  ],
+  "caps": {
+    "requestMs": 5000,
+    "requestHeaderBytes": 16384,
+    "requestBodyBytes": 65536,
+    "responseBodyBytes": 1048576,
+    "responseHeaderBytes": 65536,
+    "derivedWireBytes": 1179648,
+    "maxDispatches": 32
+  },
+  "preservation": "Report body, headers, full base64 and hashes are duplicate observations, not distinct semantic credit. Raw bytes remain protected evidence; no universal arbitrary credential-encoding claim."
+}

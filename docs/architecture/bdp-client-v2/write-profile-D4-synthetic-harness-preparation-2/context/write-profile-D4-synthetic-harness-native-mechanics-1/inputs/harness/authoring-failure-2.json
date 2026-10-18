@@ -1,0 +1,9 @@
+{
+  "activity": "AST-only authoring inspection",
+  "failure": "SyntaxError line141: R.__file__and token lacks whitespace",
+  "exit": 1,
+  "subjectOrHarnessImportedOrEvaluated": false,
+  "correction": "whitespace after __file__ only",
+  "beforeSource": "authoring-history/watchdog-controls-before-AST-fix-2.py.txt",
+  "notAControlResult": true
+}
