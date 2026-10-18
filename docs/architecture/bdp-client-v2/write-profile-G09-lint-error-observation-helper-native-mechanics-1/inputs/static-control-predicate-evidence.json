@@ -1,0 +1,30 @@
+{
+  "method": "Raw section byte equality and full readable diffs only; no AST/import/eval/compile/helper execution.",
+  "unchangedSections": {
+    "gate_strict_JSON_document_source_tools": true,
+    "gate_unused_build_consumer_functions": true,
+    "run_environment_temp_checks": true,
+    "run_signal_sampling_Popen_and_main_finally": true,
+    "run_temp_scan_and_child_return": true,
+    "guard_byteexact": true
+  },
+  "retainedCallOrder": [
+    "strict singleton CLI before imports/gate",
+    "load_gate including source/tool/ref/remote guard before output/temp/child",
+    "exclusive run namespace then unchanged env/temp setup and actual started receipt",
+    "unchanged signal/ps/sampling/Popen/stop/finally sequence",
+    "unchanged source recheck and runtime-root scan",
+    "actual raw returncode recorded1; local completion gate then exclusive exit receipt",
+    "wrapper0 capture-only; external independent PIPE/tool/census/commonclock/root error classification still missing"
+  ],
+  "explicitChangedControlSites": [
+    "single stage argv + run directory exclusive",
+    "load_gate replaced pipeline ordering/child/build/consumer branches with fixed diagnostic-only26key authority and complete source/tool checks",
+    "actual30468workspace tools unconditionally checked",
+    "started receipt diagnostic-only labels",
+    "new115 finalization refusal in addition unchanged120 bound",
+    "raw1 acceptedfalse qualityfalse completion and wrapper capture-only status"
+  ],
+  "noASTClaim": true,
+  "retainedUnusedFunctions": "Original inventory/consumer/complete/verify functions retained byteexact but unreachable from singleton load_gate/run path; they confer no extra CLI entry or stage."
+}

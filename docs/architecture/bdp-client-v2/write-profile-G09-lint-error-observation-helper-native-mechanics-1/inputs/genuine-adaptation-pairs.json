@@ -1,0 +1,61 @@
+[
+  {
+    "file": "run.py",
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+      "bytes": 5357
+    },
+    "afterSha256": "8da2272beb92f056ab56e1a63e4a1cb8d3e42454dc1d8666e00b827003e5bfe4",
+    "changed": true,
+    "forward": "deltas/run.py.forward.patch",
+    "inverse": "deltas/run.py.inverse.patch",
+    "reversible": "deltas/run.py.reversible.ndiff",
+    "exactTextRestorationBothDirections": true,
+    "semanticEvaluation": false
+  },
+  {
+    "file": "gate.py",
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/gate.py",
+      "sha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168",
+      "bytes": 12583
+    },
+    "afterSha256": "9a8a331a1dd556f29cbf199cb70a5f1efbde5e20ac630afcb5a55a2e67f6a60c",
+    "changed": true,
+    "forward": "deltas/gate.py.forward.patch",
+    "inverse": "deltas/gate.py.inverse.patch",
+    "reversible": "deltas/gate.py.reversible.ndiff",
+    "exactTextRestorationBothDirections": true,
+    "semanticEvaluation": false
+  },
+  {
+    "file": "guarded-action-session-20261018-021624-549f.py",
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/guarded-action-session-20261018-021624-549f.py",
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "bytes": 946
+    },
+    "afterSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "changed": false,
+    "forward": "deltas/guarded-action-session-20261018-021624-549f.py.forward.patch",
+    "inverse": "deltas/guarded-action-session-20261018-021624-549f.py.inverse.patch",
+    "reversible": "deltas/guarded-action-session-20261018-021624-549f.py.reversible.ndiff",
+    "exactTextRestorationBothDirections": true,
+    "semanticEvaluation": false
+  },
+  {
+    "file": "commands.json",
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/commands.json",
+      "sha256": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+      "bytes": 35072
+    },
+    "afterSha256": "7850e90410ac64eb109fbbe51650bee67bb5a7afa934edfa069c6e5c8aaadc94",
+    "changed": true,
+    "exactTextRestorationBothDirections": true,
+    "forward": "deltas/commands.json.forward.patch",
+    "inverse": "deltas/commands.json.inverse.patch",
+    "reversible": "deltas/commands.json.reversible.ndiff"
+  }
+]

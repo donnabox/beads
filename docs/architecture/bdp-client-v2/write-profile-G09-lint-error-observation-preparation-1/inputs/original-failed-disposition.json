@@ -1,0 +1,47 @@
+{
+  "accepted": false,
+  "actualAToolExit": 1,
+  "actualAToolId": "3952b6",
+  "actualB": "NOT_INVOKED",
+  "actualC": "NOT_INVOKED",
+  "allLater27Unattempted": true,
+  "auditAccepted": true,
+  "auditComplete": true,
+  "automaticOrSameAttemptRetryAuthorized": false,
+  "failurePublication": "0bc76781d7a7711d62b01cd3cbff9a3d2348ad75",
+  "findingsDisposition": [
+    {
+      "accepted": true,
+      "disposition": "Retain actual1/summary1error96warnings30infos107omitted; exact error UNKNOWN_NOT_SHOWN; visiblewarning/info is not causalproof. P3staysSTOPPED, no B/C/build/sameattemptretry/cap/options/deadlineweakening. Source-only staticdiagnosis and concrete separatelyreviewed correction plan may be considered; NOsourceauthorrelease now.",
+      "id": "LINT-ACTUAL-FAILURE-01"
+    }
+  ],
+  "laterAdministrativeFiniteAbsenceDoesNotRestoreFailure": true,
+  "liveGateReclosedSha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655",
+  "missingPostterminalCensusAndClockWitnessPreserved": true,
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-failure-native-audit-1/closure.json",
+    "sha256": "bb21deeec292d2af4720108cb143a8cae7b7d2bc07fb6da7f31193a315d3132b"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-failure-native-audit-1/index.json",
+    "sha256": "9903e9cb37dd9c5660d38fd4b4441760d6ac9f7edb9ef1873b6bb43c2acf2f30"
+  },
+  "newProviderReviewAuthorized": false,
+  "normal115ConjunctionAccepted": false,
+  "postterminalCleanupUnknown": true,
+  "publicOrWholeWriteCredit": false,
+  "rootInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-root-failed-disposition-1/inspection.json",
+    "sha256": "320999aabf2fef15dc2250fb08430c4faaa674d5e74be499195ec891068399cb"
+  },
+  "scope": "EXACT_ONE_ACTUAL_P3_LINT_FAILURE_CLASSIFICATION_ONLY",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAuthoringReleased": false,
+  "status": "FAILED_STOPPED_NO_RETRY",
+  "stop": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-failure-1/stop.json",
+    "sha256": "ec578e3d5b43ea14d497ccecf2fe0e4d5624827f21a869091f12f75ea5975ad1"
+  },
+  "successorValidationOrRuntimeReleased": false
+}

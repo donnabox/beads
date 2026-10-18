@@ -1,0 +1,77 @@
+{
+  "executionAuthorized": false,
+  "notTestsRun": true,
+  "finiteCases": [
+    {
+      "id": "D01",
+      "case": "Child1 + retained error + full independentfacts",
+      "required": "diagnostic complete only; qualityfalse"
+    },
+    {
+      "id": "D02",
+      "case": "Child1 complete but no printable diagnostic",
+      "required": "erroridentityUNKNOWN; stop"
+    },
+    {
+      "id": "D03",
+      "case": "Child0",
+      "required": "unexpectedzero refuses"
+    },
+    {
+      "id": "D04",
+      "case": "Child2/negative/null",
+      "required": "infra/unknown refuses"
+    },
+    {
+      "id": "D05",
+      "case": "Any warnings filtered to0",
+      "required": "no quality/pass inference"
+    },
+    {
+      "id": "D06",
+      "case": "Source/config/oneof10files differs",
+      "required": "beforelaunch gate refuses"
+    },
+    {
+      "id": "D07",
+      "case": "Toolbytes/realpath differs",
+      "required": "beforelaunch refuses"
+    },
+    {
+      "id": "D08",
+      "case": "Unresolved external manifest/gatehash",
+      "required": "beforeoutput/child refuses"
+    },
+    {
+      "id": "D09",
+      "case": "P3gateclosed/oldrun paths supplied",
+      "required": "refuse no reuse"
+    },
+    {
+      "id": "D10",
+      "case": "Any old output alreadyexists in newnamespace",
+      "required": "exclusivecreation refuses no retry"
+    },
+    {
+      "id": "D11",
+      "case": "Partialstdout/stderr/write/hash/close error",
+      "required": "fullstreamUNKNOWN; prefix retained where observed"
+    },
+    {
+      "id": "D12",
+      "case": "Missing A/B actualterminal or sameclock witness",
+      "required": "normalcompletionUNKNOWN"
+    },
+    {
+      "id": "D13",
+      "case": "matchingPID/PGID zombie/reused/present",
+      "required": "absence refused; no unsafehistoricalsignal"
+    },
+    {
+      "id": "D14",
+      "case": ">=115normal/deadline/forcedcleanup",
+      "required": "no positivecomplete; no grace"
+    }
+  ],
+  "policy": "Future static negative DATA relations and any subject validation need separately reviewed release. This plan executes none."
+}

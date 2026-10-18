@@ -1,0 +1,92 @@
+--- before/gate.py
++++ after/gate.py
+@@ -1,4 +1,4 @@
+-"""Current changefeed closed gates; no product imports. Root owns releases and measured pins."""
++"""Closed singleton lint-error observation gates; no product imports or quality/pipeline authority."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+@@ -84,54 +84,46 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
++KEYSET={'rootArchiveAcceptance', 'rootConsumerProofAcceptance', 'rootBuildAcceptance', 'knownOriginalActualCodeTerminal', 'session', 'rootPlanAccepted', 'released', 'actualClaudeReviewDisposed', 'baseTools', 'bootstrapReuse', 'nativeCodeDisposition', 'sourceBinding', 'staticValidationAuthorized', 'nativeCodeReviewDisposed', 'installedProvenance', 'workspaceTools', 'consumerInventory', 'actualCodeDisposition', 'consumerLockSha256', 'approvedStages', 'implementationIndexSha256', 'mode', 'knownCorrectedSourceFreeze', 'rootConsumerLockAcceptance', 'rootDisposition', 'rootExactSourceAccepted'}
++EXPECTED_SPEC={'argv': ['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/bin/biome', 'lint', '--diagnostic-level=error', '--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json', 'apps/bdptest/src/transactional-discovery-installed.test.ts', 'apps/bdptest/src/transactional-schema-installed.test.ts', 'packages/server/src/transaction-changefeed.test.ts', 'packages/server/src/transaction-http.test.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-installed-contracts.test.ts', 'packages/server/src/transaction-schema-http.test.ts', 'packages/server/src/transaction-schema-http.ts', 'packages/server/src/transaction-service.test.ts', 'packages/server/src/transaction-service.ts'], 'automaticRetries': 0, 'configurationFinalized': True, 'cwd': '/Users/dbox/repos/wt/vickie/vickie-schema-minimum', 'id': 'lint-error-observation', 'kind': 'fixed-diagnostic-command', 'mutatesSource': False, 'outerSeconds': 120, 'termAtSeconds': 115, 'expectedObservedRawExit': 1, 'qualityAcceptance': False}
++COMMANDS_SHA='7850e90410ac64eb109fbbe51650bee67bb5a7afa934edfa069c6e5c8aaadc94'
++WORKSPACE_SHA='30468c88674a41a54f8a366ca78c84dffc07f3e035a0d9bf32430300b6503552'
++KNOWN_ORIGINAL={'path': '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/actual-review-terminal-1/closure.json', 'sha256': '440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057'}
++KNOWN_CORRECTED={'path': '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/index.json', 'sha256': '784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14'}
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
++ require(name=='lint-error-observation' and child is False,'Diagnostic singleton only; no child helper entry')
+  g=read(P/'execution-gate.json')
+- require(set(g)=={'rootExactSourceAccepted', 'session', 'rootArchiveAcceptance', 'knownOriginalActualCodeTerminal', 'consumerInventory', 'consumerLockSha256', 'workspaceTools', 'implementationIndexSha256', 'approvedStages', 'sourceBinding', 'actualClaudeReviewDisposed', 'installedProvenance', 'actualCodeDisposition', 'staticValidationAuthorized', 'released', 'baseTools', 'rootConsumerProofAcceptance', 'mode', 'bootstrapReuse', 'rootConsumerLockAcceptance', 'nativeCodeDisposition', 'rootPlanAccepted', 'rootDisposition', 'rootBuildAcceptance', 'knownCorrectedSourceFreeze', 'nativeCodeReviewDisposed'},'Unknown/missing gate key')
++ require(set(g)==KEYSET,'Unknown/missing gate key')
+  require(all(type(g[k]) is bool for k in ['released','rootPlanAccepted','rootExactSourceAccepted','actualClaudeReviewDisposed','nativeCodeReviewDisposed','staticValidationAuthorized']),'Gate boolean type')
+- require(read(P/'commands.json').get('configurationFinalized') is True,'Authored current changefeed source/selection not finalized')
+- require(read(P/'audit-expectations.json').get('finalized') is True,'Actual current changefeed observation contracts not finalized')
+- require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')
+- require(g['mode']==MODE,'Wrong phase')
+- if child:
+-  record=E/(name+'.started.json')
+-  require(os.environ.get('TX_DISCOVERY_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('TX_DISCOVERY_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+-  require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
++ require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['staticValidationAuthorized'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root diagnostic release absent')
++ require(g['mode']==MODE=='final','Wrong phase')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+  for f,h in read(P/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)
+  b=document(g['sourceBinding']);sid=source_check(b);g={**g,'finalHead':b['head'],'finalTree':b['tree'],'sourceLockSha256':b['trackedSourceFiles']['pnpm-lock.yaml'],'_sourceIdentity':sid,'_sourceBinding':b}
+- disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')
+- cfg=read(P/'commands.json');order=cfg[MODE+'Order'];approved=g['approvedStages']
+- require(type(approved) is list and all(type(n) is str for n in approved),'Approved stage list type')
+- require(approved==order[:len(approved)] and name in approved,'Stage not released')
+- spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec.get('termAtSeconds')==115 and spec['automaticRetries']==0,'Limits changed')
++ require(g['sourceBinding']=={'path':str(P/'source-binding.json'),'sha256':'712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'},'Exact diagnostic source binding required')
++ cfg=read(P/'commands.json')
++ require(set(cfg)=={'configurationFinalized','diagnosticOnly','noPipelineCredit','finalOrder','commands'} and cfg['configurationFinalized'] is True and cfg['diagnosticOnly'] is True and cfg['noPipelineCredit'] is True,'Diagnostic command scope differs')
++ require(cfg['finalOrder']==['lint-error-observation'] and type(g['approvedStages']) is list and g['approvedStages']==['lint-error-observation'] and set(cfg['commands'])=={'lint-error-observation'},'Only one diagnostic is released')
++ spec=cfg['commands'][name]
++ require(spec==EXPECTED_SPEC,'Diagnostic command/argv/limits changed')
++ require(spec['outerSeconds']==120 and spec['termAtSeconds']==115 and spec['automaticRetries']==0 and spec['expectedObservedRawExit']==1 and type(spec['expectedObservedRawExit']) is int and spec['qualityAcceptance'] is False,'Diagnostic limits/outcome changed')
+  require(not any('UNRESOLVED' in arg or ('$'+'{') in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')
+- if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
++ disposition=document(g['rootDisposition'])
++ require(disposition.get('accepted') is True and disposition.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and disposition.get('commandsSha256')==COMMANDS_SHA,'Root diagnostic disposition differs')
++ require(disposition.get('diagnosticOnly') is True and disposition.get('noPipelineCredit') is True and disposition.get('approvedStages')==['lint-error-observation'] and disposition.get('qualityAcceptance') is False,'No pipeline/quality authority allowed')
++ require(disposition.get('staticValidationAuthorized') is True and disposition.get('runtimeValidationAuthorized') is False and g['bootstrapReuse']==[],'Only isolated static diagnostic authority is allowed')
+  base=document(g['baseTools']);tools_check(base['tools'])
+  require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+- if order.index(name)>order.index('bind-workspace-tools'):
+-  workspace=document(g['workspaceTools']);tools_check(workspace['tools'])
+-  require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool binding differs')
+- require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')
+- require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both CODE review dispositions remain required before validation')
++ require(g['workspaceTools']=={'path':str(P/'workspace-tools.json'),'sha256':WORKSPACE_SHA},'Exact previously observed workspace tool identity required')
++ workspace=document(g['workspaceTools']);tools_check(workspace['tools'])
++ require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Workspace tool source/lock differs')
++ require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both existing CODE disposition wrappers remain required')
+  for label in ['nativeCodeDisposition','actualCodeDisposition']:
+   d=document(g[label]);require(d.get('accepted') is True and d.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'CODE disposition differs '+label)
+- require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+- for prior in order[:order.index(name)]:complete(prior,g)
+- if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):
+-  verify_build(g);accepted=document(g['rootBuildAcceptance'])
+-  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root actual build acceptance missing')
+- if order.index(name)>=order.index('prepare-consumer'):
+-  accepted=document(g['rootArchiveAcceptance'])
+-  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance missing')
+- if name=='verify-installed-consumer':
+-  lock=document(g['rootConsumerLockAcceptance'])
+-  require(lock.get('accepted') is True and lock.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual lock acceptance missing')
+-  require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==lock['consumerLockSha256'],'Consumer lock not root-pinned')
+-  require(lock.get('consumerManifestSha256')==sha((E/'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256')==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Root actual consumer manifest/settings acceptance missing')
+- if spec.get('requiresConsumerProof') is True:
+-  proof=verify_consumer(g)
+-  accepted=document(g['rootConsumerProofAcceptance']);require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('installedProvenance')==g['installedProvenance'] and accepted.get('consumerInventory')==g['consumerInventory'],'Root actual proof acceptance missing')
+-  spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
++ require(g['knownOriginalActualCodeTerminal']==KNOWN_ORIGINAL and g['knownCorrectedSourceFreeze']==KNOWN_CORRECTED,'Original/corrected review attribution changed')
++ document(g['knownOriginalActualCodeTerminal']);document(g['knownCorrectedSourceFreeze'])
++ require(all(g[k]=={'path':'UNRESOLVED','sha256':'UNRESOLVED'} for k in ['rootBuildAcceptance','rootArchiveAcceptance','rootConsumerLockAcceptance','rootConsumerProofAcceptance','installedProvenance','consumerInventory']) and g['consumerLockSha256']=='UNRESOLVED','Build/consumer authority is not part of this diagnostic')
++ # No prior-stage completion, build, archive, consumer or next-stage branch exists here.
+  guarded();return g,spec

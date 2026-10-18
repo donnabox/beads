@@ -1,0 +1,49 @@
+--- after/run.py
++++ before/run.py
+@@ -1,12 +1,12 @@
+-"""One isolated lint-error observation. Child1 remains failed lint; wrapper0 is capture-only. Closed without diagnostic root gate."""
++"""Single bounded stage. Usage: run.py final STAGE; workspace tools are captured after guarded offline install. Closed without root gate."""
+ import os,sys
+-if len(sys.argv)!=3 or sys.argv[1:]!=['final','lint-error-observation']:raise SystemExit('usage: run.py final lint-error-observation')
++if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+ os.environ['TX_DISCOVERY_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+ import time,signal,tempfile
+-name=sys.argv[2];g,spec=load_gate(name);E.mkdir(exist_ok=False)
++name=sys.argv[2];g,spec=load_gate(name);E.mkdir(exist_ok=True)
+ for suffix in ['.started.json','.log','.exit.json','.processes.jsonl','.tmp']:
+  require(not (E/(name+suffix)).exists(),'Attempt exists: preserve, do not retry')
+ env=os.environ.copy()
+@@ -18,7 +18,7 @@
+ tmp=Path(tempfile.mkdtemp(prefix='vickie-tx-discovery-validation-'+name+'-',dir='/private/tmp'))
+ require(tmp.parent==Path('/private/tmp') and tmp.resolve()==tmp,'Unexpected owned temp path')
+ env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+-write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{}),'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','expectedObservedRawExit':1,'qualityPass':False,'temporaryDirectory':str(tmp),'npmCache':str(tmp/'npm-cache')})
++write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{}),'temporaryDirectory':str(tmp),'npmCache':str(tmp/'npm-cache')})
+ env['TX_DISCOVERY_VALIDATION_STAGE']=name;env['TX_DISCOVERY_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+@@ -66,16 +66,15 @@
+  except BaseException as e:errors.append('process verification:'+type(e).__name__)
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+-  require(name=='lint-error-observation' and spec['qualityAcceptance'] is False,'Diagnostic singleton only; no build/consumer branch')
++  if MODE=='final' and name not in ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
++  if spec.get('requiresConsumerProof') is True:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+  except BaseException as e:errors.append('temp verification:'+type(e).__name__)
+  code=p.returncode if p is not None else None
+- if time.monotonic()-start>=115:errors.append('normal elapsed exceeded115s')
+  if time.monotonic()-start>=120:errors.append('outer elapsed exceeded120s')
+- observation_complete=type(code) is int and code==spec['expectedObservedRawExit']==1 and not errors and not forced and not alive and not runtime and unchanged
+- status='CAPTURE_COMPLETE_PENDING_ROOT_CLASSIFICATION' if observation_complete else ('UNEXPECTED_ZERO' if code==0 and not errors and not forced else ('UNEXPECTED_OR_INFRASTRUCTURE_EXIT' if code is None or code!=1 else 'INCOMPLETE_OR_LATE'))
++ accepted=code in spec.get("acceptedRawExitCodes",[0]) and not errors and not forced and not alive and not runtime and unchanged
+  log=E/(name+'.log')
+- record={'exit':code,'accepted':False,'qualityPass':False,'observationComplete':observation_complete,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','status':status,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True,'sourceIdentity':g['_sourceIdentity'],'sourceUnchanged':unchanged,'elapsedSeconds':time.monotonic()-start,'forcedCleanup':forced,'errors':errors,'sampledPids':sorted(seen),'remainingProcesses':alive,'runtimeDirectoriesStillPresent':runtime,'temporaryDirectory':str(tmp),'logSha256':sha(log.read_bytes()) if log.exists() else None}
++ record={'exit':code,'accepted':accepted,'sourceIdentity':g['_sourceIdentity'],'sourceUnchanged':unchanged,'elapsedSeconds':time.monotonic()-start,'forcedCleanup':forced,'errors':errors,'sampledPids':sorted(seen),'remainingProcesses':alive,'runtimeDirectoriesStillPresent':runtime,'temporaryDirectory':str(tmp),'logSha256':sha(log.read_bytes()) if log.exists() else None}
+  write(name+'.exit.json',record)
+- print(json.dumps(record));sys.exit(0 if observation_complete else 1)
++ print(json.dumps(record));sys.exit(0 if accepted else 1)
