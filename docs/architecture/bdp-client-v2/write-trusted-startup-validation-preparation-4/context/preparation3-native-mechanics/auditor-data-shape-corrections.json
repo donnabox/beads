@@ -1,0 +1,14 @@
+{
+  "classification": "Auditor data-shape assumptions corrected; no candidate finding or execution",
+  "failures": [
+    {
+      "check": "origins preservationReference always hashes directly",
+      "actual": "Historical aggregate is sealed through predecessor index entry; verified that exact entry instead"
+    },
+    {
+      "check": "all origins use preservationReference",
+      "actual": "22 new correction/failure origins use exactPreservedCopy; independently verified copies and origins"
+    }
+  ],
+  "candidateFilesAltered": false
+}

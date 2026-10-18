@@ -1,0 +1,37 @@
+{
+  "kind": "root-startup-validation-helper-findings-disposition-and-correction-only-release",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdUtc": "2026-10-18T05:21:51.684844+00:00",
+  "nativeReviewSha256": "b50419912a3eb97138af1270b63c820ec74f5707a1fef1e0037a52fb30a878dc",
+  "preservePreparation1": "34b03b3a3eec7aeca7d37e98008f32d0ab1db1557e4efe75b9b48fac51b3d87d",
+  "decision": "Accept N1 and N2. Author minimal CLOSED preparation2; no execution release.",
+  "N1": "Track actual owned guard-close callback settlement AND success. Timeout/error makes cleanup unknown, preserves evidence directory and total guard. Do not infer callback completion from server.listening. Preserve original single cleanup deadline and all 45/10/60/115/120 limits; no retries.",
+  "N2": "Require typed integer zero numFailedTests and numFailedTestSuites. Keep numRuntimeErrorTestSuites optional and typed zero when present.",
+  "authorizedWriter": "changefeed_native_review",
+  "output": "write-trusted-startup-validation-preparation-2",
+  "scope": [
+    "Minimal bound-consumer-loader.mjs close-accounting correction",
+    "Minimal audit.py required counters correction",
+    "Necessary path/data/index bindings, exact genuine forward/inverse deltas and mirrors"
+  ],
+  "unchanged": [
+    "Frozen product source682/fullpatch4fd125d8",
+    "44 selected callbacks, all schemas and counts",
+    "25 stage structure and proven helpers except exact N1/N2",
+    "Original preparation1, all failures, actual reviews and supervisor4"
+  ],
+  "prohibited": [
+    "Product source edits",
+    "Helper/Node/compiler/formatter/test/build/install/runtime/reviewer execution",
+    "Git mutations",
+    "Flag release or approved stages",
+    "New frameworks or deadline/schema weakening"
+  ],
+  "requiresBeforeExecution": [
+    "Independent native precision closure of preparation2",
+    "Root complete helper/data/actual source acceptance",
+    "Exact corrected-source review wrappers",
+    "Staged fresh tools/build/archive/lock/proof acceptance"
+  ],
+  "executionReleased": false
+}

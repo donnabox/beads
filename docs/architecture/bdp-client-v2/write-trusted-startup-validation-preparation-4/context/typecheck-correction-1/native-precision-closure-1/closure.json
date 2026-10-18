@@ -1,0 +1,17 @@
+{
+  "kind": "independent-native-startup-fixture-type-correction-precision-closure",
+  "reviewedUtc": "2026-10-18T05:36:16.865414+00:00",
+  "decision": "ACCEPTED STATIC MINIMAL FIXTURE CORRECTION; no findings",
+  "findings": [],
+  "correctionIndexSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
+  "beforeMapSha256": "716701cb78328a94c502e5eaf84c48ceda458432aee44fd489f36a0f0ac810bd",
+  "afterMapSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+  "fullPatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+  "sourceIdentity": "fa80acbc158736217d4b58eb3ad927add6099d12a8746254c08cefdf25be2471",
+  "newTestSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+  "failedTypecheckLogSha256": "6cb63fc5da8e937e01e38f26b3de3368ca9d2e41ad4c592fec9b80f3451dd5ef",
+  "conclusion": "Readonly ReadLimits type from structuredClone is replaced only for caller-owned fixture page by object spread. Numeric leaf values stay identical and the page is inferred mutable. The real in-place post-call maximumItems mutation and exact originalReadLimits deep snapshot/F8 assertions remain byte-identical. No cast, production API/loader behavior, callback count/name, budget or schema change.",
+  "runtimeStatus": "Prior typecheck remains failed; corrected source is uncompiled/unexecuted here. All source682/other681 and complete patch verified statically. Actual reviewer did not read this new fixture line.",
+  "executionReleased": false,
+  "next": "Root must bind corrected source/schema hashes in separate fresh validation3; preserve old first-four successes and failed fifth stage without reuse/retry. Native precision suffices for this annotation/fixture-only correction, with no new actual CODE attempt requested."
+}

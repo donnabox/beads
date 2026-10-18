@@ -1,0 +1,49 @@
+{
+  "applications": 8,
+  "rows": [
+    {
+      "id": "missing-updateLink",
+      "substitution": "delete actual Directory.updateLink",
+      "requiredFailure": "closed requiredmember parser rejects"
+    },
+    {
+      "id": "wrong-version",
+      "substitution": "descriptor.bdpVersion=\"1\"",
+      "requiredFailure": "parser rejects"
+    },
+    {
+      "id": "wrong-profile",
+      "substitution": "descriptor.profile=\"read-update\"",
+      "requiredFailure": "parser rejects"
+    },
+    {
+      "id": "wrong-scope",
+      "substitution": "descriptor.scope=\"https://foreign.invalid/acme/\"",
+      "requiredFailure": "canonical Scope binding rejects"
+    },
+    {
+      "id": "unsafe-service-link",
+      "substitution": "Scope Link target http://127.0.0.1:9/escape",
+      "requiredFailure": "pre-dial confinement rejects without request"
+    },
+    {
+      "id": "unsafe-directory-target",
+      "substitution": "Directory.createBead=https://foreign.invalid/create",
+      "requiredFailure": "closed Directory parser/confinement rejects"
+    },
+    {
+      "id": "epoch-context-mismatch",
+      "substitution": "descriptor.scopeEpoch=other-epoch, headers untouched",
+      "requiredFailure": "body/header equality rejects"
+    },
+    {
+      "id": "head-context-mismatch",
+      "substitution": "descriptor.headPosition=pos-999, headers untouched",
+      "requiredFailure": "body/header equality rejects"
+    }
+  ],
+  "wireRequestsForSubstitutions": 0,
+  "cloneOnly": true,
+  "separateFromServingEvidence": true,
+  "noRetryFallback": true
+}

@@ -1,0 +1,32 @@
+{
+  "kind": "independent-native-two-regex-startup-lint-correction-precision-closure",
+  "accepted": true,
+  "decision": "ACCEPTED STATIC MINIMAL CORRECTION; no findings",
+  "reviewedUtc": "2026-10-18T05:54:03.608331+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "findings": [],
+  "correctionIndexSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
+  "beforeMapSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+  "afterMapSha256": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
+  "fullPatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "sourceFiles": 682,
+  "changedPaths": [
+    "packages/config/src/index.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "other680Unchanged": true,
+  "testFixture5b9AndAllTestSemanticsUnchanged": true,
+  "probeResultSha256": "2778afb7dcf86a15cfd3823910ec627e335a455d7db01a7a8c4810ca6827452b",
+  "probeScriptSha256": "1abc26f1734b370591f6bb1fe6e613e986dba8014364d9ad5b212c94e162aedf",
+  "nodeSha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+  "precisionConclusion": "Both unchanged path validators keep their earlier string/nonempty/well-formed/absolute checks, opposite acceptance/refusal polarity and UTF8 byte bound. The sole class spelling change preserves the accepted set at pinned Node: exhaustive root probe covers every code point, including surrogate values, and matches exactly65 old/new controls with0 mismatches. Earlier isWellFormed rejects unpaired surrogates before regex. Unanchored non-stateful Unicode tests preserve contains-control behavior for all admitted strings. No suppression, category expansion, API/schema/callback/deadline or source-footprint expansion.",
+  "actualOldPrefix": "Validation3 typecheck/format passed; lint failed. Build and18 later stages unattempted; gate closed. Failure remains preserved.",
+  "runtimeStatus": "New correction has no actual product lint/compiler/test/build/runtime result. Root pure regex probe is mechanics evidence only. No new actual CODE review requested or claimed.",
+  "actualReviewerReadCorrectedBytes": false,
+  "freshValidation4Required": true,
+  "executionReleased": false,
+  "sourceEditedByAuditor": false,
+  "helperProductCompilerNodeGitOrFlagsExecutedByAuditor": false,
+  "inputVerificationSha256": "138b52ab91e01951e2766cc5acc6fd138a2e4c39dfda0a1112220d4c976e96b8"
+}

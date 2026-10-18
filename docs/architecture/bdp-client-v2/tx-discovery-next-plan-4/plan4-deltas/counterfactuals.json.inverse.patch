@@ -1,0 +1,30 @@
+--- plan4/counterfactuals.json
++++ plan3/counterfactuals.json
+@@ -1,5 +1,5 @@
+ {
+-  "applications": 9,
++  "applications": 8,
+   "rows": [
+     {
+       "id": "missing-updateLink",
+@@ -29,7 +29,7 @@
+     {
+       "id": "unsafe-directory-target",
+       "substitution": "Directory.createBead=https://foreign.invalid/create",
+-      "requiredFailure": "closed Directory parser rejects schema const violation; does not independently prove confinement"
++      "requiredFailure": "closed Directory parser/confinement rejects"
+     },
+     {
+       "id": "epoch-context-mismatch",
+@@ -40,11 +40,6 @@
+       "id": "head-context-mismatch",
+       "substitution": "descriptor.headPosition=pos-999, headers untouched",
+       "requiredFailure": "body/header equality rejects"
+-    },
+-    {
+-      "id": "schema-valid-foreign-operations-base",
+-      "substitution": "clone actual descriptor; operations=https://foreign.invalid/operations/; keep actual schema-valid Directory values and all other fields",
+-      "requiredFailure": "descriptor parser accepts shape; pre-dial same-Scope/authority confinement rejects operations base; no request/dial/fallback/retry"
+     }
+   ],
+   "wireRequestsForSubstitutions": 0,

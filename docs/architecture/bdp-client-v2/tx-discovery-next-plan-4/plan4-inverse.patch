@@ -1,0 +1,2003 @@
+--- plan4/actual-inputs.json
++++ plan3/actual-inputs.json
+@@ -1,5 +1,5 @@
+ {
+-  "kind": "CLOSED corrected D3a plan4 actual input binding",
++  "kind": "CLOSED bounded actual input rebind",
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+   "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+   "tree": "6757829bd5b700faf28df39071190a272add90c9",
+@@ -337,32 +337,11 @@
+       "inPlan2": false,
+       "plan2Sha256": null,
+       "changedFromPlan2": false
+-    },
+-    "packages/conformance/src/http-executor.ts": {
+-      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+-      "bytes": 50611,
+-      "inPlan3": false,
+-      "purpose": "narrow accepted findings F1/F3/F4/F10/F13 evidence only; no edit ownership"
+-    },
+-    "packages/server/src/node-http-target.ts": {
+-      "sha256": "5e9289ca34ac15061311c593f3c9d16d091020371d1165f18ce388a4b8fcb0ee",
+-      "bytes": 2532,
+-      "inPlan3": false,
+-      "purpose": "narrow accepted findings F1/F3/F4/F10/F13 evidence only; no edit ownership"
+-    },
+-    "packages/server/src/authority-read.ts": {
+-      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+-      "bytes": 44340,
+-      "inPlan3": false,
+-      "purpose": "narrow accepted findings F1/F3/F4/F10/F13 evidence only; no edit ownership"
+     }
+   },
+   "canonicalSchemaCopiesEqual": true,
+   "actualCiAccepted": false,
+   "futureAuthoringBasis": "CONDITIONAL published D1 commit; root exact CI/serialization and review mechanics acceptance pending",
+   "productEdits": false,
+-  "runtimeExecuted": false,
+-  "plan3InputCount": 47,
+-  "newFindingInspectionInputs": 3,
+-  "inputCount": 50
++  "runtimeExecuted": false
+ }
+--- plan4/cold-input-contract.json
++++ plan3/cold-input-contract.json
+@@ -66,16 +66,5 @@
+     "descriptor/Directory/receipt/Resource/replication URLs from IPC or fixture",
+     "server administrative artifact retrieval URIs"
+   ],
+-  "metadataLane": "project only source/payload/runtime/config/artifact/policy/auth identities and dial binding; never pass raw ready or operationTargets to oracle",
+-  "negativeOnlyFixtureInput": {
+-    "knownBeadTypeContractId": "explicit provisioned Bead Type id is allowed only in the three noncold minimum-order seed request bodies",
+-    "notNavigationAuthority": true,
+-    "negativeCallbacks": "perform actual N1/N2/N3 to obtain actual operation route; this Type payload input is not cold provenance",
+-    "positiveColdOracleInputUnchanged": true
+-  },
+-  "positiveColdScopeLink": {
+-    "emitter": "\"<\" + new URL(\"bdp.json\", canonicalScope).href + \">; rel=\\\"service-desc\\\"; type=\\\"application/json\\\"\"",
+-    "fixtureExpectedBytes": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+-    "comparison": "Exact response Link string equality to existing URL emitter, then parse ACTUAL header for navigation; canonicalScope is the actual callback Scope, not metadata target map."
+-  }
++  "metadataLane": "project only source/payload/runtime/config/artifact/policy/auth identities and dial binding; never pass raw ready or operationTargets to oracle"
+ }
+--- plan4/cold-positive-requests.json
++++ plan3/cold-positive-requests.json
+@@ -11,7 +11,7 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+@@ -392,7 +392,7 @@
+           "method": "HEAD",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "zero body, actual service-desc Link, current context; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
++          "assert": "zero body, actual service-desc Link, current context"
+         }
+       ],
+       "distinctOperationNames": [
+@@ -424,7 +424,7 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+@@ -703,7 +703,7 @@
+           "method": "HEAD",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "zero body, actual service-desc Link, current context; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
++          "assert": "zero body, actual service-desc Link, current context"
+         },
+         {
+           "id": "snapshot-root",
+@@ -748,9 +748,5 @@
+   "operationTargetsFromActualDirectoryOnly": true,
+   "resourceConstruction": "newBead/newLink/newAlias mean client-chosen local identifiers under ACTUAL descriptor collection roots, never operation suffix construction",
+   "receiptRules": "Every non-sequence command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+-  "selectorConstruction": "JSON-quote actual b.id inside equality Selector; no artifact/IPC Resource URL.",
+-  "tableNotation": {
+-    "@made": "test-table placeholder for the client-chosen d identifier used in sequence updateBead, not a BDP named-result reference; name=made only supplies operationName",
+-    "replayReceipt": "nonsequence nonreplay commands follow actual receipt.id; replay bodies compare original retained receipt without another GET"
+-  }
++  "selectorConstruction": "JSON-quote actual b.id inside equality Selector; no artifact/IPC Resource URL."
+ }
+--- plan4/counterfactuals.json
++++ plan3/counterfactuals.json
+@@ -1,5 +1,5 @@
+ {
+-  "applications": 9,
++  "applications": 8,
+   "rows": [
+     {
+       "id": "missing-updateLink",
+@@ -29,7 +29,7 @@
+     {
+       "id": "unsafe-directory-target",
+       "substitution": "Directory.createBead=https://foreign.invalid/create",
+-      "requiredFailure": "closed Directory parser rejects schema const violation; does not independently prove confinement"
++      "requiredFailure": "closed Directory parser/confinement rejects"
+     },
+     {
+       "id": "epoch-context-mismatch",
+@@ -40,11 +40,6 @@
+       "id": "head-context-mismatch",
+       "substitution": "descriptor.headPosition=pos-999, headers untouched",
+       "requiredFailure": "body/header equality rejects"
+-    },
+-    {
+-      "id": "schema-valid-foreign-operations-base",
+-      "substitution": "clone actual descriptor; operations=https://foreign.invalid/operations/; keep actual schema-valid Directory values and all other fields",
+-      "requiredFailure": "descriptor parser accepts shape; pre-dial same-Scope/authority confinement rejects operations base; no request/dial/fallback/retry"
+     }
+   ],
+   "wireRequestsForSubstitutions": 0,
+--- plan4/dispatch-and-schema.json
++++ plan3/dispatch-and-schema.json
+@@ -56,11 +56,5 @@
+   "projection": "packages/server/src/transaction-discovery.ts:26-67",
+   "observation": "packages/server/src/transaction-service.ts:267-293",
+   "noSchemaOrDispatcherEdits": true,
+-  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "retainedCallbackSites": {
+-    "readRouteDiscover": "required member212 becomes unreachable; retain async function throwing fixed Error(\"unreachable Transactional discovery route\")",
+-    "performDiscoveryUnionArm": "already unreachable parser union arm244-245 is retained as a narrowing branch that throws same fixed invariant Error before non-discovery result.body use",
+-    "noNonownedInterfaceEdit": true,
+-    "noSecondObservation": true
+-  }
++  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081"
+ }
+--- plan4/gates.json
++++ plan3/gates.json
+@@ -1,20 +1,18 @@
+ {
+-  "state": "COMPLETE CLOSED document/data corrected D3a plan4; no source or execution release",
++  "state": "COMPLETE CLOSED READ-ONLY D3a BASIS SUCCESSOR3",
+   "D1Local28StageAcceptanceBound": true,
+   "D1NativeFinalC2d8Bound": true,
+-  "plan3NativeClosureHistoricalBound": true,
+-  "oneActualPlanSubstantiveFindingsRootDispositionBound": true,
+-  "failedSupervisedFinalizationPreserved": true,
+   "rootExactCommitCiAccepted": false,
+   "sharedHttpSerializationReleased": false,
+-  "nativePlan4PrecisionAccepted": false,
+-  "rootPlan4Accepted": false,
+-  "isolatedSourceWorktreeReleased": false,
++  "reviewMechanicsAccepted": false,
++  "nativeSuccessor3PlanAccepted": false,
++  "actualSuccessor3PlanAccepted": false,
+   "authoringReleased": false,
+   "reviewLaunched": false,
+   "rootLaunchReleased": false,
+   "approvedStages": [],
+   "runtimeBuildInstallTestReleased": false,
+   "publicActivationReleased": false,
+-  "secondActualPlanAttemptReleased": false
++  "D3cPlanEdited": false,
++  "supervisionProposalImplemented": false
+ }
+--- plan4/installed-callbacks.json
++++ plan3/installed-callbacks.json
+@@ -36,48 +36,42 @@
+           "method": "GET",
+           "target": "@existing canonical scope route",
+           "status": 204,
+-          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero"
+         },
+         {
+           "id": "GET-descriptor",
+           "method": "GET",
+           "target": "@existing canonical descriptor route",
+           "status": 200,
+-          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero",
+-          "transport": "public-exact"
++          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero"
+         },
+         {
+           "id": "GET-directory",
+           "method": "GET",
+           "target": "@existing canonical directory route",
+           "status": 200,
+-          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero",
+-          "transport": "public-exact"
++          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero"
+         },
+         {
+           "id": "HEAD-scope",
+           "method": "HEAD",
+           "target": "@existing canonical scope route",
+           "status": 204,
+-          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero"
+         },
+         {
+           "id": "HEAD-descriptor",
+           "method": "HEAD",
+           "target": "@existing canonical descriptor route",
+           "status": 200,
+-          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero",
+-          "transport": "public-exact"
++          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero"
+         },
+         {
+           "id": "HEAD-directory",
+           "method": "HEAD",
+           "target": "@existing canonical directory route",
+           "status": 200,
+-          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero",
+-          "transport": "public-exact"
++          "assert": "intentional old500\u2192success; actual context and correct projection, HEADzero"
+         },
+         {
+           "id": "anonymous-scope",
+@@ -85,8 +79,7 @@
+           "target": "@existing canonical scope route",
+           "credential": "anonymous",
+           "status": 401,
+-          "assert": "original nondisclosure preserved",
+-          "transport": "public-exact"
++          "assert": "original nondisclosure preserved"
+         },
+         {
+           "id": "anonymous-descriptor",
+@@ -94,8 +87,7 @@
+           "target": "@existing canonical descriptor route",
+           "credential": "anonymous",
+           "status": 401,
+-          "assert": "original nondisclosure preserved",
+-          "transport": "public-exact"
++          "assert": "original nondisclosure preserved"
+         },
+         {
+           "id": "anonymous-directory",
+@@ -103,8 +95,7 @@
+           "target": "@existing canonical directory route",
+           "credential": "anonymous",
+           "status": 401,
+-          "assert": "original nondisclosure preserved",
+-          "transport": "public-exact"
++          "assert": "original nondisclosure preserved"
+         },
+         {
+           "id": "original-batch",
+@@ -124,16 +115,14 @@
+             ]
+           },
+           "idempotencyKey": "discovery-create",
+-          "assert": "originalpos1 receipt schema/results",
+-          "transport": "public-exact"
++          "assert": "originalpos1 receipt schema/results"
+         },
+         {
+           "id": "original-read",
+           "method": "GET",
+           "target": "@original receipt result a.id",
+           "status": 200,
+-          "assert": "originalschema/resourceequal",
+-          "transport": "public-exact"
++          "assert": "originalschema/resourceequal"
+         },
+         {
+           "id": "original-replay",
+@@ -142,14 +131,11 @@
+           "status": 200,
+           "idempotencyKey": "discovery-create",
+           "body": "identical original-batch body",
+-          "assert": "same receipt/currentpos1",
+-          "transport": "public-exact"
++          "assert": "same receipt/currentpos1"
+         }
+       ],
+       "expectedCompletedResponses": 12,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 12,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed cold resource-alias",
+@@ -163,9 +149,7 @@
+       "termAtMs": 115000,
+       "automaticRetries": 0,
+       "expectedCompletedResponses": 43,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 43,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed cold transactional-carriers",
+@@ -179,9 +163,7 @@
+       "termAtMs": 115000,
+       "automaticRetries": 0,
+       "expectedCompletedResponses": 28,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 28,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed discovery raw receiving",
+@@ -204,24 +186,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "scope-duplicate-bdp-minimum-scope-position",
+@@ -230,8 +209,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-minimum-scope-position",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "scope-duplicate-bdp-scope-epoch",
+@@ -240,8 +218,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-scope-epoch",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "scope-duplicate-bdp-authorization-view",
+@@ -250,8 +227,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-authorization-view",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "scope-partial-get",
+@@ -264,8 +240,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "malformed-request schema and length",
+-          "transport": "public-exact"
++          "assert": "malformed-request schema and length"
+         },
+         {
+           "id": "scope-partial-head",
+@@ -278,8 +253,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "zero body/preceding GET length",
+-          "transport": "public-exact"
++          "assert": "zero body/preceding GET length"
+         },
+         {
+           "id": "scope-comma",
+@@ -287,8 +261,7 @@
+           "target": "@canonicalScope",
+           "status": 400,
+           "tuple": "minimum genesis,genesis + actual N2 epoch/view",
+-          "assert": "malformed-request no context",
+-          "transport": "public-exact"
++          "assert": "malformed-request no context"
+         },
+         {
+           "id": "descriptor-duplicate-bdp-minimum-scope-position",
+@@ -297,8 +270,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-minimum-scope-position",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "descriptor-duplicate-bdp-scope-epoch",
+@@ -307,8 +279,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-scope-epoch",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "descriptor-duplicate-bdp-authorization-view",
+@@ -317,8 +288,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-authorization-view",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "descriptor-partial-get",
+@@ -331,8 +301,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "malformed-request schema and length",
+-          "transport": "public-exact"
++          "assert": "malformed-request schema and length"
+         },
+         {
+           "id": "descriptor-partial-head",
+@@ -345,8 +314,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "zero body/preceding GET length",
+-          "transport": "public-exact"
++          "assert": "zero body/preceding GET length"
+         },
+         {
+           "id": "descriptor-comma",
+@@ -354,8 +322,7 @@
+           "target": "@N1.actualServiceDesc",
+           "status": 400,
+           "tuple": "minimum genesis,genesis + actual N2 epoch/view",
+-          "assert": "malformed-request no context",
+-          "transport": "public-exact"
++          "assert": "malformed-request no context"
+         },
+         {
+           "id": "directory-duplicate-bdp-minimum-scope-position",
+@@ -364,8 +331,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-minimum-scope-position",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "directory-duplicate-bdp-scope-epoch",
+@@ -374,8 +340,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-scope-epoch",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "directory-duplicate-bdp-authorization-view",
+@@ -384,8 +349,7 @@
+           "status": 400,
+           "tuple": "genesis + actual N2 epoch/view",
+           "extraRawOccurrence": "bdp-authorization-view",
+-          "assert": "real repeated field syntax, no context/Link/marker",
+-          "transport": "public-exact"
++          "assert": "real repeated field syntax, no context/Link/marker"
+         },
+         {
+           "id": "directory-partial-get",
+@@ -398,8 +362,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "malformed-request schema and length",
+-          "transport": "public-exact"
++          "assert": "malformed-request schema and length"
+         },
+         {
+           "id": "directory-partial-head",
+@@ -412,8 +375,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "zero body/preceding GET length",
+-          "transport": "public-exact"
++          "assert": "zero body/preceding GET length"
+         },
+         {
+           "id": "directory-comma",
+@@ -421,14 +383,11 @@
+           "target": "@N2.discovery.operations",
+           "status": 400,
+           "tuple": "minimum genesis,genesis + actual N2 epoch/view",
+-          "assert": "malformed-request no context",
+-          "transport": "public-exact"
++          "assert": "malformed-request no context"
+         }
+       ],
+       "expectedCompletedResponses": 21,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 21,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed discovery methods authorization transport",
+@@ -456,102 +415,84 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "post-scope",
+           "method": "POST",
+           "target": "@canonicalScope",
+           "status": 405,
+-          "assert": "AllowGET, HEAD/bodyless, no context/Link",
+-          "transport": "public-exact"
++          "assert": "AllowGET, HEAD/bodyless, no context/Link"
+         },
+         {
+           "id": "post-descriptor",
+           "method": "POST",
+           "target": "@N1.actualServiceDesc",
+           "status": 405,
+-          "assert": "AllowGET, HEAD/bodyless, no context/Link",
+-          "transport": "public-exact"
++          "assert": "AllowGET, HEAD/bodyless, no context/Link"
+         },
+         {
+           "id": "post-directory",
+           "method": "POST",
+           "target": "@N2.discovery.operations",
+           "status": 405,
+-          "assert": "AllowGET, HEAD/bodyless, no context/Link",
+-          "transport": "public-exact"
++          "assert": "AllowGET, HEAD/bodyless, no context/Link"
+         },
+         {
+           "id": "operation-GET",
+           "method": "GET",
+           "target": "@directoryResolved.createBead",
+           "status": 405,
+-          "assert": "AllowPOST/bodyless",
+-          "transport": "public-exact"
++          "assert": "AllowPOST/bodyless"
+         },
+         {
+           "id": "operation-HEAD",
+           "method": "HEAD",
+           "target": "@directoryResolved.createBead",
+           "status": 405,
+-          "assert": "AllowPOST/bodyless",
+-          "transport": "public-exact"
++          "assert": "AllowPOST/bodyless"
+         },
+         {
+           "id": "operation-PUT",
+           "method": "PUT",
+           "target": "@directoryResolved.createBead",
+           "status": 405,
+-          "assert": "AllowPOST/bodyless",
+-          "transport": "public-exact"
++          "assert": "AllowPOST/bodyless"
+         },
+         {
+           "id": "badtarget-9",
+           "method": "GET",
+           "target": "unknown named child under ACTUAL operations root",
+           "status": 404,
+-          "assert": "exact operationtarget refusal; no mutation",
+-          "transport": "public-exact",
+-          "credential": "anonymous",
+-          "requestEncoding": "plain exact-mode allowlisted same-Scope url; no rawRequestTarget or credential target guard bypass"
++          "assert": "exact operationtarget refusal; no mutation"
+         },
+         {
+           "id": "badtarget-10",
+           "method": "GET",
+           "target": "alternate percent-encoded spelling of ACTUAL createBead URL",
+           "status": 404,
+-          "assert": "exact operationtarget refusal; no mutation",
+-          "transport": "public-exact",
+-          "credential": "anonymous",
+-          "requestEncoding": "plain exact-mode allowlisted same-Scope url; no rawRequestTarget or credential target guard bypass"
++          "assert": "exact operationtarget refusal; no mutation"
+         },
+         {
+           "id": "badtarget-11",
+           "method": "GET",
+           "target": "ACTUAL createBead URL + ?unexpected=1",
+           "status": 404,
+-          "assert": "exact operationtarget refusal; no mutation",
+-          "transport": "public-exact",
+-          "credential": "anonymous",
+-          "requestEncoding": "plain exact-mode allowlisted same-Scope url; no rawRequestTarget or credential target guard bypass"
++          "assert": "exact operationtarget refusal; no mutation"
+         },
+         {
+           "id": "anonymous-GET-scope",
+@@ -565,8 +506,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation",
+-          "transport": "public-exact"
++          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation"
+         },
+         {
+           "id": "anonymous-HEAD-scope",
+@@ -575,8 +515,7 @@
+           "status": 401,
+           "credential": "anonymous",
+           "rawHeaderLines": [],
+-          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation",
+-          "transport": "public-exact"
++          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation"
+         },
+         {
+           "id": "anonymous-GET-descriptor",
+@@ -590,8 +529,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation",
+-          "transport": "public-exact"
++          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation"
+         },
+         {
+           "id": "anonymous-HEAD-descriptor",
+@@ -600,8 +538,7 @@
+           "status": 401,
+           "credential": "anonymous",
+           "rawHeaderLines": [],
+-          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation",
+-          "transport": "public-exact"
++          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation"
+         },
+         {
+           "id": "anonymous-GET-directory",
+@@ -615,8 +552,7 @@
+               "value": "genesis"
+             }
+           ],
+-          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation",
+-          "transport": "public-exact"
++          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation"
+         },
+         {
+           "id": "anonymous-HEAD-directory",
+@@ -625,8 +561,7 @@
+           "status": 401,
+           "credential": "anonymous",
+           "rawHeaderLines": [],
+-          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation",
+-          "transport": "public-exact"
++          "assert": "auth precedes malformedminimum; challenge; no context/Link/body navigation"
+         },
+         {
+           "id": "reader-GET-scope",
+@@ -634,8 +569,7 @@
+           "target": "@canonicalScope",
+           "status": 204,
+           "credential": "reader",
+-          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero",
+-          "transport": "public-exact"
++          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero"
+         },
+         {
+           "id": "reader-HEAD-scope",
+@@ -643,8 +577,7 @@
+           "target": "@canonicalScope",
+           "status": 204,
+           "credential": "reader",
+-          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero",
+-          "transport": "public-exact"
++          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero"
+         },
+         {
+           "id": "reader-GET-descriptor",
+@@ -652,8 +585,7 @@
+           "target": "@N1.actualServiceDesc",
+           "status": 200,
+           "credential": "reader",
+-          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero",
+-          "transport": "public-exact"
++          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero"
+         },
+         {
+           "id": "reader-HEAD-descriptor",
+@@ -661,8 +593,7 @@
+           "target": "@N1.actualServiceDesc",
+           "status": 200,
+           "credential": "reader",
+-          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero",
+-          "transport": "public-exact"
++          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero"
+         },
+         {
+           "id": "reader-GET-directory",
+@@ -670,8 +601,7 @@
+           "target": "@N2.discovery.operations",
+           "status": 200,
+           "credential": "reader",
+-          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero",
+-          "transport": "public-exact"
++          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero"
+         },
+         {
+           "id": "reader-HEAD-directory",
+@@ -679,8 +609,7 @@
+           "target": "@N2.discovery.operations",
+           "status": 200,
+           "credential": "reader",
+-          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero",
+-          "transport": "public-exact"
++          "assert": "authenticatedcanMutatefalse maydiscover, propercontext, HEADzero"
+         },
+         {
+           "id": "wronghost",
+@@ -688,10 +617,7 @@
+           "target": "@canonicalScope",
+           "rawHost": "wrong.invalid",
+           "status": 400,
+-          "assert": "no context/Link",
+-          "transport": "callback-local-node-net",
+-          "credential": "anonymous",
+-          "assertion": "Literal wrong Host over owned loopback; no Authorization; actual400/no context/Link, no public executor fallback and no path-form400 relabel"
++          "assert": "no context/Link"
+         },
+         {
+           "id": "origin",
+@@ -704,14 +630,11 @@
+             }
+           ],
+           "status": 403,
+-          "assert": "existing noCORSpolicy transport refusal/no context",
+-          "transport": "public-exact"
++          "assert": "existing noCORSpolicy transport refusal/no context"
+         }
+       ],
+       "expectedCompletedResponses": 26,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 25,
+-      "localRawRequests": 1
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed discovery minimum order scope",
+@@ -728,24 +651,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "seed",
+@@ -760,17 +680,14 @@
+             }
+           },
+           "idempotencyKey": "d3-minimum-seed",
+-          "assert": "actualpos1",
+-          "transport": "public-exact",
+-          "fixtureInput": "explicit knownBeadTypeContractId permitted only for negative seed payload; actual createBead URL still from N1/N2/N3"
++          "assert": "actualpos1"
+         },
+         {
+           "id": "seed-receipt",
+           "method": "GET",
+           "target": "@seed.receipt.id",
+           "status": 200,
+-          "assert": "same receipt; derive epoch/view from actual seed response",
+-          "transport": "public-exact"
++          "assert": "same receipt; derive epoch/view from actual seed response"
+         },
+         {
+           "id": "known-get",
+@@ -780,8 +697,7 @@
+           "status": "route success",
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "known-head",
+@@ -791,8 +707,7 @@
+           "status": "route success",
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "genesis-get",
+@@ -802,8 +717,7 @@
+           "status": "route success",
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-epoch",
+@@ -816,8 +730,7 @@
+           "status": 410,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-view",
+@@ -830,8 +743,7 @@
+           "status": 409,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-view-head",
+@@ -844,8 +756,7 @@
+           "status": 409,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-accept",
+@@ -857,8 +768,7 @@
+           "status": 503,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-none",
+@@ -870,8 +780,7 @@
+           "status": 503,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-match-head",
+@@ -883,8 +792,7 @@
+           "status": 503,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "future-get",
+@@ -894,8 +802,7 @@
+           "status": 503,
+           "target": "@canonicalScope",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         }
+       ],
+       "runtimeMinimumBudgetMs": 1000,
+@@ -909,9 +816,7 @@
+       "termAtMs": 115000,
+       "automaticRetries": 0,
+       "expectedCompletedResponses": 15,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 15,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed discovery minimum order descriptor",
+@@ -928,24 +833,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "seed",
+@@ -960,17 +862,14 @@
+             }
+           },
+           "idempotencyKey": "d3-minimum-seed",
+-          "assert": "actualpos1",
+-          "transport": "public-exact",
+-          "fixtureInput": "explicit knownBeadTypeContractId permitted only for negative seed payload; actual createBead URL still from N1/N2/N3"
++          "assert": "actualpos1"
+         },
+         {
+           "id": "seed-receipt",
+           "method": "GET",
+           "target": "@seed.receipt.id",
+           "status": 200,
+-          "assert": "same receipt; derive epoch/view from actual seed response",
+-          "transport": "public-exact"
++          "assert": "same receipt; derive epoch/view from actual seed response"
+         },
+         {
+           "id": "known-get",
+@@ -980,8 +879,7 @@
+           "status": "route success",
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "known-head",
+@@ -991,8 +889,7 @@
+           "status": "route success",
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "genesis-get",
+@@ -1002,8 +899,7 @@
+           "status": "route success",
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-epoch",
+@@ -1016,8 +912,7 @@
+           "status": 410,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-view",
+@@ -1030,8 +925,7 @@
+           "status": 409,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-view-head",
+@@ -1044,8 +938,7 @@
+           "status": 409,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-accept",
+@@ -1057,8 +950,7 @@
+           "status": 503,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-none",
+@@ -1070,8 +962,7 @@
+           "status": 503,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-match-head",
+@@ -1083,8 +974,7 @@
+           "status": 503,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "future-get",
+@@ -1094,8 +984,7 @@
+           "status": 503,
+           "target": "@N1.actualServiceDesc",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         }
+       ],
+       "runtimeMinimumBudgetMs": 1000,
+@@ -1109,9 +998,7 @@
+       "termAtMs": 115000,
+       "automaticRetries": 0,
+       "expectedCompletedResponses": 15,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 15,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed discovery minimum order directory",
+@@ -1128,24 +1015,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "seed",
+@@ -1160,17 +1044,14 @@
+             }
+           },
+           "idempotencyKey": "d3-minimum-seed",
+-          "assert": "actualpos1",
+-          "transport": "public-exact",
+-          "fixtureInput": "explicit knownBeadTypeContractId permitted only for negative seed payload; actual createBead URL still from N1/N2/N3"
++          "assert": "actualpos1"
+         },
+         {
+           "id": "seed-receipt",
+           "method": "GET",
+           "target": "@seed.receipt.id",
+           "status": 200,
+-          "assert": "same receipt; derive epoch/view from actual seed response",
+-          "transport": "public-exact"
++          "assert": "same receipt; derive epoch/view from actual seed response"
+         },
+         {
+           "id": "known-get",
+@@ -1180,8 +1061,7 @@
+           "status": "route success",
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "known-head",
+@@ -1191,8 +1071,7 @@
+           "status": "route success",
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "genesis-get",
+@@ -1202,8 +1081,7 @@
+           "status": "route success",
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-epoch",
+@@ -1216,8 +1094,7 @@
+           "status": 410,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-view",
+@@ -1230,8 +1107,7 @@
+           "status": 409,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "foreign-view-head",
+@@ -1244,8 +1120,7 @@
+           "status": 409,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-accept",
+@@ -1257,8 +1132,7 @@
+           "status": 503,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-none",
+@@ -1270,8 +1144,7 @@
+           "status": 503,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "opaque-match-head",
+@@ -1283,8 +1156,7 @@
+           "status": 503,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         },
+         {
+           "id": "future-get",
+@@ -1294,8 +1166,7 @@
+           "status": 503,
+           "target": "@N2.discovery.operations",
+           "tuple": "actual seedepoch/view + minimumPosition, overridden only by listed foreignfield",
+-          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503",
+-          "transport": "public-exact"
++          "assert": "success Scope204/JSON200 else transactionalProblem; HEADzero matched GETlength; same-entrycontextpos1/Retry-After1 for503"
+         }
+       ],
+       "runtimeMinimumBudgetMs": 1000,
+@@ -1309,9 +1180,7 @@
+       "termAtMs": 115000,
+       "automaticRetries": 0,
+       "expectedCompletedResponses": 15,
+-      "expectedTransportAbortedRequests": 0,
+-      "publicExactRequests": 15,
+-      "localRawRequests": 0
++      "expectedTransportAbortedRequests": 0
+     },
+     {
+       "callback": "private installed discovery close pending scope",
+@@ -1322,7 +1191,7 @@
+         "selectedroute GETmatchedopaque1",
+         "independent known descriptorGET1"
+       ],
+-      "assertion": "Fixed server minimum1000ms is a real dependency, not lengthened. One bounded callback-local node:net pending request supplies actual write callback as sent-only evidence. Attach settlement/partial/close observers immediately. After that write callback complete independent descriptor200, assert pending UNSETTLED and no response started immediately before existing close, and call close without another await. Any503/response first fails, no retry. Runtime307-311,375-398 destroys transport before pending/service drainage; require actual close-induced abort and all settlements, exit0/signalnull+child close/PID absence/owned-store cleanup. Source latch companion proves internal admission ordering; installed write proves sent-only.",
++      "assertion": "Attach raw finish/terminal and childexit/close before scheduling. Finish means sent-only. While opaque minimum remains pending, complete independent actual descriptor200, then invoke existing close. Runtime close sets closing and closeListener invokes server.closeAllConnections BEFORE service drain; require pending raw exchange to settle with actual connection abort/disconnect, not a fabricated503 response. Await all request settlements then clean exit0/signalnull+close/PIDabsence. Source controlled-latch companion proves admitted service-work close ordering; this installed witness proves existing transport abort plus complete runtime/service drainage, no internal admission event inferred.",
+       "workMs": 45000,
+       "cleanupMs": 10000,
+       "callbackMs": 60000,
+@@ -1336,24 +1205,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "pending-minimum",
+@@ -1362,26 +1228,18 @@
+           "tuple": "actual nav epoch/view + opaque-unknown",
+           "status": null,
+           "assert": "request sent first and observed pending before close; raw terminal error/aborted records settle under owned bound; no invented Problem, response body/hash or completion",
+-          "expected": "connection aborted by existing runtime close, no complete HTTP response",
+-          "transport": "callback-local-node-net",
+-          "credential": "writer",
+-          "writeObservation": "actual socket.write callback under bounded owned signal: sent-only, never server admission",
+-          "preClose": "Attach settlement/partial-response/error/close observers immediately; await actual write callback, then independent descriptor200; immediately before close require UNSETTLED and no response started; fail if503 or any response/settlement occurred first",
+-          "assertion": "Existing installed minimumReadBudgetMs fixed1000; no override/retry/timer extension. Invoke close immediately after unsettled check with no intervening await; require actual close-induced transport abort after complete local write; any complete503, timeout, forced cleanup or missing terminal observation fails; retain actual partial bytes and unknown response status without inventing body/wire completion"
++          "expected": "connection aborted by existing runtime close, no complete HTTP response"
+         },
+         {
+           "id": "independent-discovery",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc",
+           "status": 200,
+-          "assert": "completes while firstpending; await body then close child; source-latch companion supplies deterministic internal evidence",
+-          "transport": "public-exact"
++          "assert": "completes while firstpending; await body then close child; source-latch companion supplies deterministic internal evidence"
+         }
+       ],
+       "expectedCompletedResponses": 4,
+-      "expectedTransportAbortedRequests": 1,
+-      "publicExactRequests": 4,
+-      "localRawRequests": 1
++      "expectedTransportAbortedRequests": 1
+     },
+     {
+       "callback": "private installed discovery close pending descriptor",
+@@ -1392,7 +1250,7 @@
+         "selectedroute GETmatchedopaque1",
+         "independent known descriptorGET1"
+       ],
+-      "assertion": "Fixed server minimum1000ms is a real dependency, not lengthened. One bounded callback-local node:net pending request supplies actual write callback as sent-only evidence. Attach settlement/partial/close observers immediately. After that write callback complete independent descriptor200, assert pending UNSETTLED and no response started immediately before existing close, and call close without another await. Any503/response first fails, no retry. Runtime307-311,375-398 destroys transport before pending/service drainage; require actual close-induced abort and all settlements, exit0/signalnull+child close/PID absence/owned-store cleanup. Source latch companion proves internal admission ordering; installed write proves sent-only.",
++      "assertion": "Attach raw finish/terminal and childexit/close before scheduling. Finish means sent-only. While opaque minimum remains pending, complete independent actual descriptor200, then invoke existing close. Runtime close sets closing and closeListener invokes server.closeAllConnections BEFORE service drain; require pending raw exchange to settle with actual connection abort/disconnect, not a fabricated503 response. Await all request settlements then clean exit0/signalnull+close/PIDabsence. Source controlled-latch companion proves admitted service-work close ordering; this installed witness proves existing transport abort plus complete runtime/service drainage, no internal admission event inferred.",
+       "workMs": 45000,
+       "cleanupMs": 10000,
+       "callbackMs": 60000,
+@@ -1406,24 +1264,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "pending-minimum",
+@@ -1432,26 +1287,18 @@
+           "tuple": "actual nav epoch/view + opaque-unknown",
+           "status": null,
+           "assert": "request sent first and observed pending before close; raw terminal error/aborted records settle under owned bound; no invented Problem, response body/hash or completion",
+-          "expected": "connection aborted by existing runtime close, no complete HTTP response",
+-          "transport": "callback-local-node-net",
+-          "credential": "writer",
+-          "writeObservation": "actual socket.write callback under bounded owned signal: sent-only, never server admission",
+-          "preClose": "Attach settlement/partial-response/error/close observers immediately; await actual write callback, then independent descriptor200; immediately before close require UNSETTLED and no response started; fail if503 or any response/settlement occurred first",
+-          "assertion": "Existing installed minimumReadBudgetMs fixed1000; no override/retry/timer extension. Invoke close immediately after unsettled check with no intervening await; require actual close-induced transport abort after complete local write; any complete503, timeout, forced cleanup or missing terminal observation fails; retain actual partial bytes and unknown response status without inventing body/wire completion"
++          "expected": "connection aborted by existing runtime close, no complete HTTP response"
+         },
+         {
+           "id": "independent-discovery",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc",
+           "status": 200,
+-          "assert": "completes while firstpending; await body then close child; source-latch companion supplies deterministic internal evidence",
+-          "transport": "public-exact"
++          "assert": "completes while firstpending; await body then close child; source-latch companion supplies deterministic internal evidence"
+         }
+       ],
+       "expectedCompletedResponses": 4,
+-      "expectedTransportAbortedRequests": 1,
+-      "publicExactRequests": 4,
+-      "localRawRequests": 1
++      "expectedTransportAbortedRequests": 1
+     },
+     {
+       "callback": "private installed discovery close pending directory",
+@@ -1462,7 +1309,7 @@
+         "selectedroute GETmatchedopaque1",
+         "independent known descriptorGET1"
+       ],
+-      "assertion": "Fixed server minimum1000ms is a real dependency, not lengthened. One bounded callback-local node:net pending request supplies actual write callback as sent-only evidence. Attach settlement/partial/close observers immediately. After that write callback complete independent descriptor200, assert pending UNSETTLED and no response started immediately before existing close, and call close without another await. Any503/response first fails, no retry. Runtime307-311,375-398 destroys transport before pending/service drainage; require actual close-induced abort and all settlements, exit0/signalnull+child close/PID absence/owned-store cleanup. Source latch companion proves internal admission ordering; installed write proves sent-only.",
++      "assertion": "Attach raw finish/terminal and childexit/close before scheduling. Finish means sent-only. While opaque minimum remains pending, complete independent actual descriptor200, then invoke existing close. Runtime close sets closing and closeListener invokes server.closeAllConnections BEFORE service drain; require pending raw exchange to settle with actual connection abort/disconnect, not a fabricated503 response. Await all request settlements then clean exit0/signalnull+close/PIDabsence. Source controlled-latch companion proves admitted service-work close ordering; this installed witness proves existing transport abort plus complete runtime/service drainage, no internal admission event inferred.",
+       "workMs": 45000,
+       "cleanupMs": 10000,
+       "callbackMs": 60000,
+@@ -1476,24 +1323,21 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link",
+-          "transport": "public-exact"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
+         },
+         {
+           "id": "N2",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc resolved against Scope",
+           "status": 200,
+-          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+         },
+         {
+           "id": "N3",
+           "method": "GET",
+           "target": "@N2.discovery.operations",
+           "status": 200,
+-          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL",
+-          "transport": "public-exact"
++          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+         },
+         {
+           "id": "pending-minimum",
+@@ -1502,40 +1346,30 @@
+           "tuple": "actual nav epoch/view + opaque-unknown",
+           "status": null,
+           "assert": "request sent first and observed pending before close; raw terminal error/aborted records settle under owned bound; no invented Problem, response body/hash or completion",
+-          "expected": "connection aborted by existing runtime close, no complete HTTP response",
+-          "transport": "callback-local-node-net",
+-          "credential": "writer",
+-          "writeObservation": "actual socket.write callback under bounded owned signal: sent-only, never server admission",
+-          "preClose": "Attach settlement/partial-response/error/close observers immediately; await actual write callback, then independent descriptor200; immediately before close require UNSETTLED and no response started; fail if503 or any response/settlement occurred first",
+-          "assertion": "Existing installed minimumReadBudgetMs fixed1000; no override/retry/timer extension. Invoke close immediately after unsettled check with no intervening await; require actual close-induced transport abort after complete local write; any complete503, timeout, forced cleanup or missing terminal observation fails; retain actual partial bytes and unknown response status without inventing body/wire completion"
++          "expected": "connection aborted by existing runtime close, no complete HTTP response"
+         },
+         {
+           "id": "independent-discovery",
+           "method": "GET",
+           "target": "@N1.actualServiceDesc",
+           "status": 200,
+-          "assert": "completes while firstpending; await body then close child; source-latch companion supplies deterministic internal evidence",
+-          "transport": "public-exact"
++          "assert": "completes while firstpending; await body then close child; source-latch companion supplies deterministic internal evidence"
+         }
+       ],
+       "expectedCompletedResponses": 4,
+-      "expectedTransportAbortedRequests": 1,
+-      "publicExactRequests": 4,
+-      "localRawRequests": 1
++      "expectedTransportAbortedRequests": 1
+     }
+   ],
+   "callbackCount": 11,
+   "allCountsProspective": true,
+   "lifecycle": {
+     "timers": "one start: work45s, independent cleanup10s, finish inside60s callback; existing launcher10s nested; outer120s TERM115",
+-    "pending": "track every scheduled request through settlement; attach terminal handlers immediately; enforce bounds while consuming Public exact has no pre-settlement hook. Only four explicit local raw rows use actual callback-local socket observation; never expose a nonowned executor seam.",
+-    "close": "Existing close stops listener/allconnections before pending/service drainage. Record all terminal request outcomes, actual exit0/signalnull AND close, PIDabsence/no pending. Expected close-induced transport abort is explicitly distinct from product timeout/forced cleanup; SIGKILL/unknown drain fails. Three pending callbacks require actual write callback plus UNSETTLED/no-response immediately before close; fixed1000ms default remains. Response first, timeout or forced cleanup fails rather than changing expected counts.",
++    "pending": "track every scheduled request through settlement; attach terminal handlers immediately; enforce bounds while consuming",
++    "close": "Existing close stops listener/allconnections before pending/service drainage. Record all terminal request outcomes, actual exit0/signalnull AND close, PIDabsence/no pending. Expected close-induced transport abort is explicitly distinct from product timeout/forced cleanup; SIGKILL/unknown drain fails.",
+     "directory": "remove only owned directory after known request drain+exit+close+PIDabsence; unknown retains it; never propagate old unconditional finallyrm",
+     "sourceAndInstalled": "explicit fresh external entry+literal/resolved hash/sourcecommit/tree/fullmap/dirtypatch/payload/archive/lock/config/artifact/policy/auth/runtime identities; source fallback not accepted as external evidence"
+   },
+   "totalProspectiveScheduledHttpRequests": 190,
+   "totalProspectiveCompletedResponses": 187,
+-  "totalProspectiveTransportAbortedRequests": 3,
+-  "totalProspectivePublicExactRequests": 186,
+-  "totalProspectiveLocalRawRequests": 4
++  "totalProspectiveTransportAbortedRequests": 3
+ }
+--- plan4/observation-contract.json
++++ plan3/observation-contract.json
+@@ -17,9 +17,7 @@
+       "assembly.calls",
+       "clock.calls",
+       "wait.calls",
+-      "service submit commits separate",
+-      "96 new direct calls and14 wire requests distinct;21 callbacks; Scope minimum10calls16entries6wait22clocks2assemblies",
+-      "nine cloned counterfactual applications, zero substituted wire"
++      "service submit commits separate"
+     ],
+     "records": [
+       "actual request method/target/header occurrence arrays; credential ref only",
+@@ -49,18 +47,14 @@
+       "PID absent",
+       "owned directory retained or safely removed with reason",
+       "work/cleanup elapsed and no forceddeadline/retry",
+-      "For each close-pending callback: exactly5 scheduled,4 completed HTTP responses,1 expected raw connection-aborted request with actual terminal event/error and no invented responsewire/body fingerprint; total190 scheduled/187 responses/3 aborts.",
+-      "transport lane per row;186 public-exact +4 callback-local raw requests; no reserved Host or credential guard bypass",
+-      "three pending localraw actual write-callback sent-only observation; fixed1000ms budget; immediate preclose UNSETTLED/no-response check and phase times; first503/response fails",
+-      "exact existing service-desc Link bytes on Scope and N1/head-scope; negative-only known Type ID never positive cold input",
+-      "raw pending aborted rows preserve actual terminal/partial availability; no fake complete response or hashes; failure/unknown cleanup cannot pass"
++      "For each close-pending callback: exactly5 scheduled,4 completed HTTP responses,1 expected raw connection-aborted request with actual terminal event/error and no invented responsewire/body fingerprint; total190 scheduled/187 responses/3 aborts."
+     ],
+     "noSecrets": "only credential refs/principals and registry digest; never tokens, Authorization contents, raw secret-bearing launch data",
+     "metadataCannotFeedNavigation": true
+   },
+   "qualification": "private wire discovery only, claimEligiblefalse/historyfalse; inherited and public activation qualification remains separate",
+   "unresolved": [
+-    "native plan4 precision closure and root acceptance/source worktree release; one actual PLAN result already substantively dispositioned, no retry",
++    "nativePLAN/actualPLAN reviews/dispositions",
+     "future actual reviewed source authoring basis",
+     "CODE review/native/actual dispositions",
+     "all runtime/source execution results",
+--- plan4/plan.md
++++ plan3/plan.md
+@@ -1,4 +1,4 @@
+-# D3a receiver and cold navigation — CLOSED corrected successor 4
++# D3a receiver and cold navigation — CLOSED basis successor 3
+ 
+ This refines only D3a of preserved tx-discovery-next-plan-20261018/plan.md, SHA5a335cdb5f0a5c31ad590948dc19a0ee9fa9fc9be5b9cd1c4e7bddc00ef3e952 and its31 inputs. The sole workstream plan remains docs/architecture/bdp-client-v2/design.md. Exactly three future files remain owned:
+ 
+@@ -8,7 +8,7 @@
+ | packages/server/src/transaction-http.test.ts | Intentionally supersede three discovery GET refusals and only three minimum unsupported-loop members; add finite source projection/receiving/order/lifetime/counterfactual witnesses. |
+ | apps/bdptest/src/transactional-discovery-installed.test.ts | Retain original owner regression with six explicit success replacements; add independent cold/negative/ordering/lifecycle callbacks and honest binding/cleanup reports. |
+ 
+-This separately named document/data successor implements root's13 dispositions from the one complete substantive actual PLAN result. Its supervised finalization FAILED; CLI exit remains UNKNOWN and four runner outputs remain missing. Native terminal closure11b67338 and root disposition367b3bea accept the substantive findings only. No second actual PLAN attempt is requested or permitted. Source writing and execution stay CLOSED pending independent native plan4 precision closure, root acceptance and a separately released isolated source worktree. Originalplan3/e3ac1d6f, all contracts/flags/review packet/failed-attempt bytes stay preserved. This successor preserves plan2 SHA52d086a1 and native precision indexf93e1fed, and conditionally selects the actually published D1 commit cce884ccea1db97cbc6fd7bff876d4d6091f9081 /tree6757829bd5b700faf28df39071190a272add90c9, sole parenta56254d682cf4623cab22a552e3d2f695f691795. All679 measured source bytes equal root's exact locally tested/publication map. Clean commit metadata is bound from root's publication; no Git or CI query runs here. No later CI/shared-file/worktree acceptance is inferred from this packet. Original a562 and old4ff4 dirty candidate identities remain historical only. The ordinary implementation decision is to split installed positive proof into two independently cold callbacks, with distinct bounded negative, ordering and lifecycle witnesses. Counts are prospective inventory, never observations.
++No source writing, review attempt or execution is released here. This successor preserves plan2 SHA52d086a1 and native precision indexf93e1fed, and conditionally selects the actually published D1 commit cce884ccea1db97cbc6fd7bff876d4d6091f9081 /tree6757829bd5b700faf28df39071190a272add90c9, sole parenta56254d682cf4623cab22a552e3d2f695f691795. All679 measured source bytes equal root's exact locally tested/publication map; the worktree is clean. Exact-commit CI acceptance and root one-file serialization remain pending. Original a562 and old4ff4 dirty candidate identities remain historical only. The ordinary implementation decision is to split installed positive proof into two independently cold callbacks, with distinct bounded negative, ordering and lifecycle witnesses. Counts are prospective inventory, never observations.
+ 
+ ## Receiver and existing semantics
+ 
+@@ -16,9 +16,9 @@
+ 
+ Handle selected discovery before generic current-Read exclusions. Capture currentReadMinimumHeaders once if any controls exist; after lexical syntax succeeded this must produce a tuple, not silently fall back to owner-free discovery. Invoke service.discoveryObserved(minimum,request.signal) exactly once and use only its discovery/directory/context. The current service at267-293 already snapshots lexical opaque tuples, performs current eligibility and finite waiting, and assembles after owner release. No service/store fix belongs here.
+ 
+-Project Scope204 plus service-desc Link, descriptor200 JSON, Directory200 JSON, with all three headers from that observation. The Link must byte-equal `<${new URL("bdp.json",canonicalScope).href}>; rel="service-desc"; type="application/json"`, preserving the existing URL emitter. Assert exact equality on Scope projection GET/query/HEAD/conditional rows and cold N1/head-scope; navigation follows the parsed actual Link. Existing failure mapper retains same-entry410 cursor-expired,409 foreign-view,503 catch-up-timeout and Retry-After1. Apply existing final Read HTTP semantics exactly once. Scope has no media negotiation; JSON can406; both evaluate existing wildcard conditions304/412 after observation. Do not strip an admitted Scope Link on an ordinary conditional response or disclose it on unauthorized/malformed paths. Neither media/conditions nor predictable Directory content permits skipping minimum eligibility.
++Project Scope204 plus service-desc Link, descriptor200 JSON, Directory200 JSON, with all three headers from that observation. Existing failure mapper retains same-entry410 cursor-expired,409 foreign-view,503 catch-up-timeout and Retry-After1. Apply existing final Read HTTP semantics exactly once. Scope has no media negotiation; JSON can406; both evaluate existing wildcard conditions304/412 after observation. Do not strip an admitted Scope Link on an ordinary conditional response or disclose it on unauthorized/malformed paths. Neither media/conditions nor predictable Directory content permits skipping minimum eligibility.
+ 
+-Retain both required handler-local callback sites: readRoute.discover at212 becomes unreachable after selected discovery intercepts; perform's result.kind===discovery union arm244–245 is already unreachable from the existing parser but type-required. Replace each body with the fixed internal invariant error `new Error("unreachable Transactional discovery route")`; never call discoveryObserved a second time or return developmentGap there. Do not remove the required router member, union arm or edit nonowned interfaces. The superseded final three-route private500 fence is removed after the earlier selected projection owns those routes. Do not change read-http-routing.probe: it runs on unrelated reads. Directory assembly and dispatch constants stay unchanged. The exact12 members and schema const values are frozen in dispatch-and-schema.json. Schema/parser validation is structural evidence, not admission authority. Preserve D1 current-changefeed tag/cursor/minimum ordering outside the narrow discovery hunk.
++Remove or redirect only now-unreachable handler-local discovery callbacks without adding a second observation. Do not change read-http-routing.probe: it runs on unrelated reads. Directory assembly and dispatch constants stay unchanged. The exact12 members and schema const values are frozen in dispatch-and-schema.json. Schema/parser validation is structural evidence, not admission authority. Preserve D1 current-changefeed tag/cursor/minimum ordering outside the narrow discovery hunk.
+ 
+ The narrow composition point is immediately before transaction-http.ts586, after every existing Snapshot/changefeed/Events/receipt branch. shared-http-composition.md binds exact D1 anchors and preservation requirements. Do not hoist discovery tuple handling above those branches or replace them with a new global minimum classifier. Existing D1 current-changefeed tag, cursor-before-minimum order for actual conditioned reads, captured start anchor and undefined-minimum stream pump calls remain exact. No service/store/runtime change is authorized.
+ 
+@@ -39,19 +39,19 @@
+ | private installed cold resource-alias |43|Eight Resource/alias names. Create a/b; update a n1→10; create/update actual Link a→b n1→11; put alias and follow307 Location; delete alias, explicitly delete Link, then Beads; replay original create after deletion without recreation. Finalpos8. |
+ | private installed cold transactional-carriers |28|batch,sequence,updateWhere,deleteWhere. Batch creates a/b/c in one group; sequence creates d, retains an actual missing-Bead404, then updates @made to n5 in a separate committed member turn; set updates four to n9; set deletes actual b; replay original batch without recreating b. Final a/c/d n9,pos5. |
+ 
+-Every non-sequence, non-replay command has one idempotency header and a mutationReceipt, with actual receipt.id followed immediately. Replay bodies compare the original retained receipt without an additional GET, preserving43/28 tables. `@made` is test-table notation for the client-chosen d identifier; it is not a BDP named-result reference, and name=made only supplies operationName. Sequence has distinct member keys, no carrier idempotency header and transactionalSequenceResponse; it is not an atomic batch or outer receipt. Its real middle failure does not retract prefix/tail successes. Alias mutations retain their no-Scope-advance behavior. Set receipts require actual matched counts, canonical order and per-resource entries. Deletion witnesses use latest actual revision, with Link deletion explicit before endpoint deletion.
++Every non-sequence command has one idempotency header and a mutationReceipt, with actual receipt.id followed immediately. Sequence has distinct member keys, no carrier idempotency header and transactionalSequenceResponse; it is not an atomic batch or outer receipt. Its real middle failure does not retract prefix/tail successes. Alias mutations retain their no-Scope-advance behavior. Set receipts require actual matched counts, canonical order and per-resource entries. Deletion witnesses use latest actual revision, with Link deletion explicit before endpoint deletion.
+ 
+ Tables include actual immediate Resource/collection/alias afterstate, final descriptor GET/HEAD, Directory HEAD and Scope HEAD. Descriptor/current context advances due to actual separate commits, with no cross-response static-owner assumption. The second callback follows actual Snapshot/changes/Events roots with three finite GETs: snapshotManifest, changes?start=now, first eventPage. Validate schemas/context/source, leave continuations unrequested and claim only bounded root navigation. No replication/erasure/Snapshot continuation law is inferred. No hidden seed, follow-up, auto-redirect, polling or retry request is allowed.
+ 
+ ## Source witnesses and concrete counters
+ 
+-source-callbacks.json freezes21 new callbacks: three each projection, receiving, minimum-order, catch-up, abort, close-drain; one raw receiving, target/transport and nine-counterfactual oracle callback; the oracle first captures actual Scope Link, descriptor and Directory in three handler calls. There are96 direct handler calls and14 actual wire requests, never conflated. Service submits/probes have separate counts. The modified legacy first source callback keeps its7 HTTP requests outside these new counts.
++source-callbacks.json freezes21 new callbacks: three each projection, receiving, minimum-order, catch-up, abort, close-drain; one raw receiving, target/transport and eight-counterfactual oracle callback; the oracle first captures actual Scope Link, descriptor and Directory in three handler calls. There are94 direct handler calls and14 actual wire requests, never conflated. Service submits/probes have separate counts. The modified legacy first source callback keeps its7 HTTP requests outside these new counts.
+ 
+-Projection per route: GET, HEAD, unacceptable Accept, If-None-Match*, If-Match absent, If-Match*. Scope adds GET canonicalScope?x=1 without controls→204 with identical Link; its pathname convention is deliberately witnessed, while descriptor?x=1 remains404. Scope statuses204,204,204,304,412,204,204 (last is query GET); descriptor/Directory200,200,406,304,412,200. Each request observes once. Scope has7 calls/entries/assemblies; descriptor/Directory keep6 each. No-minimum clock/wait remain unused.
++Projection per route: GET, HEAD, unacceptable Accept, If-None-Match*, If-Match absent, If-Match*. Scope statuses204,204,204,304,412,204; descriptor/Directory200,200,406,304,412,200. Each request observes once. No-minimum clock/wait remain unused.
+ 
+-Receiving per route has8 handler rows: anonymous malformed→401, read-only ordinary→success, partial tuple, repeated each tuple field, comma token, HEAD partial→400. Each comma-token row contains the complete actual owner epoch/view plus minimum genesis,genesis, isolating lexical invalidity rather than missing fields. Only reader enters owner discovery. Three-route raw duplicate/HEAD partial witnesses add12 actual wire requests; do not claim internal entry counts from wire alone. Target/transport table distinguishes10 direct calls and2 raw requests, with exact existing Allow/unknown/encoded/query/Host/Origin behavior.
++Receiving per route has8 handler rows: anonymous malformed→401, read-only ordinary→success, partial tuple, repeated each tuple field, comma token, HEAD partial→400. Only reader enters owner discovery. Three-route raw duplicate/HEAD partial witnesses add12 actual wire requests; do not claim internal entry counts from wire alone. Target/transport table distinguishes10 direct calls and2 raw requests, with exact existing Allow/unknown/encoded/query/Host/Origin behavior.
+ 
+-Minimum-order callbacks seed realpos1 via service.submit and run9 direct rows for descriptor/Directory and10 for Scope: known/genesis, opaque/future, foreign epoch/view, opaque before Accept/If-None-Match/If-Match. Reset controlled tick0 per row, budget2 nowtick++. Descriptor and Directory each retain9 discovery calls/14 discovery withRead entries/2 assemblies/5 waits/19 clocks. Scope adds GET canonicalScope?x=1 with complete actual epoch/view+opaque-unknown→503:10 discovery calls/16 entries/2 assemblies/6 waits/22 clocks. All are above delegated construction baseline. Every timeout has2 attempts/1wait/3clocks; eligible and foreign tuples have1clock. These are test seams, not default changes.
++Minimum-order callbacks seed realpos1 via service.submit and run9 direct rows: known/genesis, opaque/future, foreign epoch/view, opaque before Accept/If-None-Match/If-Match. Reset controlled tick0 per row, budget2 nowtick++. Each callback has exactly14 discovery withRead entries,2 assemblies,5 waits,19 clocks above delegated construction baseline. Every timeout has2 attempts/1wait/3clocks; eligible and foreign tuples have1clock. These are test seams, not default changes.
+ 
+ Catch-up per route admitspos1 atpos0 and holds an actual wait latch; mutates original Request Headers after admission; independently observespos0 and commitspos1 while owner is free; releases and asserts original captured tuple succeeds. Counters:2 handler calls,3 discovery owner entries,2 assemblies,1wait,2clocks,1 separate service commit. Abort witnesses hold/abort/release and require ScopeServerOperationAbortedError without retry or assembly. Close witnesses call real service.close while a held admitted wait remains pending across microtasks with live owner; advance clock/release, map captured-context503, then close/closed and owner closure. Counts are frozen in JSON.
+ 
+@@ -70,13 +70,13 @@
+ | Minimum ordering, one per selected discovery route |3|15|
+ | Close pending, one per selected discovery route |3|5|
+ 
+-All negative callbacks independently perform actual N1/N2/N3 route navigation, except the explicitly retained historical safety successor which remains an out-of-band route regression and is never called cold proof. Receiving has18 raw malformed rows; methods/auth/transport has23 rows after navigation. Anonymous GET also carries partial minimum to distinguish auth precedence. Reader may discover but gains no mutation permission. Only the three noncold minimum-order seed bodies may take an explicit provisioned Bead Type contract ID; the positive cold oracle still receives only Scope/credentials/dial/bounds and discovers Types. No extra Type GET or changed15-row negative count is introduced. WrongHost is one anonymous callback-local node:net request with literal wrong Host/no Authorization, not a public exact-executor option; actual400/no context must be Host evidence, never a path-form fallback. badtarget9/10/11 are anonymous. The encoded variant is a plain same-Scope allowlisted url derived from the actual createBead URL, with no rawRequestTarget or credential guard bypass. Installed transport totals are186 public exact dispatches plus4 callback-local raw requests; public executor and its reserved-Host/credential guards are unchanged.
++All negative callbacks independently perform cold N1/N2/N3, except the explicitly retained historical safety successor which remains an out-of-band route regression and is never called cold proof. Receiving has18 raw malformed rows; methods/auth/transport has23 rows after navigation. Anonymous GET also carries partial minimum to distinguish auth precedence. Reader may discover but gains no mutation permission.
+ 
+ Each ordering callback has coldnav3, one actual returned createBead seed plus actual receipt GET2, and10 explicit cases (known GET/HEAD, genesis, foreign epoch, foreign view GET/HEAD, opaque before Accept/If-None-Match/If-Match HEAD, future). Four real1000ms default waits stay within its own45s work budget; no deadline shortening for installed proof. Require actual epoch/view/contextpos1, exact Problems/retry and truthful bodyless HEAD metadata, with no development minimum marker.
+ 
+-The actual runtime matters for close witnesses: transaction-runtime.ts307-311,375-398 sets closing, invokes server.closeAllConnections while stopping the listener, then awaits pending handlers and service.close, preserving firstStreamFault/aggregate/return-completion tail. Do NOT expect an invented503 response to survive close. Each of the three opaque-minimum pending requests uses one bounded callback-local node:net socket, whose actual write callback is sent-only evidence. Public exact executor has no pre-settlement write hook. Attach settlement, partial response, error and socket-close observers immediately; attach childexit/close immediately too. Await the actual local write callback, complete independent actual descriptor200, then require the first promise UNSETTLED with no response started immediately before requesting close. Invoke close without another await. The server minimum budget is fixed1000ms; descriptor/control latency must fit that real dependency. If503 or any response/settlement occurred first, or if final result is503 instead of close-induced abort, fail loudly: no retry, sleep, timer increase or new IPC seam. Require actual close-induced abort after complete local write, every pending settlement, original childexit0/signalnull+close/PIDabsence and owned-store cleanup. Source latch evidence proves internal service admission ordering; installed write/descriptor observations do not. Each callback still has5 scheduled/4 complete responses/1 expected localraw transport abort, with no fabricated aborted-response status/body/wire hashes.
++The actual runtime matters for close witnesses: transaction-runtime.ts:306-311,375-390 sets closing, invokes server.closeAllConnections while stopping the listener, then awaits pending handlers and service.close. Therefore do NOT expect an invented503 response to survive close. Send selected opaque minimum, observe raw request finish (sent-only), complete independent actual descriptor200 while first remains pending, then invoke existing close. Require the first exchange to settle with actual connection abort/disconnect, then clean request/service drainage, exit0/signalnull, close event and PID absence. Each has5 scheduled/4 complete responses/1 expected transport abort. No body/status/hash is fabricated for the aborted request. The source held-wait companion proves internal service admission ordering deterministically; installed rawfinish alone does not. No new IPC command, installed seam, arbitrary sleep or lifecycle production edit.
+ 
+-counterfactuals.json has exactly9 cloned actual-input substitutions: missing updateLink, wrong version/profile/Scope, unsafe service Link, unsafe Directory value, body/header epoch mismatch, head mismatch, and schema-valid descriptor.operations moved to a foreign authority. The unsafe Directory value is rejected by schema const validation; only the additional foreign operations base independently tests pre-dial confinement with schema-valid values. Require rejection before unsafe dial, zero fallback/retry and zero counterfactual wire requests. Record these separately from genuine serving results.
++counterfactuals.json has exactly8 cloned actual-input substitutions: missing updateLink, wrong version/profile/Scope, unsafe service Link, unsafe Directory value, body/header epoch mismatch and head mismatch. Require rejection before unsafe dial, zero fallback/retry and zero counterfactual wire requests. Record these separately from genuine serving results.
+ 
+ ## Preservation and unchanged budgets
+ 
+@@ -84,18 +84,18 @@
+ 
+ Keep all unrelated Read conditions/media/HEAD/405, write receiving/key/auth/replay/actor laws, separate RU versus TX result contracts, current-changefeed D1 controls and Snapshot/receipt/Event/continuation residual semantics. Shared Scope-path versus descriptor/Directory exact-href conventions remain. No source or schema beyond the three named files.
+ 
+-Every new source callback retains default5s; per-request5s is a ceiling, not a promised timer. The old2s raw helper at transaction-http.test.ts1033–1055 is already within that ceiling and remains byte-unchanged. The14 new source wire requests use a new callback-local bounded helper; remaining3s work/1s cleanup dominates its5s request ceiling. For async source ownership, use local3s work/1s cleanup inside default5s, never copy older15/20s wrappers. Installed:5s/exchange,45s aggregate work,10s independent cleanup,60s callback,120s outer/TERM115,zero retries; existing launcher10s remains nested. Work/cleanup clocks never restart or extend beyond callback ceiling. Explicit public executor options are maximumBodyBytes131072 and maximumHeaderBytes16384, preserving the16KiB header cap; exact-mode request body remains65536 and request-header bound16384. The actual derived response wire ceiling is131072+2*16384=163840, not a maximumWireBytes option. All local raw exchanges enforce the same or stricter header/body/derived-wire caps while consuming. No65536-header widening or invented executor option is allowed; fail rather than raise a cap.
++Every new source callback retains default5s; each raw exchange5s. For async source ownership, use local3s work/1s cleanup inside default5s, never copy older15/20s wrappers. Installed:5s/exchange,45s aggregate work,10s independent cleanup,60s callback,120s outer/TERM115,zero retries; existing launcher10s remains nested. Work/cleanup clocks never restart or extend beyond callback ceiling. Bounded response body131072, request body65536, header16384 and raw wire262144 fit tiny fixtures; enforce while consuming and fail rather than opportunistically raise.
+ 
+ Attach request/child terminal listeners immediately, including child close (launcher.close alone waits exit). Track every pending exchange until fulfillment or rejection. Require clean childexit+close and PIDabsence, complete pending/drain evidence, no force/SIGKILL. Only then remove owned stores. Unknown ownership retains directories and fails. Expected close-induced transport abort is distinct from timeout or forced cleanup. No socket census or store closure inference from counters alone.
+ 
+ ## Basis, later startup and completion
+ 
+-actual-inputs.json rebinds the same45 source/spec paths from plan2 (31 original plus14 narrow additions), and preserves the2 narrow D1 inputs, transaction-store.ts and transaction-read.ts. Plan4 adds3 read-only finding inputs (http-executor.ts, node-http-target.ts, authority-read.ts), for50 actualsource/spec paths total, to inspect actual D1 cursor and current-Read classification. Plan2's34 indexed parent artifacts and5 native review files remain immutable under predecessor/plan2;34 is an artifact count, not the45-path input count. Of those45 paths, only transaction-http.ts and transaction-service.ts changed from original plan2 source. Pinned spec and all schema bytes remain exact. source-bases.json binds the published cce884c commit/tree/sole parent, clean status and all679 measured source bytes. Its six-file committed patch exactly matches root's tested890ce777 patch; old4ff4 dirty identity is historical and may not stand in for the active source.
++actual-inputs.json rebinds the same45 source/spec paths from plan2 (31 original plus14 narrow additions), and adds exactly2 read-only evidence inputs, transaction-store.ts and transaction-read.ts, to inspect actual D1 cursor and current-Read classification. Plan2's34 indexed parent artifacts and5 native review files remain immutable under predecessor/plan2;34 is an artifact count, not the45-path input count. Of those45 paths, only transaction-http.ts and transaction-service.ts changed from original plan2 source. Pinned spec and all schema bytes remain exact. source-bases.json binds the published cce884c commit/tree/sole parent, clean status and all679 measured source bytes. Its six-file committed patch exactly matches root's tested890ce777 patch; old4ff4 dirty identity is historical and may not stand in for the active source.
+ 
+-Root accepted all28 D1 local stages and native final auditc2d8c117, then published this ordinary commit. These existing dispositions are bound context, not tests rerun by this packet, not full Write qualification and not exact-commit CI acceptance. CI remains pending; main landing remains unauthorized in the bound publication record. Root must accept exact CI and serialize transaction-http.ts before authoring. The one actual PLAN result has now received root's13 substantive dispositions; failed supervised finalization is retained. No second actual PLAN is permitted. Plan4 independent native precision closure/root acceptance and the separately released source worktree remain unresolved. No runner, new actual review packet, source authoring release or execution attempt is created here. The other two files do not permit racing ahead.
++Root accepted all28 D1 local stages and native final auditc2d8c117, then published this ordinary commit. These existing dispositions are bound context, not tests rerun by this packet, not full Write qualification and not exact-commit CI acceptance. CI remains pending; main landing remains unauthorized in the bound publication record. Root must accept exact CI and serialize transaction-http.ts before authoring. Independent native/actual PLAN dispositions for this successor and future review-helper mechanics acceptance remain unresolved. No runner, actual review packet, authoring release or execution attempt is created here. The other two files do not permit racing ahead.
+ 
+-Trusted-startup plan3 has already advanced D3b:12-file pure deployment input/loader contract, private registry and existing capture reuse, no listener/admission. This D3a packet neither reopens its design nor touches its files. The preserved D3c nine-file intended-listener/fail-before-bind/store-readback plan1 is historical context; its separate successor/review/validation work is not adopted or changed here. D3d verified profile capability/public activation remains separate. D1/D2/D4/D5 applicable evidence gates remain; private discovery stays non-attesting/claimEligiblefalse/historyfalse. No incoming main/spec adoption.
++Trusted-startup plan3 has already advanced D3b:12-file pure deployment input/loader contract, private registry and existing capture reuse, no listener/admission. This D3a packet neither reopens its design nor touches its files. D3c nine-file intended-listener/fail-before-bind/store-readback plan1 is separately frozen and pending independent review; it is context only, not an included source increment. D3d verified profile capability/public activation remains separate. D1/D2/D4/D5 applicable evidence gates remain; private discovery stays non-attesting/claimEligiblefalse/historyfalse. No incoming main/spec adoption.
+ 
+-Done requires: preserved actual PLAN findings/root dispositions plus native plan4 precision closure/root acceptance, exact3-file authoring, independent CODE dispositions, exact-source checks/build before emitted tests, finite source+retained regressions, fresh packed external consumer running each installed callback separately with immediate strict report/raw/lifecycle audit, actual source/payload/archive/consumer/lock/entry proof and unchanged Read/unrelated TX laws, followed by root's combined exact-tree CI. observation-contract.json distinguishes source, installed and counterfactual evidence. The actual PLAN result/root disposition are bound; D3a native plan4 closure, CODE/runtime/build/archive/consumer/lock/proof/CI outputs remain UNRESOLVED. Existing D1 local acceptance does not satisfy D3a evidence. The failed D3a supervision/unknown CLI exit remain failed evidence; this packet neither changes supervision mechanics nor launches any process.
++Done requires: native+actual PLAN dispositions on bound successor, exact3-file authoring, independent CODE dispositions, exact-source checks/build before emitted tests, finite source+retained regressions, fresh packed external consumer running each installed callback separately with immediate strict report/raw/lifecycle audit, actual source/payload/archive/consumer/lock/entry proof and unchanged Read/unrelated TX laws, followed by root's combined exact-tree CI. observation-contract.json distinguishes source, installed and counterfactual evidence. All D3a runtime/review/build/archive/consumer/lock/proof/CI outputs remain UNRESOLVED. Existing D1 local acceptance does not satisfy D3a evidence. The startup supervision diagnosis/mechanics proposal remains under independent review and is not implemented or released by this packet.
+ 
+ This packet contains no execution helper or review runner. No product tests/build/install/runtime/formatter/review CLI, source edit, git mutation, coordination, main/spec adoption, design or launch edit was performed.
+--- plan4/preservation.json
++++ plan3/preservation.json
+@@ -5,10 +5,10 @@
+     "apps/bdptest/src/transactional-discovery-installed.test.ts"
+   ],
+   "explicitSupersession": {
+-    "installed": "Only six authenticated GET/HEAD discovery500s at transactional-discovery-installed.test.ts:188-194 become204/200/200 twice; replace only corresponding development-limit/empty JSON assertions. Keep original3 anonymous + batch/read/replay3.",
++    "installed": "Only six authenticated GET/HEAD discovery500s at transactional-discovery-installed.test.ts:189-195 become204/200/200 twice; replace only corresponding development-limit/empty JSON assertions. Keep original3 anonymous + batch/read/replay3.",
+     "source": "Only three GET500 projection assertions transaction-http.test.ts:211-217 become Scope204/JSON200; keep targetinventory+405/write/read/receipt assertions.",
+     "minimumUnsupportedLoop": "Remove only suffixes empty,bdp.json,operations/ at transaction-http.test.ts:1781-1792; retain links/?cursor=missing and beads/?cursor=missing exact500 minimum-position-route.",
+-    "production": "Selected discovery route projection before586 and final discovery refusal fence604-611 only; required readRoute.discover212 and already-unreachable perform discovery union244-245 stay present with fixed internal invariant throws. No other developmentGap or nonowned interface changed."
++    "production": "Only selected discovery refusal/projection and narrow routing before currentRead gate; preserve every other developmentGap."
+   },
+   "retained": [
+     "non-attesting/header, claimEligiblefalse/historyfalse; publicadmission unchanged",
+@@ -22,7 +22,7 @@
+     "schema/protocol/constants/SDK, runtime/config/loader/capability/exports/main unchanged",
+     "historical packets/logs remainhistorical"
+   ],
+-  "serialization": "CLOSED until root exact source/CI/sharedHTTP acceptance, native plan4 precision closure/root acceptance and separate isolated source worktree release; one actual PLAN result already dispositioned, no second actualPLAN",
++  "serialization": "CLOSED until root exact-commit CI acceptance, shared HTTP serialization, successor PLAN dispositions and future review mechanics acceptance",
+   "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+   "D1CommittedChangesPreserved": [
+     "HTTP current-changefeed tag and all route/classification/parameter/conditional controls",
+@@ -30,24 +30,5 @@
+     "owner readChanges cursor validation/integrity before minimum for actual conditioned calls",
+     "stream continuation invokes owner-backed service.changes with minimum/admission undefined",
+     "D1 complete15 source callbacks and3 installed callbacks retain their accepted report schemas/prefixes"
+-  ],
+-  "plan4AcceptedPrecision": {
+-    "sourceScopeQueryRows": 2,
+-    "sourceDirectHandlerCalls": 96,
+-    "sourceWireRequests": 14,
+-    "sourceCallbacks": 21,
+-    "counterfactualApplications": 9,
+-    "counterfactualWireRequests": 0,
+-    "installedCallbacks": 11,
+-    "installedScheduled": 190,
+-    "installedCompleted": 187,
+-    "installedExpectedAborts": 3,
+-    "publicExact": 186,
+-    "localRaw": 4,
+-    "headerBytes": 16384,
+-    "bodyBytes": 131072,
+-    "derivedWireBytes": 163840,
+-    "allOriginalDeadlinesUnchanged": true,
+-    "old2sSourceRawHelperUnchanged": true
+-  }
++  ]
+ }
+--- plan4/report.md
++++ plan3/report.md
+@@ -1,11 +1,11 @@
+-# Corrected D3a plan4 freeze
++# D3a basis successor3 freeze
+ 
+-Root disposition367b3bea accepts the13 findings from one complete actual PLAN result, with independent terminal closure11b67338. Supervised finalization remains FAILED, CLI exit UNKNOWN, and exit.json/source-after.json/final-review.txt/terminal-results.json remain missing. No replacement result or second actual PLAN was created.
++COMPLETE, CLOSED, read-only. The conditionally selected basis is the actually published D1 commit cce884ccea1db97cbc6fd7bff876d4d6091f9081, tree6757829bd5b700faf28df39071190a272add90c9, sole parenta562. The branch is clean and all679 measured files equal the tested publication map. Its six-file committed patch SHA890ce777 equals the exact root-tested patch. Root's28-stage local acceptance and native finalc2d8 are immutable context; exact CI acceptance and main landing are not inferred.
+ 
+-Plan4 binds the same679 cce884c source/spec677 bytes, the original47 source/spec inputs and3 narrow additional read-only evidence inputs (executor, target normalization, authority discovery union). Exactly3 future source files remain owned. No product source, shared executor/interface/schema/runtime, active plan, old packet, guard or flag was edited.
++The predecessor's34 indexed parent artifacts, its index and all5 native files are copied unchanged. Its actual input map contains45 paths (31+14), not34. Those45 paths are rebound to the published commit; only HTTP/service changed among them. Two additional read-only owner/current-classification files make47 active inputs for the requested D1 composition inspection. Spec/schema bytes remain pinned. Old4ff4 dirty identity remains historical only.
+ 
+-The13 exact dispositions and their authored plan/data locations are in findings-resolution.json. The finite source inventory is now21callbacks/96direct/14wire, with Scope projection7 and Scope minimum10calls16entries6wait22clocks2assemblies; descriptor/Directory counters stay exact. There are9 clone-only counterfactuals/zero substituted wire. Cold requests/payloads/order remain43/28 and actual12 operation names. Installed remains11callbacks/190scheduled/187responses/3aborts, explicitly186publicexact+4localraw. The header bound stays16384;131072 body implies derived163840 wire. All original deadlines/retry rules stay fixed.
++The future footprint remains exactly three files. Discovery's one actual observation is inserted after existing specialized routes and before the generic current-Read minimum gate. D1 current-changefeed classification, cursor-before-minimum, once-only start capture, strict/default admission and undefined-minimum stream pump remain. shared-http-composition.md binds exact current anchors and the narrow supersession sites.
+ 
+-WrongHost uses one anonymous local socket with literal wrong Host. The three pending sockets require actual write callback, complete independent descriptor response, then immediate UNSETTLED/no-response assertion before close under the fixed1000ms server budget; first503/response fails. These are bounded callback-local witnesses, not a new executor hook or server-admission observation.
++All six witness/observation JSON contracts remain byte-identical: cold43/28 requests with all12 actual returned targets;21 source callbacks/94 direct calls/14 wire;11 installed callbacks/190 scheduled/187 responses/3 aborts; all original budgets. Counts are prospective. Genuine plan delta/inverse and six data delta/inverse pairs were reconstructed in memory, without source edits or helper execution.
+ 
+-The actual source map and copied input map are exact. Original plan3/native/contracts, actual review raw stream/findings/failed-supervision terminal audit, root disposition and live original packet/flag bytes are preserved. Genuine forward/inverse deltas distinguish current4 from historical inherited patches. New plan4 native precision/root acceptance and later isolated source authoring release remain CLOSED. No helper/compiler/reviewer/runtime/Git execution occurred.
++All97 origin/copy pairs,679 source files,34 parent artifacts and4 native-index members were rehashed. No source, design.md, launch, gate or prior packet edits; no compiler, formatter, tests, build, install, runtime, reviewer or git mutation. No actual fresh PLAN packet or helper proposal implementation was created. D3c plan1 remains frozen. Future authoring/review launch remain closed pending root exact CI/shared-file serialization, future mechanics acceptance and the distinct successor PLAN dispositions.
+--- plan4/shared-http-composition.md
++++ plan3/shared-http-composition.md
+@@ -19,7 +19,7 @@
+ | D1 changes lifetime | transaction-service.ts466-504 | Copy intent/lexical tuple before async attempts; capture start head once at488, retain default strict and finite-start-now tags, send current-changefeed only for its explicit caller. No tag broadening. |
+ | D1 changes owner | transaction-store.ts1848-1886 | Preserve unsupported special result, actual checkpoint/context/head/integrity checks before minimum, then group selection. Current admission uses checkCurrentReadMinimum; undefined admission retains checkTransactionMinimum. |
+ | stream continuation | transaction-runtime.ts203-217 | Actual continuation calls activeService.changes({after},undefined,nextSignal), no admission tag or new minimum. No runtime/pump edit. |
+-| runtime close | transaction-runtime.ts307-311,375-398 | Stop/destroy transport, then pending work/service drain. Keep three installed expected aborts, not invented503 delivery. |
++| runtime close | transaction-runtime.ts307-311,375-390 | Stop/destroy transport, then pending work/service drain. Keep three installed expected aborts, not invented503 delivery. |
+ 
+ ## Preservation decisions
+ 
+@@ -27,12 +27,10 @@
+ 
+ For captured actual current-changefeed tuples, store readChanges resolves checkpointPosition, head ordering and retained-group integrity before minimum eligibility. It retains its explicit unsupported result path and prior default/private admission policies. Its service captures start=now exactly once per finite lifetime. The HTTP branch still selects media/reconnect syntax before observation, but ordinary response negotiation/conditions do not bypass actual owner minimum eligibility. A lexical/header receiving error remains earlier at HTTP403-405. No blanket minimum law should be inferred for every retained continuation or service caller.
+ 
+-Discovery uses existing service.discoveryObserved semantics independently of D1's changefeed tag. Its lexical opaque minimum reaches that real owner method once; no-minimum retains zero wait/clock discovery behavior. Startup/capture traffic is measured by delegate before resetting counters, preserving all methods including readConfiguration. D1 added no discovery-method work, so descriptor/Directory prospective9-call/14-entry/2-assembly/5-wait/19-clock minimum-order counts stay exact; Scope's added query-bearing opaque row makes10calls/16entries/2assemblies/6waits/22clocks without a policy change. These counts remain unexecuted D3a expectations.
++Discovery uses existing service.discoveryObserved semantics independently of D1's changefeed tag. Its lexical opaque minimum reaches that real owner method once; no-minimum retains zero wait/clock discovery behavior. Startup/capture traffic is measured by delegate before resetting counters, preserving all methods including readConfiguration. D1 added no discovery-method work, so accepted prospective discovery14-entry/2-assembly/5-wait/19-clock minimum-order counts need no policy change. These counts remain unexecuted D3a expectations.
+ 
+-Cold callback2's finite changes?start=now request has no minimum and follows the actual discovered changes root. D1's explicit current tag does not add a minimum, change start capture or create a new callback/request. Snapshot root and finite first Events request remain independent retained contracts. The two cold tables retain the same43/28 requests/payloads/order; only exact Link assertions/table-notation prose are refined, with all12 actual returned operation names meaningfully exercised; no IPC/constant target oracle is added.
++Cold callback2's finite changes?start=now request has no minimum and follows the actual discovered changes root. D1's explicit current tag does not add a minimum, change start capture or create a new callback/request. Snapshot root and finite first Events request remain independent retained contracts. The two cold tables remain byte-identical43/28 requests, with all12 actual returned operation names meaningfully exercised; no IPC/constant target oracle is added.
+ 
+-Only the three source GET500 assertions at transaction-http.test.ts211-217, three discovery suffixes in its minimum loop1781-1792, and six installed GET/HEAD500 projections at transactional-discovery-installed.test.ts188-194 are intentionally superseded. Preserve both cursor=missing collection suffixes, all other Read/Update/Transactional/key/auth/replay/actor laws and every D1 report/schema/prefix. The shared HTTP source remains D1's serialized file until root accepts exact CI and releases a successor basis; the other two future owned files do not enable concurrent authoring.
++Only the three source GET500 assertions at transaction-http.test.ts211-217, three discovery suffixes in its minimum loop1781-1792, and six installed GET/HEAD500 projections at transactional-discovery-installed.test.ts189-195 are intentionally superseded. Preserve both cursor=missing collection suffixes, all other Read/Update/Transactional/key/auth/replay/actor laws and every D1 report/schema/prefix. The shared HTTP source remains D1's serialized file until root accepts exact CI and releases a successor basis; the other two future owned files do not enable concurrent authoring.
+ 
+ This plan incorporates no incoming main/spec, startup source branch or lifecycle edit. D3b startup plan3 and D3c nine-file plan1 remain independent frozen context. C's supervision observability proposal is under independent review; no helper or fresh review packet is authored here. No second startup CODE review or retry is requested.
+-
+-Plan4 binds the one actual substantive PLAN result/root13dispositions while preserving failed supervised finalization. Required routerdiscover and the already-unreachable perform discovery union arm are retained with fixed internal invariant errors; no nonowned interface edit or second observation. New Scope query witnesses pin pathname selection; descriptor/Directory remain exact href. See transport-and-lifecycle-contract.json for four local raw exceptions, fixed1000ms preclose dependency and16KiB/163840 bounds. No second actual PLAN or source release.
+--- plan4/source-callbacks.json
++++ plan3/source-callbacks.json
+@@ -3,11 +3,11 @@
+     {
+       "callback": "D3 source projection scope",
+       "route": "scope",
+-      "directHandlerCalls": 7,
+-      "wireRequests": 0,
+-      "discoveryCalls": 7,
+-      "ownerWithReadAboveDelegatedBaseline": 7,
+-      "assemblyCalls": 7,
++      "directHandlerCalls": 6,
++      "wireRequests": 0,
++      "discoveryCalls": 6,
++      "ownerWithReadAboveDelegatedBaseline": 6,
++      "assemblyCalls": 6,
+       "waitCalls": 0,
+       "clockCalls": 0,
+       "callbackMs": 5000,
+@@ -51,16 +51,9 @@
+             "If-Match": "*"
+           },
+           "status": 204
+-        },
+-        {
+-          "method": "GET",
+-          "target": "@canonicalScope + ?x=1",
+-          "headers": {},
+-          "status": 204,
+-          "assert": "same pathname-selected Scope; exact existing service-desc Link spelling and current context"
+         }
+       ],
+-      "assertion": "Each of7 requests observes real owner once; same-entry context, HEAD/body rules, exact Link bytes from exactScopeServiceDescLink for no-query/query/HEAD/conditional eligible rows; no-minimum clock/wait unused."
++      "assertion": "Each request observes real owner once; context from observation, HEAD length/body/context and Scope Link; no-minimum clock/wait unused."
+     },
+     {
+       "callback": "D3 source receiving scope",
+@@ -132,8 +125,7 @@
+           "authorization": "writer",
+           "minimumPosition": "genesis,genesis",
+           "method": "GET",
+-          "status": 400,
+-          "tuple": "genesis,genesis + actual owner epoch/view"
++          "status": 400
+         },
+         {
+           "label": "HEAD partial",
+@@ -151,13 +143,13 @@
+     {
+       "callback": "D3 source minimum order scope",
+       "route": "scope",
+-      "directHandlerCalls": 10,
+-      "wireRequests": 0,
+-      "discoveryCalls": 10,
+-      "ownerWithReadAboveDelegatedBaseline": 16,
++      "directHandlerCalls": 9,
++      "wireRequests": 0,
++      "discoveryCalls": 9,
++      "ownerWithReadAboveDelegatedBaseline": 14,
+       "assemblyCalls": 2,
+-      "waitCalls": 6,
+-      "clockCalls": 22,
++      "waitCalls": 5,
++      "clockCalls": 19,
+       "callbackMs": 5000,
+       "requestMs": 5000,
+       "automaticRetries": 0,
+@@ -216,13 +208,6 @@
+           "headers": {
+             "If-Match": "\"absent\""
+           },
+-          "status": 503
+-        },
+-        {
+-          "case": "Scope query opaque",
+-          "target": "@canonicalScope + ?x=1",
+-          "position": "opaque-unknown",
+-          "tuple": "complete actual owner epoch/view + opaque-unknown",
+           "status": 503
+         }
+       ],
+@@ -434,8 +419,7 @@
+           "authorization": "writer",
+           "minimumPosition": "genesis,genesis",
+           "method": "GET",
+-          "status": 400,
+-          "tuple": "genesis,genesis + actual owner epoch/view"
++          "status": 400
+         },
+         {
+           "label": "HEAD partial",
+@@ -729,8 +713,7 @@
+           "authorization": "writer",
+           "minimumPosition": "genesis,genesis",
+           "method": "GET",
+-          "status": 400,
+-          "tuple": "genesis,genesis + actual owner epoch/view"
++          "status": 400
+         },
+         {
+           "label": "HEAD partial",
+@@ -974,8 +957,7 @@
+           "status": 400
+         }
+       ],
+-      "assertion": "True raw field multiplicity; bounded byte consumption; no context/Link. Do not infer internal owner counters from wire alone.",
+-      "wireHelper": "New callback-local bounded raw helper for these14 exchanges only; old transaction-http.test.ts1033-1055 helper (2s) byte-unchanged. request5s ceiling is dominated by remaining3s work/1s cleanup/default5s."
++      "assertion": "True raw field multiplicity; bounded byte consumption; no context/Link. Do not infer internal owner counters from wire alone."
+     },
+     {
+       "callback": "D3 source target transport boundary",
+@@ -1040,8 +1022,7 @@
+           "status": 403
+         }
+       ],
+-      "assertion": "AllowGET, HEAD orPOST exactly; no invented query normalization; raw Host/Origin before service.",
+-      "wireHelper": "New callback-local bounded raw helper for these14 exchanges only; old transaction-http.test.ts1033-1055 helper (2s) byte-unchanged. request5s ceiling is dominated by remaining3s work/1s cleanup/default5s."
++      "assertion": "AllowGET, HEAD orPOST exactly; no invented query normalization; raw Host/Origin before service."
+     },
+     {
+       "callback": "D3 source cold oracle counterfactual",
+@@ -1056,7 +1037,7 @@
+       "callbackMs": 5000,
+       "requestMs": 5000,
+       "automaticRetries": 0,
+-      "counterfactualApplications": 9,
++      "counterfactualApplications": 8,
+       "assertion": "Capture actual Scope Link, descriptor and Directory through three handler calls; clone-only substitutions in counterfactuals.json; zero unsafe dial/retry/fallback.",
+       "rows": [
+         {
+@@ -1084,14 +1065,9 @@
+     }
+   ],
+   "sourceDefaultMs": 5000,
+-  "newDirectHandlerCalls": 96,
++  "newDirectHandlerCalls": 94,
+   "newWireRequests": 14,
+   "countsAreProspective": true,
+   "counterBaseline": "Count actual delegated construction/capture owner traffic then reset; preserve all owner methods/readConfiguration via delegate spread; service submits are separate non-HTTP/non-discovery counters. Do not hardcode away constructor reads.",
+-  "legacySource": "First existing source callback retains7 HTTP requests (three discovery GETs nowpositive; target405/write/read/receipt laws unchanged), excluded from new counts.",
+-  "exactScopeServiceDescLink": {
+-    "emitter": "\"<\" + new URL(\"bdp.json\", canonicalScope).href + \">; rel=\\\"service-desc\\\"; type=\\\"application/json\\\"\"",
+-    "fixtureExpectedBytes": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+-    "comparison": "Exact response Link string equality to existing URL emitter, then parse ACTUAL header for navigation; canonicalScope is the actual callback Scope, not metadata target map."
+-  }
++  "legacySource": "First existing source callback retains7 HTTP requests (three discovery GETs nowpositive; target405/write/read/receipt laws unchanged), excluded from new counts."
+ }
+--- plan4/static-rebind-checks.json
++++ plan3/static-rebind-checks.json
+@@ -1,36 +1,35 @@
+ {
+-  "state": "STATIC exact plan4 document/data checks; no product/reviewer/helper execution",
+-  "actualReviewCount": 1,
+-  "actualSupervisedFinalization": "FAILED; CLI exit UNKNOWN; missing4 outputs not reconstructed",
+-  "rootDispositionSha256": "367b3bea6a4ccb21b0faec463e526cf8fc0d155c89a4855ff91bdbbf38ebf126",
+-  "all13FindingIdsPresent": true,
+-  "same679SourceMap": true,
+-  "sourceBasisByteIdentical": true,
+-  "ownedFutureFileCount": 3,
+-  "actualSourceSpecInputCount": 50,
+-  "positiveRequestPayloadsOrderStatusesAndCountsUnchanged": true,
++  "activeHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++  "sourceFilesRehashed": 679,
++  "sourceCleanAndUnchanged": true,
++  "originCopyPairs": 97,
++  "allOriginsAndCopiesMatch": true,
++  "parentArtifactsReverified": 34,
++  "nativeIndexSha256": "f93e1fed24bf740744bddb48b6c56fa97869d4162aa9131575bf302ee4b7aa31",
++  "nativeArtifactsReverified": 4,
++  "sixWitnessContractsByteIdentical": {
++    "cold-input-contract.json": "7a62b0eca649f19316b7d4346db2d9cbcda0a281df480f30f1e93d9ff0730245",
++    "cold-positive-requests.json": "ee4001be667ed8851c1330028da5fa20893c060446ac34fb432a49b694b157de",
++    "source-callbacks.json": "329ccfe8cd8cae2f828a720297398bee89822cb184328a2bf6d5f89130518d33",
++    "installed-callbacks.json": "b1e57845d067d64304adaf0efefbb281019a21838ba61db9d59d850ba176876e",
++    "counterfactuals.json": "af575aacce1b68f9d780dead626924083a367e436b2036af323e500e2f353087",
++    "observation-contract.json": "8194b07f75a0dc3cfb32075bd89edd09a834adea596d0c13aff46466d272a4fc"
++  },
+   "sourceCallbacks": 21,
+-  "newDirectHandlerCalls": 96,
+-  "newSourceWireRequests": 14,
+-  "scopeMinimum": {
+-    "calls": 10,
+-    "entries": 16,
+-    "waits": 6,
+-    "clocks": 22,
+-    "assemblies": 2
+-  },
+-  "counterfactuals": 9,
+-  "counterfactualWire": 0,
++  "sourceDirectCalls": 94,
++  "sourceWireRequests": 14,
++  "coldRows": [
++    43,
++    28
++  ],
++  "directoryNames": 12,
+   "installedCallbacks": 11,
+   "installedScheduled": 190,
+-  "installedCompletedResponses": 187,
++  "installedResponses": 187,
+   "installedExpectedAborts": 3,
+-  "installedPublicExact": 186,
+-  "installedLocalRaw": 4,
+-  "headerBudget": 16384,
+-  "derivedWireCap": 163840,
+-  "old2sHelperByteUnchanged": true,
+-  "allOriginalDeadlinesAndRetryRulesPreserved": true,
+-  "rootAuthoringRuntimeLaunchFlagsFalse": true,
+-  "countsAreProspective": true
++  "allCountsProspective": true,
++  "discoveryObservedBodyByteIdentical": true,
++  "genuineDeltaInversePairsVerified": 7,
++  "productExecution": false,
++  "helperOrReviewerInvoked": false
+ }
+--- plan4/status.json
++++ plan3/status.json
+@@ -1,19 +1,42 @@
+ {
+-  "state": "CLOSED corrected plan4;13 root dispositions incorporated; native precision/root acceptance pending",
+-  "sourceHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "sourceFiles": 679,
+-  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+-  "actualInputs": 50,
++  "state": "COMPLETE CLOSED published-D1 basis rebind; CI/mechanics/authoring pending",
++  "preparedUtc": "2026-10-18T05:16:46.457517+00:00",
+   "ownedFutureFiles": [
+     "packages/server/src/transaction-http.ts",
+     "packages/server/src/transaction-http.test.ts",
+     "apps/bdptest/src/transactional-discovery-installed.test.ts"
+   ],
+-  "actualPlanReview": "One complete substantive result accepted for findings by root; supervised finalization FAILED, CLIexitUNKNOWN, missing4runneroutputs preserved",
+-  "productSourceEdited": false,
+-  "newActualPlanRequested": false,
+-  "reviewLaunchReleased": false,
+-  "sourceAuthoringReleased": false,
+-  "executionReleased": false,
+-  "mainOrSpecAdopted": false
++  "predecessorPlanSha256": "52d086a1bcc94a582e10fcd104effa00356c67e2552c525e8fec3919f8337c39",
++  "originalInputsVerified": 31,
++  "additionalInputs": 14,
++  "sourceFilesPerBasis": 679,
++  "futureAuthoringBasis": "CONDITIONAL published D1 commit; root exact CI/shared-file serialization and PLAN/mechanics acceptance pending",
++  "sourceCallbacks": 21,
++  "sourceDirectHandlerCalls": 94,
++  "sourceWireRequests": 14,
++  "retainedLegacySourceWireRequests": 7,
++  "installedCallbacks": 11,
++  "installedScheduledRequests": 190,
++  "installedCompletedResponses": 187,
++  "installedExpectedTransportAborts": 3,
++  "coldPositiveRequests": [
++    43,
++    28
++  ],
++  "counterfactualApplications": 8,
++  "allCountsProspective": true,
++  "sourceEdits": false,
++  "testsBuildInstallRuntimeReviewFormatterExecuted": false,
++  "gitMutationCoordinationDesignLaunchEdits": false,
++  "authoringReleased": false,
++  "reviewLaunched": false,
++  "publicActivationReleased": false,
++  "predecessorNativeIndexSha256": "f93e1fed24bf740744bddb48b6c56fa97869d4162aa9131575bf302ee4b7aa31",
++  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++  "activeSourceTree": "6757829bd5b700faf28df39071190a272add90c9",
++  "parentArtifactCount": 34,
++  "plan2ActualInputs": 45,
++  "newNarrowD1Inputs": 2,
++  "activeInputCount": 47,
++  "actualCiAccepted": false
+ }

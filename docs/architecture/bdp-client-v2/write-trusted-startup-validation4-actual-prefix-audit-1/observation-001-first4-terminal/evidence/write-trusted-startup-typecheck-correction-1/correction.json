@@ -1,0 +1,20 @@
+{
+  "kind": "root-minimal-startup-test-fixture-type-correction",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdUtc": "2026-10-18T05:31:51.861711+00:00",
+  "file": "packages/server/src/reference-deployment.test.ts",
+  "beforeSha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9",
+  "afterSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+  "sourceFiles": 682,
+  "other681BytesUnchanged": true,
+  "fullPatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+  "beforeMapSha256": "716701cb78328a94c502e5eaf84c48ceda458432aee44fd489f36a0f0ac810bd",
+  "afterMapSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+  "reason": "structuredClone retains ReadLimits readonly type. Spread-copy only page in the existing cloned test fixture so caller-owned page is inferred mutable. Same numeric leaves and in-place post-call write; F8 deep snapshot assertion retained unchanged. No cast, production contract or test-name change.",
+  "runtimeExecuted": false,
+  "formatterExecuted": false,
+  "actualReviewerReadCorrectedBytes": false,
+  "independentNativeClosureRequired": true,
+  "freshValidationSuccessorRequired": true,
+  "executionReleased": false
+}

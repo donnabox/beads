@@ -1,0 +1,13 @@
+# Startup validation preparation 4 — CLOSED
+
+This data successor binds the root's two-regex lint correction after validation3 passed its first four stages, typecheck and format, then failed lint with four explicit-control-regex diagnostics. Only packages/config/src/index.ts and packages/server/src/reference-deployment.ts change. The root correction uses Unicode Cc with the same unanchored Unicode predicate. The root's frozen all1114112-codepoint result records65 controls and0 mismatches; that pure-data proof is context, not a product lint/test/build result. No lint rule is suppressed or permission grammar expanded. The5b9 fixture test and all other680 source files remain unchanged.
+
+Five helpers are byte-identical to preparation3; bound-consumer-loader.mjs changes only the executionRoot literal3→4. Selection bytes,44 callbacks, report schemas,71 private specifiers, six loader calls,25 stages and all budgets are unchanged. The only active data changes are exact source identities, two after hashes/source copies, paths, provenance/history and closed gates.
+
+Both gates remain closed with all release/acceptance flags false, approvedStages empty and bootstrapReuse empty. All25 stages must run fresh, including the first four, typecheck and format. Existing validation3 passes and failed lint are historical only. The old run stays in place and is hash-inventoried; its actual after-failure gate and root failure evidence are preserved as context. There is no new run, scratch consumer, node_modules or output directory.
+
+Root and independent native review must accept this exact packet and corrected-source binding before any release. Corrected-source actual/native disposition wrappers, mechanics acceptance, actual base/workspace tools, fresh build inventory, archive, consumer generated lock and graph/inventory/entry proof remain unresolved. The original complete substantive CODE result and failed supervisor finalization remain historical; no reviewer retry is requested or launched. D3a's actual review is outside this packet.
+
+Review successor-disposition.json, successor-preservation.json, successor4-delta-manifest.json and unresolved-inputs.json. successor4-deltas/ plus successor-delta.patch and successor-inverse.patch are the active3→4 deltas. Other inherited adaptation/delta files and earlier preservation reports are historical. preparation-index.json seals all bytes; implementation-hashes.json excludes its own/gate/derived-delta cycles.
+
+No source, Git, reviewer, helper, Node, compiler, formatter, lint, test, build, install or runtime execution occurred during this preparation. Only guarded filesystem/pure-data preparation was performed. No existing packet/guard/gate/source bytes were edited.

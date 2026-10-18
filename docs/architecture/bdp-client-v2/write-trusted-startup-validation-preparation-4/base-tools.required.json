@@ -1,0 +1,19 @@
+{
+  "state": "UNRESOLVED root actual base tool pinning; candidate paths only",
+  "paths": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14"
+  ],
+  "expectedPrintedVersions": {
+    "node": "v24.16.0",
+    "pnpm": "11.20.0"
+  },
+  "mustMeasure": [
+    "actual canonical realpath and SHA256 of every execution interpreter/package-manager entry",
+    "actual printed versions from this fresh pipeline",
+    "after offline install: actual Biome2.5.7,TypeScript7.0.2,Vitest4.1.10 and platform binaries/entry helpers"
+  ],
+  "runtimeHashes": "UNRESOLVED; no prior pipeline tool acceptance reused",
+  "offlineFailure": "Preserve and stop; no online/retry fallback"
+}

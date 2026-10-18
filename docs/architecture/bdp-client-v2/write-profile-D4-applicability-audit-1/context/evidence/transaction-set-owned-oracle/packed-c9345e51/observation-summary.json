@@ -1,0 +1,114 @@
+{
+  "kind": "installed-valid-set-observation",
+  "source": "c9345e51da225d11a801c0d86c024d7cb3a5fe30",
+  "workspaceDirty": false,
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-set-owned-oracle/packed-c9345e51/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "binding": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "c9345e51da225d11a801c0d86c024d7cb3a5fe30",
+      "installedPayloadDigest": "312ffe5038aefa399096870568a26013fc9c2dfa55168fff700af2a2c9ff5ce6",
+      "installedContractsDigest": "95b4ef854865acafc04caa438285dd52b7955fa99e6b241397660d6f262b4935",
+      "policyDigest": "6d8e825ba163184f8f2432287005491c5980df506629f2994dc02c68b6e1faec",
+      "authenticationDigest": "9112810517935ddac835f4e67f6d009805b67f1e805259b5a396057fa38646d5",
+      "fixtureDigest": "8a1252afaae04e57e07cd722b77f66d26c6c696c823733aa97be256938fa41c1",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "b39183d9ca061836dae53da7ad02d88372668f828653ebe1763e7bce63a2acc6",
+    "authorityMode": "canonical"
+  },
+  "claimEligible": false,
+  "initialReady": {
+    "event": "qualification.ready",
+    "authorityMode": "canonical",
+    "runtimeConfigurationIdentity": "b39183d9ca061836dae53da7ad02d88372668f828653ebe1763e7bce63a2acc6",
+    "artifactIdentity": "development-schema5-95b4ef854865acafc04caa438285dd52b7955fa99e6b241397660d6f262b4935",
+    "policyIdentity": "6d8e825ba163184f8f2432287005491c5980df506629f2994dc02c68b6e1faec",
+    "authenticationIdentity": "9112810517935ddac835f4e67f6d009805b67f1e805259b5a396057fa38646d5",
+    "scope": "https://reference.invalid/acme/",
+    "profile": "transactional",
+    "history": false,
+    "claimEligible": false,
+    "listenUrl": "http://127.0.0.1:50064/",
+    "targets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "payloadIdentity": "312ffe5038aefa399096870568a26013fc9c2dfa55168fff700af2a2c9ff5ce6"
+  },
+  "reopenedReady": {
+    "event": "qualification.ready",
+    "authorityMode": "canonical",
+    "runtimeConfigurationIdentity": "b39183d9ca061836dae53da7ad02d88372668f828653ebe1763e7bce63a2acc6",
+    "artifactIdentity": "development-schema5-95b4ef854865acafc04caa438285dd52b7955fa99e6b241397660d6f262b4935",
+    "policyIdentity": "6d8e825ba163184f8f2432287005491c5980df506629f2994dc02c68b6e1faec",
+    "authenticationIdentity": "9112810517935ddac835f4e67f6d009805b67f1e805259b5a396057fa38646d5",
+    "scope": "https://reference.invalid/acme/",
+    "profile": "transactional",
+    "history": false,
+    "claimEligible": false,
+    "listenUrl": "http://127.0.0.1:50093/",
+    "targets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "payloadIdentity": "312ffe5038aefa399096870568a26013fc9c2dfa55168fff700af2a2c9ff5ce6"
+  },
+  "counts": {
+    "receiptEntries": 33,
+    "receiptPages": [
+      32,
+      1
+    ],
+    "eventPages": [
+      32,
+      32,
+      32
+    ],
+    "events": 96,
+    "groups": 1,
+    "negativeOracles": 5
+  },
+  "wireObservationCount": 32
+}

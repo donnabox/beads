@@ -1,0 +1,32 @@
+{
+  "actualResultsSha256": "10e335ef22366c65fd471a1aba72c9378410f42210b3ca1ca09e71135f0631e1",
+  "actualLogSha256": "677ca4bdd7e814dfbe177ad7ce5706063557d274b5fc06b836fb1c454ea1734e",
+  "selectedCallbacks": 44,
+  "selectedPassed": 43,
+  "selectedFailed": 1,
+  "unselectedSkippedPending": 389,
+  "actualFiles": 8,
+  "totalTests": 433,
+  "vitestAggregateSuiteCounter": 45,
+  "suiteCounterIsNotFileCount": true,
+  "failedAssertions": [
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts",
+      "ancestorTitles": [],
+      "fullName": "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+      "status": "failed",
+      "title": "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+      "duration": 19.37383299999999,
+      "failureMessages": [
+        "Error: expected local preparation failure\n    at failure (/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts:216:9)\n    at /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts:541:5\n    at file:///Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ],
+      "meta": {},
+      "tags": []
+    }
+  ],
+  "fullSelectedCallbackIdentityFileBindingsVerified": true,
+  "unselectedCallbackExecuted": false,
+  "auditFocusedSourceStageExecuted": false,
+  "failureCause": "Unresolved diagnosis; observed failure helper reached expected-local-preparation-failure after the tested load resolved",
+  "productFaultOrFixtureFaultChosen": false
+}

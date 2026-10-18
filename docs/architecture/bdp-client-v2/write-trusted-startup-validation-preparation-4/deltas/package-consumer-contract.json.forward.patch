@@ -1,0 +1,16 @@
+--- preparation2/package-consumer-contract.json
++++ preparation3/package-consumer-contract.json
+@@ -4,11 +4,11 @@
+     "@bdp/protocol",
+     "@bdp/server"
+   ],
+-  "packDestination": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/packages",
++  "packDestination": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run/packages",
+   "directoryExclusive": true,
+   "completeTarMembership": "All members regular package/ files; unique safe relative paths; exactly LICENSE/package.json/dist and protocol full schemas inventory; bytes equal actual build/source except approved server workspace:* ->0.0.0 metadata rewrite",
+   "actualArchiveHashes": "UNRESOLVED",
+-  "externalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run/consumer",
++  "externalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run/consumer",
+   "install": [
+     "install",
+     "--offline",

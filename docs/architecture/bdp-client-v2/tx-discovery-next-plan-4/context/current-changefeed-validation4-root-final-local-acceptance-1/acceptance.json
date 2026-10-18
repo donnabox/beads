@@ -1,0 +1,192 @@
+{
+  "accepted": true,
+  "acceptedAt": "2026-10-18T05:10:09.787514+00:00",
+  "scope": "bounded current-changefeed minimum increment; not full Write qualification",
+  "sourceBindingSha256": "f03a40dc7431b657bd862e40b45b4c7c81ff7115cce1faef7b1640a0d17a155f",
+  "baseHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "baseTree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "dirtyPatchSha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
+  "actualSourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+  "actualStageCount": 28,
+  "actualStages": {
+    "node-version": {
+      "exitSha256": "093b4c3818045fedf6b9810f455ba5f2e3ad045bf18a1d73410d97c9256e8845",
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+      "elapsedSeconds": 3.727497166953981
+    },
+    "pnpm-version": {
+      "exitSha256": "1c41c9ae6e5f97488249c93a31c41bf93ce195eaf11fa5ac3204e5eaf2054232",
+      "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201",
+      "elapsedSeconds": 3.990912541281432
+    },
+    "workspace-install": {
+      "exitSha256": "b28c191ad961fc79cea9a2d8e81f228a610a00ebdac3445ebcb52256c231084e",
+      "logSha256": "7e64af59999bdd1f3ff1db6e6e88778cf96141b6fb45cd6d6eecf79860e1a84f",
+      "elapsedSeconds": 4.0432759169489145
+    },
+    "bind-workspace-tools": {
+      "exitSha256": "22a017bb45e971537938b0c0ccb7d57eaa2b90bda7a38e57bac071b45c12a75c",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 7.964818083215505
+    },
+    "typecheck": {
+      "exitSha256": "d1dcc92103b4dab238bb233944534376f1b1cd022f8336f958c04a8b422adc24",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "elapsedSeconds": 4.605347792152315
+    },
+    "format-check": {
+      "exitSha256": "f8e2475567a3d8750fb029e14e501a55d2fbf879d9458eae684b13984d673e54",
+      "logSha256": "04666f7bea76742e24a3ac19abfe3df449c3e31dac98110180217a31355361b3",
+      "elapsedSeconds": 4.265086624771357
+    },
+    "lint": {
+      "exitSha256": "c117cd579a7216e11c4bf1775ae12f1ba0ab49b2497d7281fdb42dcc1f115a06",
+      "logSha256": "71297b3aeceab46f868acee8c9d89f647daeebaa154e755d0e47265a51226769",
+      "elapsedSeconds": 3.815335915889591
+    },
+    "fresh-build": {
+      "exitSha256": "afc0a6fce84d63abdaeb6b90f3b7e36c1f8e90cc7e3c48cea0e3830d5d2e0c78",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "elapsedSeconds": 4.678675708826631
+    },
+    "bind-fresh-build": {
+      "exitSha256": "37016e339191471feaa50d564ad2f2c4a2bdf0769fd3a8b969745ecf57dc7860",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.09379016701132
+    },
+    "focused-source": {
+      "exitSha256": "77bb28b176f0d6ab254ac1efc91d24ea15ea364bf8fdf336df90a25aa3be2ecf",
+      "logSha256": "0aa93871ec8ce675f2223933517cd3b58bd7a1a403c9d19c084b5cb883655d2d",
+      "elapsedSeconds": 5.643126124981791
+    },
+    "audit-focused-source": {
+      "exitSha256": "578edec15f68447d91ceec5d8c8cb2016d84b1c4b8a6b39dc838f7b2e724a54f",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.07508070813492
+    },
+    "prepare-package-directory": {
+      "exitSha256": "d3bde7742331fad36ddc185a288d8bef1cc78c7489660510d0a56fc0b06a74b8",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 7.985488791018724
+    },
+    "pack-protocol": {
+      "exitSha256": "40f1729f854f522ffd31a563a54587930ab253dcc58160803f1f905b8860ef43",
+      "logSha256": "26a712e23772063a52446169d7d6e1ee07a8efa6d2e95950670be2cb4ca8cdaf",
+      "elapsedSeconds": 4.257776457816362
+    },
+    "pack-server": {
+      "exitSha256": "ae76882ef49e6806bde81cbb82942f3db1cd19b7c88e30c12bb78e70f46613b3",
+      "logSha256": "2127752f98ec2663b93b55ec243c54a465b0edb9a354f1c296ccbf00dd27d426",
+      "elapsedSeconds": 4.043678999878466
+    },
+    "verify-archives": {
+      "exitSha256": "032f8c398e5cb604fc1b8f7ed5b2428921cf6880fee9ca19ae7862e018915a1f",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.175356292165816
+    },
+    "prepare-consumer": {
+      "exitSha256": "f28994288b92e13d163439b2007ecaea041ce9609baeb6c3ebbd1213a0f2f380",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 7.953776208683848
+    },
+    "consumer-install": {
+      "exitSha256": "5d3e1aaef05b59513a2f203c18b3ad3444741aa7b048f7152fc6e38870ff5b69",
+      "logSha256": "2935ad909088905921be8ad3ccc0e6436f4b57af88491fdc695d3d44217fd9d7",
+      "elapsedSeconds": 4.200625833589584
+    },
+    "verify-installed-consumer": {
+      "exitSha256": "ba713dcbd223c1528a6a6f364364336f8cdfb335621210d9efa5cae7781e1a48",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.08707141596824
+    },
+    "historical-context-external": {
+      "exitSha256": "dbd9d69082baa86b9b32b5810ea0019ed4e38d54094cb42e0330a9e164c14bd2",
+      "logSha256": "6e6b7c022ac618c5b88f8b0bd1ae3b006391fe61ec260e7ae8fe362db438805d",
+      "elapsedSeconds": 4.331308291759342
+    },
+    "audit-historical-context-external": {
+      "exitSha256": "8fe86ba6ce6bf5d437173d55e079adce212e1f30877610f14c9dbb9813d52f95",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.897768749855459
+    },
+    "finite-start-now-external": {
+      "exitSha256": "12370f50725e053aeb7706d521729ed3ccfe961cc85d11ad0e0c03bd818ce91d",
+      "logSha256": "0feea517e7f3592b7c33c1d5d9a589f0620f35e23b5ce9aa0c34b55953ce6829",
+      "elapsedSeconds": 6.483003249857575
+    },
+    "audit-finite-start-now-external": {
+      "exitSha256": "7d3a8f5728557bbf6061d01cf4322f66392be7fea1a0d42f5ed8adfd11cb1d95",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.016021125018597
+    },
+    "current-changefeed-external": {
+      "exitSha256": "401eca24b18df51b905bbae9545bb9631991777d7716141fcbf55523aede9998",
+      "logSha256": "f69c8c6e5eb2d28eeb6856cf17ca93e629a4301473734ff41910690013bf51ae",
+      "elapsedSeconds": 9.43340687500313
+    },
+    "audit-current-changefeed-external": {
+      "exitSha256": "ee595891e9ad010537ad591222f9671e8c7de408dbbbc7347a32e269d6fdd176",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 7.982124332804233
+    },
+    "required-check-boundaries": {
+      "exitSha256": "90f58bafac6317a09378cd20f4969dab41e0028a5f0f28849b164a62466a12f1",
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "elapsedSeconds": 4.293540207669139
+    },
+    "required-e2e-ready-preflight": {
+      "exitSha256": "5d5acb42776cf6d62ad2e9ad99d2b9efe35b38c6069f0164905b9d219015a3fa",
+      "logSha256": "d98f56a898eeec7bdf9a9ec2b01310dc241eb978dfce43bf347492c182d6c532",
+      "elapsedSeconds": 4.970248542260379
+    },
+    "required-smoke": {
+      "exitSha256": "e9049e8f658dc4342bcedc1e8e16ac3193258b16f56d3d13e9237a811f319acb",
+      "logSha256": "0ac9a742ca4711d08db91c0d7224c8da0f1d25907beebb2790b18fda1e7cb150",
+      "elapsedSeconds": 8.111255541909486
+    },
+    "required-evidence-verify": {
+      "exitSha256": "1cbacb9c3a27569274bfe27a24327528cb17c728446882a27282364c1490d4d8",
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "elapsedSeconds": 4.046841208823025
+    }
+  },
+  "sourceCallbacksPassed": 15,
+  "sourceCallbacksUnselected": 52,
+  "sourceReports": {
+    "new": 9,
+    "selectedLegacy": 2,
+    "parameterContextUnselected": true
+  },
+  "sourceDHttpRequests": 32,
+  "installedCallbacks": 3,
+  "installedHttpRequests": 24,
+  "installedChildren": [
+    31096,
+    35803,
+    39921
+  ],
+  "installedPayloadIdentity": "0e4db6cff80b117661292e75da4d6d15a6bf67e3f1c97182a9dab8d691557aff",
+  "actualConsumerLockSha256": "a9a71a54828eef3dd55bbe0217ad68b8df48758de2910d9a189a12f70494f0b7",
+  "actualConsumerFiles": 870,
+  "actualConsumerLinks": 17,
+  "freshBuildEntries": 476,
+  "packageMembers": 321,
+  "sampledPidCount": 439,
+  "sampledPidsAbsentAtRootAudit": true,
+  "lintWarnings": 66,
+  "lintInfos": 41,
+  "hiddenLintDiagnostics": 87,
+  "historicalReadSeal": {
+    "event": "evidence.verified",
+    "rows": 89,
+    "freshCumulativeWriteEvidence": false
+  },
+  "failuresPreserved": [
+    "prior typecheck TS18048 from validation3",
+    "failed supervised startupCODE despite complete result"
+  ],
+  "fullSuiteExactCommitCiPending": true,
+  "commitPushDraftPrAuthorized": true,
+  "mainLandingAuthorized": false,
+  "fullWriteComplete": false
+}

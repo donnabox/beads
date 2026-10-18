@@ -1,0 +1,147 @@
+--- plan4/source-callbacks.json
++++ plan3/source-callbacks.json
+@@ -3,11 +3,11 @@
+     {
+       "callback": "D3 source projection scope",
+       "route": "scope",
+-      "directHandlerCalls": 7,
+-      "wireRequests": 0,
+-      "discoveryCalls": 7,
+-      "ownerWithReadAboveDelegatedBaseline": 7,
+-      "assemblyCalls": 7,
++      "directHandlerCalls": 6,
++      "wireRequests": 0,
++      "discoveryCalls": 6,
++      "ownerWithReadAboveDelegatedBaseline": 6,
++      "assemblyCalls": 6,
+       "waitCalls": 0,
+       "clockCalls": 0,
+       "callbackMs": 5000,
+@@ -51,16 +51,9 @@
+             "If-Match": "*"
+           },
+           "status": 204
+-        },
+-        {
+-          "method": "GET",
+-          "target": "@canonicalScope + ?x=1",
+-          "headers": {},
+-          "status": 204,
+-          "assert": "same pathname-selected Scope; exact existing service-desc Link spelling and current context"
+         }
+       ],
+-      "assertion": "Each of7 requests observes real owner once; same-entry context, HEAD/body rules, exact Link bytes from exactScopeServiceDescLink for no-query/query/HEAD/conditional eligible rows; no-minimum clock/wait unused."
++      "assertion": "Each request observes real owner once; context from observation, HEAD length/body/context and Scope Link; no-minimum clock/wait unused."
+     },
+     {
+       "callback": "D3 source receiving scope",
+@@ -132,8 +125,7 @@
+           "authorization": "writer",
+           "minimumPosition": "genesis,genesis",
+           "method": "GET",
+-          "status": 400,
+-          "tuple": "genesis,genesis + actual owner epoch/view"
++          "status": 400
+         },
+         {
+           "label": "HEAD partial",
+@@ -151,13 +143,13 @@
+     {
+       "callback": "D3 source minimum order scope",
+       "route": "scope",
+-      "directHandlerCalls": 10,
+-      "wireRequests": 0,
+-      "discoveryCalls": 10,
+-      "ownerWithReadAboveDelegatedBaseline": 16,
++      "directHandlerCalls": 9,
++      "wireRequests": 0,
++      "discoveryCalls": 9,
++      "ownerWithReadAboveDelegatedBaseline": 14,
+       "assemblyCalls": 2,
+-      "waitCalls": 6,
+-      "clockCalls": 22,
++      "waitCalls": 5,
++      "clockCalls": 19,
+       "callbackMs": 5000,
+       "requestMs": 5000,
+       "automaticRetries": 0,
+@@ -216,13 +208,6 @@
+           "headers": {
+             "If-Match": "\"absent\""
+           },
+-          "status": 503
+-        },
+-        {
+-          "case": "Scope query opaque",
+-          "target": "@canonicalScope + ?x=1",
+-          "position": "opaque-unknown",
+-          "tuple": "complete actual owner epoch/view + opaque-unknown",
+           "status": 503
+         }
+       ],
+@@ -434,8 +419,7 @@
+           "authorization": "writer",
+           "minimumPosition": "genesis,genesis",
+           "method": "GET",
+-          "status": 400,
+-          "tuple": "genesis,genesis + actual owner epoch/view"
++          "status": 400
+         },
+         {
+           "label": "HEAD partial",
+@@ -729,8 +713,7 @@
+           "authorization": "writer",
+           "minimumPosition": "genesis,genesis",
+           "method": "GET",
+-          "status": 400,
+-          "tuple": "genesis,genesis + actual owner epoch/view"
++          "status": 400
+         },
+         {
+           "label": "HEAD partial",
+@@ -974,8 +957,7 @@
+           "status": 400
+         }
+       ],
+-      "assertion": "True raw field multiplicity; bounded byte consumption; no context/Link. Do not infer internal owner counters from wire alone.",
+-      "wireHelper": "New callback-local bounded raw helper for these14 exchanges only; old transaction-http.test.ts1033-1055 helper (2s) byte-unchanged. request5s ceiling is dominated by remaining3s work/1s cleanup/default5s."
++      "assertion": "True raw field multiplicity; bounded byte consumption; no context/Link. Do not infer internal owner counters from wire alone."
+     },
+     {
+       "callback": "D3 source target transport boundary",
+@@ -1040,8 +1022,7 @@
+           "status": 403
+         }
+       ],
+-      "assertion": "AllowGET, HEAD orPOST exactly; no invented query normalization; raw Host/Origin before service.",
+-      "wireHelper": "New callback-local bounded raw helper for these14 exchanges only; old transaction-http.test.ts1033-1055 helper (2s) byte-unchanged. request5s ceiling is dominated by remaining3s work/1s cleanup/default5s."
++      "assertion": "AllowGET, HEAD orPOST exactly; no invented query normalization; raw Host/Origin before service."
+     },
+     {
+       "callback": "D3 source cold oracle counterfactual",
+@@ -1056,7 +1037,7 @@
+       "callbackMs": 5000,
+       "requestMs": 5000,
+       "automaticRetries": 0,
+-      "counterfactualApplications": 9,
++      "counterfactualApplications": 8,
+       "assertion": "Capture actual Scope Link, descriptor and Directory through three handler calls; clone-only substitutions in counterfactuals.json; zero unsafe dial/retry/fallback.",
+       "rows": [
+         {
+@@ -1084,14 +1065,9 @@
+     }
+   ],
+   "sourceDefaultMs": 5000,
+-  "newDirectHandlerCalls": 96,
++  "newDirectHandlerCalls": 94,
+   "newWireRequests": 14,
+   "countsAreProspective": true,
+   "counterBaseline": "Count actual delegated construction/capture owner traffic then reset; preserve all owner methods/readConfiguration via delegate spread; service submits are separate non-HTTP/non-discovery counters. Do not hardcode away constructor reads.",
+-  "legacySource": "First existing source callback retains7 HTTP requests (three discovery GETs nowpositive; target405/write/read/receipt laws unchanged), excluded from new counts.",
+-  "exactScopeServiceDescLink": {
+-    "emitter": "\"<\" + new URL(\"bdp.json\", canonicalScope).href + \">; rel=\\\"service-desc\\\"; type=\\\"application/json\\\"\"",
+-    "fixtureExpectedBytes": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+-    "comparison": "Exact response Link string equality to existing URL emitter, then parse ACTUAL header for navigation; canonicalScope is the actual callback Scope, not metadata target map."
+-  }
++  "legacySource": "First existing source callback retains7 HTTP requests (three discovery GETs nowpositive; target405/write/read/receipt laws unchanged), excluded from new counts."
+ }

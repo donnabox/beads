@@ -1,0 +1,22 @@
+--- preparation3/successor-static-checks.json
++++ preparation4/successor-static-checks.json
+@@ -1,16 +1,15 @@
+ {
+-  "state": "STATIC preparation3 data checks only",
++  "state": "STATIC preparation4 data checks only",
+   "helperExecution": false,
+   "sourceExecution": false,
+   "allSixHelperRelationsVerified": true,
+   "all682SourceBytesMatchRootAfterMap": true,
+-  "only681SourceFilesUnchangedSinceValidation2": true,
++  "only680SourceFilesUnchangedSinceValidation3": true,
+   "selectedCallbacks": 44,
+-  "selectedNamesAndOwnershipUnchanged": true,
++  "selectionByteIdentical": true,
+   "reportSchemasByteIdentical": true,
+   "all25CommandsOnlyExecutionPathRebound": true,
+   "all25StagesFresh": true,
+-  "nativeCorrectedFixtureClosure": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
+   "executionReleased": false,
+   "rootAndNativeMechanicsAcceptance": "UNRESOLVED",
+   "noNewRunDirectory": true

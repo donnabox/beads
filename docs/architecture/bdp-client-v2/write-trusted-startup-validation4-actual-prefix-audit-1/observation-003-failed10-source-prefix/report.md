@@ -1,0 +1,9 @@
+# Startup validation4 failed tenth-stage audit
+
+First9 accepted stages and actual484-record build remain preserved. The tenth stage focused-source exited1/acceptedfalse in6.28395s. Its actual log and JSON show43 selected passes,1 selected failure and389 unselected skipped/pending tests,433 total across8 files. Vitest's aggregate suite counter45 is not45 files. All44 selected callback identities/file bindings and skipped status of every unselected callback were independently checked without executing the audit helper.
+
+The failure is reference-deployment.test.ts “delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals”: failure helper216:9 reports expected local preparation failure, called at541:5 after the tested load resolved. This preserves the observed assertion; product-versus-fixture cause remains root diagnosis. No failure is converted into success or treated as runtime timeout.
+
+Audit-focused-source and all15 later stages remain unattempted. The active gate is closed. All682 current source bytes still match ecdc/7e856365, all484 build-map records remain exact and360 frozen inputs remain preserved with the sole active-gate exception. No source drift, forced cleanup, lifecycle-recording errors or BDP runtime residue appears in the terminal records. All99 sampled PIDs and10 groups across ten stages are independently absent in the fresh census. Retained scratch/cache directories are not claimed removed.
+
+The successful first9 gate attribution remains in the preceding immutable observation; the failed stage's actual started gate and closed snapshot are separately retained. No later result, reviewer retry, corrected-byte acceptance or qualification is inferred. Root owns diagnosis, any separately frozen correction and future release. Auditor performed read/hash checks, the role guard/process census and new records only; no helper/compiler/product/Node/source/Git/gate action or rerun.

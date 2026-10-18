@@ -1,0 +1,49 @@
+--- plan3/cold-positive-requests.json
++++ plan4/cold-positive-requests.json
+@@ -11,7 +11,7 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+         },
+         {
+           "id": "N2",
+@@ -392,7 +392,7 @@
+           "method": "HEAD",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "zero body, actual service-desc Link, current context"
++          "assert": "zero body, actual service-desc Link, current context; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+         }
+       ],
+       "distinctOperationNames": [
+@@ -424,7 +424,7 @@
+           "method": "GET",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata"
++          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+         },
+         {
+           "id": "N2",
+@@ -703,7 +703,7 @@
+           "method": "HEAD",
+           "target": "@canonicalScope",
+           "status": 204,
+-          "assert": "zero body, actual service-desc Link, current context"
++          "assert": "zero body, actual service-desc Link, current context; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+         },
+         {
+           "id": "snapshot-root",
+@@ -748,5 +748,9 @@
+   "operationTargetsFromActualDirectoryOnly": true,
+   "resourceConstruction": "newBead/newLink/newAlias mean client-chosen local identifiers under ACTUAL descriptor collection roots, never operation suffix construction",
+   "receiptRules": "Every non-sequence command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+-  "selectorConstruction": "JSON-quote actual b.id inside equality Selector; no artifact/IPC Resource URL."
++  "selectorConstruction": "JSON-quote actual b.id inside equality Selector; no artifact/IPC Resource URL.",
++  "tableNotation": {
++    "@made": "test-table placeholder for the client-chosen d identifier used in sequence updateBead, not a BDP named-result reference; name=made only supplies operationName",
++    "replayReceipt": "nonsequence nonreplay commands follow actual receipt.id; replay bodies compare original retained receipt without another GET"
++  }
+ }

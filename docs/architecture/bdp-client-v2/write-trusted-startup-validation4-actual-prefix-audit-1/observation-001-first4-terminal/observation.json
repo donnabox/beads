@@ -1,0 +1,282 @@
+{
+  "kind": "independent-startup-validation4-actual-first4-terminal-audit",
+  "observedUtc": "2026-10-18T06:07:40.113738+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "stages": [
+    {
+      "stage": "node-version",
+      "started": {
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "--version"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+        "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+        "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "rootGateSha256": "263ff887acc588b55d6a155d1ee4981aa43b827bc93dc310ae00eb3480186d0a",
+        "outerSeconds": 120,
+        "automaticRetries": 0,
+        "overrides": {},
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-node-version-qv_n35yz",
+        "npmCache": "/private/tmp/vickie-trusted-startup-validation-node-version-qv_n35yz/npm-cache"
+      },
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 3.692363374866545,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          25216
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-node-version-qv_n35yz",
+        "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+      },
+      "scratchDirectoryPresentAtObservation": true,
+      "scratchTopLevelNames": []
+    },
+    {
+      "stage": "pnpm-version",
+      "started": {
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--version"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+        "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+        "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "rootGateSha256": "263ff887acc588b55d6a155d1ee4981aa43b827bc93dc310ae00eb3480186d0a",
+        "outerSeconds": 120,
+        "automaticRetries": 0,
+        "overrides": {},
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-pnpm-version-qnso0uwc",
+        "npmCache": "/private/tmp/vickie-trusted-startup-validation-pnpm-version-qnso0uwc/npm-cache"
+      },
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 4.038833791855723,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          26623
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-pnpm-version-qnso0uwc",
+        "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+      },
+      "scratchDirectoryPresentAtObservation": true,
+      "scratchTopLevelNames": [
+        "node-compile-cache"
+      ]
+    },
+    {
+      "stage": "workspace-install",
+      "started": {
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--frozen-lockfile"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+        "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+        "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "rootGateSha256": "263ff887acc588b55d6a155d1ee4981aa43b827bc93dc310ae00eb3480186d0a",
+        "outerSeconds": 120,
+        "automaticRetries": 0,
+        "overrides": {},
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-workspace-install-ilpm170m",
+        "npmCache": "/private/tmp/vickie-trusted-startup-validation-workspace-install-ilpm170m/npm-cache"
+      },
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 4.014571167062968,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          28070
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-workspace-install-ilpm170m",
+        "logSha256": "9f570fffc122bf288ff1ab8cd2a3d25ea82b6c321dfa743912734157194cf7cc"
+      },
+      "scratchDirectoryPresentAtObservation": true,
+      "scratchTopLevelNames": [
+        "node-compile-cache"
+      ]
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "started": {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py",
+          "tools"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+        "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+        "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "rootGateSha256": "263ff887acc588b55d6a155d1ee4981aa43b827bc93dc310ae00eb3480186d0a",
+        "outerSeconds": 120,
+        "automaticRetries": 0,
+        "overrides": {},
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-bind-workspace-tools-3m_shk9x",
+        "npmCache": "/private/tmp/vickie-trusted-startup-validation-bind-workspace-tools-3m_shk9x/npm-cache"
+      },
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 7.851384500041604,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          29478,
+          29486,
+          29506,
+          29525,
+          29542,
+          29561,
+          29581,
+          29601,
+          29621,
+          29641,
+          29661,
+          29681,
+          29701,
+          29721,
+          29739,
+          29758,
+          29777,
+          29796,
+          29815,
+          29835,
+          29856,
+          29893,
+          29914,
+          29934,
+          29954,
+          29971,
+          29990,
+          30008,
+          30046,
+          30066,
+          30087,
+          30105,
+          30124,
+          30145,
+          30165,
+          30184,
+          30204,
+          30209,
+          30210
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-bind-workspace-tools-3m_shk9x",
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scratchDirectoryPresentAtObservation": true,
+      "scratchTopLevelNames": []
+    }
+  ],
+  "firstFourActuallyAccepted": true,
+  "sampledPids": [
+    25216,
+    26623,
+    28070,
+    29478,
+    29486,
+    29506,
+    29525,
+    29542,
+    29561,
+    29581,
+    29601,
+    29621,
+    29641,
+    29661,
+    29681,
+    29701,
+    29721,
+    29739,
+    29758,
+    29777,
+    29796,
+    29815,
+    29835,
+    29856,
+    29893,
+    29914,
+    29934,
+    29954,
+    29971,
+    29990,
+    30008,
+    30046,
+    30066,
+    30087,
+    30105,
+    30124,
+    30145,
+    30165,
+    30184,
+    30204,
+    30209,
+    30210
+  ],
+  "sampledGroups": [
+    25216,
+    26623,
+    28070,
+    29478
+  ],
+  "remainingPidOrGroupRows": [],
+  "scratchRetentionDistinctFromRuntimeOwnership": true,
+  "stageStartGateSha256": "263ff887acc588b55d6a155d1ee4981aa43b827bc93dc310ae00eb3480186d0a",
+  "stageStartApprovedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "activeSnapshotSha256": "379e2db664809b2e93530fbda4130660455793e0ea2fb6e44460210f396a43f8",
+  "activeSnapshotReleased": true,
+  "activeSnapshotApprovedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "snapshotClaimedSameAsStartGate": false,
+  "sourceFiles": 682,
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "toolFilesRehashed": 11,
+  "olderFailedAttemptsReused": false,
+  "laterStageSuccessClaimed": false,
+  "auditorHelperNodeProbeCompilerProductSourceGitFlagsAction": false
+}

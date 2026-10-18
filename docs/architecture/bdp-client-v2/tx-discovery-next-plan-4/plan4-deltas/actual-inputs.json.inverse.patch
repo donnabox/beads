@@ -1,0 +1,43 @@
+--- plan4/actual-inputs.json
++++ plan3/actual-inputs.json
+@@ -1,5 +1,5 @@
+ {
+-  "kind": "CLOSED corrected D3a plan4 actual input binding",
++  "kind": "CLOSED bounded actual input rebind",
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+   "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+   "tree": "6757829bd5b700faf28df39071190a272add90c9",
+@@ -337,32 +337,11 @@
+       "inPlan2": false,
+       "plan2Sha256": null,
+       "changedFromPlan2": false
+-    },
+-    "packages/conformance/src/http-executor.ts": {
+-      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+-      "bytes": 50611,
+-      "inPlan3": false,
+-      "purpose": "narrow accepted findings F1/F3/F4/F10/F13 evidence only; no edit ownership"
+-    },
+-    "packages/server/src/node-http-target.ts": {
+-      "sha256": "5e9289ca34ac15061311c593f3c9d16d091020371d1165f18ce388a4b8fcb0ee",
+-      "bytes": 2532,
+-      "inPlan3": false,
+-      "purpose": "narrow accepted findings F1/F3/F4/F10/F13 evidence only; no edit ownership"
+-    },
+-    "packages/server/src/authority-read.ts": {
+-      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+-      "bytes": 44340,
+-      "inPlan3": false,
+-      "purpose": "narrow accepted findings F1/F3/F4/F10/F13 evidence only; no edit ownership"
+     }
+   },
+   "canonicalSchemaCopiesEqual": true,
+   "actualCiAccepted": false,
+   "futureAuthoringBasis": "CONDITIONAL published D1 commit; root exact CI/serialization and review mechanics acceptance pending",
+   "productEdits": false,
+-  "runtimeExecuted": false,
+-  "plan3InputCount": 47,
+-  "newFindingInspectionInputs": 3,
+-  "inputCount": 50
++  "runtimeExecuted": false
+ }

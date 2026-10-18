@@ -1,0 +1,34 @@
+--- plan4/observation-contract.json
++++ plan3/observation-contract.json
+@@ -17,9 +17,7 @@
+       "assembly.calls",
+       "clock.calls",
+       "wait.calls",
+-      "service submit commits separate",
+-      "96 new direct calls and14 wire requests distinct;21 callbacks; Scope minimum10calls16entries6wait22clocks2assemblies",
+-      "nine cloned counterfactual applications, zero substituted wire"
++      "service submit commits separate"
+     ],
+     "records": [
+       "actual request method/target/header occurrence arrays; credential ref only",
+@@ -49,18 +47,14 @@
+       "PID absent",
+       "owned directory retained or safely removed with reason",
+       "work/cleanup elapsed and no forceddeadline/retry",
+-      "For each close-pending callback: exactly5 scheduled,4 completed HTTP responses,1 expected raw connection-aborted request with actual terminal event/error and no invented responsewire/body fingerprint; total190 scheduled/187 responses/3 aborts.",
+-      "transport lane per row;186 public-exact +4 callback-local raw requests; no reserved Host or credential guard bypass",
+-      "three pending localraw actual write-callback sent-only observation; fixed1000ms budget; immediate preclose UNSETTLED/no-response check and phase times; first503/response fails",
+-      "exact existing service-desc Link bytes on Scope and N1/head-scope; negative-only known Type ID never positive cold input",
+-      "raw pending aborted rows preserve actual terminal/partial availability; no fake complete response or hashes; failure/unknown cleanup cannot pass"
++      "For each close-pending callback: exactly5 scheduled,4 completed HTTP responses,1 expected raw connection-aborted request with actual terminal event/error and no invented responsewire/body fingerprint; total190 scheduled/187 responses/3 aborts."
+     ],
+     "noSecrets": "only credential refs/principals and registry digest; never tokens, Authorization contents, raw secret-bearing launch data",
+     "metadataCannotFeedNavigation": true
+   },
+   "qualification": "private wire discovery only, claimEligiblefalse/historyfalse; inherited and public activation qualification remains separate",
+   "unresolved": [
+-    "native plan4 precision closure and root acceptance/source worktree release; one actual PLAN result already substantively dispositioned, no retry",
++    "nativePLAN/actualPLAN reviews/dispositions",
+     "future actual reviewed source authoring basis",
+     "CODE review/native/actual dispositions",
+     "all runtime/source execution results",

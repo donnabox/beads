@@ -1,0 +1,57 @@
+--- plan4/status.json
++++ plan3/status.json
+@@ -1,19 +1,42 @@
+ {
+-  "state": "CLOSED corrected plan4;13 root dispositions incorporated; native precision/root acceptance pending",
+-  "sourceHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "sourceFiles": 679,
+-  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+-  "actualInputs": 50,
++  "state": "COMPLETE CLOSED published-D1 basis rebind; CI/mechanics/authoring pending",
++  "preparedUtc": "2026-10-18T05:16:46.457517+00:00",
+   "ownedFutureFiles": [
+     "packages/server/src/transaction-http.ts",
+     "packages/server/src/transaction-http.test.ts",
+     "apps/bdptest/src/transactional-discovery-installed.test.ts"
+   ],
+-  "actualPlanReview": "One complete substantive result accepted for findings by root; supervised finalization FAILED, CLIexitUNKNOWN, missing4runneroutputs preserved",
+-  "productSourceEdited": false,
+-  "newActualPlanRequested": false,
+-  "reviewLaunchReleased": false,
+-  "sourceAuthoringReleased": false,
+-  "executionReleased": false,
+-  "mainOrSpecAdopted": false
++  "predecessorPlanSha256": "52d086a1bcc94a582e10fcd104effa00356c67e2552c525e8fec3919f8337c39",
++  "originalInputsVerified": 31,
++  "additionalInputs": 14,
++  "sourceFilesPerBasis": 679,
++  "futureAuthoringBasis": "CONDITIONAL published D1 commit; root exact CI/shared-file serialization and PLAN/mechanics acceptance pending",
++  "sourceCallbacks": 21,
++  "sourceDirectHandlerCalls": 94,
++  "sourceWireRequests": 14,
++  "retainedLegacySourceWireRequests": 7,
++  "installedCallbacks": 11,
++  "installedScheduledRequests": 190,
++  "installedCompletedResponses": 187,
++  "installedExpectedTransportAborts": 3,
++  "coldPositiveRequests": [
++    43,
++    28
++  ],
++  "counterfactualApplications": 8,
++  "allCountsProspective": true,
++  "sourceEdits": false,
++  "testsBuildInstallRuntimeReviewFormatterExecuted": false,
++  "gitMutationCoordinationDesignLaunchEdits": false,
++  "authoringReleased": false,
++  "reviewLaunched": false,
++  "publicActivationReleased": false,
++  "predecessorNativeIndexSha256": "f93e1fed24bf740744bddb48b6c56fa97869d4162aa9131575bf302ee4b7aa31",
++  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++  "activeSourceTree": "6757829bd5b700faf28df39071190a272add90c9",
++  "parentArtifactCount": 34,
++  "plan2ActualInputs": 45,
++  "newNarrowD1Inputs": 2,
++  "activeInputCount": 47,
++  "actualCiAccepted": false
+ }

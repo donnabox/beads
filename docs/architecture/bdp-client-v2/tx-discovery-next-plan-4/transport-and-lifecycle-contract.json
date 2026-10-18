@@ -1,0 +1,44 @@
+{
+  "state": "Prospective precise authoring constraints; no helper code/execution",
+  "publicExecutorOptions": {
+    "maximumBodyBytes": 131072,
+    "maximumHeaderBytes": 16384,
+    "requestTimeoutMs": 5000
+  },
+  "exactModeRequestLimits": {
+    "maximumRequestHeaderBytes": 16384,
+    "maximumRequestBodyBytes": 65536
+  },
+  "derivedResponseWireByteCeiling": 163840,
+  "wireCeilingFormula": "maximumBodyBytes + maximumHeaderBytes*2; cap while consuming",
+  "maximumWireBytesOptionExists": false,
+  "headerBudgetWidened": false,
+  "installedTransports": {
+    "publicExactDispatches": 186,
+    "callbackLocalRaw": 4,
+    "scheduled": 190,
+    "completedResponses": 187,
+    "expectedLocalRawCloseAborts": 3
+  },
+  "localRawRows": [
+    "methods authorization transport/wronghost anonymous literal wrong Host",
+    "close pending scope/pending-minimum writer",
+    "close pending descriptor/pending-minimum writer",
+    "close pending directory/pending-minimum writer"
+  ],
+  "rawLimits": "Same or stricter131072 response body/16384 response header/163840 wire; request body65536/header16384. Enforce during consumption, not after unbounded accumulation. No shared helper/executor mutation.",
+  "pendingSequence": [
+    "Immediately register pending promise settlement/rejection handler, partial response/status/data, socket error/end/close; register child exit/close.",
+    "Observe actual socket.write callback for full authored request; sent-only, no admission proof.",
+    "Complete independent actual descriptor200 and finite drain under same parent work deadline.",
+    "Immediately before invoking close assert settled=false and responseStarted=false; capture state/actual phase times; invoke close without an intervening await.",
+    "Any preclose503/other response/settlement or final503 fails, no retry/deadline increase. Default minimumReadBudgetMs remains1000.",
+    "Require actual close-induced transport abort after full write, actual partial availability and all settlements; no invented complete response/body/wire hashes.",
+    "Require original exit0/signalnull+close/PID absence/drain, then remove owned store; timeout/forced cleanup/unknown ownership fails."
+  ],
+  "sourceRawHelper": "Old2s helper1033-1055 byte-unchanged;14 new source exchanges use callback-local bounded helper under3s work+1s cleanup/default5s, per-request ceiling5s; parent remaining budget wins.",
+  "runtimeCloseAnchors": "transaction-runtime.ts307-311,375-398",
+  "noNewSeamOrPublicOption": true,
+  "responseStartedDefinition": "Any observed incoming response octet before close counts as started, including partial status/headers/body; first response cannot be relabeled an abort. Any actual partial evidence remains available in failure report.",
+  "localRawSecretPolicy": "Pending writer credential exists only in authored socket write bytes in memory; report credential reference/write callback/response availability, never Authorization value/raw request or launch-secret data."
+}

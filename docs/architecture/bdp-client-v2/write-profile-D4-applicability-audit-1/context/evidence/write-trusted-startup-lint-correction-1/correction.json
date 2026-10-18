@@ -1,0 +1,33 @@
+{
+  "kind": "minimal-two-regex-lint-correction-with-character-equivalence",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdUtc": "2026-10-18T05:49:53.910397+00:00",
+  "files": [
+    "packages/config/src/index.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "sourceFiles": 682,
+  "other680BytesUnchanged": true,
+  "testFixture5b9AndAllTestsUnchanged": true,
+  "fullPatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+  "afterMapSha256": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
+  "proof": {
+    "exit": 0,
+    "pid": 9856,
+    "elapsedSeconds": 0.04030408291146159,
+    "forcedCleanup": false,
+    "nodeSha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "probeSha256": "1abc26f1734b370591f6bb1fe6e613e986dba8014364d9ad5b212c94e162aedf",
+    "stdoutSha256": "1b3740d4081a11dcbd97dfb653ca9ebae9b623d0cab0d7ea5a5002c17d993f13",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "scope": "Pure regex character-predicate mechanics, no product import/compiler/test/build/service or file inputs. Not product validation.",
+    "sourceEditedAtProbe": false
+  },
+  "predicate": "Unicode Cc matches exactly the original C0 U+0000..001F and DEL/C1 U+007F..009F; same unanchored Unicode test, no category expansion at pinned runtime. Negation/order/all other path checks unchanged.",
+  "productValidationExecuted": false,
+  "formatterExecuted": false,
+  "lintRuleSuppression": false,
+  "independentNativeClosureRequired": true,
+  "freshValidation4Required": true,
+  "executionReleased": false
+}
