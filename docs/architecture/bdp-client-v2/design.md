@@ -7,13 +7,13 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 ## Autonomous profile completion — active execution plan
 
 <!-- VICKIE-CURRENT-START -->
-Current execution, 2026-10-18 09:18 UTC: [PR168](https://github.com/gastownhall/bdp/pull/168) and [PR169](https://github.com/gastownhall/bdp/pull/169) remain ready for Trish. Their accepted increment validation is complete. Ordinary Write startup and cumulative same-configuration qualification remain open; no incoming main/spec changes are absorbed.
+Current execution, 2026-10-18 09:20 UTC: [PR168](https://github.com/gastownhall/bdp/pull/168) and [PR169](https://github.com/gastownhall/bdp/pull/169) remain ready for Trish. Their accepted increment validation is complete. Ordinary Write startup and cumulative same-configuration qualification remain open; no incoming main/spec changes are absorbed.
 
 | Lane | Verified state | Active next step |
 | --- | --- | --- |
 | D1 changefeed | PR168 ready, exact local/CI evidence accepted | Trish owns main sequencing. |
 | D2 S1/G2 | No adopted ruling; private gaps receive no qualification credit | Separate Donna/Trish discussion while independent work continues. |
-| D3a TX discovery | Six-file correction passed full native/root source review | First validation helpers have [three accepted audit defects](tx-discovery-validation-root-mechanics-disposition-1/disposition.md). Prepare exact successor; execution CLOSED. |
+| D3a TX discovery | Six-file correction passed full native/root source review | [Validation preparation2 is frozen](tx-discovery-validation-preparation-2/README.md), correcting all three audit defects with the same 52 stages/16 immediate audit pairs. C and root independently review; execution CLOSED. |
 | D3b trusted loader | PR169 ready; all 25 local stages and 27 CI steps passed (9,500 tests) | Frozen increment, ordinary lifecycle separate. |
 | D3c trusted lifecycle | Corrected plan4 passed full independent native/root acceptance | A authors [nine-file source release](write-trusted-startup-lifecycle-plan4-root-source-release-1/release.json) on isolated fdd basis; future combined D1/D3a binding still required. |
 | D4 owned set/restart | One actual CODE review completed cleanly; three Low findings accepted | [Four-site correction passed full independent native/root review](write-profile-D4-corrected-root-source-acceptance-1/acceptance.md); no new source finding remains. [Timing/collector prerequisites](write-profile-D4-execution-prerequisites-1/report.md) remain CLOSED. |
@@ -21,7 +21,7 @@ Current execution, 2026-10-18 09:18 UTC: [PR168](https://github.com/gastownhall/
 
 The D4 actual review has CLI/outer exit0, one complete result, all final receipts, independently verified source/packet and 223 tracked PIDs/91 groups absent. Three Low findings cover PID closure guard, byte-exact diff hashing and two failure-label subitems. [Root disposition](write-profile-D4-code-root-disposition-1/disposition.md) preserves the original source/review. F6 requires a concrete phase-deadline mechanism and bounded full-report collector before any runtime release; samples and partial wire-size arithmetic are insufficient. A [closed phase/collector proposal](write-profile-D4-phase-collector-proposal-1/plan.md) now specifies explicit admission cutoffs and honest resource-refusal thresholds for independent mechanics review; no instrumentation or execution is released.
 
-Carrier source registers 48 prospective data callbacks; no compiler/tests have run. Its single format-write preceded three final manual case subassertions, recorded as a genuine separate delta. Root verified all source bytes and froze a local commit without source changes or present/bypassed hooks. Independent full native review is queued after the discovery helper freeze, followed by one actual CODE attempt only after packet mechanics/root release. The original TX 63,000ms assertion and product workload are preserved.
+Carrier source registers 48 prospective data callbacks; no compiler/tests have run. Its single format-write preceded three final manual case subassertions, recorded as a genuine separate delta. Root verified all source bytes and froze a local commit without source changes or present/bypassed hooks. B now independently reviews the full carrier source; one actual CODE attempt follows only after source acceptance, packet mechanics and root release. The original TX 63,000ms assertion and product workload are preserved.
 
 D3a preparation1 and its additive physical-index correction remain immutable. Native audit found omitted returned-record census, weakened inherited changefeed predicates and unchecked nested installed binding/Scope fields. The successor keeps all source bytes, 52 stages, 16 immediate audit pairs, requests and budgets. No product test/build/install/runtime has run for that lane.
 
