@@ -15,7 +15,7 @@ Preparation source: `89ca1e3124059c9f292fd362b93413b6b683dc8a`, tree `96d4c0ae35
 - Optional SQL character-length clarity: no defect; kv.memory. is ASCII and existing rune count matches LEFT character count. No behavior change for this nit.
 - MEM-POL-001 boundary: graph-only --source-prefix (including explicit empty) refuses before ordinary storage open; corrupt-metadata and default omission have focused tests.
 
-Raw completed external predecessor report/exit/hash and reviewed manifest are retained. Fresh native repaired-source and generated BUILD reviews have no actionable findings. Fresh external repaired-source review is RUNNING at evidence creation: no pass claimed; frozen manifest/prompt retained. Gemini excluded. Prior source review never qualifies changed code.
+Raw completed external predecessor report/exit/hash and reviewed manifest are retained. Fresh native repaired-source and generated BUILD reviews have no actionable findings. The full external review of89ca1e312 completed exit0 with follow-up findings. Source41bbc5591 repairs/dispositions and83 current focused records are in followup/README.md; fresh external delta review remains RUNNING. No repaired-source pass is inherited. Gemini excluded. Prior source review never qualifies changed code.
 
 ## Measured checks
 
