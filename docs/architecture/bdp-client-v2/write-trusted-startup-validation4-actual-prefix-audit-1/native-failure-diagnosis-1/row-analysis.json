@@ -1,0 +1,79 @@
+{
+  "state": "STATIC branch analysis, not per-row executed telemetry",
+  "rows": [
+    {
+      "row": 1,
+      "fixture": "relative directory",
+      "branch": "installed-reference-configuration.ts:directory absolute check",
+      "prediction": "refuse"
+    },
+    {
+      "row": 2,
+      "fixture": "create string",
+      "branch": "same explicit provisioning boolean check",
+      "prediction": "refuse"
+    },
+    {
+      "row": 3,
+      "fixture": "empty credentials",
+      "branch": "unique credentials requires nonempty",
+      "prediction": "refuse"
+    },
+    {
+      "row": 4,
+      "fixture": "duplicate token",
+      "branch": "unique token cardinality check",
+      "prediction": "refuse"
+    },
+    {
+      "row": 5,
+      "fixture": "short token",
+      "branch": "trusted credential32..256 lexical bound",
+      "prediction": "refuse"
+    },
+    {
+      "row": 6,
+      "fixture": "canMutate extension",
+      "branch": "administrativeData token/principal exact field set",
+      "prediction": "refuse"
+    },
+    {
+      "row": 7,
+      "fixture": "missing reader policy",
+      "branch": "access.policy.capture(reader) requires registered principal",
+      "prediction": "refuse"
+    },
+    {
+      "row": 8,
+      "fixture": "unknown writer policy key",
+      "branch": "access() exact four fields",
+      "prediction": "refuse"
+    },
+    {
+      "row": 9,
+      "fixture": "descriptor payload_sentinel",
+      "branch": "ingest descriptor JSON decode refusal",
+      "prediction": "refuse"
+    },
+    {
+      "row": 10,
+      "fixture": "empty descriptors + unused schemas/bad missing ref",
+      "branch": "shipped descriptors have no propertiesSchema, evaluator/graph never invoked; valid JSON ingestion and local hosting pass",
+      "prediction": "first statically predicted success"
+    },
+    {
+      "row": 11,
+      "fixture": "foreign descriptor",
+      "branch": "compiled descriptors must start Scope types prefix",
+      "prediction": "refuse if reached"
+    },
+    {
+      "row": 12,
+      "fixture": "absent aggregate Link Type",
+      "branch": "captureDevelopmentAggregatePolicy requires existing Link descriptor",
+      "prediction": "refuse if reached"
+    }
+  ],
+  "postLoopMissingOwnedType": "Would refuse descriptor-dependency if reached; actual loop stopped earlier",
+  "actualRowLogged": false
+}

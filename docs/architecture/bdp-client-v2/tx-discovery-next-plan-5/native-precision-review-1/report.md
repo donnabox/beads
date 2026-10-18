@@ -1,0 +1,9 @@
+# Native plan5 receipt-rule precision closure
+
+N1-F7 is closed, with no findings on the bounded correction. The only effective content change inserts “non-replay” into the broad receiptRules sentence. Replay rows still compare the original retained receipt, already schema-validated at creation, without another GET. This agrees with unchanged tableNotation and exact43/28 tables: the first callback has11 command POSTs and10 receipt GETs; the second has5 POSTs including sequence/replay and3 receipt GETs. No hidden two-request increase is introduced.
+
+All12 overlay artifacts plus index/mirror are exact. The explicit composition binds all210 immutable plan4 artifacts and overrides only cold-positive-requests.json#/receiptRules. Its other209 paths/hashes remain plan4; all other fields of the overridden JSON are exact. Genuine forward/inverse patches reconstruct both bytes. Root078a and original native71a3 specifically requested this correction. Original plan4/native/actual-review bytes are unchanged.
+
+All679 current cce source bytes and50 frozen source/spec input copies were verified, including pinned spec677. Commit/tree/sole-parent attribution remains the root-published cce record; no fresh Git or CI query ran. Source21/96direct/14wire, installed11/190scheduled/187responses/3aborts,186 public exact+4local raw, three future paths and every budget/cleanup/privacy/admission constraint remain plan4. This is N1 precision closure, not a re-audit or new semantic approval of other plan4 content.
+
+The historical complete substantive actual PLAN retains failed supervision/unknown CLI and no retry. No second actual review, source authoring or execution is released; closed overlay flags stay unchanged. Root retains exact-basis source release and validation authority. No source/helper/Node/compiler/reviewer/runtime/Git/gate action occurred.

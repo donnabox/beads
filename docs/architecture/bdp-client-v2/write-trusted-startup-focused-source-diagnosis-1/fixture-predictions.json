@@ -1,0 +1,113 @@
+{
+  "state": "SOURCE-DERIVED predictions only; actual captured callback does not label row index",
+  "rows": [
+    {
+      "ordinal": 1,
+      "fixture": "directory relative",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts106-108: path.isAbsolute false",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 2,
+      "fixture": "create string true",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts106-108: create must be boolean",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 3,
+      "fixture": "empty credentials",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts109-118: credentials length must be nonzero",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 4,
+      "fixture": "same token across writer/reader",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts117-118: unique token set size mismatch; duplicate principals with DISTINCT tokens are separate legal case",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 5,
+      "fixture": "short token",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts110-114: credential token pattern length32..256",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 6,
+      "fixture": "extra canMutate in RU credential",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts110 and development-contracts.ts23-40: exact token/principal keys; this is not RU policy write=false refusal",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 7,
+      "fixture": "writer policy only, reader credential retained",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts119-122 invokes capture for EVERY credential principal; development-contracts.ts236-239: reader lacks administrative policy",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 8,
+      "fixture": "unknown key on writer access policy",
+      "prediction": "contract refusal",
+      "evidence": "development-contracts.ts181-193: exactly create/write/hidden/readOnly own data fields",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 9,
+      "fixture": "descriptor payload_sentinel",
+      "prediction": "contract refusal",
+      "evidence": "installed-reference-configuration.ts147\u2192compileDevelopmentContracts74-77\u2192artifact ingest357-377: embedded descriptor invalid JSON",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 10,
+      "fixture": "descriptors[] + local standalone schemas/bad with missing external $ref",
+      "prediction": "SUCCESSFUL inert RU preparation (FIRST predicted unexpected success)",
+      "evidence": "installed-reference-configuration.ts135-147: descriptors[] selects shipped13; reference-domain.ts29-73: none propertiesSchema. development-contracts.ts98-105 skips EVERY schema evaluator call; ingest only JSON+Type dependencies405-424; local schema hosting151-158 passes, aggregate[] passes. Loader302-313 returns handle. It does NOT follow from this that unused schemas always bypass graph validation when any descriptor schema entry exists.",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 11,
+      "fixture": "one foreign Type descriptor",
+      "prediction": "contract refusal (not reached if row10 resolves)",
+      "evidence": "installed-reference-configuration.ts149-150 requires captured descriptor id under configured scope/types; this is existing RU private hosting restriction, not a new global BDP Type locality rule",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 12,
+      "fixture": "maximumEndpointMultiplicity linkConformsTo types/absent",
+      "prediction": "contract refusal (not reached if row10 resolves)",
+      "evidence": "development-contracts.ts247-261 checks actual compiled descriptor inventory for matching link Type. Default13 include blocks/relationship/dependency/relates/cites; no absent Type. Do not repair by adding an inventory member.",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    },
+    {
+      "ordinal": 13,
+      "fixture": "trailing explicit artifacts owner owns missing Link Type (outside loop)",
+      "prediction": "contract refusal (not reached if row10 resolves)",
+      "evidence": "artifact ingest checkDependencies265-283 requires every explicit ownsOutgoing Link Type, missing refused; default reference substitution is not selected because descriptors are explicit",
+      "sourceLines": "reference-deployment.test.ts487-553",
+      "newlyExecuted": false
+    }
+  ],
+  "firstPredictedUnexpectedSuccess": 10,
+  "actualFailureProves": "At least one awaited loadReferenceDeployment resolved inside the refusal loop; failure helper then throws its own expected-local-preparation-failure. No compiler error was reported as the actual assertion failure.",
+  "actualRowDirectlyLogged": false,
+  "postRow10CasesPredictedNotReached": true
+}

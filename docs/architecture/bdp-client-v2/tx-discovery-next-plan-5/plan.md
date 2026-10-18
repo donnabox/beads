@@ -1,0 +1,11 @@
+# D3a plan5 — CLOSED receipt-rule overlay
+
+This is the authoritative minimal composition of frozen plan4 plus one corrected sentence in cold-positive-requests.json. Resolve every effective artifact through composition.json. All210 original plan4 indexed artifacts remain bound; only that file resolves here. The unchanged plan4 plan.md continues to supply the receiver, source/cold/request/lifecycle/ownership/budget design. This overlay replaces no other design paragraph or input and copies no large source/context trees.
+
+The receiptRules sentence now reads: “Every non-sequence, non-replay command validates mutationReceipt and follows actual receipt.id.” The remainder of that field and every other field are byte-equivalent. Replays still compare the original retained receipt body without another GET. Both cold tables remain43/28, with identical payloads, row order, statuses, keys and counts. No new request or implementation behavior is introduced.
+
+Root plan4 disposition078a5214 and native N1-F7 closure71a3dc31 require precisely this correction. The original finding, all frozen plan4/predecessor/actual-review bytes and failure history remain unchanged. One complete substantive actual PLAN review already exists; its failed supervision/unknown CLI/missing outputs remain preserved. No second actual PLAN is requested or allowed.
+
+The full679-file clean published cce884c basis and spec677 map remain pinned and statically rehashed. All50 source/spec input copies, contexts,210 original indexed hashes, source21callbacks/96direct/14wire,11installed callbacks/190scheduled/187responses/3aborts,186public-exact+4localraw, nine counterfactuals/zero wire, three future source paths and all original deadlines/cleanup/privacy/public-admission constraints remain those of plan4. Header16384/body131072/derivedwire163840 remain fixed. No startup/main/spec input is incorporated.
+
+This overlay is CLOSED preparation only. Independent native precision and root acceptance precede any separate source authoring release. No source/helper/reviewer/compiler/test/build/install/runtime/Git/signal/coordination action, source or launch edit, gate flip or actual retry was performed. Local source byte checks are static evidence, not new validation or CI results.
