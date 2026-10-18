@@ -7,13 +7,13 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 ## Autonomous profile completion — active execution plan
 
 <!-- VICKIE-CURRENT-START -->
-Current execution, 2026-10-18 09:20 UTC: [PR168](https://github.com/gastownhall/bdp/pull/168) and [PR169](https://github.com/gastownhall/bdp/pull/169) remain ready for Trish. Their accepted increment validation is complete. Ordinary Write startup and cumulative same-configuration qualification remain open; no incoming main/spec changes are absorbed.
+Current execution, 2026-10-18 09:26 UTC: [PR168](https://github.com/gastownhall/bdp/pull/168) and [PR169](https://github.com/gastownhall/bdp/pull/169) remain ready for Trish. Their accepted increment validation is complete. Ordinary Write startup and cumulative same-configuration qualification remain open; no incoming main/spec changes are absorbed.
 
 | Lane | Verified state | Active next step |
 | --- | --- | --- |
 | D1 changefeed | PR168 ready, exact local/CI evidence accepted | Trish owns main sequencing. |
 | D2 S1/G2 | No adopted ruling; private gaps receive no qualification credit | Separate Donna/Trish discussion while independent work continues. |
-| D3a TX discovery | Six-file correction passed full native/root source review | [Validation preparation2 is frozen](tx-discovery-validation-preparation-2/README.md), correcting all three audit defects with the same 52 stages/16 immediate audit pairs. C and root independently review; execution CLOSED. |
+| D3a TX discovery | Six-file correction passed full native/root source review | [Validation preparation2 passed full independent mechanics/root review](tx-discovery-validation-preparation-2/native-mechanics-closure-1/report.md). [Root released the first four stages](tx-discovery-validation-root-release-1/release.json): versions, offline locked workspace installation and tool binding. Remaining stages await their exact measured barriers. |
 | D3b trusted loader | PR169 ready; all 25 local stages and 27 CI steps passed (9,500 tests) | Frozen increment, ordinary lifecycle separate. |
 | D3c trusted lifecycle | Corrected plan4 passed full independent native/root acceptance | A authors [nine-file source release](write-trusted-startup-lifecycle-plan4-root-source-release-1/release.json) on isolated fdd basis; future combined D1/D3a binding still required. |
 | D4 owned set/restart | One actual CODE review completed cleanly; three Low findings accepted | [Four-site correction passed full independent native/root review](write-profile-D4-corrected-root-source-acceptance-1/acceptance.md); no new source finding remains. [Timing/collector prerequisites](write-profile-D4-execution-prerequisites-1/report.md) remain CLOSED. |
