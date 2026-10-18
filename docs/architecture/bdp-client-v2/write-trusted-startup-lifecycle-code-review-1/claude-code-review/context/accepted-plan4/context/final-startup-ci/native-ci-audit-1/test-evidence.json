@@ -1,0 +1,286 @@
+{
+  "testMember": "verify/19_Run pnpm test.txt",
+  "filesPassed": 187,
+  "testsPassed": 9500,
+  "passingCallbackLineCount": 9500,
+  "skips": [
+    {
+      "line": 9756,
+      "text": " ↓ scripts/demo-read.test.mjs > runnable Read walkthrough > matches real bd and preserves the established seed command recipe"
+    }
+  ],
+  "summaries": [
+    {
+      "line": 10365,
+      "text": " Test Files  187 passed (187)"
+    },
+    {
+      "line": 10366,
+      "text": "      Tests  9500 passed | 1 skipped (9501)"
+    },
+    {
+      "line": 10368,
+      "text": "   Duration  884.55s (transform 9.62s, setup 3.32s, import 49.45s, tests 1974.81s, environment 30ms)"
+    }
+  ],
+  "loaderCallbacks": [
+    {
+      "line": 5189,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > captures the RU default closure through the existing capture and exposes only an inert handle 35ms",
+      "rawLineSha256": "902f9129df249b9ca098df091f13b447a1584d018d016f2c28bf08028c3847dc"
+    },
+    {
+      "line": 5190,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > accepts the deploymentFile-only bdptest section for read-update with one selected file open 28ms",
+      "rawLineSha256": "48c8319e9534faa3f8a99d07e8999d560a7a6ef0c7fe808311558bde6f1864a5"
+    },
+    {
+      "line": 5191,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > accepts the deploymentFile-only bdptest section for transactional with one selected file open 29ms",
+      "rawLineSha256": "f719fca58ebb66cb95ee173e2505fcd4e4026cd90664f852e0fdafa4a4705530"
+    },
+    {
+      "line": 5192,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses a nested deploymentFile mismatched-path before opening 2ms",
+      "rawLineSha256": "bf9aaca4be50b521b4b2f411ade92e94705c9d84e86d6a07e35bed4cfb6e700e"
+    },
+    {
+      "line": 5193,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses a nested deploymentFile invalid-path-type before opening 1ms",
+      "rawLineSha256": "6d6feb018411fe0e2b56172ba236b4110ab9a54fdde2caf19cb7cc1c21b809d4"
+    },
+    {
+      "line": 5194,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses a nested deploymentFile fixture-conflict before opening 1ms",
+      "rawLineSha256": "7527041e0dd091c9958866b81364ccc4bffdf26962acab1ef9ed50bc5a31e504"
+    },
+    {
+      "line": 5195,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler 47ms",
+      "rawLineSha256": "7202f11b6fdf826d166dc64036a3479cd0aab48aecf317297a7dcf2b0ec27165"
+    },
+    {
+      "line": 5196,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > keeps TX compilation, credentials and capabilities private and leaves live metadata unavailable 28ms",
+      "rawLineSha256": "48d14d22bf1341e99a3f0f440f16041acd196138c12a8d98427329d37cffcf36"
+    },
+    {
+      "line": 5197,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > accepts duplicate RU principals with unique tokens, preserving existing semantics 22ms",
+      "rawLineSha256": "bce15aaf279082d5a123c8581554feef4db0bdcabc6bd08699809db703997e5d"
+    },
+    {
+      "line": 5198,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > snapshots caller settings before await and never rereads after file replacement 13ms",
+      "rawLineSha256": "dbfc38eaaa4cbf863b16e3f0b86adf43290a5ddeceb971aa23ae99f0d1207d76"
+    },
+    {
+      "line": 5199,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > does not create or alter a pre-existing read-only target store directory 7ms",
+      "rawLineSha256": "6c9bb3242ab157147fc1a3084e37a578a77e245ba209ea7f1141021723a8504e"
+    },
+    {
+      "line": 5200,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses unsupported profile read before opening 1ms",
+      "rawLineSha256": "551d5d3e40350b8de8f676b8e197c1349432d4e1f361d6786399076440bbc202"
+    },
+    {
+      "line": 5201,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses unsupported profile undefined before opening 1ms",
+      "rawLineSha256": "6e78f9444beb35951c01518727bb8d12583167241fd1880b899f792621e739a6"
+    },
+    {
+      "line": 5202,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses unsupported profile future before opening 1ms",
+      "rawLineSha256": "ca84a34af21bd79576f93ecef6570007dd346290bde182abd9ced39c56075ec1"
+    },
+    {
+      "line": 5203,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses shared listener/limits/fixture/fault conflicts before opening and never invokes getters 5ms",
+      "rawLineSha256": "e4668b5980281b7bee95b6ebd9dc03d730d1d81dc63ed97e419939d794ba5560"
+    },
+    {
+      "line": 5204,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > accepts the supported RU IPv6 intended listener 7ms",
+      "rawLineSha256": "5c57014943fd22fb2bbbfcfc19869a210524fa2c851045f112b5f8145db33c60"
+    },
+    {
+      "line": 5205,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > refuses envelope extensions, wrong profile/format and Directory/descriptor wire shapes 24ms",
+      "rawLineSha256": "d904886276c9cff965387b8534d03fc240efe538241af0d3afba4af67604b5b8"
+    },
+    {
+      "line": 5206,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals 71ms",
+      "rawLineSha256": "5ee0f99f379ef9070b427ec36901e08990e1eddaa0fd80cad0c8c83f1368434f"
+    },
+    {
+      "line": 5207,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > delegates TX exact credential and compiled closure refusals 50ms",
+      "rawLineSha256": "b1892c05c8f0ede1a1a256056095a5bc052ce92a84a80884cc903ac7a962136b"
+    },
+    {
+      "line": 5208,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo 51ms",
+      "rawLineSha256": "405f1141d7214ff82958ac88437f8eac09919c95fd698fe93eca9822f3457b93"
+    },
+    {
+      "line": 5209,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > bounds the lossless tree before numeric admission and treats number literals as atomic 667ms",
+      "rawLineSha256": "edd42f0aa1b39666a9c5b76f6900b6893c9d0aeed1917954487a2eb1a3cafc74"
+    },
+    {
+      "line": 5210,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace 31ms",
+      "rawLineSha256": "ef486d6a348a2b080fa70dec3c462dc72e8796ecebe96375b64554c64324d8f9"
+    },
+    {
+      "line": 5211,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > closes the single real descriptor on success and syntax/contract failures 15ms",
+      "rawLineSha256": "2378f93474341cabc1700209b88232167ae19198236365ab8ae91ea7aa136dbd"
+    },
+    {
+      "line": 5212,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > bounds reads despite stale stat and closes handles on overflow/read failure/non-file 15ms",
+      "rawLineSha256": "238f11bc47e183ca5958df8f91ba91b1706ee887764d71312905ae9d6f57b41d"
+    },
+    {
+      "line": 5213,
+      "text": " ✓ packages/server/src/reference-deployment.test.ts > exports only the loader and local error constructor from the public data entry 0ms",
+      "rawLineSha256": "aa6e9499b5a12e79e25ef2c50e34059d83ccc2558653dac0040dabf66df41cd5"
+    }
+  ],
+  "preflightCallbacks": [
+    {
+      "line": 12,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 62ms"
+    },
+    {
+      "line": 13,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 140ms"
+    },
+    {
+      "line": 14,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 4ms"
+    },
+    {
+      "line": 15,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 1ms"
+    },
+    {
+      "line": 16,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 2ms"
+    },
+    {
+      "line": 17,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 156ms"
+    },
+    {
+      "line": 18,
+      "text": " ✓ scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 643ms"
+    }
+  ],
+  "installedLoader": {
+    "actualAggregatePass": true,
+    "sourceDerivedCalls": 6,
+    "acceptedLoads": 2,
+    "contractRefusals": 4,
+    "sourceFunction": "scripts/smoke-executables.mjs:1197",
+    "acquisitionClaim": "Configured intended port remains occupied by owned witness listener and store paths absent; this is pure loader evidence, not trusted service lifecycle or forbidden-call instrumentation"
+  },
+  "stockPrivateResolution": {
+    "sourceDerivedAttempts": 73,
+    "sourceDerivedUniqueSpecifiers": 66,
+    "dynamicAttempts": 32,
+    "literalAttempts": 41,
+    "specifiers": [
+      "@bdp/conformance/dist/transactional-observation.js",
+      "@bdp/conformance/transactional-observation",
+      "@bdp/server/development-authority",
+      "@bdp/server/development-composition",
+      "@bdp/server/development-contracts",
+      "@bdp/server/development-runtime",
+      "@bdp/server/dist/development-composition.js",
+      "@bdp/server/dist/development-contracts.js",
+      "@bdp/server/dist/development-runtime.js",
+      "@bdp/server/dist/installed-payload.js",
+      "@bdp/server/dist/installed-reference-configuration.js",
+      "@bdp/server/dist/installed-reference-process.js",
+      "@bdp/server/dist/installed-reference.js",
+      "@bdp/server/dist/installed-schema-builtins.js",
+      "@bdp/server/dist/installed-schema-decimal.js",
+      "@bdp/server/dist/installed-schema-evaluator.js",
+      "@bdp/server/dist/installed-schema-graph.js",
+      "@bdp/server/dist/installed-schema-pattern.js",
+      "@bdp/server/dist/installed-schema-recursion.js",
+      "@bdp/server/dist/installed-schema-shape.js",
+      "@bdp/server/dist/installed-schema-uri.js",
+      "@bdp/server/dist/installed-schema-value.js",
+      "@bdp/server/dist/node-http-disconnect.js",
+      "@bdp/server/dist/read-http-routing.js",
+      "@bdp/server/dist/read-pagination.js",
+      "@bdp/server/dist/reference-deployment-state.js",
+      "@bdp/server/dist/reference-deployment.js",
+      "@bdp/server/dist/transaction-authorization.js",
+      "@bdp/server/dist/transaction-batch.js",
+      "@bdp/server/dist/transaction-changefeed.js",
+      "@bdp/server/dist/transaction-changefeed.js",
+      "@bdp/server/dist/transaction-comparison.js",
+      "@bdp/server/dist/transaction-consistency.js",
+      "@bdp/server/dist/transaction-dependencies.js",
+      "@bdp/server/dist/transaction-discovery.js",
+      "@bdp/server/dist/transaction-events.js",
+      "@bdp/server/dist/transaction-http.js",
+      "@bdp/server/dist/transaction-installed-configuration.js",
+      "@bdp/server/dist/transaction-installed-configuration.js",
+      "@bdp/server/dist/transaction-installed-process.js",
+      "@bdp/server/dist/transaction-installed-process.js",
+      "@bdp/server/dist/transaction-installed.js",
+      "@bdp/server/dist/transaction-installed.js",
+      "@bdp/server/dist/transaction-read.js",
+      "@bdp/server/dist/transaction-runtime-configuration.js",
+      "@bdp/server/dist/transaction-runtime-configuration.js",
+      "@bdp/server/dist/transaction-runtime.js",
+      "@bdp/server/dist/transaction-schema-http.js",
+      "@bdp/server/dist/transaction-sequence.js",
+      "@bdp/server/dist/transaction-service.js",
+      "@bdp/server/dist/transaction-set.js",
+      "@bdp/server/dist/transaction-snapshot.js",
+      "@bdp/server/dist/transaction-snapshot.js",
+      "@bdp/server/dist/transaction-sse.js",
+      "@bdp/server/dist/transaction-sse.js",
+      "@bdp/server/dist/transaction-store.js",
+      "@bdp/server/dist/transaction-submission.js",
+      "@bdp/server/installed-payload",
+      "@bdp/server/installed-reference",
+      "@bdp/server/installed-reference-configuration",
+      "@bdp/server/installed-reference-process",
+      "@bdp/server/node-http-disconnect",
+      "@bdp/server/read-http-routing",
+      "@bdp/server/read-pagination",
+      "@bdp/server/reference-deployment",
+      "@bdp/server/reference-deployment-state",
+      "@bdp/server/transaction-changefeed",
+      "@bdp/server/transaction-installed",
+      "@bdp/server/transaction-installed-configuration",
+      "@bdp/server/transaction-installed-process",
+      "@bdp/server/transaction-runtime-configuration",
+      "@bdp/server/transaction-snapshot",
+      "@bdp/server/transaction-sse"
+    ],
+    "completionAuthority": "CI smoke step success plus exact pinned script loops; no per-attempt event log"
+  },
+  "historicalReadSeal": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  }
+}

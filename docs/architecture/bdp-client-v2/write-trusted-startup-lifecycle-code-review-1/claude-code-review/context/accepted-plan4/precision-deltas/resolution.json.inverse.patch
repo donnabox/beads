@@ -1,0 +1,105 @@
+--- plan4/resolution.json
++++ plan3/resolution.json
+@@ -1,6 +1,6 @@
+ {
+-  "state": "CLOSED PLAN4 AUTHOR RESOLUTION; independent full native/root precision still required",
+-  "rootDispositionSha256": "fd945f3c76477fa8b000271fb749424f7efb184c7d3a3b0528f6b66ea8be458a",
++  "state": "AUTHOR RESOLUTION; INDEPENDENT PRECISION REVIEW REQUIRED",
++  "rootDispositionSha256": "2936247bcc29b84734ec8c41f4b9f880789b6d0514417e9d68e5862f817be15c",
+   "N1": {
+     "paths": [
+       "plan.md",
+@@ -38,92 +38,5 @@
+   },
+   "sourceAuthoringReleased": false,
+   "reviewLaunchReleased": false,
+-  "runtimeReleased": false,
+-  "priorN1N4RootDispositionSha256": "2936247bcc29b84734ec8c41f4b9f880789b6d0514417e9d68e5862f817be15c",
+-  "actualPlanFindings": [
+-    {
+-      "id": "F1",
+-      "severity": "High",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Trusted TX listen uses genuine handle.listener host/port exclusively, never private preflight.port0. S03 verifies actual nonzero listen argument equals intended port. RU captured installed.port already agrees."
+-    },
+-    {
+-      "id": "F2",
+-      "severity": "Medium",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Persistent error observer and serving completion exist only in trusted core mode. Preserve legacy attach/remove observer, order/resultshape/close; source asserts legacy listenerCount(error)0."
+-    },
+-    {
+-      "id": "F3",
+-      "severity": "Medium",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Explicit TX owner.readConfiguration, receiptMaximumItems/readOptions advertised-limit comparisons and preflight.metadata all finish BEFORE createTransactionService construction. Constructor throw leaves caller ownership: S04 direct owner.close1 and service.close0. After successful construction service owns owner; preserve separately measured constructor read/no global one-read promise."
+-    },
+-    {
+-      "id": "F4",
+-      "severity": "Medium-Low",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Prepared RU reconstructs exact four-value installed-reference.ts tuple from frozen state.installed without recapture/compilation. Intentionally parallel unchanged outside-footprint function; assert equal tuple for same capture. options.token uses first captured credential, required-unused."
+-    },
+-    {
+-      "id": "F5",
+-      "severity": "Medium",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Keep21 callbacks/126finiteHTTP+2CONNECT/32 original candidate-or-public-executable generations. Add FOUR separately inventoried owned Node guard helpers: I20 inert non-entry import withoutIPC and withIPC plus direct missingIPC (3); I21 invalid-configuration IPC (1). Total36 planned child processes. Helpers acquire no listener/store; never describe them as zero processes. Inert guards preserve exit/listener counts; refusals fixed diagnostic/exit2/empty stdout/no ready. Observe exit AND stdio close/cleanup. Stay inside existing45work10cleanup60callback120outer and existing per-helper5s/10s bounds dominated by remainingwork; no retry/widening. Local helper only in already-owned new installed file."
+-    },
+-    {
+-      "id": "F6",
+-      "severity": "Medium-Low",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Installed test precreates TX parent directory0700 before generation1create:true; samepath create:false reopen. Loader/process gain no provisioning; missingcreate:false store FILE refusal unchanged. Do not claim shared TX launcher provisions new shared configuration envelope: its flat configuration.directory/create assumptions differ. Use callback-local bounded orchestration in owned new installed file with existing10s configuration/control/output caps; observe signalled exit and close directly because existing shared close rejects non-nullsignal. No shared-launcher/tenth-file edit."
+-    },
+-    {
+-      "id": "F7",
+-      "severity": "Low",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "RU epoch is process-generated lifecycle token, not independently persisted readback or installation-equality evidence. TX epoch remains persisted; no new equality rule."
+-    },
+-    {
+-      "id": "F8",
+-      "severity": "Low",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Add history to private lifecycle result; forward existing profile-specific captured constant to ready, never mint unobservedfield."
+-    },
+-    {
+-      "id": "F9",
+-      "severity": "Low",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "21 persisted rows enumerate installation-equality mismatches, not all opaque/allocation/integrity rows. Explain excluded TXepoch/position and RUnextRevision/nextIdentity/namespace/history. Cite actual existing malformed guards where present; TXepoch has no equalitycheck and no invented malformed-epoch refusal. Keep21."
+-    },
+-    {
+-      "id": "F10",
+-      "severity": "Low",
+-      "disposition": "ACCEPT with concrete root precision",
+-      "requiredCorrection": "Scope/listener authority alignment is installed FIXTURE property, not new loader invariant. Record configured Scope and acquired listen URL independently; installed assertion matches fixture authority/address without rewriting configured Scope."
+-    }
+-  ],
+-  "R1": {
+-    "id": "R1",
+-    "disposition": "REJECT false verified-correct claim; correct dependency labels without new source semantics",
+-    "actualSource": "fdd transaction-http.ts596-604 explicitly blocks Scope, bdp.json and operations/ with transactional-discovery gap. Generic readRoute parses Types and authority-read.ts789-794 serves Type descriptors. transaction-service.discoveryObserved is internal only, not wire. transaction-schema-http serving schemas does not exclude generic Read Type routes.",
+-    "requiredCorrection": "ALL TX callbacks navigating cold rows1-3 require accepted D3a receiver: I02,I04,I13,I15,I17,I19. Type row4 already implemented; not missing receiver. Keep explicit client-known Type fixtureinput/N4 distinction and same HTTP/footprint. Internal prebind lifecycle authoring separate; installedcold success requires exact accepted combinedsource."
+-  },
+-  "firstActualPlan": "ONE substantive result complete; FAILED supervision/CLI UNKNOWN/four outputs missing preserved; no second actual PLAN",
+-  "sourceWitnessSubphaseCounts": {
+-    "callbacksUnchanged": 51,
+-    "HTTPUnchanged": 2,
+-    "S02AdditionalCompilerOwnerOrHttp": 0,
+-    "S03AdditionalPreparedAttemptAndReturnedOwner": 1,
+-    "S11AdditionalLegacyRuntimeStartsAndReturnedOwners": 2,
+-    "additionalReturnedOwnerAcquisitionsVsPlan3": 3,
+-    "additionalSuccessfulListenersVsPlan3": 2,
+-    "notNewCallbacks": true,
+-    "allSourcePhasesWithinOriginalMs": 5000,
+-    "feasibility": "PROSPECTIVE; no timing pass or worst-case claim. If a finite combined subphase cannot fit5s, report concrete conflict and stop; no extra callbacks, widening, retry or hidden acquisitions."
+-  },
+-  "guardHelperAccounting": {
+-    "originalGenerations": 32,
+-    "guardHelperChildren": 4,
+-    "totalOwnedChildren": 36
+-  }
++  "runtimeReleased": false
+ }

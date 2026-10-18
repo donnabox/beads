@@ -1,0 +1,207 @@
+{
+  "scope": "genuine effective plan2+plan3 -> complete effective plan4 documentation/data; source unchanged",
+  "pairs": [
+    {
+      "file": "README.md",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "6674f671b9a17074fc5ad4a7dd93ade860ce558296353d4f0b559146685a9d8f",
+      "forward": "deltas/README.md.patch",
+      "forwardSha256": "3f97dd875b8107f70a95bc5af09462c65689499307500999b4e6aa68fac6d236",
+      "inverse": "deltas/README.md.inverse.patch",
+      "inverseSha256": "53b121e31ca9e07aa25964b820e9966fed00d4bf9eac0c8e3350866a7b775009"
+    },
+    {
+      "file": "actual-interface-map.json",
+      "before": "predecessor-effective/actual-interface-map.json",
+      "beforeSha256": "fb1bc93f7385db3b146e769dcd62716fcb66b8a35398e3e77a2d1de5229a9637",
+      "afterSha256": "32fc4676f1ca13dbe9f47843a9bd19c13a0d462478247e51d2b67fa33632158b",
+      "forward": "deltas/actual-interface-map.json.patch",
+      "forwardSha256": "67a49f7aab0b1f4b9986a2b01db6300dee254a8dfc80df46a284b9db708e1a88",
+      "inverse": "deltas/actual-interface-map.json.inverse.patch",
+      "inverseSha256": "d30c9f263116e9e92feac91dc6718aa5af4f7ba5ca839ee2f7bd8d2c4f74c09f"
+    },
+    {
+      "file": "basis.json",
+      "before": "predecessor-effective/basis.json",
+      "beforeSha256": "e8d2bb3b3e7a1450c6409115820f5d0819fd3bc1267e7f480dd075d53ebe4003",
+      "afterSha256": "04ce7a564fc9030bcb7b5ac08a1f956eaded5c5883b8a22c3b957200cb0a2b2b",
+      "forward": "deltas/basis.json.patch",
+      "forwardSha256": "721cf912bba9527bdc036e0a5d3d6f10a7e1ab41746b37f3e3c020e56b762cbe",
+      "inverse": "deltas/basis.json.inverse.patch",
+      "inverseSha256": "b04ee35bd7d3118c7764acf7e42fc3f1e82fc422b9e4cb8a523a729f8abd3478"
+    },
+    {
+      "file": "budgets-and-secrecy.json",
+      "before": "predecessor-effective/budgets-and-secrecy.json",
+      "beforeSha256": "3d5fb05a1778b9300d6cc52667a5f00b34864bb085d3ba049d8ab600d2ec3947",
+      "afterSha256": "acd7e74c26a0a132e9ae3ac4bba3444c7624ab59ddac7857ee4305f9b35611e5",
+      "forward": "deltas/budgets-and-secrecy.json.patch",
+      "forwardSha256": "21b07898cc2f9fa2b77e56a4e50f6d9284826d340283b7d54dead6738b954c55",
+      "inverse": "deltas/budgets-and-secrecy.json.inverse.patch",
+      "inverseSha256": "5233e03366a6d051191e20d7e126a04dc8301bdb6c04143791539cd5b4e6709f"
+    },
+    {
+      "file": "error-contract.json",
+      "before": "predecessor-effective/error-contract.json",
+      "beforeSha256": "5bf3cd635621d82910f245bd81ce21a5329c15974c8f5e6ac3e055d481e791d2",
+      "afterSha256": "cfd12bae62fd44f9c86b7dcfb64e0b5d368e692fc49a20c209ef4a11a59b1936",
+      "forward": "deltas/error-contract.json.patch",
+      "forwardSha256": "5f4e2fa9cf2c4e31ce90631d09c47c7c5090ac3e02aee2b60e3d4d82de112ffa",
+      "inverse": "deltas/error-contract.json.inverse.patch",
+      "inverseSha256": "a371616a6bce015b533975c909d3430086741e143222c0420bd547d8ae974004"
+    },
+    {
+      "file": "findings-resolution.json",
+      "before": "predecessor-effective/findings-resolution.json",
+      "beforeSha256": "b714912ae8f96d48ededd132fa4082361debfb332f3becd1af2be79e86b743fb",
+      "afterSha256": "65f32220fc53caee92821c25dbd00c750ad54b94931984b32d1f302c08a781c9",
+      "forward": "deltas/findings-resolution.json.patch",
+      "forwardSha256": "08f4f29d321b968b01fc36ce98209828e753b17f83c3541474dfb43da86ab843",
+      "inverse": "deltas/findings-resolution.json.inverse.patch",
+      "inverseSha256": "e5ec24ff7792df6ee3f6872ab51d149e2be43546a33e0b439902a17aa82fe13d"
+    },
+    {
+      "file": "footprint.json",
+      "before": "predecessor-effective/footprint.json",
+      "beforeSha256": "bcbeb5729e39419c36ca4e5973ffca9c5093635e08f2ac5742da0cbb94157c5c",
+      "afterSha256": "9d326fcc4fa40575690171d14c73c6280f89f4b5a0eab7380f68976cc1305ce6",
+      "forward": "deltas/footprint.json.patch",
+      "forwardSha256": "ff6f7c3c4551be83a494967ffc01f7f72d967b256d5f997fd7c08f5be8265b1f",
+      "inverse": "deltas/footprint.json.inverse.patch",
+      "inverseSha256": "174685539477de737476ebfb160df43e0f57a29628c7d576b5e46965ddb4b9f5"
+    },
+    {
+      "file": "handoff-contract.json",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "187f5aae9b4c7ff4925be4ca0af2fe9880aaa9fa0c382930d8c501a9117cc96f",
+      "forward": "deltas/handoff-contract.json.patch",
+      "forwardSha256": "f7a36e2792f5657996fbc527b22a491c8bd073d19a97904bec3ff5fa67a1847e",
+      "inverse": "deltas/handoff-contract.json.inverse.patch",
+      "inverseSha256": "0adf658eac6e03a983666519589e174889b5559be8410b64b2c6c8827651cbd7"
+    },
+    {
+      "file": "input-schema.json",
+      "before": "predecessor-effective/input-schema.json",
+      "beforeSha256": "a6498fa023e322e242a650c62311520d41f08c82f6115ebec0f78a5b02babd56",
+      "afterSha256": "7cfe8cb3c73bf2b15ff532565bad9884a461780e7e64be25cd33f3cf5b268544",
+      "forward": "deltas/input-schema.json.patch",
+      "forwardSha256": "508d0632fd4ab459bf0499629664f46be589c492c933ecf03520b8c3dfed35ee",
+      "inverse": "deltas/input-schema.json.inverse.patch",
+      "inverseSha256": "4ac7b0231d251b0126ac25ff3c9333c23d3dd784314181b4c4cd0fdb5d28a3d4"
+    },
+    {
+      "file": "io-contract.json",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "922b2e7bd7442bbb4817c9f2cbd9382b7cff1cf0e632d2d18c493ab1ca714b78",
+      "forward": "deltas/io-contract.json.patch",
+      "forwardSha256": "9aa4eac3d9a01f6d76eea939a1236aa84551e0fbe9d342fb9fe158797903e5e2",
+      "inverse": "deltas/io-contract.json.inverse.patch",
+      "inverseSha256": "ab9084d85b5d3f7def3167f6b085ec03f3c87b817c305930e11f1f3128b8e4e5"
+    },
+    {
+      "file": "lifecycle-and-adapters.json",
+      "before": "predecessor-effective/lifecycle-and-adapters.json",
+      "beforeSha256": "f4d12f9d3d620a6fcfba3fe87cff3a03f9c132a4f6a6e8b36eb6b5bbb9b68afc",
+      "afterSha256": "94c2472be983babd74581769bb45692a566e8cd7d36175a8b0a47be33dfd50fe",
+      "forward": "deltas/lifecycle-and-adapters.json.patch",
+      "forwardSha256": "785ab38f9cfaf4a859d8ff33bd496d493a65d963c08757a6941a8be8dea992a9",
+      "inverse": "deltas/lifecycle-and-adapters.json.inverse.patch",
+      "inverseSha256": "08a95af39bee5aa2761099bf10657b6fc294a47e4b4750ec16ec5c6b0267b871"
+    },
+    {
+      "file": "next-successor.json",
+      "before": "predecessor-effective/next-successor.json",
+      "beforeSha256": "186b5410d9d6b3dfb44449e5206269445edfc6dac2c24816b7d17040a8652bb4",
+      "afterSha256": "ce5ba8dd92246696b8c7553cace1c18e56eb19aadbf33b64f93234149558e99c",
+      "forward": "deltas/next-successor.json.patch",
+      "forwardSha256": "2dd4beb6a598268b5fa46c69d994441541eec0a8b241cddbc18efbee4d9dd78b",
+      "inverse": "deltas/next-successor.json.inverse.patch",
+      "inverseSha256": "fe611cfce6775544c600c76f4e068f14975c63e898f3b8e8102ef6926cc94971"
+    },
+    {
+      "file": "outcome-join-contract.json",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "816998e9c6adbc62e034f18eb89bb0e31c8b83f45a66c0ce593dd032b8084596",
+      "forward": "deltas/outcome-join-contract.json.patch",
+      "forwardSha256": "ff9d3efeb7d0c44bb020c0457a09bbb7c9a2858f46f1715e16cf75bb25fdd963",
+      "inverse": "deltas/outcome-join-contract.json.inverse.patch",
+      "inverseSha256": "cf0eae6a9a24990c411a14d041e13776528be019420064447ae1d77b36ea84a1"
+    },
+    {
+      "file": "output-schema.json",
+      "before": "predecessor-effective/output-schema.json",
+      "beforeSha256": "332ac3a74ac9f94338327cb0e9da8df2a128e0a6a328911a5dcb63bd79a9c0aa",
+      "afterSha256": "698702ac86450267150e5d46c6e511bc56f3abe874819906aa843d73df9582a7",
+      "forward": "deltas/output-schema.json.patch",
+      "forwardSha256": "4b5afffab38f55843caff8ab65b69829d48dffebcd29f1788d6ec8bbb1121ca2",
+      "inverse": "deltas/output-schema.json.inverse.patch",
+      "inverseSha256": "a843498cb5df9b61008f331a182b6f6059211afc38fd12217e117610d26e3fdc"
+    },
+    {
+      "file": "plan.md",
+      "before": "predecessor-effective/plan.md",
+      "beforeSha256": "b380b5dd4492807cb04d5b2deac2c46f26315ecec798a753bee5b1c7f2542844",
+      "afterSha256": "2aefcb82209e5929df1a81d22511ebb66a70c751d8d066c4b304c83a10f6cbf7",
+      "forward": "deltas/plan.md.patch",
+      "forwardSha256": "e04c0aeb04eecaa6a43a2c2229135be98a5dc2419b16b30114229deaffd50f8e",
+      "inverse": "deltas/plan.md.inverse.patch",
+      "inverseSha256": "49d2da8308730634b99c13f41ee9c1d35a466f4f087eb27e9c802fd6df5d97ad"
+    },
+    {
+      "file": "preparation-static-assertion-1.json",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "9991051bf0bd9afe917a2542f8272b2f62c12cb32f74f7d36773d3def5dacb1d",
+      "forward": "deltas/preparation-static-assertion-1.json.patch",
+      "forwardSha256": "17289df494a6a3d80820ba24c0d2c8c5feef3c1e21cbad6ceea2d22e4dcea36e",
+      "inverse": "deltas/preparation-static-assertion-1.json.inverse.patch",
+      "inverseSha256": "1aa0e41255139d5a3045d178fadc9b2fe392375a4c9402229fe6d2eaa9a0ff93"
+    },
+    {
+      "file": "source-data-cases.json",
+      "before": "predecessor-effective/source-data-cases.json",
+      "beforeSha256": "c5a76167f82e1b393c89a1c27e2c7259c9175be6d44cc92d2fb71f7a4a950a00",
+      "afterSha256": "5c7a19550818e7725db6168caae761acc71a95e3ff6f70f04240fa756fcd81dc",
+      "forward": "deltas/source-data-cases.json.patch",
+      "forwardSha256": "bb75d2ad7be48fae5b7f4de5a90044b50443128627a2d179ad50c0da3fbfc337",
+      "inverse": "deltas/source-data-cases.json.inverse.patch",
+      "inverseSha256": "4803713251a2f381bd2058a49b35cb31c5a5c44644b5645f698b93a7ab89f0b9"
+    },
+    {
+      "file": "source-input-map.json",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "8c552546f6cefb02aa64fb6218c04c8c6036b71cf8804bccfe219dbcfd0ef7d9",
+      "forward": "deltas/source-input-map.json.patch",
+      "forwardSha256": "e0c08fe6236abf777ddf5f7032d80e6550680bfae09b00a1800a8155eab1adaf",
+      "inverse": "deltas/source-input-map.json.inverse.patch",
+      "inverseSha256": "6ca41f79a93838d644494ca482fb077aae93fd933756d0e337550afe5d075596"
+    },
+    {
+      "file": "validation-plan.json",
+      "before": "predecessor-effective/validation-plan.json",
+      "beforeSha256": "769d73f5fd074bff5e75a356b8bde8370ec34aef14a6f61eb122c4cb7651bf6b",
+      "afterSha256": "59718c88fb70aa9aee926aec3793dbaac89cf15bda0d9293e5266e16e74a8217",
+      "forward": "deltas/validation-plan.json.patch",
+      "forwardSha256": "5322a0b535ccdc002f5d59459248b5e2e872c9e2220f303a65a3a106c252c555",
+      "inverse": "deltas/validation-plan.json.inverse.patch",
+      "inverseSha256": "f5c98bc5fcfaf0f272f0f85ee5d29e13921d848a21270bd0aa21533bc1db8c2b"
+    },
+    {
+      "file": "verification-order.json",
+      "before": "predecessor-effective/verification-order.json",
+      "beforeSha256": "815435f7074176f00035e5b01e034d0027cc32012f591f3ae5c7a6ffaf16b310",
+      "afterSha256": "31d8bb92ee4176f4023d8119b7ab3f764d880304d63f615e84769f2d79ca8e4e",
+      "forward": "deltas/verification-order.json.patch",
+      "forwardSha256": "27c6a2fc9c464cb8d2c083dc4ee2273dea68a60d94b5c6886f5f9b183b06c86f",
+      "inverse": "deltas/verification-order.json.inverse.patch",
+      "inverseSha256": "f66d74c29ca0e17eff0f11b191445e488c5ac1b2e7d22fc2e02db9ad3e5823c9"
+    }
+  ],
+  "pairCount": 20,
+  "noSourcePatch": true
+}

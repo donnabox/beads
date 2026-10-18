@@ -1,0 +1,15 @@
+{
+  "scope": "static draft precision only; no execution",
+  "corrections": [
+    "Observe all startup/listener errors rather than only first while retaining original first stream fault.",
+    "Genuine spread/frozen/proxy handles and file-open tripwire; abort and observe pending source preparation before teardown.",
+    "Preserve installed fixture-setup failure evidence and cache entry hash before cleanup. Catch socket-event assertion errors within owned promise.",
+    "Readback Type inventory compares the same exact rows independent of ordering."
+  ],
+  "paths": [
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts"
+  ]
+}

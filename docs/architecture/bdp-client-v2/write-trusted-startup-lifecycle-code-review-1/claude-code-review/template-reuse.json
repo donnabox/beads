@@ -1,0 +1,26 @@
+{
+  "state": "EXACT clean runner literal adapter; independently reviewed before launch",
+  "runnerTemplate": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/run.py",
+  "templateSha256": "1d39774841f53b38b5c04e40d309e60c22f3dee2b017cc4c59537eaaf0a5ffc7",
+  "runnerSha256": "b02dbc762e837710a95be06aed350dbba39879a667178afc7f79877afd575fdd",
+  "exactNamedLiteralChangesOnly": 3,
+  "replacements": [
+    {
+      "before": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+      "after": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review/guarded-action-session-20261018-021624-549f.py"
+    },
+    {
+      "before": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "after": "d181d9167fdf71d64ceb1d8dc73a86557ba8f032"
+    }
+  ],
+  "inverseTextAndASTEqual": true,
+  "parserArgvGuardByteIdentical": true,
+  "supervisor5ByteIdentical": true,
+  "noDirtySourceExclusions": true,
+  "defaultModelNoAgentsNoTurnCapsNoGeminiNoRetry": true
+}

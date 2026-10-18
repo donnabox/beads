@@ -1,0 +1,20 @@
+--- plan3/source/packages/server/src/reference-deployment.test.ts
++++ plan2/source/packages/server/src/reference-deployment.test.ts
+@@ -509,15 +509,9 @@
+     },
+     {
+       contracts: {
+-        ...artifacts(),
++        descriptors: [],
+         schemas: [
+-          {
+-            retrievalUri: `${scope}schemas/item`,
+-            utf8: JSON.stringify({
+-              $id: `${scope}schemas/item`,
+-              $ref: "https://missing.test/schema",
+-            }),
+-          },
++          { retrievalUri: `${scope}schemas/bad`, utf8: '{"$ref":"https://missing.test/schema"}' },
+         ],
+       },
+     },

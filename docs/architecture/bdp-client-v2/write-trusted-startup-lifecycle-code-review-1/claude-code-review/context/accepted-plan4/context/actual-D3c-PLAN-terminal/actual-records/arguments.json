@@ -1,0 +1,18 @@
+[
+  "/opt/homebrew/bin/claude",
+  "--safe-mode",
+  "-p",
+  "--tools",
+  "Read,Glob,Grep",
+  "--allowedTools",
+  "Read,Glob,Grep",
+  "--disable-slash-commands",
+  "--strict-mcp-config",
+  "--mcp-config",
+  "{\"mcpServers\":{}}",
+  "--no-session-persistence",
+  "--output-format",
+  "stream-json",
+  "--verbose",
+  "--include-partial-messages"
+]

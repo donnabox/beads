@@ -1,0 +1,85 @@
+--- plan3/source-witnesses.json
++++ plan4/source-witnesses.json
+@@ -13,17 +13,38 @@
+     {
+       "id": "S02",
+       "callbacks": 2,
+-      "oracle": "RU second distinct principal discover held: success or rejection. While held, zero listen attempts/acquisitions. Success builds all routes before bind; failure closes acquired owner once with no ready."
++      "oracle": "RU second distinct principal discover held: success or rejection. While held, zero listen attempts/acquisitions. Success builds all routes before bind; failure closes acquired owner once with no ready. In each existing RU callback, compare the prepared four-value tuple against the exact installed-reference.ts14–20 formula using the SAME genuine state.installed and already-created composition. The source-private pure assemblePreparedDevelopmentArguments(installed,composition) tuple assembler in development-runtime.ts is used by the prepared entry and directly source-tested in this already-private module, never package-exported/public-handle output. Expected tuple includes options.token=first captured credential token (required-unused), actual composition, exact configuration/credentials and Scope/host/schemas. No startInstalledReferenceCandidate, recapture, compiler invocation, extra composition factory, owner or HTTP for this equality assertion."
+     },
+     {
+       "id": "S03",
+       "callbacks": 1,
+-      "oracle": "TX delegating owner.readConfiguration records one explicit pre-bind snapshot order and checks listen attempts still zero; actual metadata and same preflight/read tuple complete before the first listen call. Record unchanged service-constructor readConfiguration calls separately; no global exactly-one-read assertion."
++      "oracle": "One existing TX callback has TWO explicit finite sequential fresh-owner subphases, both within its SAME5s: (A) successful prepared start records explicit owner snapshot/receipt+advertised-limit comparisons/preflight.metadata BEFORE createTransactionService; constructor read traffic separately recorded, then actual listen args equal genuine handle.listener.host/port and port>0, close service-owned owner once. (B) with another real owner, allow explicit pre-bind snapshot/metadata success, then make the actual constructor readConfiguration throw through a delegating owner mock; observe constructor attempt/no successful service assignment, direct owner.close exactly1 and service.close0, listen0/result0. No extra callback or HTTP; do not reset deadline or claim global one-read.",
++      "finiteSubphases": [
++        {
++          "id": "S03-A",
++          "preparedStartAttempts": 1,
++          "returnedOwnerAcquisitions": 1,
++          "successfulServiceConstructions": 1,
++          "successfulListenerAcquisitions": 1,
++          "closeAuthority": "service owns owner after construction",
++          "http": 0
++        },
++        {
++          "id": "S03-B",
++          "preparedStartAttempts": 1,
++          "returnedOwnerAcquisitions": 1,
++          "successfulServiceConstructions": 0,
++          "successfulListenerAcquisitions": 0,
++          "directOwnerClose": 1,
++          "serviceClose": 0,
++          "http": 0
++        }
++      ]
+     },
+     {
+       "id": "S04",
+       "callbacks": 7,
+-      "oracle": "Readback counterfactuals: RU Scope/readLimits/installedTypes; TX receiptMaximumItems/scopeSnapshot/authorization-view consistency/installedTypes. Delegate actual owner then corrupt only the returned selected fact; reject before bind, close actual owner once."
++      "oracle": "Readback counterfactuals: RU Scope/readLimits/installedTypes; TX receiptMaximumItems/scopeSnapshot/authorization-view consistency/installedTypes. Delegate actual owner then corrupt only the returned selected fact; reject before bind, close actual owner once. Every TX returned-fact failure occurs before service construction: direct owner.close1/service.close0/listen0. Constructor-throw coverage is S03-B, not an eighth S04 callback. RU epoch is a process-generated lifecycle token, not persisted installation readback or an extra mismatch row."
+     },
+     {
+       "id": "S05",
+@@ -58,7 +79,20 @@
+     {
+       "id": "S11",
+       "callbacks": 2,
+-      "oracle": "Concurrent repeated trusted close, RU/TX: one memoized terminal result/owner close, actual listener stopped and store can reopen; this does not alter legacy RU listener-only retry behavior."
++      "oracle": "Two existing profile callbacks, RU and TX. EACH has (A) one trusted runtime with concurrent repeated close, one memoized terminal result/owner close and actual stopped listener; then (B) ONE additional legacy port0 runtime acquisition in that same callback using ordinary existing entry/fixture, assert successful legacy server.listenerCount(error)===0 and exact old result keys, then observe legacy close/owner exactly once. RU old keys=[scope,close]; TX=[scope,listenUrl,configurationMetadata,replaceAuthorizationPolicy,targets,close], with original values/behavior. No trusted completion/history key is added to legacy shape. Count delegated close calls; double close may silently no-op. Extra legacy acquisition is explicit, no extra HTTP/callback; both phases share existing5s or fail without widening.",
++      "finiteSubphases": {
++        "perProfile": {
++          "trustedRuntimeAcquisitions": 1,
++          "additionalLegacyRuntimeAcquisitions": 1,
++          "successfulListenerAcquisitions": 2,
++          "http": 0
++        },
++        "profiles": [
++          "read-update",
++          "transactional"
++        ],
++        "additionalLegacyRuntimeAcquisitionsAcrossRow": 2
++      }
+     },
+     {
+       "id": "S12",
+@@ -71,5 +105,17 @@
+       "oracle": "RU/TX lifecycle cancellation during preparation: abort while delegating preparation is held, observe zero listen attempts, settle the held work, close acquired owner exactly once and publish no ready. A signal already aborted before entry acquires neither owner nor listener. Observe pending tasks; no detached late bind."
+     }
+   ],
+-  "counterRules": "Counters are installed before call; open attempts/returned owner/SQLite internal close and listen attempts/listening acquisition/ready/cleanup completion are separate. No inferred negative count from missing ready alone."
++  "counterRules": "Counters are installed before call; open attempts/returned owner/SQLite internal close and listen attempts/listening acquisition/ready/cleanup completion are separate. No inferred negative count from missing ready alone.",
++  "subphaseAccounting": {
++    "callbacksUnchanged": 51,
++    "HTTPUnchanged": 2,
++    "S02AdditionalCompilerOwnerOrHttp": 0,
++    "S03AdditionalPreparedAttemptAndReturnedOwner": 1,
++    "S11AdditionalLegacyRuntimeStartsAndReturnedOwners": 2,
++    "additionalReturnedOwnerAcquisitionsVsPlan3": 3,
++    "additionalSuccessfulListenersVsPlan3": 2,
++    "notNewCallbacks": true,
++    "allSourcePhasesWithinOriginalMs": 5000,
++    "feasibility": "PROSPECTIVE; no timing pass or worst-case claim. If a finite combined subphase cannot fit5s, report concrete conflict and stop; no extra callbacks, widening, retry or hidden acquisitions."
++  }
+ }

@@ -1,0 +1,73 @@
+{
+  "state": "FULL static semantic review; not compiler or runtime verification",
+  "allTenAndR1": [
+    {
+      "id": "F1",
+      "topic": "TX intended listener",
+      "assessment": "transaction-runtime.ts423-436 uses genuine handle listener after registration; preflight.port0 is only legacy fallback. RU666 checks intended port equals installed port. S03 asserts actual host/nonzero port."
+    },
+    {
+      "id": "F2",
+      "topic": "Legacy versus trusted error ownership",
+      "assessment": "Persistent server error/completion observers are prepared-only (RU598-600/TX366-368). Legacy once/remove sites remain RU674/676 and TX433/438. Legacy RU result wrapper explicit two-key return; TX wrapper projects original six keys. S11 counts actual additional legacy acquisition."
+    },
+    {
+      "id": "F3",
+      "topic": "Actual readback precedes service construction",
+      "assessment": "TX395-407 performs explicit actual snapshot, receipt limit/advertised-limit and metadata checks before service409. Service assignment only on successful return; catch468-469 closes service if assigned, otherwise direct owner. S03 has good prebind phase then fresh constructor-read throw; S04 TX has direct-close/no-service assertions."
+    },
+    {
+      "id": "F4",
+      "topic": "RU tuple and capture reuse",
+      "assessment": "development-runtime178-194 pure private tuple uses same installed capture/composition and required first-token field; prepared entry196-215 performs genuine state lookup and one composition. It does not recapture/compile or call outside-footprint installed candidate. S02 compares tuple against original formula using actual composition."
+    },
+    {
+      "id": "F5",
+      "topic": "Four owned guard helpers",
+      "assessment": "Installed guard815-833 implements inert import without/with IPC plus missing IPC/invalid config and actual exit+close. Private process103-117 entry guard is realpath based and fixed safe diagnostic. Required three/one call-site count arguments are missing: N1."
+    },
+    {
+      "id": "F6",
+      "topic": "TX fixture provisioning/local orchestration",
+      "assessment": "Installed fixture creates TX parent0700; loader/process source gain no mkdir. Shared Scope/server/bdptest envelope is sent to actual private entry. No shared launcher or tenth file edited."
+    },
+    {
+      "id": "F7",
+      "topic": "Profile-specific epoch",
+      "assessment": "Authority259 generates RU epoch,343-352 reports it as owner lifecycle fact; no persisted equality added. TX snapshot retains actual persisted epoch. Reopen tests compare actual Resource/revision rather than epoch spelling."
+    },
+    {
+      "id": "F8",
+      "topic": "Observed history and non-attestation",
+      "assessment": "RU766 forwards installed history; TX530 forwards checked configuration metadata history; selector39 forwards actual runtime field and process76 forwards it into exact six-field ready. claimEligible remains literalfalse and no admission capability is minted."
+    },
+    {
+      "id": "F9",
+      "topic": "Bounded persisted mismatch inventory",
+      "assessment": "Source persisted table573-597 implements RU8/TX13; 21 actual independent callbacks restore/reopen same real stores and separate failed-opener internal SQLite release from returned-owner counts. Opaque TXepoch/position and RUallocation/integrity rows stay outside selected21, without invented refusal grammar."
+    },
+    {
+      "id": "F10",
+      "topic": "Canonical Scope and intended listener are separate",
+      "assessment": "Result carries actual listenUrl and configured Scope independently. Installed launch aligns the fixture authority to actual observed listener, without loader Scope-authority invariant or rewrite. Authentication/contract configuration remains frozen existing capture."
+    },
+    {
+      "id": "R1",
+      "topic": "TX cold dependency is explicit",
+      "assessment": "Current fdd transaction-http607-616 still refuses Scope/bdp.json/operations discovery. Type route remains generic authority-read789. All I02/I04/I13/I15/I17/I19 retain original actual Scope\u2192Link\u2192descriptor\u2192Directory HTTP navigation and explicitly require accepted combined D3a. No target-map oracle, shortcut or fdd-only success claim."
+    }
+  ],
+  "additionalReview": {
+    "ownerBeforeBind": "RU669 acquireOwner includes actual readback and distinct principal discover/route construction beforelisten675. TX427 prepareOwner includes complete service/handler construction beforelisten434. No production ordering defect identified.",
+    "cancellation": "Already-aborted signals reject before owner; async RU preparation checks after settlement, TX microtask check before bind; process observes file load settlement before signal check. No raced-away late-start task introduced.",
+    "close": "Trusted closes memoized; listener and sockets stop, pending dispatch observed, actual authority/service closed; TX firstStreamFault and all actually observed listener faults retained. Constructor exception remains direct owner ownership.",
+    "process": "Six safe ready fields only; no captures/token/targets/digests/capabilities in IPC; fixed stderr exit2; disconnect/signals/control feed one AbortController and serving completion race.",
+    "parentProbeCleanup": "N2 requires correction; current child census cannot attest parent SQLite release.",
+    "sourceCallbackEvidence": "N3 requires callback-local attribution.",
+    "exports": "Exactly8 new emitted inventory entries for two module families,4 bare/deep refusal specifiers, public start/tuple absence. No package exports/bin/config/WeakMap/public handle changes.",
+    "discovery": "Cold requests start from actual Scope and follow actual Link/descriptor/Directory. Explicit fixture Type ID is distinct from received operation targets. Replay/reader403/anonymous401/HEAD and real owner postimage/absence checks are preserved.",
+    "budget": "51 source default5s with2HTTP and21 persisted rows;21 installed callbacks126HTTP+2CONNECT,32original+4guards=36 plannedchildren;45swork/10scleanup/60scallback/120souter/TERM115 unchanged. Timings/counts are prospective, not collected.",
+    "scope": "9 owned paths,5existing+4new;682\u2192686,677 base paths exact. No incoming main/spec/D1/D3a adoption.",
+    "format": "One authorized formatter followed four manual corrections; finalformatUNRUN, not a new formatter/check authorization."
+  }
+}

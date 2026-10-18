@@ -1,0 +1,7 @@
+# FIRST trusted lifecycle CODE review — CLOSED
+
+Exact clean d181/686 candidate includes all nine lifecycle paths and four added files. Root private commit preserved source2 a93b bytes. Whole source2/native/plan4/actual PLAN failure/root provenance is context, with actual tools and strict clean source hash/status/tracked-file checks. Original PLAN failed supervised finalization/CLIUNKNOWN; its ten substantive findings+R1 were disposed and corrected without a second PLAN. No current actual CODE yet.
+
+Clean runner adaptation changes exactly three literals: worktree path, exact remote-session guard path, and committed HEAD. Parser, safe default Read/Glob/Grep argv, guard, clean-source predicates and exact supervisor5 are unchanged. No dirty-source exclusions/newfile bypass, model override, agents, turn caps, Gemini or retry.1800total/TERM1790/KILL1798 ownership/deadline policy remains; failed/partial evidence is preserved honestly.
+
+Both launch flags are false; no attempt or nine runner outputs. Independent packet native/root mechanics and a durable separate root two-flag release are mandatory before ONE actual CODE. No launch, compiler/test/build/install/runtime/Git/helper/reviewer execution by preparer. Source2 full51/21persisted/2sourceHTTP and21installed126HTTP+2CONNECT/36children remain prospective; sixTXcold require later combinedD3a. Product/public/cumulative qualification remains unresolved.

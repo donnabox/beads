@@ -1,0 +1,23 @@
+{
+  "state": "AUTHOR source correction only; independent corrected native/CODE pending",
+  "N1": {
+    "change": "Explicit expected3/1 at existing I20/I21 cohort call sites; actual4 guards unchanged",
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts"
+  },
+  "N2": {
+    "change": "All7 syntactic returned parent acquisition sites (2RU/2TX/3rawSQLite) immediately enter callback-local ownership. Work body uses observed finally-close; one memoized actual close, terminal settlement/success separately recorded, timeout/failure sticky uncertain. Parent cleanup begins concurrently with child cleanup under SAME original cleanupEnd, no renewed10s. Aggregate original/cleanup internally, serialize only finite booleans/kind/stage, directory deletion requires every parent close settled+successful+notuncertain. Actual probes only record success after close.",
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "acquisitionExpressions": 7,
+    "newAcquisitions": 0,
+    "newCloseRetries": 0,
+    "closeWorkDeadline": "started+45000",
+    "cleanupDeadline": "one existing cleanupEnd=cleanup entry+10000",
+    "unknownRetention": "Sticky even if original close later succeeds; no child/reopen substitution."
+  },
+  "N3": {
+    "change": "Capture sqlStart at beforeEach, use current slice in before-cleanup/terminal/closure checks/S10. Separate previousUnresolvedSQLite retains historical rows; roots already detached per callback and remain retained on unknown. No clearing historical sql rows.",
+    "path": "packages/server/src/reference-deployment-runtime.test.ts"
+  },
+  "caseCountsAndBudgetsChanged": false,
+  "noNewRuntimeFailureInjectionOrCallbacks": true
+}

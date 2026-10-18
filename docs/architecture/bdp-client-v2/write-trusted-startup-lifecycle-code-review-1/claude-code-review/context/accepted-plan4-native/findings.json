@@ -1,0 +1,63 @@
+{
+  "acceptedStatic": true,
+  "findings": [],
+  "allTenRootFindingsPlusR1Closed": [
+    {
+      "id": "F1",
+      "references": "plan.md23/37/43; source-witnessesS03-A; fdd transaction-installed-configuration62/runtime316",
+      "assessment": "Trusted TX uses genuine registered handle.listener exclusively, never private preflight.port0; S03-A checks actual nonzero listen host/port. RU captured installed.port already matches. No loader/Scope identity change."
+    },
+    {
+      "id": "F2",
+      "references": "plan.md45\u201349; source-witnessesS11; fdd RU507\u2013513/565\u2013591 andTX314\u2013320/375\u2013398",
+      "assessment": "Persistent error observer and serving completion are trusted-only. Legacy observer attach/remove order, result keys and terminal-close behavior remain exact. S11 explicitly adds two actual legacy starts, one per existing profile callback, errorlistener0/exact keys and delegated close counts; source test can capture actual server through existing delegating createServer mocks."
+    },
+    {
+      "id": "F3",
+      "references": "plan.md37; source-witnessesS03/S04; fdd transaction-service111\u2013116/runtime336\u2013359",
+      "assessment": "Explicit owner snapshot, receipt/read-limit checks and metadata finish BEFORE service constructor. PhaseA proves successful order/listen; fresh-owner phaseB throws in actual constructor read, leaving direct owner.close1/service.close0/listen0. S04 corrupted facts likewise fail before constructor. Separately counted constructor/Read-adapter reads preserve no-global-one-read rule; successful construction alone transfers owner ownership."
+    },
+    {
+      "id": "F4",
+      "references": "plan.md23; source-witnessesS02; fdd installed-reference11\u201320/reference-deployment-state7\u201318",
+      "assessment": "Pure same-module tuple assembly over same genuine installed capture and already-created composition is feasible: options first token/directory/port/create, composition, configuration+credentials, Scope+host+schemas. No recapture/compiler/additional composition/owner/listener/HTTP. The proposed inspection export is SOURCE-PRIVATE in already-owned development-runtime, not package/public export, capability or handle field; four-value data assembly has no authority to start anything."
+    },
+    {
+      "id": "F5",
+      "references": "plan.md67; installed-witnessesI20/I21/H1\u2013H4",
+      "assessment": "Exactly four real Node guard helpers: I20 inert non-entry withoutIPC/withIPC plus direct missingIPC; I21 invalid configuration IPC. Both inert cases check original exitCode and message/disconnect/SIGTERM/SIGINT counts, then actual exit/stdio close. Direct refusal2/close2/empty stdout/fixed diagnostic/no ready. Each helper has5s or10s capped by remaining45s work; shared10s cleanup/60callback/120outer/TERM115 unchanged. No helper source file/new callback or zero-process claim."
+    },
+    {
+      "id": "F6",
+      "references": "plan.md57; installed-witnessesTXProvisioning; fdd store358/sharedlauncher6\u20137/52\u201354",
+      "assessment": "Test precreates TX parent0700 for create:true; samepath create:false reopen, loader/process do not mkdir. Missing store FILE law remains. Callback-local owned installed-file IPC orchestration uses existing10s/65536byte boundaries; it does not misapply flat shared launcher config or use shared close for signalled exits. Actual exit+stdio close and cleanup observed without tenth file."
+    },
+    {
+      "id": "F7",
+      "references": "plan.md33; persisted-cases.rules; fdd development-authority259/transaction-store632",
+      "assessment": "RU epoch is process-minted lifecycle token, not persisted equality/readback proof. TX epoch remains stored opaque. No new equality/refusal rule."
+    },
+    {
+      "id": "F8",
+      "references": "plan.md25/59; future-footprintselector; fdd installed-reference-configuration174/runtime-configuration399",
+      "assessment": "Trusted internal result history derives existing profile capture/checked metadata; process forwards it. Legacy shape receives no new fields; no constant minted as observation."
+    },
+    {
+      "id": "F9",
+      "references": "persisted-cases.enumerationScope/excludedMetadata; plan.md84; fdd recovery-store659\u2013675/transaction-store632/662\u2013665",
+      "assessment": "21 cases stay RU8/TX13 installation/capture/effective-compatibility refusals, not exhaustive integrity suite. TX epoch excluded with NO invented grammar check; position grammar and RU allocation/history guards cited where actual. Current legitimate policy/migration and post-open recovery effects retained, no blanket rollback/byte-unchanged guarantee."
+    },
+    {
+      "id": "F10",
+      "references": "plan.md43; request-table last paragraph; installed-witnessesfixtureAlignment; fdd loader137\u2013191",
+      "assessment": "Configured canonical Scope and actual acquired listener URL are independent facts. Installed fixture alignment assertion only; no loader invariant/Scope rewrite. Actual nonzero listener and occupied-port attempt/acquisition distinctions remain meaningful."
+    },
+    {
+      "id": "R1",
+      "references": "plan.md61/73/79; source-claim-correction; six installed dependency rows; fdd transaction-http607\u2013616/authority-read789\u2013794",
+      "assessment": "Actual gap predicate609\u2013614 blocks Scope/bdp.json/operations. Generic Read Type path already served. ALL I02/I04/I13/I15/I17/I19 retain D3a prerequisite for rows1\u20133 on exact accepted combined source. Explicit known Type row4 fixture input is not operation target oracle. Original false reviewer verified-correct assertion and root historical596\u2013604 locator remain immutable with precise erratum."
+    }
+  ],
+  "N1N4Preserved": true,
+  "sourceAuthoringOrExecutionAuthority": false
+}

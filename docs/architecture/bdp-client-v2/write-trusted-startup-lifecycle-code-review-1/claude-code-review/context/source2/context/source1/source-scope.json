@@ -1,0 +1,102 @@
+{
+  "baseKnownFiles": 682,
+  "afterKnownFiles": 686,
+  "existingModifiedFiles": 5,
+  "newOwnedFiles": 4,
+  "ownedFiles": [
+    {
+      "path": "packages/server/src/development-authority.ts",
+      "beforeExists": true,
+      "afterExists": true,
+      "beforeSha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+      "beforeBytes": 14384,
+      "afterSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+      "afterBytes": 14876,
+      "afterLines": 361
+    },
+    {
+      "path": "packages/server/src/development-runtime.ts",
+      "beforeExists": true,
+      "afterExists": true,
+      "beforeSha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+      "beforeBytes": 24799,
+      "afterSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+      "afterBytes": 31469,
+      "afterLines": 770
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "beforeExists": true,
+      "afterExists": true,
+      "beforeSha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "beforeBytes": 16727,
+      "afterSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+      "afterBytes": 21670,
+      "afterLines": 539
+    },
+    {
+      "path": "packages/server/src/reference-deployment-runtime.ts",
+      "beforeExists": false,
+      "afterExists": true,
+      "beforeSha256": null,
+      "beforeBytes": 0,
+      "afterSha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+      "afterBytes": 1629,
+      "afterLines": 45
+    },
+    {
+      "path": "packages/server/src/reference-deployment-runtime.test.ts",
+      "beforeExists": false,
+      "afterExists": true,
+      "beforeSha256": null,
+      "beforeBytes": 0,
+      "afterSha256": "18d963ae7a72097a853988970f2f3c9f087ace14cdd4798250969ac89930f27f",
+      "afterBytes": 33979,
+      "afterLines": 962
+    },
+    {
+      "path": "packages/server/src/reference-deployment-process.ts",
+      "beforeExists": false,
+      "afterExists": true,
+      "beforeSha256": null,
+      "beforeBytes": 0,
+      "afterSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+      "afterBytes": 4555,
+      "afterLines": 117
+    },
+    {
+      "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "beforeExists": false,
+      "afterExists": true,
+      "beforeSha256": null,
+      "beforeBytes": 0,
+      "afterSha256": "3270a70ae08d6a870c804892aecf1657b2b3126469d00f187c1b5d82848722ee",
+      "afterBytes": 42421,
+      "afterLines": 1233
+    },
+    {
+      "path": "scripts/smoke-executables.mjs",
+      "beforeExists": true,
+      "afterExists": true,
+      "beforeSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+      "beforeBytes": 51677,
+      "afterSha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+      "afterBytes": 52496,
+      "afterLines": 1369
+    },
+    {
+      "path": "docs/design/startup-configuration.md",
+      "beforeExists": true,
+      "afterExists": true,
+      "beforeSha256": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+      "beforeBytes": 41427,
+      "afterSha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+      "afterBytes": 44870,
+      "afterLines": 757
+    }
+  ],
+  "protectedUnownedFiles": 677,
+  "allProtectedUnownedExact": true,
+  "unexpectedTrackedMutationObserved": false,
+  "limitation": "Known-file byte census only; writer did not execute Git. Root must independently verify HEAD/tree/branch/status/no untracked or staged content."
+}
