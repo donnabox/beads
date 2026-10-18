@@ -1,14 +1,19 @@
 {
   "actualClaudeReviewDisposed": true,
   "actualCodeDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/actual-code-disposition.json",
-    "sha256": "7efd6023295c82b84ec63114f48796dbf340f28a7d5fe1337024c78fd9fe4aa4"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/actual-code-disposition.json",
+    "sha256": "0320697ad97ad0c0478ee2bbed1e039ad9f22de3450dce0a3695350686418c39"
   },
   "approvedStages": [
     "node-version",
     "pnpm-version",
     "workspace-install",
-    "bind-workspace-tools"
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/base-tools.candidate.json",
@@ -35,8 +40,8 @@
   },
   "mode": "final",
   "nativeCodeDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/native-code-disposition.json",
-    "sha256": "09898f77cedf52190ec16271c9bb12705d50b1227f690d4a4c0c8abb02ad3f0c"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/native-code-disposition.json",
+    "sha256": "182dd0ea09e001bc42c61e90c6369e11c4e7f9a99c3364800d08d3a20661f966"
   },
   "nativeCodeReviewDisposed": true,
   "released": true,
@@ -57,8 +62,8 @@
     "sha256": "UNRESOLVED"
   },
   "rootDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/root-disposition.json",
-    "sha256": "8ca2417110927f97a4b505945b44e005ad9a808da024da9639f0c7d5d04ccf57"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/root-disposition.json",
+    "sha256": "01e1db2619271c5e667d915701268da5e372b279da53a63d0d55032f49488033"
   },
   "rootExactSourceAccepted": true,
   "rootPlanAccepted": true,
@@ -69,7 +74,7 @@
   },
   "staticValidationAuthorized": true,
   "workspaceTools": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-tools.json",
+    "sha256": "30468c88674a41a54f8a366ca78c84dffc07f3e035a0d9bf32430300b6503552"
   }
 }
