@@ -1,0 +1,3169 @@
+{
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "resultsSha256": "af43bd83d5343aff2a65deaf72359932044a4d4e58696f743b1f0f1129d74295",
+  "logSha256": "c4ac3c9ecfc7b98070fdd8c31cd9e78c117bf505370f12a1f8efe264ad5f71cb",
+  "selectedFullNames": [
+    "D3 source projection scope",
+    "D3 source receiving scope",
+    "D3 source minimum order scope",
+    "D3 source catch-up scope",
+    "D3 source abort scope",
+    "D3 source close-drain scope",
+    "D3 source projection descriptor",
+    "D3 source receiving descriptor",
+    "D3 source minimum order descriptor",
+    "D3 source catch-up descriptor",
+    "D3 source abort descriptor",
+    "D3 source close-drain descriptor",
+    "D3 source projection directory",
+    "D3 source receiving directory",
+    "D3 source minimum order directory",
+    "D3 source catch-up directory",
+    "D3 source abort directory",
+    "D3 source close-drain directory",
+    "D3 source raw receiving",
+    "D3 source target transport boundary",
+    "D3 source cold oracle counterfactual"
+  ],
+  "reports": [
+    {
+      "observation": "D3-source",
+      "callback": "D3 source projection scope",
+      "elapsedMs": 34.81945799999994,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-SyKNRr",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 7,
+            "discovery": 7,
+            "entries": 7,
+            "assemblies": 7,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 304,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 412,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/?x=1",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "aef3b5b0-5493-4d9c-b25f-0c1f136b4967",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source receiving scope",
+      "elapsedMs": 8.970083000000045,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-0ObeN2",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 8,
+            "discovery": 1,
+            "entries": 1,
+            "assemblies": 1,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "anonymous",
+              "status": 401,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/authentication",
+                "code": "unauthenticated",
+                "retry": "after-state-change",
+                "status": 401
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "reader",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "a8835cfe-ebb1-405a-845b-64081e812b90",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-length": "118",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source minimum order scope",
+      "elapsedMs": 56.7919159999999,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-A1z2ql",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 10,
+            "discovery": 10,
+            "entries": 16,
+            "assemblies": 2,
+            "waits": 6,
+            "clocks": 22,
+            "commits": 1
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 410,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/gone",
+                "code": "cursor-expired",
+                "retry": "after-state-change",
+                "status": 410
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 409,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "code": "foreign-view",
+                "retry": "after-state-change",
+                "status": 409
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/?x=1",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "7a5fd8c2-071d-403e-9f0d-63c17da75f3e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source catch-up scope",
+      "elapsedMs": 17.408957999999984,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-4lZlAp",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 2,
+            "discovery": 2,
+            "entries": 3,
+            "assemblies": 2,
+            "waits": 1,
+            "clocks": 2,
+            "commits": 1
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "461158ff-0485-4759-9e29-a8ca0cefa928",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source abort scope",
+      "elapsedMs": 10.192834000000062,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-GOgqWa",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 1,
+            "discovery": 1,
+            "entries": 1,
+            "assemblies": 0,
+            "waits": 1,
+            "clocks": 2,
+            "commits": 0
+          },
+          "records": []
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source close-drain scope",
+      "elapsedMs": 10.806375000000003,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-zaddJv",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 1,
+            "discovery": 1,
+            "entries": 2,
+            "assemblies": 0,
+            "waits": 1,
+            "clocks": 3,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "ac5cfae0-a3e7-433c-bd8f-54b8fd043f48",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source projection descriptor",
+      "elapsedMs": 8.890999999999963,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-XjliIC",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 6,
+            "discovery": 6,
+            "entries": 6,
+            "assemblies": 6,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-0",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "861",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 406,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 304,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 412,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "5f8a58af-1edd-46ae-951c-a531c95619a8",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-0",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source receiving descriptor",
+      "elapsedMs": 14.776042000000075,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-K8Z3yV",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 8,
+            "discovery": 1,
+            "entries": 1,
+            "assemblies": 1,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "anonymous",
+              "status": 401,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/authentication",
+                "code": "unauthenticated",
+                "retry": "after-state-change",
+                "status": 401
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "reader",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "1a7dcc03-7a39-4bdc-9acc-6f3c32c07564",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "1a7dcc03-7a39-4bdc-9acc-6f3c32c07564",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-0",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-length": "118",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source minimum order descriptor",
+      "elapsedMs": 13.201082999999926,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-VwgUdl",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 9,
+            "discovery": 9,
+            "entries": 14,
+            "assemblies": 2,
+            "waits": 5,
+            "clocks": 19,
+            "commits": 1
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-1",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-1",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 410,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/gone",
+                "code": "cursor-expired",
+                "retry": "after-state-change",
+                "status": 410
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 409,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "code": "foreign-view",
+                "retry": "after-state-change",
+                "status": 409
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "605a4fb4-8864-4df7-ba31-b3d7aa98003e",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source catch-up descriptor",
+      "elapsedMs": 13.672458000000006,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-D01heB",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 2,
+            "discovery": 2,
+            "entries": 3,
+            "assemblies": 2,
+            "waits": 1,
+            "clocks": 2,
+            "commits": 1
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "fa4d3b5c-4036-44b2-a910-60ce025d820f",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "fa4d3b5c-4036-44b2-a910-60ce025d820f",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-0",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source abort descriptor",
+      "elapsedMs": 5.365084000000024,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-8ZisHi",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 1,
+            "discovery": 1,
+            "entries": 1,
+            "assemblies": 0,
+            "waits": 1,
+            "clocks": 2,
+            "commits": 0
+          },
+          "records": []
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source close-drain descriptor",
+      "elapsedMs": 8.465792000000079,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-ug2FEq",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 1,
+            "discovery": 1,
+            "entries": 2,
+            "assemblies": 0,
+            "waits": 1,
+            "clocks": 3,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "b2df080f-2c7d-4bb6-9c9d-71c97d697f41",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source projection directory",
+      "elapsedMs": 9.616541999999981,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-TO9etd",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 6,
+            "discovery": 6,
+            "entries": 6,
+            "assemblies": 6,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "43ff84bd-4989-46ed-8d08-64a3a6b391ca",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "43ff84bd-4989-46ed-8d08-64a3a6b391ca",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "311",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 406,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "43ff84bd-4989-46ed-8d08-64a3a6b391ca",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 304,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "43ff84bd-4989-46ed-8d08-64a3a6b391ca",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 412,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "43ff84bd-4989-46ed-8d08-64a3a6b391ca",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "43ff84bd-4989-46ed-8d08-64a3a6b391ca",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source receiving directory",
+      "elapsedMs": 9.713624999999865,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-hqvLpv",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 8,
+            "discovery": 1,
+            "entries": 1,
+            "assemblies": 1,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "anonymous",
+              "status": 401,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/authentication",
+                "code": "unauthenticated",
+                "retry": "after-state-change",
+                "status": 401
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "reader",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "3d77e3d0-9ef2-454f-8e89-816146bb4861",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/request",
+                "code": "malformed-request",
+                "retry": "never",
+                "status": 400
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 400,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-length": "118",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source minimum order directory",
+      "elapsedMs": 15.79629100000011,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-rTwRSi",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 9,
+            "discovery": 9,
+            "entries": 14,
+            "assemblies": 2,
+            "waits": 5,
+            "clocks": 19,
+            "commits": 1
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 410,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/gone",
+                "code": "cursor-expired",
+                "retry": "after-state-change",
+                "status": 410
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 409,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "code": "foreign-view",
+                "retry": "after-state-change",
+                "status": 409
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "0f05c362-feb7-412a-ba1e-8f1d06c9bc53",
+                "bdp-scope-position": "pos-1",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source catch-up directory",
+      "elapsedMs": 11.002542000000176,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-loywqg",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 2,
+            "discovery": 2,
+            "entries": 3,
+            "assemblies": 2,
+            "waits": 1,
+            "clocks": 2,
+            "commits": 1
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "8e5cf7ed-31c1-48a2-b814-70d455239cd3",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source abort directory",
+      "elapsedMs": 8.834833000000117,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-u4rCkg",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 1,
+            "discovery": 1,
+            "entries": 1,
+            "assemblies": 0,
+            "waits": 1,
+            "clocks": 2,
+            "commits": 0
+          },
+          "records": []
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source close-drain directory",
+      "elapsedMs": 9.152708000000075,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-WKOMkJ",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counters": {
+            "direct": 1,
+            "discovery": 1,
+            "entries": 2,
+            "assemblies": 0,
+            "waits": 1,
+            "clocks": 3,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 503,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "b63fa907-de20-4733-8e0b-f49ee0652cd2",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "retry-after": "1",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+                "code": "catch-up-timeout",
+                "retry": "after-delay",
+                "status": 503
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source raw receiving",
+      "elapsedMs": 23.524625000000015,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-wire-Soel4W",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "HEAD",
+          "target": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "d9137bc0af52ba4d7cd096fa310ecf3a23e7b4cca22ceda1414a27080184d8f9"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "HEAD",
+          "target": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "d9137bc0af52ba4d7cd096fa310ecf3a23e7b4cca22ceda1414a27080184d8f9"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ],
+            [
+              "bdp-scope-epoch",
+              "epoch"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ],
+            [
+              "bdp-authorization-view",
+              "view"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "HEAD",
+          "target": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "bdp-minimum-scope-position",
+              "genesis"
+            ]
+          ],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "d9137bc0af52ba4d7cd096fa310ecf3a23e7b4cca22ceda1414a27080184d8f9"
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source target transport boundary",
+      "elapsedMs": 13.123749999999973,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-eqrn1L",
+          "absent": true
+        },
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-wire-kNLYz4",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/",
+          "credential": "anonymous",
+          "fieldOccurrences": [],
+          "status": 400,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "118",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "wireSha256": "197f198b0e990bc3870d1c0e4047105f058a5d90160317f473e90b883a1d1eb3"
+        },
+        {
+          "transport": "source-local-raw",
+          "method": "GET",
+          "target": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            [
+              "Origin",
+              "https://browser.invalid"
+            ]
+          ],
+          "status": 403,
+          "headers": {
+            "cache-control": "private, no-store",
+            "connection": "close",
+            "content-length": "129",
+            "content-type": "application/problem+json",
+            "date": "Sun, 18 Oct 2026 12:34:24 GMT",
+            "x-bdp-development": "non-attesting"
+          },
+          "bodyOctets": 129,
+          "bodySha256": "7a92b82a7347430338fa07cbf1152a6865a4ff64e03657d92034909a1f8ba421",
+          "wireSha256": "aeccaa470852ec4c6826ff0614890ac037e0607dd51d4b304c505d76f5a5f7ae"
+        },
+        {
+          "counters": {
+            "direct": 10,
+            "discovery": 0,
+            "entries": 0,
+            "assemblies": 0,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 405,
+              "headers": {
+                "allow": "GET, HEAD",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 405,
+              "headers": {
+                "allow": "GET, HEAD",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 405,
+              "headers": {
+                "allow": "GET, HEAD",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "credential": "writer",
+              "status": 405,
+              "headers": {
+                "allow": "POST",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "credential": "writer",
+              "status": 405,
+              "headers": {
+                "allow": "POST",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "PUT",
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "credential": "writer",
+              "status": 405,
+              "headers": {
+                "allow": "POST",
+                "cache-control": "private, no-store",
+                "content-length": "0",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/unknown",
+              "credential": "writer",
+              "status": 404,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/not-found",
+                "code": "resource-not-found",
+                "retry": "after-state-change",
+                "status": 404
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/create%2Dbead",
+              "credential": "writer",
+              "status": 404,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/not-found",
+                "code": "resource-not-found",
+                "retry": "after-state-change",
+                "status": 404
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/create-bead?x=1",
+              "credential": "writer",
+              "status": 404,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/not-found",
+                "code": "resource-not-found",
+                "retry": "after-state-change",
+                "status": 404
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json?x=1",
+              "credential": "writer",
+              "status": 404,
+              "headers": {
+                "cache-control": "private, no-store",
+                "content-type": "application/problem+json",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "type": "https://github.com/gastownhall/bdp/problems/not-found",
+                "code": "resource-not-found",
+                "retry": "after-state-change",
+                "status": 404
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "D3-source",
+      "callback": "D3 source cold oracle counterfactual",
+      "elapsedMs": 10.34849999999983,
+      "workSettled": true,
+      "cleanupKnown": true,
+      "directories": [
+        {
+          "directory": "/private/tmp/vickie-tx-discovery-validation-focused-source-me7nfuz8/bdp-d3-source-9Zko68",
+          "absent": true
+        }
+      ],
+      "observations": [
+        {
+          "baseline": {
+            "calls": [
+              "readConfiguration",
+              "readConfiguration",
+              "readConfiguration"
+            ],
+            "entries": 0,
+            "assemblies": 0
+          }
+        },
+        {
+          "counterfactual": "missing-updateLink",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "wrong-version",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "wrong-profile",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "wrong-scope",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "unsafe-service-link",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "unsafe-directory-target",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "epoch-context-mismatch",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "head-context-mismatch",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counterfactual": "schema-valid-foreign-operations-base",
+          "rejected": true,
+          "wireRequests": 0
+        },
+        {
+          "counters": {
+            "direct": 3,
+            "discovery": 3,
+            "entries": 3,
+            "assemblies": 3,
+            "waits": 0,
+            "clocks": 0,
+            "commits": 0
+          },
+          "records": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "credential": "writer",
+              "status": 204,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "f612652c-e001-411d-85d5-5c3bae14f2bc",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+                "x-bdp-development": "non-attesting"
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/bdp.json",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "f612652c-e001-411d-85d5-5c3bae14f2bc",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "bdpVersion": "0",
+                "profile": "transactional",
+                "scope": "https://reference.invalid/acme/",
+                "beads": "https://reference.invalid/acme/beads/",
+                "links": "https://reference.invalid/acme/links/",
+                "types": "https://reference.invalid/acme/types/",
+                "operations": "https://reference.invalid/acme/operations/",
+                "aliases": "https://reference.invalid/acme/alias/",
+                "receipts": "https://reference.invalid/acme/receipts/",
+                "snapshot": "https://reference.invalid/acme/snapshot",
+                "changes": "https://reference.invalid/acme/changes/",
+                "events": "https://reference.invalid/acme/events/",
+                "scopeEpoch": "f612652c-e001-411d-85d5-5c3bae14f2bc",
+                "authorizationView": "development-all-visible",
+                "headPosition": "pos-0",
+                "minimumReplayPosition": "pos-0",
+                "limits": {
+                  "page": {
+                    "defaultItems": 2,
+                    "maximumItems": 32
+                  },
+                  "selector": {
+                    "bytes": 4096,
+                    "depth": 32,
+                    "nodes": 256
+                  },
+                  "validation": {
+                    "diagnostics": 16,
+                    "diagnosticBytes": 524288
+                  }
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/operations/",
+              "credential": "writer",
+              "status": 200,
+              "headers": {
+                "bdp-authorization-view": "development-all-visible",
+                "bdp-scope-epoch": "f612652c-e001-411d-85d5-5c3bae14f2bc",
+                "bdp-scope-position": "pos-0",
+                "cache-control": "private, no-store",
+                "content-type": "application/json",
+                "vary": "Accept",
+                "x-bdp-development": "non-attesting"
+              },
+              "body": {
+                "createBead": "create-bead",
+                "updateBead": "update-bead",
+                "deleteBead": "delete-bead",
+                "createLink": "create-link",
+                "updateLink": "update-link",
+                "deleteLink": "delete-link",
+                "putAlias": "put-alias",
+                "deleteAlias": "delete-alias",
+                "updateWhere": "update-where",
+                "deleteWhere": "delete-where",
+                "batch": "batch",
+                "sequence": "sequence"
+              }
+            }
+          ]
+        }
+      ],
+      "failureCount": 0
+    }
+  ],
+  "claimEligible": false,
+  "limitations": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim."
+}

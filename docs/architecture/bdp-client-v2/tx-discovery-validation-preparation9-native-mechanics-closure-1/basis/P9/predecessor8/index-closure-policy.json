@@ -1,0 +1,18 @@
+{
+  "historicalIndicesIncluded": true,
+  "implementationExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor8.patch",
+    "execution-gate.json.successor8.inverse.patch",
+    "execution-gate.closed.json.successor8.patch",
+    "execution-gate.closed.json.successor8.inverse.patch",
+    "implementation-hashes.json.successor8.patch",
+    "implementation-hashes.json.successor8.inverse.patch",
+    "successor-delta.json"
+  ],
+  "onlyReleaseMutationLater": "Root active execution-gate.json only after separately reviewed/durable explicit release; no closed snapshot/history edits.",
+  "reason": "Exact11 self-referential controls/deltas only, same accepted framework. Every other authored/history/index/origin/referencepin file included. P7 original prepared index retains meaning with explicit original7ed6/consumed2d0 exception."
+}

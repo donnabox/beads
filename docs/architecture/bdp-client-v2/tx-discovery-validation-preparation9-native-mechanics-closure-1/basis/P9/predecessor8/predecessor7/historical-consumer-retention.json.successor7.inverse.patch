@@ -1,0 +1,31 @@
+--- historical-consumer-retention.json
++++ predecessor6/historical-consumer-retention.json
+@@ -1,10 +1,9 @@
+ {
+-  "bodyCopiedIntoP7": false,
++  "bodyCopiedIntoPreparation6": false,
+   "completeTreeCopyOrFreshRevalidationClaim": false,
+-  "historicalP5RetentionAlsoPreserved": "predecessor6/historical-consumer-retention.json",
+   "inventory": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/run/installed-consumer-inventory.json",
+-    "sha256": "3a9b98398f24961d91a285fbd9d75cc028c15989ef04ed480a1d2a903c0d1688"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/installed-consumer-inventory.json",
++    "sha256": "000d49855be92bea4e22f467ebed32356decdfab5a23c50160bb6bea9e52d1ba"
+   },
+   "metadataOnlyCopies": [
+     "package.json",
+@@ -12,8 +11,12 @@
+     "pnpm-workspace.yaml"
+   ],
+   "newConsumerOrPayloadProofCredit": false,
+-  "originalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/run/consumer",
++  "originalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/consumer",
+   "recordedInventoryFiles": 870,
+   "recordedInventoryLinks": 17,
+-  "retainedInPlaceUntouched": true
++  "retainedInPlaceUntouched": true,
++  "rootProofAcceptance": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation5-installed-proof-root-release-1/acceptance.json",
++    "sha256": "a2880b2e914d578eec8488be5d0ba062a121408d5126e56806a3c70cf4fe1e77"
++  }
+ }

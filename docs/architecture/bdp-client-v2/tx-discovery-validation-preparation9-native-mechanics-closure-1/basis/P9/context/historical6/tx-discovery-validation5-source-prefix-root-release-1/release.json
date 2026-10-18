@@ -1,0 +1,34 @@
+{
+  "utc": "2026-10-18T10:47:26.050671+00:00",
+  "rootSourcePrefixAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation5-source-prefix-root-release-1/acceptance.json",
+    "sha256": "ced035d3e7495a4a5708bb9aa018b830b1a506782237a9147fc43ae70e45f676"
+  },
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "gateSha256": "faebf8513965ab0bf9cab6882c63634a5dee1b983086a94631c5603194b92a5f",
+  "durablePushRequiredBeforeNextStages": true,
+  "nextScope": "Prepare package directory,pack protocol,pack server,verify archives only; consumer remains CLOSED until root actual archive acceptance.",
+  "noRetry": true
+}

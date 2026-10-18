@@ -1,0 +1,80 @@
+--- /dev/null
++++ root-barrier-comparison.json
+@@ -0,0 +1,77 @@
++{
++  "state": "Independent DATA comparison complete, no discrepancy",
++  "rootIndexSha256": "7c556a300942e6a8eb4b649156b37e1a173e936282bd5de14c4ece25d6788040",
++  "rootContractSha256": "fafb19ac57e3a60d7c1003c254b1727fa0975d1135d359892096e727c1370267",
++  "exactGateCopy": true,
++  "records": [
++    {
++      "record": "rootBuildAcceptance",
++      "rootKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "buildMapSha256"
++      ],
++      "independentKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "buildMapSha256"
++      ],
++      "exactRequiredKeySet": true,
++      "valuePredicateAssessment": "Same actual-file SHA/source-binding/boolean true or exact active-gate object equalities; no discrepancy."
++    },
++    {
++      "record": "rootArchiveAcceptance",
++      "rootKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "tarProvenanceSha256"
++      ],
++      "independentKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "tarProvenanceSha256"
++      ],
++      "exactRequiredKeySet": true,
++      "valuePredicateAssessment": "Same actual-file SHA/source-binding/boolean true or exact active-gate object equalities; no discrepancy."
++    },
++    {
++      "record": "rootConsumerLockAcceptance",
++      "rootKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "consumerLockSha256",
++        "consumerManifestSha256",
++        "consumerSettingsSha256"
++      ],
++      "independentKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "consumerLockSha256",
++        "consumerManifestSha256",
++        "consumerSettingsSha256"
++      ],
++      "exactRequiredKeySet": true,
++      "valuePredicateAssessment": "Same actual-file SHA/source-binding/boolean true or exact active-gate object equalities; no discrepancy."
++    },
++    {
++      "record": "rootConsumerProofAcceptance",
++      "rootKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "installedProvenance",
++        "consumerInventory"
++      ],
++      "independentKeys": [
++        "accepted",
++        "sourceBindingSha256",
++        "installedProvenance",
++        "consumerInventory"
++      ],
++      "exactRequiredKeySet": true,
++      "valuePredicateAssessment": "Same actual-file SHA/source-binding/boolean true or exact active-gate object equalities; no discrepancy."
++    }
++  ],
++  "mismatches": [],
++  "scope": "These four downstream root record families agree; independent inventory additionally documents rootDisposition, CODE dispositions, tools and gate/document checks. Field shape is necessary, not complete semantic/process/provenance acceptance.",
++  "executionReleased": false
++}

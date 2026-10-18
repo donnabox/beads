@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-18T10:57:46.690085+00:00",
+  "actualFailedStage": "audit-installed-02",
+  "failedExit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/audit-installed-02.exit.json",
+    "sha256": "f9a6af2367100fb72f3991cbec67cbb3f1e5f4c2d703b0d16e8332181b7b1bf1"
+  },
+  "fullFailedLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/audit-installed-02.log",
+    "sha256": "aaac324013dcd114e36c187b65dfeef73e3b45e921fe2fddb2aab777b5c8e99a"
+  },
+  "runtimeInstalled02Exit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/installed-02.exit.json",
+    "sha256": "22526bd5ad0672f96f963223c2a3471755dcf893b316c629b26741d6d6295de4"
+  },
+  "stagePasses": 27,
+  "stageFailures": 1,
+  "laterUnattempted": 24,
+  "firstInstalledRuntimeAndAuditPassed": true,
+  "secondInstalledRuntimePassedAuditFailed": true,
+  "firstRejection": "Exact source-derived occurrence/order/value grammar at audit.py131",
+  "sourceUnchanged": true,
+  "noForceOrRuntimeResidueReported": true,
+  "gateClosedSha256": "330d04a6af514b9c9b471ba73b3ad4a03e55be47c49ed7f45c3abdcaa6986780",
+  "diagnosis": "PENDING exactsource/report/expectation comparison. Do not weaken predicates, retry or adopt semantics.",
+  "correctiveSourceOrHelperReleased": false
+}

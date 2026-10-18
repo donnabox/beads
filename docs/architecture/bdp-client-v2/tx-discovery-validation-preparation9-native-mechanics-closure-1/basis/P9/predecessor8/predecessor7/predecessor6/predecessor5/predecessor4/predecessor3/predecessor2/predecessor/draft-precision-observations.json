@@ -1,0 +1,29 @@
+{
+  "notRuntimeFailures": true,
+  "beforeFreezeCorrections": [
+    {
+      "topic": "legacy changefeed full suite",
+      "initialDraft": 26,
+      "sourceConfirmed": 32,
+      "reason": "include six it.each expansions"
+    },
+    {
+      "topic": "schema positive child lifetime",
+      "initialDraft": 2,
+      "sourceConfirmed": 1,
+      "reason": "exact source has one launch and one sessions.push, no reopen; two callbacks means pure+positive, not two children"
+    },
+    {
+      "topic": "raw source target statuses",
+      "sourceConfirmed": [
+        400,
+        403
+      ]
+    },
+    {
+      "topic": "artifact identity",
+      "sourceConfirmed": "development-schema5- plus64hex, distinct from raw SHA256 runtime/policy/auth"
+    }
+  ],
+  "noSourceOrRuntimeChanged": true
+}

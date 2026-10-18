@@ -1,0 +1,5 @@
+# Root barrier record interfaces — CLOSED DATA
+
+The P8 consumer preflight correctly refused root archive record7cf49f97 because the required **top-level** `tarProvenanceSha256` was missing. The nested `{path,sha256}` object did not satisfy that existing interface. That record and failed wrapper remain immutable; no consumer child ran, no in-place retry is authorized and no product failure is inferred.
+
+`contracts.json` extracts every root build/archive/consumer-lock/consumer-proof field actually consumed by the unchanged gate. It is authored DATA for independent review and future root acceptance construction, not a new helper or an executed schema/test. Keys alone do not prove semantics, source/artifacts/installation, cleanup or ownership. Full independent actual checks remain mandatory. A future separately named fresh successor must preserve all old history, strict helpers/source/schema/selections and deadlines, then execute a genuinely fresh pipeline after full native/root staged release. This packet grants no authoring or execution release.

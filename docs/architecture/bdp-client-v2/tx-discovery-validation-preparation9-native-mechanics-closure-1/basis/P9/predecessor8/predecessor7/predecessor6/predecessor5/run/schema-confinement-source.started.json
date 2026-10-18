@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/schema-confinement-source.results.json",
+    "--testNamePattern",
+    "^(?:confines\\ observed\\ Type\\ and\\ schema\\ traversal\\ to\\ exact\\ administrative\\ identities)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+  "rootGateSha256": "76ef4b0b8df1b2a3d08add6fae19e401cc799ecda22ca6803f2742e7ebbe4c3e",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-schema-confinement-source-5zvoxaiy",
+  "npmCache": "/private/tmp/vickie-tx-discovery-validation-schema-confinement-source-5zvoxaiy/npm-cache"
+}

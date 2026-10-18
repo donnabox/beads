@@ -1,0 +1,26 @@
+--- a/apps/bdptest/src/transactional-discovery-installed.test.ts
++++ b/apps/bdptest/src/transactional-discovery-installed.test.ts
+@@ -260,11 +260,9 @@
+   } finally {
+     if (child) {
+       try {
+-        if (!childEvents) failures.push(new Error("missing immediate child terminal observers"));
+-        else {
+-          await d3CloseKnown(child, childEvents, performance.now() + 10000);
+-          cleanupKnown = true;
+-        }
++        if (!childEvents) throw new Error("missing immediate child terminal observers");
++        await d3CloseKnown(child, childEvents, performance.now() + 10000);
++        cleanupKnown = true;
+       } catch (error) {
+         failures.push(error);
+       } finally {
+@@ -530,7 +528,7 @@
+       await d3Remaining(Promise.allSettled([...f.pending]), end);
+       await d3CloseKnown(f.child, f.events, end);
+       cleanupKnown = workSettled && f.pending.size === 0;
+-      if (!cleanupKnown) failures.push(new Error("D3 unresolved work ownership"));
++      if (!cleanupKnown) throw new Error("D3 unresolved work ownership");
+     } catch (error) {
+       failures.push(error);
+     }
