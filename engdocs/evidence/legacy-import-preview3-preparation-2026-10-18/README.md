@@ -17,7 +17,7 @@ Preparation source: `89ca1e3124059c9f292fd362b93413b6b683dc8a`, tree `96d4c0ae35
 - Optional SQL character-length clarity: no defect; kv.memory. is ASCII and existing rune count matches LEFT character count. No behavior change for this nit.
 - MEM-POL-001 boundary: graph-only --source-prefix (including explicit empty) refuses before ordinary storage open; corrupt-metadata and default omission have focused tests.
 
-Raw completed external predecessor report/exit/hash and reviewed manifest are retained. Fresh native repaired-source and generated BUILD reviews have no actionable findings. The full external review of89ca1e312 completed exit0 with follow-up findings. Source41bbc5591 repairs/dispositions are in followup/README.md; its completed review led to the narrow latest sourceffc139a05 under followup/diagnostics/README.md, whose external review remains RUNNING. No repaired-source pass is inherited. Gemini excluded. Prior source review never qualifies changed code.
+Raw completed external predecessor report/exit/hash and reviewed manifest are retained. Fresh native repaired-source and generated BUILD reviews have no actionable findings. The full external review of89ca1e312 completed exit0 with follow-up findings. Source41bbc5591 repairs/dispositions are in followup/README.md; its completed review led to the narrow latest sourceffc139a05 under followup/diagnostics/README.md, whose external review completed; finalc57725789 direct file-only review is also complete without actionable findings. No repaired-source pass is inherited. Gemini excluded. Prior source review never qualifies changed code.
 
 ## Measured checks
 
@@ -36,3 +36,5 @@ The new base requires Bazel as final gate. bazel is unavailable on PATH; make ba
 Genuine expanded ordinary bd producer corpus and receipts, activating expanded workflow/runfiles, settled/documented key/unsupported relationship/custom-workflow/comment dedup semantics, full exact-source quality checks, actual installed embedded/shared-server qualification with zero required skips, exact source/build/engine identities and owned cleanup. No readiness, merge, default flip or release admission claim. Earlier installed evidence qualifies older source only.
 
 Freshness is a fail-closed inventory of retained resource/history/identity planes, not proof that a workspace has never executed any operation. Inventory details are in freshness-inventory.md.
+
+Source council is complete for currentc57725789 with findings dispositioned; runtime gates remain open. A shared Git-metadata incident required isolated recovery in legacy-import-preview3-recovery; see git-state-incident-2026-10-18/README.md. Do not use affected shared Git bindings until owner audit.
