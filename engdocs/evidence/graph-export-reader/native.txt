@@ -1,0 +1,3 @@
+No confirmed findings in the frozen export_current.go, export_current_test.go, export_current_pure_test.go and BUILD.bazel.
+
+The review covered the existing transaction/cleanup boundary, complete snapshot and Type validation, deleted Issue/Memory retained-head acquisition, comment authoring/reading, and test-store ownership seams. Runtime qualification and driver rollback/close fault coverage remain pending as stated in the prompt; callback faults are not evidence for those cleanup paths. No tests, builds, DBs or servers were run.

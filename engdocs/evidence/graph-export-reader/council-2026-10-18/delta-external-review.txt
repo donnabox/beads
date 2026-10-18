@@ -1,0 +1,39 @@
+All 25 added lines verified against the surrounding implementation. Here are the results.
+
+## Verdict: no actionable findings on this delta
+
+All three repairs are sound, and I could not construct a regression from any of them. Verification of each repair's premise, not just its text:
+
+**Low1 — Type descriptor equality** (`export_current_test.go:111-115`, `139-141`)
+
+The stated premise is correct. `graph.TypeDescriptor` (`graphops/types.go:797-808`) has only unexported fields and no `MarshalJSON`/`MarshalText` anywhere in the repo, so `canonicalJSON` renders `Snapshot.Types` as `[{},{},…]` — array length only. The independent comparison is therefore not redundant with the fingerprint.
+
+The assertion is also safe from false negatives: every field is a string, `[]string`, `[]byte`, `int`, or a string-kind (`ResourceKind`, `ExternalPolicy`, `EndpointConstraint`, `OwnedLinkDecl`) — no funcs, maps, or pointers, so `reflect.DeepEqual` over unexported fields is well-defined. Order stability is guaranteed, not incidental: `collection_read.go:61` sorts by `CompareCodeUnits(ID())` over unique IDs, so the "or their order" claim cannot flake. `installedPreviewTypes` (`informational_types.go:83-99`) allocates a fresh slice and re-parses each descriptor per call, so no aliasing or caching defeats the check.
+
+One informational note on its *power*, not its correctness: `installedPreviewTypes:91-97` already pins each parsed descriptor to the in-code definition by `bytes.Equal` on canonical JSON plus a double fingerprint check. Descriptor *content* is thus already guaranteed by construction, so the incremental coverage is really count-position binding and the scope-derived Type IDs across reopen. That is genuine but narrower than the assertion text implies — no change needed.
+
+**Low2 — deleted-head baseline** (`export_current_test.go:304-324`, `336`, `355-357`)
+
+The isolation triple now matches the admission block statement-for-statement and in order, so the only difference between the two measured states is the creation and deletion of `beads/removed`. That makes the `ErrLimitExceeded` at line 348 correctly attributable to the retained 40 KiB head, which is exactly what was missing. The repair also moves the baseline *away* from the old budget edge rather than toward it: marking filler deleted shifts its snapshot charge from the live-bead query (`collection_read_bounds.go:46`) to the deleted-generic-head query (line 50) — charged once, as the new comment says — while the payload delete drops its separate `p.properties` charge (line 39). Strictly more headroom than before, so no new fragility.
+
+The two rollback assertions are load-bearing rather than decorative, which was my main concern: `exportSourceState` → `workflowState` (`workflow_test.go:242`) covers both `graph_preview_catalog` and `graph_preview_payloads`, the exact tables the new statements mutate, so an escaped mutation would actually be caught. `withTx(ctx, false, …)` rolls back unconditionally even on callback success (`backend.go:226-230`), so both assertions should hold. Capturing `beforeDeletedHeadCheck` at line 336 rather than reusing `before` is required and correct — `before` (line 283) predates the committed `beads/removed` create/delete, so reusing it there would have failed.
+
+**Low3 — FK-bypass-only probe** (`export_current.go:190-191`)
+
+Accurate, and airtight for the reason implied. `wisp_dependencies.issue_id` is `NOT NULL` with `CONSTRAINT fk_wisp_dep_issue … REFERENCES wisps(id)` (`migrations/0021_create_wisp_auxiliary.up.sql:10,25`), so a non-empty `wisp_dependencies` forces a non-empty `wisps`, which the loop probes first. The contrast with `wisp_comments`/`wisp_labels` holds too — those carry no FKs (lines 1-6, 43-50), which is precisely why `TestExportCurrentSnapshotFailures` can insert orphan rows into them with `issue_id='orphan'` but has no analogous `wisp_dependencies` case.
+
+## One nit (non-blocking, mitigation already present)
+
+**Nit — `export_current_test.go:308-316` / `339-347`:** the three-statement isolation sequence is now duplicated across two sites whose *equality is the baseline's correctness condition*. If someone later edits one site only, the baseline silently stops measuring the admission block's state and the attribution this delta just established breaks without any assertion firing. The `// Match the isolated state used below` comment at 304-305 is the right mitigation and may well be sufficient. I'm flagging it only because the delta raises the duplication from one site to two; this is downstream of the Low4 deferral you already dispositioned, and I'm not reopening that call.
+
+## On Low5, since the disposition rests on a code claim
+
+I did not re-litigate it, but the reasoning checks out against the code: `ErrOutcomeUnknown` is joined only on commit failure, post-commit conn close, or rollback-after-write (`backend.go:192`, `218`, `251`), all gated on `committed` or `write`. `ExportCurrentSnapshot` runs `withTx(ctx, false, …)`, which can never set `committed`, so that path cannot produce an uncertain mutation at all. `ErrInvalidStore` for an incomplete or malformed feed (`export_current.go:245`) is the right sentinel. Preserving it is well-founded.
+
+## Runtime limitations (reported separately, as requested)
+
+- **No execution of any kind.** Per the engine-slot constraint I ran no tests, builds, `bd`, or DB engines. The new engine assertions remain authored and unrun; I did not compile the file, so compilation is established by inspection only — the added lines introduce no new identifiers or imports (`reflect` is already imported at line 11, `graph` is not named in the new code, `ordinary` and `beforeDeletedHeadCheck` are both in scope and used).
+- **Byte budgets unverified numerically.** The baseline's "fits 40 KiB" and the admission's "exceeds 40 KiB" depend on actual persisted row sizes (descriptor JSON for 6 installed types, catalog rows, filler's retained snapshot). My analysis of the charge *shifts* is from the query definitions and is sound directionally, but the absolute margin is only confirmable by running the test on both `embedded` and `server` backends.
+- **Rollback behavior asserted, not observed.** Both new rollback assertions should hold given `backend.go:226-230`, including for the `server` backend, but that is read from source rather than demonstrated.
+- **Scope held to the delta.** I reviewed all 25 added lines plus the surrounding implementation needed to validate them; I did not re-review the unchanged body of the export path, consistent with the prior full review.
+- **No Gemini or substitute reviewer** was invoked, and I wrote no files.
