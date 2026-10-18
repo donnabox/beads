@@ -1,0 +1,932 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/static-call-inventory.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/static-call-inventory.json
+@@ -1,901 +1,84 @@
+ {
+   "KillOrAlarmCancellationSites": 0,
+-  "PopenSites": [
+-    {
+-      "callee": "subprocess.Popen",
+-      "line": 61
+-    }
+-  ],
++  "PopenSites": 1,
+   "calls": [
+     {
+-      "callee": "time.monotonic",
+-      "line": 5
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 9
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 10
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 12
+-    },
+-    {
+-      "callee": "Path(__file__).resolve",
+-      "line": 8
+-    },
+-    {
+-      "callee": "hashlib.sha256(Path(p).read_bytes()).hexdigest",
+-      "line": 22
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 24
+-    },
+-    {
+-      "callee": "need",
+-      "line": 24
+-    },
+-    {
+-      "callee": "p.read_bytes",
+-      "line": 25
+-    },
+-    {
+-      "callee": "need",
+-      "line": 25
+-    },
+-    {
+-      "callee": "json.loads",
+-      "line": 25
+-    },
+-    {
+-      "callee": "need",
+-      "line": 27
+-    },
+-    {
+-      "callee": "need",
+-      "line": 27
+-    },
+-    {
+-      "callee": "read",
+-      "line": 27
+-    },
+-    {
+-      "callee": "need",
+-      "line": 29
+-    },
+-    {
+-      "callee": "SystemExit",
+-      "line": 149
+-    },
+-    {
+-      "callee": "RuntimeError",
+-      "line": 17
+-    },
+-    {
+-      "callee": "need",
+-      "line": 20
+-    },
+-    {
+-      "callee": "need",
+-      "line": 31
+-    },
+-    {
+-      "callee": "os.fstat",
+-      "line": 33
+-    },
+-    {
+-      "callee": "before",
++      "call": "before(120)",
+       "line": 43
+     },
+     {
+-      "callee": "(json.dumps(snapshot(reason), separators=(',', ':'), allow_nan=False) + '\\n').encode",
+-      "line": 43
++      "call": "before(120)",
++      "line": 45
+     },
+     {
+-      "callee": "need",
+-      "line": 43
++      "call": "before(120)",
++      "line": 50
+     },
+     {
+-      "callee": "len",
+-      "line": 47
+-    },
+-    {
+-      "callee": "before",
++      "call": "before()",
+       "line": 56
+     },
+     {
+-      "callee": "time.monotonic",
++      "call": "subprocess.Popen(argv,cwd=cwd,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,umask=0o077)",
+       "line": 61
+     },
+     {
+-      "callee": "subprocess.Popen",
+-      "line": 61
++      "call": "p.terminate()",
++      "line": 78
+     },
+     {
+-      "callee": "handles.append",
+-      "line": 62
+-    },
+-    {
+-      "callee": "states.append",
+-      "line": 63
+-    },
+-    {
+-      "callee": "checkpoint",
+-      "line": 63
+-    },
+-    {
+-      "callee": "min",
+-      "line": 65
+-    },
+-    {
+-      "callee": "need",
+-      "line": 80
+-    },
+-    {
+-      "callee": "need",
+-      "line": 85
+-    },
+-    {
+-      "callee": "checkpoint",
++      "call": "before()",
+       "line": 86
+     },
+     {
+-      "callee": "before",
+-      "line": 86
+-    },
+-    {
+-      "callee": "need",
+-      "line": 87
+-    },
+-    {
+-      "callee": "signal.signal",
+-      "line": 89
+-    },
+-    {
+-      "callee": "read",
+-      "line": 92
+-    },
+-    {
+-      "callee": "read",
+-      "line": 92
+-    },
+-    {
+-      "callee": "need",
+-      "line": 92
+-    },
+-    {
+-      "callee": "need",
+-      "line": 93
+-    },
+-    {
+-      "callee": "need",
+-      "line": 94
+-    },
+-    {
+-      "callee": "pinned",
+-      "line": 95
+-    },
+-    {
+-      "callee": "need",
+-      "line": 95
+-    },
+-    {
+-      "callee": "need",
+-      "line": 96
+-    },
+-    {
+-      "callee": "os.umask",
+-      "line": 97
+-    },
+-    {
+-      "callee": "attempt.mkdir",
+-      "line": 97
+-    },
+-    {
+-      "callee": "os.open",
+-      "line": 97
+-    },
+-    {
+-      "callee": "checkpoint",
+-      "line": 97
+-    },
+-    {
+-      "callee": "read(HERE / 'reference-pins.json', 16777216).items",
++      "call": "before()",
+       "line": 98
+     },
+     {
+-      "callee": "read(HERE / 'implementation-hashes.json', 16777216).items",
++      "call": "before()",
+       "line": 99
+     },
+     {
+-      "callee": "need",
+-      "line": 101
++      "call": "before()",
++      "line": 100
+     },
+     {
+-      "callee": "need",
+-      "line": 104
++      "call": "before()",
++      "line": 103
+     },
+     {
+-      "callee": "capture",
++      "call": "capture('guard',[PYTHON,'-I','-B',str(GUARD),'/usr/bin/true'],str(HERE),30)",
+       "line": 106
+     },
+     {
+-      "callee": "need",
++      "call": "before()",
+       "line": 107
+     },
+     {
+-      "callee": "before",
+-      "line": 107
+-    },
+-    {
+-      "callee": "capture",
++      "call": "capture('native',argv,str(H),120)",
+       "line": 109
+     },
+     {
+-      "callee": "need",
+-      "line": 110
+-    },
+-    {
+-      "callee": "native_state['streams'][0]['path'].read_bytes",
++      "call": "before()",
+       "line": 111
+     },
+     {
+-      "callee": "before",
+-      "line": 111
+-    },
+-    {
+-      "callee": "need",
+-      "line": 111
+-    },
+-    {
+-      "callee": "need",
+-      "line": 113
+-    },
+-    {
+-      "callee": "need",
+-      "line": 114
+-    },
+-    {
+-      "callee": "need",
+-      "line": 115
+-    },
+-    {
+-      "callee": "before",
++      "call": "before()",
+       "line": 116
+     },
+     {
+-      "callee": "checkpoint",
+-      "line": 116
++      "call": "st['proc'].terminate()",
++      "line": 122
+     },
+     {
+-      "callee": "old.items",
+-      "line": 147
+-    },
+-    {
+-      "callee": "main",
+-      "line": 149
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 8
+-    },
+-    {
+-      "callee": "hashlib.sha256",
+-      "line": 22
+-    },
+-    {
+-      "callee": "p.is_absolute",
+-      "line": 24
+-    },
+-    {
+-      "callee": "p.is_file",
+-      "line": 24
+-    },
+-    {
+-      "callee": "len",
+-      "line": 25
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 27
+-    },
+-    {
+-      "callee": "len",
+-      "line": 29
+-    },
+-    {
+-      "callee": "values.append",
+-      "line": 40
+-    },
+-    {
+-      "callee": "os.getpid",
+-      "line": 41
+-    },
+-    {
+-      "callee": "os.getpgrp",
+-      "line": 41
+-    },
+-    {
+-      "callee": "sum",
+-      "line": 41
+-    },
+-    {
+-      "callee": "len",
+-      "line": 45
+-    },
+-    {
+-      "callee": "before",
+-      "line": 45
+-    },
+-    {
+-      "callee": "os.write",
+-      "line": 45
+-    },
+-    {
+-      "callee": "need",
+-      "line": 45
+-    },
+-    {
+-      "callee": "os.open",
+-      "line": 59
+-    },
+-    {
+-      "callee": "raws.append",
+-      "line": 60
+-    },
+-    {
+-      "callee": "os.set_blocking",
+-      "line": 64
+-    },
+-    {
+-      "callee": "time.monotonic",
+-      "line": 66
+-    },
+-    {
+-      "callee": "zip",
+-      "line": 67
+-    },
+-    {
+-      "callee": "p.poll",
+-      "line": 74
+-    },
+-    {
+-      "callee": "select.select",
+-      "line": 79
+-    },
+-    {
+-      "callee": "pipe.close",
+-      "line": 81
+-    },
+-    {
+-      "callee": "all",
+-      "line": 85
+-    },
+-    {
+-      "callee": "need",
+-      "line": 98
+-    },
+-    {
+-      "callee": "before",
+-      "line": 98
+-    },
+-    {
+-      "callee": "need",
+-      "line": 99
+-    },
+-    {
+-      "callee": "before",
+-      "line": 99
+-    },
+-    {
+-      "callee": "read",
+-      "line": 100
+-    },
+-    {
+-      "callee": "need",
+-      "line": 100
+-    },
+-    {
+-      "callee": "before",
+-      "line": 100
+-    },
+-    {
+-      "callee": "read",
+-      "line": 102
+-    },
+-    {
+-      "callee": "need",
+-      "line": 103
+-    },
+-    {
+-      "callee": "before",
+-      "line": 103
+-    },
+-    {
+-      "callee": "read",
+-      "line": 105
+-    },
+-    {
+-      "callee": "str",
+-      "line": 106
+-    },
+-    {
+-      "callee": "all",
+-      "line": 107
+-    },
+-    {
+-      "callee": "str",
+-      "line": 109
+-    },
+-    {
+-      "callee": "json.loads",
+-      "line": 112
+-    },
+-    {
+-      "callee": "signal.signal",
+-      "line": 147
+-    },
+-    {
+-      "callee": "Path(p).read_bytes",
+-      "line": 22
+-    },
+-    {
+-      "callee": "p.is_symlink",
+-      "line": 24
+-    },
+-    {
+-      "callee": "(_ for _ in ()).throw",
+-      "line": 25
+-    },
+-    {
+-      "callee": "type",
+-      "line": 27
+-    },
+-    {
+-      "callee": "set",
+-      "line": 27
+-    },
+-    {
+-      "callee": "streams.append",
+-      "line": 39
+-    },
+-    {
+-      "callee": "time.monotonic",
+-      "line": 41
+-    },
+-    {
+-      "callee": "len",
+-      "line": 43
+-    },
+-    {
+-      "callee": "len",
+-      "line": 49
+-    },
+-    {
+-      "callee": "before",
+-      "line": 50
+-    },
+-    {
+-      "callee": "os.write",
+-      "line": 50
+-    },
+-    {
+-      "callee": "need",
+-      "line": 50
+-    },
+-    {
+-      "callee": "pipe.fileno",
+-      "line": 64
+-    },
+-    {
+-      "callee": "all",
+-      "line": 75
+-    },
+-    {
+-      "callee": "p.terminate",
+-      "line": 78
+-    },
+-    {
+-      "callee": "checkpoint",
+-      "line": 78
+-    },
+-    {
+-      "callee": "all",
+-      "line": 80
+-    },
+-    {
+-      "callee": "identity",
+-      "line": 83
+-    },
+-    {
+-      "callee": "os.close",
+-      "line": 83
+-    },
+-    {
+-      "callee": "(_ for _ in ()).throw",
+-      "line": 89
+-    },
+-    {
+-      "callee": "all",
+-      "line": 96
+-    },
+-    {
+-      "callee": "read",
+-      "line": 98
+-    },
+-    {
+-      "callee": "read",
+-      "line": 99
+-    },
+-    {
+-      "callee": "(H / 'availability-attempt').exists",
+-      "line": 101
+-    },
+-    {
+-      "callee": "str",
+-      "line": 104
+-    },
+-    {
+-      "callee": "str",
+-      "line": 104
+-    },
+-    {
+-      "callee": "str",
+-      "line": 106
+-    },
+-    {
+-      "callee": "raw.endswith",
+-      "line": 111
+-    },
+-    {
+-      "callee": "raw.splitlines",
+-      "line": 112
+-    },
+-    {
+-      "callee": "math.isfinite",
+-      "line": 115
+-    },
+-    {
+-      "callee": "math.isfinite",
+-      "line": 115
+-    },
+-    {
+-      "callee": "type",
+-      "line": 118
+-    },
+-    {
+-      "callee": "before",
++      "call": "before(120)",
+       "line": 138
+     },
+     {
+-      "callee": "checkpoint",
+-      "line": 138
+-    },
+-    {
+-      "callee": "os.close",
+-      "line": 138
+-    },
+-    {
+-      "callee": "snapshot",
+-      "line": 139
+-    },
+-    {
+-      "callee": "(json.dumps(value, separators=(',', ':'), allow_nan=False) + '\\n').encode",
+-      "line": 140
+-    },
+-    {
+-      "callee": "need",
+-      "line": 140
+-    },
+-    {
+-      "callee": "os.open",
+-      "line": 141
+-    },
+-    {
+-      "callee": "p.stat",
+-      "line": 24
+-    },
+-    {
+-      "callee": "ValueError",
+-      "line": 25
+-    },
+-    {
+-      "callee": "time.monotonic",
+-      "line": 31
+-    },
+-    {
+-      "callee": "os.getpid",
+-      "line": 40
+-    },
+-    {
+-      "callee": "json.dumps",
+-      "line": 43
+-    },
+-    {
+-      "callee": "x['hash'].update",
+-      "line": 51
+-    },
+-    {
+-      "callee": "type",
+-      "line": 54
+-    },
+-    {
+-      "callee": "hashlib.sha256",
+-      "line": 60
+-    },
+-    {
+-      "callee": "identity",
+-      "line": 60
+-    },
+-    {
+-      "callee": "os.read",
+-      "line": 69
+-    },
+-    {
+-      "callee": "retain",
+-      "line": 72
+-    },
+-    {
+-      "callee": "identity",
+-      "line": 72
+-    },
+-    {
+-      "callee": "checkpoint",
+-      "line": 72
+-    },
+-    {
+-      "callee": "need",
+-      "line": 72
+-    },
+-    {
+-      "callee": "checkpoint",
+-      "line": 73
+-    },
+-    {
+-      "callee": "time.monotonic",
+-      "line": 76
+-    },
+-    {
+-      "callee": "KeyboardInterrupt",
+-      "line": 89
+-    },
+-    {
+-      "callee": "type",
+-      "line": 92
+-    },
+-    {
+-      "callee": "set",
+-      "line": 92
+-    },
+-    {
+-      "callee": "set",
+-      "line": 92
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 94
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 94
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 94
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 94
+-    },
+-    {
+-      "callee": "native.get",
+-      "line": 95
+-    },
+-    {
+-      "callee": "native.get",
+-      "line": 95
+-    },
+-    {
+-      "callee": "native.get",
+-      "line": 95
+-    },
+-    {
+-      "callee": "native.get",
+-      "line": 95
+-    },
+-    {
+-      "callee": "type",
+-      "line": 96
+-    },
+-    {
+-      "callee": "len",
+-      "line": 96
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 98
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 99
+-    },
+-    {
+-      "callee": "Path(shutil.which('gh') or '').resolve",
+-      "line": 104
+-    },
+-    {
+-      "callee": "Path('/opt/homebrew/bin/gh').resolve",
+-      "line": 104
+-    },
+-    {
+-      "callee": "len",
+-      "line": 111
+-    },
+-    {
+-      "callee": "len",
+-      "line": 113
+-    },
+-    {
+-      "callee": "type",
+-      "line": 114
+-    },
+-    {
+-      "callee": "type",
+-      "line": 115
+-    },
+-    {
+-      "callee": "type",
+-      "line": 115
+-    },
+-    {
+-      "callee": "checkpoint",
+-      "line": 125
+-    },
+-    {
+-      "callee": "pipe.close",
+-      "line": 134
+-    },
+-    {
+-      "callee": "os.close",
+-      "line": 145
+-    },
+-    {
+-      "callee": "time.monotonic",
+-      "line": 148
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 22
+-    },
+-    {
+-      "callee": "str",
+-      "line": 39
+-    },
+-    {
+-      "callee": "snapshot",
+-      "line": 43
+-    },
+-    {
+-      "callee": "pipe.fileno",
+-      "line": 69
+-    },
+-    {
+-      "callee": "type",
+-      "line": 84
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 94
+-    },
+-    {
+-      "callee": "str",
+-      "line": 100
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 100
+-    },
+-    {
+-      "callee": "str",
+-      "line": 103
+-    },
+-    {
+-      "callee": "sha",
+-      "line": 103
+-    },
+-    {
+-      "callee": "(_ for _ in ()).throw",
+-      "line": 112
+-    },
+-    {
+-      "callee": "v.get",
+-      "line": 113
+-    },
+-    {
+-      "callee": "st['proc'].terminate",
+-      "line": 122
+-    },
+-    {
+-      "callee": "identity",
+-      "line": 131
+-    },
+-    {
+-      "callee": "os.close",
+-      "line": 131
+-    },
+-    {
+-      "callee": "len",
+-      "line": 140
+-    },
+-    {
+-      "callee": "len",
++      "call": "before(120)",
+       "line": 144
+-    },
+-    {
+-      "callee": "before",
+-      "line": 144
+-    },
+-    {
+-      "callee": "os.write",
+-      "line": 144
+-    },
+-    {
+-      "callee": "need",
+-      "line": 144
+-    },
+-    {
+-      "callee": "x['hash'].hexdigest",
+-      "line": 39
+-    },
+-    {
+-      "callee": "x['hash'].hexdigest",
+-      "line": 39
+-    },
+-    {
+-      "callee": "Path(item['path']).resolve",
+-      "line": 100
+-    },
+-    {
+-      "callee": "Path(item['path']).resolve",
+-      "line": 103
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 104
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 104
+-    },
+-    {
+-      "callee": "ValueError",
+-      "line": 112
+-    },
+-    {
+-      "callee": "json.dumps",
+-      "line": 140
+-    },
+-    {
+-      "callee": "type",
+-      "line": 132
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 100
+-    },
+-    {
+-      "callee": "Path",
+-      "line": 103
+-    },
+-    {
+-      "callee": "shutil.which",
+-      "line": 104
+     }
+   ],
+-  "guardAndNativeOnly": true,
+-  "method": "ast.parse and AST data only; never imported/evaluated"
++  "guardAndNativeOnly": "One shared literal Popen capture site used exactly for pinned guard then one native AVAIL; no workers/product/finite controls",
++  "method": "AST DATA only; never import/evaluate capture/native/helper/Perl"
+ }
