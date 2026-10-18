@@ -1,0 +1,227 @@
+{
+  "activity": "own read/hash/JSON/tar membership/provenance parser ONLY, no helper import/eval/Git/probe",
+  "checks": 18056,
+  "errors": [],
+  "immutablePreparedFiles": 2839,
+  "implementationFiles": 2829,
+  "referencePins": 10879,
+  "soleMutablePreparedException": [
+    "execution-gate.json"
+  ],
+  "source679": 679,
+  "sixOwnedAnd673ProtectedByFrozenRootBinding": true,
+  "buildArtifacts": 476,
+  "tools": 11,
+  "archives": [
+    {
+      "package": "protocol",
+      "members": 63,
+      "archiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+    },
+    {
+      "package": "server",
+      "members": 258,
+      "archiveSha256": "78f014af635f0903886be31f467447d45b72750ac8a7cbc7ba6cabe32cc7ee30"
+    }
+  ],
+  "passedStages": [
+    {
+      "stage": "node-version",
+      "innerExit": 0,
+      "innerElapsedSeconds": 5.570506041869521,
+      "wrapperElapsedSeconds": 12.318641957826912,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    {
+      "stage": "pnpm-version",
+      "innerExit": 0,
+      "innerElapsedSeconds": 5.789857415948063,
+      "wrapperElapsedSeconds": 12.0563366250135,
+      "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+    },
+    {
+      "stage": "workspace-install",
+      "innerExit": 0,
+      "innerElapsedSeconds": 5.786853374913335,
+      "wrapperElapsedSeconds": 12.061240042094141,
+      "logSha256": "c159b44fe5185aa822cc4bb6fb8445ee063cdc18d58adbf7e2f01cf04ed93627"
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "innerExit": 0,
+      "innerElapsedSeconds": 12.054057959001511,
+      "wrapperElapsedSeconds": 18.395584667101502,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "typecheck",
+      "innerExit": 0,
+      "innerElapsedSeconds": 6.78830137476325,
+      "wrapperElapsedSeconds": 13.108533083926886,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    {
+      "stage": "format-check",
+      "innerExit": 0,
+      "innerElapsedSeconds": 5.599156165961176,
+      "wrapperElapsedSeconds": 11.995730708818883,
+      "logSha256": "e74ef629bcbb212fc0fb5e1cbdb1ab808d879956d036df46b4fd4e612f4c6a8c"
+    },
+    {
+      "stage": "lint",
+      "innerExit": 0,
+      "innerElapsedSeconds": 5.637445209082216,
+      "wrapperElapsedSeconds": 12.064476208761334,
+      "logSha256": "fdf64fe2e756a936000349c277c66d67d92de363371f418de4a4310ad70c87b5"
+    },
+    {
+      "stage": "fresh-build",
+      "innerExit": 0,
+      "innerElapsedSeconds": 6.8916892083361745,
+      "wrapperElapsedSeconds": 13.294730750378221,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    {
+      "stage": "bind-fresh-build",
+      "innerExit": 0,
+      "innerElapsedSeconds": 12.890154667198658,
+      "wrapperElapsedSeconds": 19.276845290791243,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "focused-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 6.868267333135009,
+      "wrapperElapsedSeconds": 13.333808499854058,
+      "logSha256": "86cf4a5435b7c37437e795a8d634ea868c582040ad4aefeb9aed3cff472245fb"
+    },
+    {
+      "stage": "audit-focused-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 14.815468249842525,
+      "wrapperElapsedSeconds": 21.44713674997911,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "legacy-changefeed-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 7.423512707930058,
+      "wrapperElapsedSeconds": 15.378920792136341,
+      "logSha256": "441237534e6194146545c66acf6c06b7264136ae4df4e173a9e4fd50ab112d2f"
+    },
+    {
+      "stage": "audit-legacy-changefeed-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 13.559550124686211,
+      "wrapperElapsedSeconds": 22.71038549998775,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "legacy-installed-contracts-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 7.565590208861977,
+      "wrapperElapsedSeconds": 14.156078750267625,
+      "logSha256": "2368f60daf3b52578ccb710f37f68c025fbed2f5119c2c4294d4e52d57c56250"
+    },
+    {
+      "stage": "audit-legacy-installed-contracts-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 12.797849915921688,
+      "wrapperElapsedSeconds": 19.507144750095904,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "schema-confinement-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 6.476930916775018,
+      "wrapperElapsedSeconds": 13.726495917420834,
+      "logSha256": "8a20a0836004c74f14f9abf40687b73639f4b652c0274e843dbba394d63d2a9e"
+    },
+    {
+      "stage": "audit-schema-confinement-source",
+      "innerExit": 0,
+      "innerElapsedSeconds": 12.543715375009924,
+      "wrapperElapsedSeconds": 19.510938208084553,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "prepare-package-directory",
+      "innerExit": 0,
+      "innerElapsedSeconds": 12.973148959223181,
+      "wrapperElapsedSeconds": 20.196101000066847,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "pack-protocol",
+      "innerExit": 0,
+      "innerElapsedSeconds": 6.122702291235328,
+      "wrapperElapsedSeconds": 12.89094745926559,
+      "logSha256": "db4df55315b495939942fae6592a4cd2724b8dda09555b7e1412358c6d9a40c2"
+    },
+    {
+      "stage": "pack-server",
+      "innerExit": 0,
+      "innerElapsedSeconds": 6.486453457735479,
+      "wrapperElapsedSeconds": 13.235096250195056,
+      "logSha256": "ab21ca55583f3406925e962a247d73be108e14f940b56f3420dc05b35b156f28"
+    },
+    {
+      "stage": "verify-archives",
+      "innerExit": 0,
+      "innerElapsedSeconds": 12.872398667037487,
+      "wrapperElapsedSeconds": 19.698811582755297,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "stageCount": 52,
+  "acceptedStageReceipts": 21,
+  "wrapperRefusedBeforeStageStart": "prepare-consumer",
+  "wrapperElapsedSeconds": 6.560374124906957,
+  "laterUndispatched": [
+    "consumer-install",
+    "verify-installed-consumer",
+    "installed-01",
+    "audit-installed-01",
+    "installed-02",
+    "audit-installed-02",
+    "installed-03",
+    "audit-installed-03",
+    "installed-04",
+    "audit-installed-04",
+    "installed-05",
+    "audit-installed-05",
+    "installed-06",
+    "audit-installed-06",
+    "installed-07",
+    "audit-installed-07",
+    "installed-08",
+    "audit-installed-08",
+    "installed-09",
+    "audit-installed-09",
+    "installed-10",
+    "audit-installed-10",
+    "installed-11",
+    "audit-installed-11",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "knownPids": 417,
+  "knownGroups": 21,
+  "freshCensusRows": 1406,
+  "knownRemainingRows": [],
+  "consumerCreated": false,
+  "installedProof": "MISSING",
+  "installedCallbacksExecuted": 0,
+  "schemaInstalledExecuted": false,
+  "requiredChecksExecuted": 0,
+  "archiveTopLevelMissing": true,
+  "nestedTarPinValid": true,
+  "rootRecordErrorNotProductFailure": true,
+  "gateSha256": "5dfcbd2a5a48d0ed43cc6f77d3398cb5fe1dd9d45c561ef29859efd1dba89dd8",
+  "preparedIndexRecordShape": "Wrapped {bytes,sha256}; distinct from flat implementation SHA-string values",
+  "correctedOwnInspection": "Initial own compare used string assumption for wrapped preparation-index records, yielding false differences; no subject/helper evaluated. Raw own intermediate preserved separately. Correct final decode rehashed all2839, sole actual mutable gate exception verified."
+}

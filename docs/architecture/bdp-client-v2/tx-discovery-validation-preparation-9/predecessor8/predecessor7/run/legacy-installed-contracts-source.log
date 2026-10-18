@@ -1,0 +1,23 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum
+
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > exposes detached frozen exact capture without changing compiler identity and reconstructs offline 49ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > uses inherited schema for writes, atomic late failures and staged sets, retaining replay after graph changes 99ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > retains capture through deletion, receipt expiry and startup cleanup and reads the same installation 32ms
+ ↓ packages/server/src/transaction-installed-contracts.test.ts > refuses tampered capture before maintenance or pending retraction
+ ↓ packages/server/src/transaction-installed-contracts.test.ts > refuses tampered missing-capture before maintenance or pending retraction
+ ↓ packages/server/src/transaction-installed-contracts.test.ts > refuses tampered compiler-witness before maintenance or pending retraction
+ ↓ packages/server/src/transaction-installed-contracts.test.ts > refuses tampered limits before maintenance or pending retraction
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > refuses changed artifact identity, artifact limits and schema-free fallback on a compiled installation 247ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > refuses forged, cross-module, mismatched and nonlocal authorities before provisioning 9ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > installs a complete compiled owning descriptor bundle in its own store 6ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > compiles plain runtime artifacts in emitted module and serves same-owner Types, writes, sequence and restart 109ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > bounds runtime artifact input and requires explicit Scope before provisioning 9ms
+ ✓ packages/server/src/transaction-installed-contracts.test.ts > rolls back earlier selected postimages when a later effective contract fails 22ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed | 4 skipped (13)
+   Start at  05:35:11
+   Duration  1.26s (transform 486ms, setup 16ms, import 599ms, tests 585ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/legacy-installed-contracts-source.results.json

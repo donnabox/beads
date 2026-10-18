@@ -1,0 +1,3 @@
+Changed only the Snapshot manifest-id validator call to d3Safe(manifest.id, scope, true). The existing query-enabled validator retains same-origin/Scope path, no credentials/fragment and 8192-byte limit. All other678 candidate files are byte-exact; all28 planned requests and every callback/deadline remain unchanged.
+
+ONE pinned Biome format-only invocation exited0 and changed no semantic output bytes; final equals the exact one-call replacement. No compiler, checks, tests, build, install, runtime, Git or reviewer command ran during authoring. Actual failed P6 evidence remains failed/historical; no actual manifest body/token is reconstructed. Independent native precision and root actual Git/source acceptance remain required before a fresh P7 binding/validation.

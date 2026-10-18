@@ -1,0 +1,43 @@
+{
+  "utc": "2026-10-18T13:41:25.651673+00:00",
+  "accepted": true,
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/acceptance.json",
+    "sha256": "2d6b75e5670ffcd60035ee3cb49e8c8f835032dfaddd331b87790e6c08123f02"
+  },
+  "gate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/execution-gate.json",
+    "sha256": "56bfd065715879f72fb75015270d946b716f47208f14c40b9e60cadfd91fcdbc"
+  },
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "newStages": [
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "mustPushAndReadbackBeforeExecution": true,
+  "laterStagesClosed": true
+}

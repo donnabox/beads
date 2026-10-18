@@ -1,0 +1,32 @@
+{
+  "utc": "2026-10-18T14:07:12.933208+00:00",
+  "rootDispositionSha256": "761e49bb48d49bbb358c258a23ee1abdedb7fd7235bb6f9e833702fd73378a5e",
+  "authorOnly": true,
+  "owner": "tx_discovery_next_plan",
+  "newImmutableSuccessor": "tx-discovery-validation-preparation-9",
+  "sourceBindingSha256MustRemain": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "scope": [
+    "Prepare a fresh CLOSED full52-stage pipeline, preserving exact P8 source/schema/helper behavior and all prior history.",
+    "All5 helpers MUST remain BYTE+AST identical to P8; commands change only P8\u2192P9 namespace literals, inverse reproduces P8 commands; report-schemas.json BYTEEXACT P8.",
+    "Preserve all2840 preparedP8 plus95actual flatrunfiles/twoarchives/5dispatches/rootbarriers/failure/native241 and originalprepared-vs-consumedclosedgate distinction; no consumer exists inP8. Older consumers remain INPLACE, nevercopy/reuse.",
+    "Copy exact root-barrier DATA contracts and independent interface/comparison; future root records must bind all actual TOP LEVEL requiredfields and be independently checked before publication/flag release.",
+    "Fresh future tool/build/archive/consumer/lock/fullproof/runtime/requiredchecks UNKNOWN; both gates false/run absent, no oldpass/proof reuse.",
+    "Actual original CODE and later native correction attributions unchanged; no new review or claim actual external review read new bytes."
+  ],
+  "fixed": [
+    "679sourcea61/Giteed91",
+    "52orderedstages16immediatepairs",
+    "21focused32legacy9contracts1schema/11installed+legacy14schema",
+    "5srequest/3snewDwork4scleanupinclusive/45sinstalledwork10scleanup60scallback/120outer115TERM",
+    "strict schema keys/selectors/Update response-retry-nonatomic vsTX contracts"
+  ],
+  "notAuthorized": [
+    "Any helper/schema import or evaluation, compiler/lint/check/test/build/install/runtime/reviewer invocation, Git/flags, source/helper/schema/budget/selection mutation, P8 retry or failed-record repair"
+  ],
+  "afterFreeze": [
+    "Full other-native mechanics (A) including exact barrier DATA compatibility",
+    "Root full inspection and durable staged first4release",
+    "Entire genuinely fresh52-stage pipeline with exact root barriers/publish/readback; stop firstfailure/no retry"
+  ],
+  "durablePushRequiredBeforeAuthoring": true
+}

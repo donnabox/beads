@@ -1,0 +1,13 @@
+# Preparation4 independent native mechanics
+
+**Accepted static mechanics; no remaining findings.** This is the minimal DATA-only successor to rejected preparation3. It does not release execution or replace the required fresh root disposition.
+
+N1 is closed at the actual consumption boundary: implementation-hashes.files now contains676 SHA256 string values, matching unchanged gate.py’s direct digest comparison. Byte sizes remain in the complete687-file physical index. The exact11 named control/self/delta exclusions cover the implementation-hash cycles; all other physical files are included and hashed. No helper/interface change was used to hide the rejected object-vs-string error.
+
+N2’s two active labels now say6eea in source-audit-contract and release-gates. Historical6458 evidence remains unchanged. The accepted0132 annotation closure is explicitly cross-bound by same679 source bytes/canonical5964/binary6eea while acknowledging its old preparation3 metadata binding. Current executable/root/CODE-disposition wrappers remain UNRESOLVED rather than falsely reusing an old binding. No corrected compiler pass or second actual review is claimed.
+
+All five executable helpers are byte AND static AST identical to accepted2 and rejected3. The audit/report/schema/selection semantics remain those accepted after the earlier full N1/N2/N3 report precision: source21/96 started direct/90 retained/20 baselines/14 raw/9 clones; full historical32+9 suites/18 reports; installed11/190 scheduled187 response3 abort186 exact4 raw; schema pure1 and installed14. Fifty-two stages and16 immediate audit pairs retain exact order and budgets; commands differ only by preparation namespace. No deadline/skip/parser/request/schema relaxation occurred.
+
+All687 files and exact mirror,676 implementation entries,597 origins,2645 reference pins,28 genuine forward/inverse delta pairs and all679 live source hashes verify. Source has exactly6 owned/673 protected base paths; only root’s frozen observation supplies Git metadata, and no Git command ran here. Old failed run/history/native rejection remain immutable and are not current outputs. Both gates are false, approvedStages and bootstrapReuse empty, no current run exists. Fresh workspace tools/install/build/archives/external consumer/actual lock/full proof remain unresolved behind root barriers.
+
+This review imported or evaluated no reviewed helper and ran no compiler/test/runtime/reviewer/Git/product command. Static AST parsing and file/hash/JSON/diff checks only. Root must independently accept and durably release an exact ordered prefix with new same-source disposition before any fresh execution. D4 collector/helper authoring stayed paused throughout this isolated review.

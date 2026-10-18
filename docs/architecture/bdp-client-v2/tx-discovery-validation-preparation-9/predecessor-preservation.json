@@ -1,0 +1,26 @@
+{
+  "actualAcceptedStages": 21,
+  "actualFlatRunFiles": 95,
+  "allNew52StagesFreshRequired": true,
+  "bootstrapReuse": [],
+  "dispatches": 5,
+  "failedWrapperBeforeStageCreation": "prepare-consumer",
+  "historicalArchives": 2,
+  "historicalConsumer870Files17Links": "older consumers INPLACE ONLY; no P8 consumer exists; no body copied/reused",
+  "laterUnattemptedStages": 30,
+  "nativeTerminalAuditFiles": 241,
+  "noHistoricalOutputReuse": true,
+  "originalP8PreparationIndexSha256": "b12c7a5d9fb71aaf5e6a0c8970a914fad39ff580ab4bb2607b49b00ce13b7b59",
+  "preparedFiles": 2840,
+  "preparedGateException": [
+    {
+      "consumedClosedSha256": "5dfcbd2a5a48d0ed43cc6f77d3398cb5fe1dd9d45c561ef29859efd1dba89dd8",
+      "copiedConsumedAt": "predecessor8/execution-gate.json",
+      "originalIndexPreservedVerbatim": "predecessor8/preparation-index.json",
+      "originalPreparedBytesAt": "predecessor8-original-active-gate.json",
+      "originalPreparedSha256": "ee9cefbf47ccbcbdac37e4415c8e6365319ad011cc39d2441c738c855d0c368b",
+      "path": "execution-gate.json"
+    }
+  ],
+  "scope": "all 2840 prepared P8 plus 95 actual flat run files and two archives; exact five dispatches/root barriers/failure/native241; earlier P7/P6/P5 retained inside prepared snapshot"
+}
