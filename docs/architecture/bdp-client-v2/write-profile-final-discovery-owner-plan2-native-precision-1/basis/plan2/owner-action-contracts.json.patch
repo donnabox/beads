@@ -1,0 +1,123 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-1/owner-action-contracts.json
++++ owner-action-contracts.json
+@@ -330,7 +330,22 @@
+           "family": "http",
+           "method": "GET",
+           "targetFromActualCapture": "d03-descriptor",
+-          "captures": [],
++          "captures": [
++            {
++              "binding": "d03-types",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/types"
++              }
++            },
++            {
++              "binding": "d03-beads",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/beads"
++              }
++            }
++          ],
+           "assertionOracles": [
+             "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+             "current source expected page.defaultItems2 maximumItems32 and selector4096/32/256; exact primitive type and integer checks against captured source configuration, not a new fixture choice",
+@@ -354,7 +369,7 @@
+           "id": "d03-page-bound",
+           "family": "http",
+           "method": "GET",
+-          "targetFromActualCapture": "received types URL ?limit=32",
++          "targetFromActualCapture": "d03-types ?limit=32",
+           "captures": [],
+           "assertionOracles": [
+             "200; correct Type page; records<=32; no silent clipping claim from empty/small population",
+@@ -377,7 +392,7 @@
+           "id": "d03-page-zero",
+           "family": "http",
+           "method": "GET",
+-          "targetFromActualCapture": "received types URL ?limit=0",
++          "targetFromActualCapture": "d03-types ?limit=0",
+           "captures": [],
+           "assertionOracles": [
+             "400 invalid-parameter; exact Problem/retry/actual current context; no primary data disclosure",
+@@ -400,7 +415,7 @@
+           "id": "d03-page-over",
+           "family": "http",
+           "method": "GET",
+-          "targetFromActualCapture": "received types URL ?limit=33",
++          "targetFromActualCapture": "d03-types ?limit=33",
+           "captures": [],
+           "assertionOracles": [
+             "413 limit-exceeded; family size/retry never; compare actual advertised maximum32 before probe",
+@@ -423,7 +438,7 @@
+           "id": "d03-selector-bound",
+           "family": "http",
+           "method": "GET",
+-          "targetFromActualCapture": "received beads URL ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
++          "targetFromActualCapture": "d03-beads ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
+           "captures": [],
+           "assertionOracles": [
+             "200 complete current empty-prefix collection; grammar/depth/nodes remain below their own limits; no selector syntax error accepted as boundary proof",
+@@ -446,7 +461,7 @@
+           "id": "d03-selector-over",
+           "family": "http",
+           "method": "GET",
+-          "targetFromActualCapture": "received beads URL ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
++          "targetFromActualCapture": "d03-beads ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
+           "captures": [],
+           "assertionOracles": [
+             "413 limit-exceeded; actual encoded request target remains<=8192 local cap; no target/configuration refusal mistaken for selector refusal",
+@@ -571,21 +586,21 @@
+           "targetFromActualCapture": "d04-operations",
+           "captures": [
+             {
+-              "binding": "d04-createBead",
++              "binding": "d04-create-bead",
+               "from": {
+                 "kind": "json-pointer-relative-url",
+                 "pointer": "/createBead"
+               }
+             },
+             {
+-              "binding": "d04-putAlias",
++              "binding": "d04-put-alias",
+               "from": {
+                 "kind": "json-pointer-relative-url",
+                 "pointer": "/putAlias"
+               }
+             },
+             {
+-              "binding": "d04-deleteAlias",
++              "binding": "d04-delete-alias",
+               "from": {
+                 "kind": "json-pointer-relative-url",
+                 "pointer": "/deleteAlias"
+@@ -613,7 +628,7 @@
+           "id": "d04-create",
+           "family": "http",
+           "method": "POST",
+-          "targetFromActualCapture": "d04-createBead",
++          "targetFromActualCapture": "d04-create-bead",
+           "captures": [],
+           "assertionOracles": [
+             "200 completed mutationReceipt, one created entry, exact canonical Bead id/type/properties; original exact idempotency namespace and raw authored body",
+@@ -681,7 +696,7 @@
+           "id": "d04-put",
+           "family": "http",
+           "method": "POST",
+-          "targetFromActualCapture": "d04-putAlias",
++          "targetFromActualCapture": "d04-put-alias",
+           "captures": [],
+           "assertionOracles": [
+             "200 TX locator-only alias receipt with one alias entry; no RU inline-result substitution",
+@@ -762,7 +777,7 @@
+           "id": "d04-delete",
+           "family": "http",
+           "method": "POST",
+-          "targetFromActualCapture": "d04-deleteAlias",
++          "targetFromActualCapture": "d04-delete-alias",
+           "captures": [],
+           "assertionOracles": [
+             "200 TX locator-only alias receipt, deleted alias entry without target",

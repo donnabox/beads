@@ -1,0 +1,1379 @@
+--- static-call-inventory.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/static-call-inventory.json
+@@ -1,7 +1,7 @@
+ [
+   {
+     "path": "availability_owner.py",
+-    "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7",
++    "sha256": "db0abde1dcf4921bab3d830fc3bb8616fff4984e1cc2c211b5a2ee205be148e5",
+     "staticCalls": [
+       {
+         "line": 6,
+@@ -96,7 +96,7 @@
+         "call": "attempt.mkdir"
+       },
+       {
+-        "line": 168,
++        "line": 104,
+         "call": "SystemExit"
+       },
+       {
+@@ -112,139 +112,95 @@
+         "call": "need"
+       },
+       {
+-        "line": 52,
++        "line": 41,
++        "call": "min"
++      },
++      {
++        "line": 51,
+         "call": "need"
+       },
+       {
+-        "line": 52,
+-        "call": "(json.dumps(capture_snapshot(state, reason), separators=(',', ':'), allow_nan=False) + '\\n').encode"
+-      },
+-      {
+-        "line": 53,
++        "line": 55,
++        "call": "save"
++      },
++      {
++        "line": 56,
++        "call": "read"
++      },
++      {
++        "line": 58,
+         "call": "need"
+       },
+       {
++        "line": 59,
++        "call": "need"
++      },
++      {
++        "line": 60,
++        "call": "sha"
++      },
++      {
++        "line": 60,
++        "call": "need"
++      },
++      {
++        "line": 61,
++        "call": "pinned"
++      },
++      {
++        "line": 61,
++        "call": "need"
++      },
++      {
++        "line": 62,
++        "call": "pinned"
++      },
++      {
++        "line": 62,
++        "call": "need"
++      },
++      {
++        "line": 63,
++        "call": "read"
++      },
++      {
++        "line": 63,
++        "call": "need"
++      },
++      {
+         "line": 64,
+-        "call": "os.open"
++        "call": "read"
+       },
+       {
+         "line": 65,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 68,
+-        "call": "len"
+-      },
+-      {
+-        "line": 84,
+-        "call": "min"
+-      },
+-      {
+-        "line": 99,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 99,
+         "call": "need"
+       },
+       {
+-        "line": 101,
+-        "call": "close_capture"
+-      },
+-      {
+-        "line": 101,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 102,
++        "line": 66,
++        "call": "index.items"
++      },
++      {
++        "line": 69,
+         "call": "need"
+       },
+       {
+-        "line": 105,
++        "line": 70,
++        "call": "os.urandom(16).hex"
++      },
++      {
++        "line": 93,
+         "call": "save"
+       },
+       {
+-        "line": 106,
+-        "call": "read"
+-      },
+-      {
+-        "line": 108,
++        "line": 93,
+         "call": "need"
+       },
+       {
+-        "line": 109,
+-        "call": "need"
+-      },
+-      {
+-        "line": 110,
+-        "call": "sha"
+-      },
+-      {
+-        "line": 110,
+-        "call": "need"
+-      },
+-      {
+-        "line": 111,
+-        "call": "pinned"
+-      },
+-      {
+-        "line": 111,
+-        "call": "need"
+-      },
+-      {
+-        "line": 112,
+-        "call": "pinned"
+-      },
+-      {
+-        "line": 112,
+-        "call": "need"
+-      },
+-      {
+-        "line": 113,
+-        "call": "read"
+-      },
+-      {
+-        "line": 113,
+-        "call": "need"
+-      },
+-      {
+-        "line": 114,
+-        "call": "read"
+-      },
+-      {
+-        "line": 115,
+-        "call": "need"
+-      },
+-      {
+-        "line": 116,
+-        "call": "index.items"
+-      },
+-      {
+-        "line": 119,
+-        "call": "need"
+-      },
+-      {
+-        "line": 120,
+-        "call": "os.urandom(16).hex"
+-      },
+-      {
+-        "line": 148,
+-        "call": "save"
+-      },
+-      {
+-        "line": 148,
+-        "call": "need"
+-      },
+-      {
+-        "line": 148,
++        "line": 93,
+         "call": "emit"
+       },
+       {
+-        "line": 154,
+-        "call": "captures.values"
+-      },
+-      {
+-        "line": 168,
++        "line": 104,
+         "call": "main"
+       },
+       {
+@@ -308,163 +264,143 @@
+         "call": "f.write"
+       },
+       {
+-        "line": 49,
+-        "call": "streams.append"
++        "line": 41,
++        "call": "bytearray"
++      },
++      {
++        "line": 41,
++        "call": "bytearray"
++      },
++      {
++        "line": 42,
++        "call": "os.set_blocking"
++      },
++      {
++        "line": 44,
++        "call": "enumerate"
+       },
+       {
+         "line": 50,
++        "call": "p.poll"
++      },
++      {
++        "line": 50,
++        "call": "select.select"
++      },
++      {
++        "line": 52,
++        "call": "s.close"
++      },
++      {
++        "line": 53,
++        "call": "bytes"
++      },
++      {
++        "line": 53,
++        "call": "bytes"
++      },
++      {
++        "line": 67,
++        "call": "need"
++      },
++      {
++        "line": 67,
++        "call": "need"
++      },
++      {
++        "line": 68,
++        "call": "read"
++      },
++      {
++        "line": 68,
++        "call": "need"
++      },
++      {
++        "line": 72,
++        "call": "socket.socketpair"
++      },
++      {
++        "line": 72,
++        "call": "parent.setblocking"
++      },
++      {
++        "line": 73,
++        "call": "signal.pthread_sigmask"
++      },
++      {
++        "line": 78,
++        "call": "child.close"
++      },
++      {
++        "line": 78,
++        "call": "time.monotonic"
++      },
++      {
++        "line": 78,
++        "call": "need"
++      },
++      {
++        "line": 79,
++        "call": "(json.dumps({'event': 'execute', 'nonce': nonce, 'pid': p.pid}, separators=(',', ':')) + '\\n').encode"
++      },
++      {
++        "line": 79,
++        "call": "need"
++      },
++      {
++        "line": 80,
++        "call": "min"
++      },
++      {
++        "line": 84,
++        "call": "need"
++      },
++      {
++        "line": 84,
++        "call": "parent.close"
++      },
++      {
++        "line": 85,
++        "call": "drain"
++      },
++      {
++        "line": 85,
++        "call": "(attempt / (role + '.stdout')).write_bytes"
++      },
++      {
++        "line": 85,
++        "call": "(attempt / (role + '.stderr')).write_bytes"
++      },
++      {
++        "line": 86,
++        "call": "need"
++      },
++      {
++        "line": 90,
++        "call": "receipts.append"
++      },
++      {
++        "line": 91,
++        "call": "save"
++      },
++      {
++        "line": 92,
++        "call": "os.getpid"
++      },
++      {
++        "line": 92,
+         "call": "os.getpgrp"
+       },
+       {
+-        "line": 62,
+-        "call": "state['streams'].append"
+-      },
+-      {
+-        "line": 63,
+-        "call": "os.open"
+-      },
+-      {
+-        "line": 84,
+-        "call": "bytearray"
+-      },
+-      {
+-        "line": 84,
+-        "call": "bytearray"
+-      },
+-      {
+-        "line": 85,
+-        "call": "os.set_blocking"
+-      },
+-      {
+-        "line": 87,
+-        "call": "enumerate"
+-      },
+-      {
+-        "line": 96,
+-        "call": "p.poll"
+-      },
+-      {
+-        "line": 98,
+-        "call": "select.select"
+-      },
+-      {
+-        "line": 100,
+-        "call": "stream.close"
+-      },
+-      {
+-        "line": 102,
+-        "call": "all"
+-      },
+-      {
+-        "line": 103,
+-        "call": "bytes"
+-      },
+-      {
+-        "line": 103,
+-        "call": "bytes"
+-      },
+-      {
+-        "line": 117,
+-        "call": "need"
+-      },
+-      {
+-        "line": 117,
+-        "call": "need"
+-      },
+-      {
+-        "line": 118,
+-        "call": "read"
+-      },
+-      {
+-        "line": 118,
+-        "call": "need"
+-      },
+-      {
+-        "line": 122,
+-        "call": "socket.socketpair"
+-      },
+-      {
+-        "line": 122,
+-        "call": "parent.setblocking"
+-      },
+-      {
+-        "line": 123,
+-        "call": "signal.pthread_sigmask"
+-      },
+-      {
+-        "line": 128,
+-        "call": "new_capture"
+-      },
+-      {
+-        "line": 129,
+-        "call": "child.close"
+-      },
+-      {
+-        "line": 129,
++        "line": 92,
+         "call": "time.monotonic"
+       },
+       {
+-        "line": 129,
+-        "call": "need"
+-      },
+-      {
+-        "line": 130,
+-        "call": "(json.dumps({'event': 'execute', 'nonce': nonce, 'pid': p.pid}, separators=(',', ':')) + '\\n').encode"
+-      },
+-      {
+-        "line": 130,
+-        "call": "need"
+-      },
+-      {
+-        "line": 131,
+-        "call": "min"
+-      },
+-      {
+-        "line": 135,
+-        "call": "need"
+-      },
+-      {
+-        "line": 135,
+-        "call": "parent.close"
+-      },
+-      {
+-        "line": 136,
+-        "call": "drain"
+-      },
+-      {
+-        "line": 137,
+-        "call": "need"
+-      },
+-      {
+-        "line": 141,
+-        "call": "receipts.append"
+-      },
+-      {
+-        "line": 142,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 146,
+-        "call": "save"
+-      },
+-      {
+-        "line": 147,
+-        "call": "os.getpid"
+-      },
+-      {
+-        "line": 147,
+-        "call": "os.getpgrp"
+-      },
+-      {
+-        "line": 147,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 147,
++        "line": 92,
+         "call": "vars"
+       },
+       {
+-        "line": 147,
++        "line": 92,
+         "call": "all"
+       },
+       {
+@@ -508,136 +444,76 @@
+         "call": "left"
+       },
+       {
+-        "line": 50,
++        "line": 41,
+         "call": "time.monotonic"
+       },
+       {
+-        "line": 52,
+-        "call": "left"
+-      },
+-      {
+-        "line": 53,
+-        "call": "len"
+-      },
+-      {
+-        "line": 56,
+-        "call": "len"
+-      },
+-      {
+-        "line": 57,
++        "line": 42,
++        "call": "s.fileno"
++      },
++      {
++        "line": 43,
++        "call": "time.monotonic"
++      },
++      {
++        "line": 51,
++        "call": "all"
++      },
++      {
++        "line": 55,
++        "call": "os.getpid"
++      },
++      {
++        "line": 55,
++        "call": "os.getpgrp"
++      },
++      {
++        "line": 65,
++        "call": "all"
++      },
++      {
++        "line": 70,
++        "call": "os.urandom"
++      },
++      {
++        "line": 75,
++        "call": "subprocess.Popen"
++      },
++      {
++        "line": 76,
++        "call": "handles.append"
++      },
++      {
++        "line": 77,
++        "call": "signal.pthread_sigmask"
++      },
++      {
++        "line": 88,
++        "call": "json.loads"
++      },
++      {
++        "line": 88,
+         "call": "need"
+       },
+       {
+-        "line": 57,
+-        "call": "os.write"
+-      },
+-      {
+-        "line": 57,
++        "line": 89,
+         "call": "need"
+       },
+       {
+-        "line": 62,
+-        "call": "hashlib.sha256"
+-      },
+-      {
+-        "line": 70,
+-        "call": "len"
+-      },
+-      {
+-        "line": 71,
+-        "call": "need"
+-      },
+-      {
+-        "line": 71,
+-        "call": "os.write"
+-      },
+-      {
+-        "line": 71,
+-        "call": "need"
+-      },
+-      {
+-        "line": 84,
++        "line": 92,
++        "call": "time.get_clock_info"
++      },
++      {
++        "line": 93,
+         "call": "time.monotonic"
+       },
+       {
+-        "line": 85,
+-        "call": "stream.fileno"
+-      },
+-      {
+-        "line": 86,
++        "line": 93,
+         "call": "time.monotonic"
+       },
+       {
+-        "line": 97,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 99,
+-        "call": "all"
+-      },
+-      {
+-        "line": 105,
+-        "call": "os.getpid"
+-      },
+-      {
+-        "line": 105,
+-        "call": "os.getpgrp"
+-      },
+-      {
+-        "line": 115,
+-        "call": "all"
+-      },
+-      {
+-        "line": 120,
+-        "call": "os.urandom"
+-      },
+-      {
+-        "line": 125,
+-        "call": "subprocess.Popen"
+-      },
+-      {
+-        "line": 126,
+-        "call": "handles.append"
+-      },
+-      {
+-        "line": 127,
+-        "call": "signal.pthread_sigmask"
+-      },
+-      {
+-        "line": 139,
+-        "call": "json.loads"
+-      },
+-      {
+-        "line": 139,
+-        "call": "need"
+-      },
+-      {
+-        "line": 140,
+-        "call": "need"
+-      },
+-      {
+-        "line": 143,
+-        "call": "os.close"
+-      },
+-      {
+-        "line": 147,
+-        "call": "time.get_clock_info"
+-      },
+-      {
+-        "line": 148,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 148,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 150,
++        "line": 95,
+         "call": "save"
+-      },
+-      {
+-        "line": 156,
+-        "call": "close_capture"
+       },
+       {
+         "line": 20,
+@@ -652,191 +528,143 @@
+         "call": "Path"
+       },
+       {
++        "line": 43,
++        "call": "all"
++      },
++      {
+         "line": 46,
+-        "call": "os.fstat"
++        "call": "os.read"
+       },
+       {
+         "line": 49,
+-        "call": "str"
+-      },
+-      {
+-        "line": 52,
+-        "call": "json.dumps"
++        "call": "raw[i].extend"
++      },
++      {
++        "line": 49,
++        "call": "need"
+       },
+       {
+         "line": 58,
+         "call": "type"
+       },
+       {
+-        "line": 72,
+-        "call": "item['hash'].update"
+-      },
+-      {
+-        "line": 75,
++        "line": 58,
++        "call": "set"
++      },
++      {
++        "line": 61,
++        "call": "native.get"
++      },
++      {
++        "line": 61,
++        "call": "native.get"
++      },
++      {
++        "line": 61,
++        "call": "native.get"
++      },
++      {
++        "line": 62,
++        "call": "durable.get"
++      },
++      {
++        "line": 62,
++        "call": "durable.get"
++      },
++      {
++        "line": 62,
++        "call": "durable.get"
++      },
++      {
++        "line": 62,
++        "call": "durable.get"
++      },
++      {
++        "line": 62,
++        "call": "durable.get"
++      },
++      {
++        "line": 63,
++        "call": "read"
++      },
++      {
++        "line": 65,
+         "call": "type"
+       },
+       {
++        "line": 67,
++        "call": "path.resolve().is_relative_to"
++      },
++      {
++        "line": 67,
++        "call": "left"
++      },
++      {
++        "line": 68,
++        "call": "sha"
++      },
++      {
++        "line": 69,
++        "call": "time.monotonic"
++      },
++      {
++        "line": 79,
++        "call": "parent.send"
++      },
++      {
++        "line": 79,
++        "call": "len"
++      },
++      {
+         "line": 80,
+-        "call": "os.fstat"
++        "call": "time.monotonic"
+       },
+       {
+         "line": 81,
+-        "call": "os.close"
+-      },
+-      {
+-        "line": 86,
+-        "call": "all"
+-      },
+-      {
+-        "line": 89,
+-        "call": "os.read"
+-      },
+-      {
+-        "line": 92,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 94,
+-        "call": "retain"
+-      },
+-      {
+-        "line": 94,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 95,
++        "call": "time.monotonic"
++      },
++      {
++        "line": 82,
++        "call": "select.select"
++      },
++      {
++        "line": 83,
++        "call": "parent.recv"
++      },
++      {
++        "line": 83,
+         "call": "need"
+       },
+       {
+-        "line": 95,
+-        "call": "raw[i].extend"
+-      },
+-      {
+-        "line": 108,
+-        "call": "type"
+-      },
+-      {
+-        "line": 108,
+-        "call": "set"
+-      },
+-      {
+-        "line": 111,
+-        "call": "native.get"
+-      },
+-      {
+-        "line": 111,
+-        "call": "native.get"
+-      },
+-      {
+-        "line": 111,
+-        "call": "native.get"
+-      },
+-      {
+-        "line": 112,
+-        "call": "durable.get"
+-      },
+-      {
+-        "line": 112,
+-        "call": "durable.get"
+-      },
+-      {
+-        "line": 112,
+-        "call": "durable.get"
+-      },
+-      {
+-        "line": 112,
+-        "call": "durable.get"
+-      },
+-      {
+-        "line": 112,
+-        "call": "durable.get"
+-      },
+-      {
+-        "line": 113,
+-        "call": "read"
+-      },
+-      {
+-        "line": 115,
+-        "call": "type"
+-      },
+-      {
+-        "line": 117,
+-        "call": "path.resolve().is_relative_to"
+-      },
+-      {
+-        "line": 117,
+-        "call": "left"
+-      },
+-      {
+-        "line": 118,
+-        "call": "sha"
+-      },
+-      {
+-        "line": 119,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 130,
+-        "call": "parent.send"
+-      },
+-      {
+-        "line": 130,
+-        "call": "len"
+-      },
+-      {
+-        "line": 131,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 132,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 133,
+-        "call": "select.select"
+-      },
+-      {
+-        "line": 134,
+-        "call": "parent.recv"
+-      },
+-      {
+-        "line": 134,
++        "line": 83,
+         "call": "need"
+       },
+       {
+-        "line": 134,
+-        "call": "need"
+-      },
+-      {
+-        "line": 135,
++        "line": 84,
+         "call": "(json.dumps({'event': 'executing', 'nonce': nonce, 'pid': p.pid}, separators=(',', ':')) + '\\n').encode"
+       },
+       {
+-        "line": 141,
++        "line": 90,
+         "call": "os.getpgrp"
+       },
+       {
+-        "line": 141,
+-        "call": "len"
+-      },
+-      {
+-        "line": 141,
+-        "call": "len"
+-      },
+-      {
+-        "line": 141,
++        "line": 90,
++        "call": "len"
++      },
++      {
++        "line": 90,
++        "call": "len"
++      },
++      {
++        "line": 90,
+         "call": "hashlib.sha256(out).hexdigest"
+       },
+       {
+-        "line": 141,
++        "line": 90,
+         "call": "hashlib.sha256(err).hexdigest"
+       },
+       {
+-        "line": 157,
+-        "call": "checkpoint"
+-      },
+-      {
+-        "line": 165,
++        "line": 101,
+         "call": "p.kill"
+       },
+       {
+@@ -844,163 +672,123 @@
+         "call": "Path"
+       },
+       {
++        "line": 46,
++        "call": "s.fileno"
++      },
++      {
++        "line": 67,
++        "call": "path.is_symlink"
++      },
++      {
++        "line": 67,
++        "call": "sha"
++      },
++      {
++        "line": 75,
++        "call": "str"
++      },
++      {
++        "line": 75,
++        "call": "str"
++      },
++      {
++        "line": 75,
++        "call": "str"
++      },
++      {
++        "line": 75,
++        "call": "str"
++      },
++      {
++        "line": 75,
++        "call": "str"
++      },
++      {
++        "line": 79,
++        "call": "json.dumps"
++      },
++      {
++        "line": 83,
++        "call": "bool"
++      },
++      {
++        "line": 90,
++        "call": "time.monotonic"
++      },
++      {
+         "line": 49,
+-        "call": "item['hash'].hexdigest"
+-      },
+-      {
+-        "line": 52,
+-        "call": "capture_snapshot"
+-      },
+-      {
+-        "line": 57,
+-        "call": "left"
+-      },
+-      {
+-        "line": 71,
+-        "call": "left"
++        "call": "len"
++      },
++      {
++        "line": 65,
++        "call": "index.values"
++      },
++      {
++        "line": 67,
++        "call": "path.resolve"
++      },
++      {
++        "line": 75,
++        "call": "child.fileno"
++      },
++      {
++        "line": 75,
++        "call": "child.fileno"
++      },
++      {
++        "line": 83,
++        "call": "len"
++      },
++      {
++        "line": 88,
++        "call": "os.getpid"
++      },
++      {
++        "line": 88,
++        "call": "os.getpgrp"
++      },
++      {
++        "line": 88,
++        "call": "time.monotonic"
++      },
++      {
++        "line": 90,
++        "call": "hashlib.sha256"
++      },
++      {
++        "line": 90,
++        "call": "hashlib.sha256"
++      },
++      {
++        "line": 95,
++        "call": "type"
++      },
++      {
++        "line": 95,
++        "call": "str"
++      },
++      {
++        "line": 65,
++        "call": "type"
++      },
++      {
++        "line": 65,
++        "call": "len"
++      },
++      {
++        "line": 84,
++        "call": "json.dumps"
++      },
++      {
++        "line": 88,
++        "call": "int"
+       },
+       {
+         "line": 89,
+-        "call": "stream.fileno"
+-      },
+-      {
+-        "line": 117,
+-        "call": "path.is_symlink"
+-      },
+-      {
+-        "line": 117,
+-        "call": "sha"
+-      },
+-      {
+-        "line": 125,
+-        "call": "str"
+-      },
+-      {
+-        "line": 125,
+-        "call": "str"
+-      },
+-      {
+-        "line": 125,
+-        "call": "str"
+-      },
+-      {
+-        "line": 125,
+-        "call": "str"
+-      },
+-      {
+-        "line": 125,
+-        "call": "str"
+-      },
+-      {
+-        "line": 130,
+-        "call": "json.dumps"
+-      },
+-      {
+-        "line": 134,
+-        "call": "bool"
+-      },
+-      {
+-        "line": 141,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 157,
+-        "call": "left"
+-      },
+-      {
+-        "line": 161,
+-        "call": "os.close"
+-      },
+-      {
+-        "line": 47,
+-        "call": "type"
+-      },
+-      {
+-        "line": 82,
+-        "call": "type"
+-      },
+-      {
+-        "line": 115,
+-        "call": "index.values"
+-      },
+-      {
+-        "line": 117,
+-        "call": "path.resolve"
+-      },
+-      {
+-        "line": 125,
+-        "call": "child.fileno"
+-      },
+-      {
+-        "line": 125,
+-        "call": "child.fileno"
+-      },
+-      {
+-        "line": 134,
+-        "call": "len"
+-      },
+-      {
+-        "line": 139,
+-        "call": "os.getpid"
+-      },
+-      {
+-        "line": 139,
+-        "call": "os.getpgrp"
+-      },
+-      {
+-        "line": 139,
+-        "call": "time.monotonic"
+-      },
+-      {
+-        "line": 141,
+-        "call": "hashlib.sha256"
+-      },
+-      {
+-        "line": 141,
+-        "call": "hashlib.sha256"
+-      },
+-      {
+-        "line": 144,
+-        "call": "type"
+-      },
+-      {
+-        "line": 150,
+-        "call": "type"
+-      },
+-      {
+-        "line": 150,
+-        "call": "str"
+-      },
+-      {
+-        "line": 150,
+-        "call": "capture_snapshot"
+-      },
+-      {
+-        "line": 115,
+-        "call": "type"
+-      },
+-      {
+-        "line": 115,
+-        "call": "len"
+-      },
+-      {
+-        "line": 135,
+-        "call": "json.dumps"
+-      },
+-      {
+-        "line": 139,
+         "call": "int"
+-      },
+-      {
+-        "line": 140,
+-        "call": "int"
+-      },
+-      {
+-        "line": 150,
+-        "call": "captures.values"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "availability_peer.py",
+@@ -1107,7 +895,7 @@
+         "call": "json.dumps"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "bootstrap.py",
+@@ -1266,7 +1054,7 @@
+         "call": "os.getpid"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "gate_controls.py",
+@@ -1653,7 +1441,7 @@
+         "call": "archive.read_bytes"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "harness.py",
+@@ -2356,7 +2144,7 @@
+         "call": "str"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "host_controls.py",
+@@ -2859,7 +2647,7 @@
+         "call": "item.items"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "host_peer.py",
+@@ -3354,7 +3142,7 @@
+         "call": "Path"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "outer_host.py",
+@@ -4493,7 +4281,7 @@
+         "call": "ValueError"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "outer_worker.py",
+@@ -4948,7 +4736,7 @@
+         "call": "len"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "owned_spawn.py",
+@@ -5247,7 +5035,7 @@
+         "call": "ack.fileno"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "report_controls.py",
+@@ -5954,7 +5742,7 @@
+         "call": "headers.items"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "scanner_controls.py",
+@@ -6589,7 +6377,7 @@
+         "call": "str"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   },
+   {
+     "path": "watchdog_controls.py",
+@@ -7044,6 +6832,6 @@
+         "call": "datetime.datetime.fromtimestamp"
+       }
+     ],
+-    "method": "AST DATA only, zero executed coverage"
++    "method": "ast.parse only; no evaluation or executed coverage"
+   }
+ ]

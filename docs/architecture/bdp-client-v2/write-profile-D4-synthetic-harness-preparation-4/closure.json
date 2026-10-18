@@ -1,0 +1,46 @@
+{
+  "state": "CLOSED author-only H3-N1 correction frozen for OTHER-native review",
+  "authoringFrozen": true,
+  "accepted": false,
+  "implementationIndexSha256": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37",
+  "harnessImplementationSha256": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37",
+  "implementationFiles": 89,
+  "exactExclusions": [
+    "closure.json",
+    "implementation-hashes.json",
+    "preparation-index.json"
+  ],
+  "bindingSha256": "3a79538d1e08051da298b401dfdc3405c11ded1b2e882892a71c588d460a7eb7",
+  "priorH3PreparationIndexSha256": "32a0861ea658dada00107d3f2f6013091ac1415314cd164c2d8cf4f76f66010a",
+  "sourceMapSha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+  "source679Verified": true,
+  "helper4SubjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "inPlaceHistoricalPhysical": {
+    "H3": 1994,
+    "H3-native": 129,
+    "H3-root-authority": 3
+  },
+  "noRecursiveHistoricalCopy": true,
+  "copiedOrigins": 33,
+  "externalPins": 5412,
+  "genuinePairs": 18,
+  "oneSemanticHelper": "availability_owner.py",
+  "12OtherPythonByteExact": true,
+  "48IDs60Commands20StatesPreserved": true,
+  "rawAvailabilityAcceptanceBytes": 65536,
+  "nativeClock": {
+    "outer": 120,
+    "TERM": 115,
+    "KILL": 119,
+    "normalStrictBefore": 115
+  },
+  "allExecutionFlagsFalse": true,
+  "approvedInvocations": [],
+  "attemptsAbsent": true,
+  "clockDomainVerified": false,
+  "actualAvailabilityControlsProduct": "UNEXECUTED/UNKNOWN",
+  "requiresFullOtherNativeAndRootAuthorityCandidateBeforeDurableAvailabilityOnlyRelease": true,
+  "noAutomaticControlOrProductRelease": true,
+  "unexpectedLastOwnerLoss": "FAILED/UNKNOWN, no global guarantee",
+  "reportSha256": "9a0ca513a8f344bb46b9fa6e88a286e81f92199c53d1811e5ef61e888fa93630"
+}

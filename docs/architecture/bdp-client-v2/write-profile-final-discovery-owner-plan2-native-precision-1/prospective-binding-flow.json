@@ -1,0 +1,289 @@
+[
+  {
+    "owner": "read.discovery.scope-service-desc",
+    "rows": [
+      {
+        "id": "d01-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d01-descriptor",
+          "d01-scope-response"
+        ]
+      },
+      {
+        "id": "d01-descriptor",
+        "target": "d01-descriptor",
+        "produces": []
+      },
+      {
+        "id": "d01-scope-head",
+        "target": "scope",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "read.discovery.canonical-navigation",
+    "rows": [
+      {
+        "id": "d02-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d02-descriptor",
+          "d02-scope-response"
+        ]
+      },
+      {
+        "id": "d02-descriptor",
+        "target": "d02-descriptor",
+        "produces": [
+          "d02-beads",
+          "d02-links",
+          "d02-types"
+        ]
+      },
+      {
+        "id": "d02-beads",
+        "target": "d02-beads with literal limit=32",
+        "produces": []
+      },
+      {
+        "id": "d02-links",
+        "target": "d02-links with literal limit=32",
+        "produces": []
+      },
+      {
+        "id": "d02-types",
+        "target": "d02-types with literal limit=32",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "read.discovery.optional-limits",
+    "rows": [
+      {
+        "id": "d03-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d03-descriptor",
+          "d03-scope-response"
+        ]
+      },
+      {
+        "id": "d03-descriptor",
+        "target": "d03-descriptor",
+        "produces": [
+          "d03-types",
+          "d03-beads"
+        ]
+      },
+      {
+        "id": "d03-page-bound",
+        "target": "d03-types ?limit=32",
+        "produces": []
+      },
+      {
+        "id": "d03-page-zero",
+        "target": "d03-types ?limit=0",
+        "produces": []
+      },
+      {
+        "id": "d03-page-over",
+        "target": "d03-types ?limit=33",
+        "produces": []
+      },
+      {
+        "id": "d03-selector-bound",
+        "target": "d03-beads ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
+        "produces": []
+      },
+      {
+        "id": "d03-selector-over",
+        "target": "d03-beads ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "read-update.discovery.aliases",
+    "rows": [
+      {
+        "id": "d04-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d04-descriptor",
+          "d04-scope-response"
+        ]
+      },
+      {
+        "id": "d04-descriptor",
+        "target": "d04-descriptor",
+        "produces": [
+          "d04-operations",
+          "d04-aliases"
+        ]
+      },
+      {
+        "id": "d04-directory",
+        "target": "d04-operations",
+        "produces": [
+          "d04-create-bead",
+          "d04-put-alias",
+          "d04-delete-alias"
+        ]
+      },
+      {
+        "id": "d04-create",
+        "target": "d04-create-bead",
+        "produces": []
+      },
+      {
+        "id": "d04-before",
+        "target": "existing fixture subject binding (beads/a)",
+        "produces": [
+          "d04-bead"
+        ]
+      },
+      {
+        "id": "d04-put",
+        "target": "d04-put-alias",
+        "produces": []
+      },
+      {
+        "id": "d04-resolve",
+        "target": "d04-aliases + reviewed local segment discovery-owner",
+        "produces": []
+      },
+      {
+        "id": "d04-after-put",
+        "target": "d04-bead",
+        "produces": []
+      },
+      {
+        "id": "d04-delete",
+        "target": "d04-delete-alias",
+        "produces": []
+      },
+      {
+        "id": "d04-missing",
+        "target": "d04-aliases + discovery-owner",
+        "produces": []
+      },
+      {
+        "id": "d04-after-delete",
+        "target": "d04-bead",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "transactional.discovery.document",
+    "rows": [
+      {
+        "id": "d05-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d05-descriptor",
+          "d05-scope-response"
+        ]
+      },
+      {
+        "id": "d05-descriptor",
+        "target": "d05-descriptor",
+        "produces": []
+      },
+      {
+        "id": "d05-descriptor-head",
+        "target": "d05-descriptor",
+        "produces": []
+      },
+      {
+        "id": "d05-descriptor-again",
+        "target": "d05-descriptor",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "transactional.discovery.operation-directory",
+    "rows": [
+      {
+        "id": "d06-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d06-descriptor",
+          "d06-scope-response"
+        ]
+      },
+      {
+        "id": "d06-descriptor",
+        "target": "d06-descriptor",
+        "produces": [
+          "d06-operations"
+        ]
+      },
+      {
+        "id": "d06-directory",
+        "target": "d06-operations",
+        "produces": [
+          "d06-create"
+        ]
+      },
+      {
+        "id": "d06-directory-head",
+        "target": "d06-operations",
+        "produces": []
+      },
+      {
+        "id": "d06-wrong-target-method",
+        "target": "d06-create",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "transactional.discovery.limits",
+    "rows": [
+      {
+        "id": "d07-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d07-descriptor",
+          "d07-scope-response"
+        ]
+      },
+      {
+        "id": "d07-descriptor",
+        "target": "d07-descriptor",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  },
+  {
+    "owner": "transactional.discovery.no-idempotency-retention",
+    "rows": [
+      {
+        "id": "d08-scope",
+        "target": "existing runner scope binding",
+        "produces": [
+          "d08-descriptor",
+          "d08-scope-response"
+        ]
+      },
+      {
+        "id": "d08-descriptor",
+        "target": "d08-descriptor",
+        "produces": []
+      }
+    ],
+    "scope": "prospective DATA binding flow, not parser/run proof"
+  }
+]

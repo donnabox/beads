@@ -1,0 +1,10 @@
+--- authoring-data-error-1.json
++++ /dev/null
+@@ -1,7 +0,0 @@
+-{
+-  "phase": "literal text adaptation before candidate owner write",
+-  "error": "ValueError: substring not found; author data script expected two-space def drain indentation, actual source has one",
+-  "effect": "H4 namespace initialized and exact copies made; owner remained byte-identical H3. No index/mirror/freeze/helper evaluation occurred.",
+-  "correction": "Use actual observed one-space indentation in data-only author edit",
+-  "subjectExecution": false
+-}

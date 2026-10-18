@@ -1,0 +1,15 @@
+{
+  "subjectMutation": false,
+  "inspectionOnlyCorrection": {
+    "toolChunk": "3f0b33",
+    "description": "Initial own hash census compared native1 wrapped {sha256,bytes} records directly to strings and falsely listed mismatches. Corrected this own parser assumption, independently checked both SHA and bytes. No native1 subject bytes or index changed. No product failure."
+  },
+  "historicalMutableDesign": [
+    {
+      "copy": "context/sole-plan.design.snapshot.md",
+      "snapshotSha256": "61ba06681e3695d887ba96ea12f76f616d5cde40b63b8fff92e1119399e14c31",
+      "currentMutableOriginSha256": "726dd7b820e7ed04622b36cc220d0d8eb35a462b3151ec83f99d99c14554e248",
+      "meaning": "Explicit historical design snapshot, no new design/main adoption"
+    }
+  ]
+}

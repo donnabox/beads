@@ -1,0 +1,171 @@
+{
+  "execution-contract.json": [
+    {
+      "path": "/capacity/existingPositiveElapsedAssertionMs",
+      "before": {
+        "absent": true
+      },
+      "after": 63000
+    },
+    {
+      "path": "/capacity/existingPositiveCallbackMs",
+      "before": 63000,
+      "after": 120000
+    },
+    {
+      "path": "/existingLifecycleBudgets/positiveElapsedAssertionMs",
+      "before": {
+        "absent": true
+      },
+      "after": 63000
+    },
+    {
+      "path": "/existingLifecycleBudgets/actualPositiveCallbackTimeoutMs",
+      "before": 63000,
+      "after": 120000
+    },
+    {
+      "path": "/existingLifecycleBudgets/effectiveFit",
+      "before": "UNKNOWN; callback63s is not extended to observe90s, cleanup/postchecks/publication must finish within actual independently enforced attempt. No claim a90s work allowance fits63s.",
+      "after": "UNKNOWN. Actual Vitest callback timeout120000ms and elapsed assertion63000ms are distinct unchanged source constraints; observe work90000ms, prepare10000ms, cleanup10000ms and request5000ms remain separate. Future outer supervision must independently include setup/cleanup/postchecks/publication; no cap/deadline widening or measured fit claim."
+    },
+    {
+      "path": "/stages/3/requirement",
+      "before": "Independent actual bounded parser and collection checks on exact frozen combined manifest, all conditional cases/source/report sizes and whole callback63s. Failure or lack of fit blocks; no cap/deadline widening",
+      "after": "Independent actual bounded parser and collection checks on exact frozen combined manifest, all conditional cases/source/report sizes and actual callback timeout120000ms and separate elapsed assertion63000ms. Failure or lack of fit blocks; no cap/deadline widening"
+    }
+  ],
+  "integration.proposed.json": [
+    {
+      "path": "/positiveElapsedAssertionMsUnchanged",
+      "before": {
+        "absent": true
+      },
+      "after": 63000
+    },
+    {
+      "path": "/callbackMsUnchanged",
+      "before": 63000,
+      "after": 120000
+    }
+  ],
+  "owner-action-contracts.json": [
+    {
+      "path": "/rows/2/actions/1/captures",
+      "before": [],
+      "after": [
+        {
+          "binding": "d03-types",
+          "from": {
+            "kind": "json-pointer",
+            "pointer": "/types"
+          }
+        },
+        {
+          "binding": "d03-beads",
+          "from": {
+            "kind": "json-pointer",
+            "pointer": "/beads"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/rows/2/actions/2/targetFromActualCapture",
+      "before": "received types URL ?limit=32",
+      "after": "d03-types ?limit=32"
+    },
+    {
+      "path": "/rows/2/actions/3/targetFromActualCapture",
+      "before": "received types URL ?limit=0",
+      "after": "d03-types ?limit=0"
+    },
+    {
+      "path": "/rows/2/actions/4/targetFromActualCapture",
+      "before": "received types URL ?limit=33",
+      "after": "d03-types ?limit=33"
+    },
+    {
+      "path": "/rows/2/actions/5/targetFromActualCapture",
+      "before": "received beads URL ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
+      "after": "d03-beads ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES"
+    },
+    {
+      "path": "/rows/2/actions/6/targetFromActualCapture",
+      "before": "received beads URL ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
+      "after": "d03-beads ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES"
+    },
+    {
+      "path": "/rows/3/actions/2/captures/0/binding",
+      "before": "d04-createBead",
+      "after": "d04-create-bead"
+    },
+    {
+      "path": "/rows/3/actions/2/captures/1/binding",
+      "before": "d04-putAlias",
+      "after": "d04-put-alias"
+    },
+    {
+      "path": "/rows/3/actions/2/captures/2/binding",
+      "before": "d04-deleteAlias",
+      "after": "d04-delete-alias"
+    },
+    {
+      "path": "/rows/3/actions/3/targetFromActualCapture",
+      "before": "d04-createBead",
+      "after": "d04-create-bead"
+    },
+    {
+      "path": "/rows/3/actions/5/targetFromActualCapture",
+      "before": "d04-putAlias",
+      "after": "d04-put-alias"
+    },
+    {
+      "path": "/rows/3/actions/8/targetFromActualCapture",
+      "before": "d04-deleteAlias",
+      "after": "d04-delete-alias"
+    }
+  ],
+  "prospective-wire-inventory.json": [
+    {
+      "path": "/rows/10/actualURLMustBeCapturedAsAuthored",
+      "before": "received types URL ?limit=32",
+      "after": "d03-types ?limit=32"
+    },
+    {
+      "path": "/rows/11/actualURLMustBeCapturedAsAuthored",
+      "before": "received types URL ?limit=0",
+      "after": "d03-types ?limit=0"
+    },
+    {
+      "path": "/rows/12/actualURLMustBeCapturedAsAuthored",
+      "before": "received types URL ?limit=33",
+      "after": "d03-types ?limit=33"
+    },
+    {
+      "path": "/rows/13/actualURLMustBeCapturedAsAuthored",
+      "before": "received beads URL ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
+      "after": "d03-beads ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES"
+    },
+    {
+      "path": "/rows/14/actualURLMustBeCapturedAsAuthored",
+      "before": "received beads URL ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
+      "after": "d03-beads ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES"
+    },
+    {
+      "path": "/rows/18/actualURLMustBeCapturedAsAuthored",
+      "before": "d04-createBead",
+      "after": "d04-create-bead"
+    },
+    {
+      "path": "/rows/20/actualURLMustBeCapturedAsAuthored",
+      "before": "d04-putAlias",
+      "after": "d04-put-alias"
+    },
+    {
+      "path": "/rows/23/actualURLMustBeCapturedAsAuthored",
+      "before": "d04-deleteAlias",
+      "after": "d04-delete-alias"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "state": "CLOSED",
+  "argv": [
+    "/usr/bin/env",
+    "-u",
+    "PERL5OPT",
+    "-u",
+    "PERL5LIB",
+    "-u",
+    "PERLLIB",
+    "-u",
+    "PERL5DB",
+    "-u",
+    "PERL_SIGNALS",
+    "LC_ALL=C",
+    "TZ=UTC",
+    "/usr/bin/perl5.34",
+    "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+    "-I/System/Library/Perl/5.34",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl",
+    "AVAIL",
+    "availability",
+    "UNKNOWN_FUTURE_DURABLE_AVAILABILITY_ONLY_RELEASE_ABSOLUTE_PATH"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4",
+  "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+  "approved": false,
+  "executed": false,
+  "noRetry": true,
+  "productCalls": 0,
+  "finiteControlCalls": 0,
+  "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect",
+  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt",
+  "clock": {
+    "whole": 120,
+    "TERM": 115,
+    "KILL": 119,
+    "bothNormalTerminalsStrictBefore": 115,
+    "authBootstrapBefore": 10
+  },
+  "authoritySequence": [
+    "OTHER-native FULL H3 including actual availability code",
+    "separately durable root availability-only release bound to exact H3 and pinned tools",
+    "one actual availability invocation and independent fresh terminal/PID/PGID/raw audit",
+    "root measured availability acceptance; clockDomainVerified may only now become true in separate immutable acceptance",
+    "separate durable finite-control release; no automatic suite/product"
+  ],
+  "actualToolClockResolution": "UNRESOLVED",
+  "actualClockEpochCompatibility": "UNRESOLVED",
+  "actualSignalBootstrapPipeAvailability": "UNRESOLVED",
+  "rootFreshAbsence": "UNRESOLVED"
+}

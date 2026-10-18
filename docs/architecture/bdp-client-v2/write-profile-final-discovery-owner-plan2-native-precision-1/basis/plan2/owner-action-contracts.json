@@ -1,0 +1,1341 @@
+{
+  "state": "PROPOSED DATA ONLY; not an executable artifact or authority",
+  "rows": [
+    {
+      "id": "read.discovery.scope-service-desc",
+      "prefix": "d01",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "read",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d01-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d01-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d01-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d01-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d01-descriptor",
+          "captures": [],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d01-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d01-scope-head",
+          "family": "http",
+          "method": "HEAD",
+          "targetFromActualCapture": "scope",
+          "captures": [],
+          "assertionOracles": [
+            "same GET status/context and applicable metadata; zero body octets/full framed raw HEAD; no expectation Scope body is JSON",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Follow only the observed registered Link target; the canonical installed fixture uses204 but200 human page is permitted by specification.",
+        "No scraper/README/service-doc prerequisite; optional human-page SHOULD only when actually supplied."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "Scope aliases/redirect canonical identity and full local-ID grammar belong inherited Read/HTTP owners.",
+        "Public admission remains unresolved; private observations ineligible."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "read.discovery.canonical-navigation",
+      "prefix": "d02",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "read",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d02-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d02-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d02-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d02-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d02-descriptor",
+          "captures": [
+            {
+              "binding": "d02-beads",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/beads"
+              }
+            },
+            {
+              "binding": "d02-links",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/links"
+              }
+            },
+            {
+              "binding": "d02-types",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/types"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "beads->beads/, links->links/, types->types/, operations->operations/, aliases->alias/ exactly canonical absolute URL; no extra roots/foreign or overlapping roots; normalize only to compare already-validated actual URLs",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d02-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d02-beads",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d02-beads with literal limit=32",
+          "captures": [],
+          "assertionOracles": [
+            "200; actual advertised root Resource kind; correct collection envelope; all IDs canonical/in-Scope and correct fixed root; current fixture Type inventory exactly Task and Relationship; no opaque external nav",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d02-links",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d02-links with literal limit=32",
+          "captures": [],
+          "assertionOracles": [
+            "200; actual advertised root Resource kind; correct collection envelope; all IDs canonical/in-Scope and correct fixed root; current fixture Type inventory exactly Task and Relationship; no opaque external nav",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d02-types",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d02-types with literal limit=32",
+          "captures": [],
+          "assertionOracles": [
+            "200; actual advertised root Resource kind; correct collection envelope; all IDs canonical/in-Scope and correct fixed root; current fixture Type inventory exactly Task and Relationship; no opaque external nav",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "All navigation comes from received descriptor; config allowlist is not the cold client oracle.",
+        "Absolute HTTP(S), canonical scope slash/root identities and exact no-overlap checks use actual response URLs."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "Full local-ID invalid spellings, resource-kind resolution, external endpoint opacity and percent/UTF8 rules remain assigned to inherited Read owners.",
+        "General collection order/filter/cursor/continuation is not established by these initial pages; S1 remains unadopted."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "read.discovery.optional-limits",
+      "prefix": "d03",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "read",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d03-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d03-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d03-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d03-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d03-descriptor",
+          "captures": [
+            {
+              "binding": "d03-types",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/types"
+              }
+            },
+            {
+              "binding": "d03-beads",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/beads"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "current source expected page.defaultItems2 maximumItems32 and selector4096/32/256; exact primitive type and integer checks against captured source configuration, not a new fixture choice",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d03-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d03-page-bound",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d03-types ?limit=32",
+          "captures": [],
+          "assertionOracles": [
+            "200; correct Type page; records<=32; no silent clipping claim from empty/small population",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d03-page-zero",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d03-types ?limit=0",
+          "captures": [],
+          "assertionOracles": [
+            "400 invalid-parameter; exact Problem/retry/actual current context; no primary data disclosure",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d03-page-over",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d03-types ?limit=33",
+          "captures": [],
+          "assertionOracles": [
+            "413 limit-exceeded; family size/retry never; compare actual advertised maximum32 before probe",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d03-selector-bound",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d03-beads ?selector=REVIEWED_ASCII_VALID_SELECTOR_EXACT4096_UTF8_BYTES",
+          "captures": [],
+          "assertionOracles": [
+            "200 complete current empty-prefix collection; grammar/depth/nodes remain below their own limits; no selector syntax error accepted as boundary proof",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d03-selector-over",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d03-beads ?selector=SAME_SHAPE_EXACT4097_UTF8_BYTES",
+          "captures": [],
+          "assertionOracles": [
+            "413 limit-exceeded; actual encoded request target remains<=8192 local cap; no target/configuration refusal mistaken for selector refusal",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Current seven advertised primitives are typed/binding, with explicit boundary witnesses for page maximum and decoded Selector bytes.",
+        "Encoded-target/JSON-body/UTF8 representation byte domains remain distinct."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "Selector depth32/nodes256, default-page nontruncation and every advertised limit require concrete independently isolated boundary witnesses before whole closure.",
+        "Any future advertised group activates conditional table; omission never means infinite or authorizes nonnormative failure.",
+        "No minimum schema route/Snapshot/continuation inference required."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "read-update.discovery.aliases",
+      "prefix": "d04",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "read-update",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d04-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d04-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d04-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d04-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d04-descriptor",
+          "captures": [
+            {
+              "binding": "d04-operations",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/operations"
+              }
+            },
+            {
+              "binding": "d04-aliases",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/aliases"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "aliases required and exactly canonical alias/; operation directory read via received operations member",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d04-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d04-directory",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d04-operations",
+          "captures": [
+            {
+              "binding": "d04-create-bead",
+              "from": {
+                "kind": "json-pointer-relative-url",
+                "pointer": "/createBead"
+              }
+            },
+            {
+              "binding": "d04-put-alias",
+              "from": {
+                "kind": "json-pointer-relative-url",
+                "pointer": "/putAlias"
+              }
+            },
+            {
+              "binding": "d04-delete-alias",
+              "from": {
+                "kind": "json-pointer-relative-url",
+                "pointer": "/deleteAlias"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200; exact normative twelve-entry closed directory; schema and independent literal equality",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d04-create",
+          "family": "http",
+          "method": "POST",
+          "targetFromActualCapture": "d04-create-bead",
+          "captures": [],
+          "assertionOracles": [
+            "200 completed mutationReceipt, one created entry, exact canonical Bead id/type/properties; original exact idempotency namespace and raw authored body",
+            "request-authored-headers exact field occurrences and values after credential decoration",
+            "request-authored-body exact UTF8 bytes and complete write-state; body absent is distinct from empty"
+          ],
+          "requestBody": {
+            "id": "beads/a",
+            "type": "https://reference.invalid/acme/types/task",
+            "properties": {
+              "title": "discovery"
+            }
+          },
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "discovery-owner-create"
+            }
+          ]
+        },
+        {
+          "id": "d04-before",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing fixture subject binding (beads/a)",
+          "captures": [
+            {
+              "binding": "d04-bead",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200 full Bead/schema; capture canonical response URL and actual revision/ETag",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d04-put",
+          "family": "http",
+          "method": "POST",
+          "targetFromActualCapture": "d04-put-alias",
+          "captures": [],
+          "assertionOracles": [
+            "200 TX locator-only alias receipt with one alias entry; no RU inline-result substitution",
+            "request-authored-headers exact field occurrences and values after credential decoration",
+            "request-authored-body exact UTF8 bytes and complete write-state; body absent is distinct from empty"
+          ],
+          "requestBody": {
+            "alias": "alias/discovery-owner",
+            "target": "beads/a"
+          },
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "discovery-owner-put"
+            }
+          ]
+        },
+        {
+          "id": "d04-resolve",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d04-aliases + reviewed local segment discovery-owner",
+          "captures": [],
+          "assertionOracles": [
+            "307; Location equals captured d04-bead; no alias Resource representation/revision/body; raw response preserves original canonical target",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d04-after-put",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d04-bead",
+          "captures": [],
+          "assertionOracles": [
+            "200; ETag/revision equals d04-before; alias is locator only",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d04-delete",
+          "family": "http",
+          "method": "POST",
+          "targetFromActualCapture": "d04-delete-alias",
+          "captures": [],
+          "assertionOracles": [
+            "200 TX locator-only alias receipt, deleted alias entry without target",
+            "request-authored-headers exact field occurrences and values after credential decoration",
+            "request-authored-body exact UTF8 bytes and complete write-state; body absent is distinct from empty"
+          ],
+          "requestBody": {
+            "alias": "alias/discovery-owner"
+          },
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "discovery-owner-delete"
+            }
+          ]
+        },
+        {
+          "id": "d04-missing",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d04-aliases + discovery-owner",
+          "captures": [],
+          "assertionOracles": [
+            "404 resource-not-found; no alias/target enumeration leak; current context only when prescribed",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d04-after-delete",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d04-bead",
+          "captures": [],
+          "assertionOracles": [
+            "200 unchanged Bead revision/ETag; original committed Bead remains",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Inherited aliases law executes on the TX owner with TX receipt forms, no RU-only epoch/inline assumptions.",
+        "Reuse existing Task type and credentials; fixed reviewed alias local segment creates no new fixture identity or capability."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "Alias repoint/no-op/uniqueness/reuse/forbidden/invisible/chain/Link target rejection/sequence semantics, key namespace and retention stay co-owned by exact selected alias law IDs.",
+        "No alias creation Event/position assertion inferred from these few HTTP reads."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "transactional.discovery.document",
+      "prefix": "d05",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "transactional",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d05-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d05-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d05-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d05-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d05-descriptor",
+          "captures": [],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "exact sixteen required TX members plus only admitted optional members; all history/receipt/Snapshot/changefeed/Event fields present despite Historyfalse; absent historicalResolution is optional History policy, not TX history waiver",
+            "body context token strings equal the three current serving header fields; minimumReplayPosition is opaque and not compared lexically/arithmetic",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d05-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d05-descriptor-head",
+          "family": "http",
+          "method": "HEAD",
+          "targetFromActualCapture": "d05-descriptor",
+          "captures": [],
+          "assertionOracles": [
+            "same GET metadata/context, no body; declared no-store policy preserved",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d05-descriptor-again",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d05-descriptor",
+          "captures": [],
+          "assertionOracles": [
+            "same live actual no-intervening-effect epoch/view/head, same source/config/session; raw header/body equality, no ETag validator invented",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Apply TX retirement of RU discovery and transitive Read closed document: never validate TX with lower-profile closed schema.",
+        "Optional order omission means canonical-uri; actual sorted population proof belongs collection owner."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "Epoch stability/change triggers, authorization projection changes, head/minReplay actual availability and individual expiry semantics belong TX recovery/replication/HTTP owners.",
+        "No G2 Event membership decision adopted."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "transactional.discovery.operation-directory",
+      "prefix": "d06",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "transactional",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d06-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d06-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d06-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d06-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d06-descriptor",
+          "captures": [
+            {
+              "binding": "d06-operations",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/operations"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d06-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d06-directory",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d06-operations",
+          "captures": [
+            {
+              "binding": "d06-create",
+              "from": {
+                "kind": "json-pointer-relative-url",
+                "pointer": "/createBead"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "200 application/json; exact12 keys and fixed relative values independently equal normative dictionary; no aliases to targets not returned",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d06-directory-head",
+          "family": "http",
+          "method": "HEAD",
+          "targetFromActualCapture": "d06-operations",
+          "captures": [],
+          "assertionOracles": [
+            "200 same directory metadata as GET, body absent",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "id": "d06-wrong-target-method",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d06-create",
+          "captures": [],
+          "assertionOracles": [
+            "405 Allow POST, no BDP Problem body; dispatch classification before private command key work",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Follow received directory entries, preserve strict executor route/credential bounds; never read ready.targets in the cold action path."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "All12 actual mutation semantics, POST carrier discipline/idempotency and CORS OPTIONS behavior retain distinct mutation/HTTP owners.",
+        "A12-key dictionary does not prove12 commands implemented or full Write."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "transactional.discovery.limits",
+      "prefix": "d07",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "transactional",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d07-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d07-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d07-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d07-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d07-descriptor",
+          "captures": [],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "closed transactionalAdvertisedLimits; current actual page/selector/validation groups only; all seven positive integer primitives bound to this capture; transaction/retention optional omitted means unadvertised, never infinite",
+            "Read+Update advertisedLimits is retired for TX; TX may admit transaction and receipt/replay/snapshot durations, rejects idempotency",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d07-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Audit type/group membership and exact primitive semantics from normative schema plus actual full clause.",
+        "Conditional duration and all24 known leaf limits are enumerated separately, not fabricated as advertised."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "Receipt entries/pages maximum and receipt/replay/maximumSnapshotLifetime enforcement/retention are separate selected owners when advertised/applicable.",
+        "Validation/patch/sequence/transaction limits need actual corresponding operations/afterstate, not schema-only conformance."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    },
+    {
+      "id": "transactional.discovery.no-idempotency-retention",
+      "prefix": "d08",
+      "state": "CLOSED prospective executable owner, not implemented",
+      "requiredProfile": "transactional",
+      "appliesOnActualProfile": "transactional",
+      "setupFixture": "UNCHANGED reference-transactional-v1; no binding named scope; same actual TX capture/owner/transport",
+      "actions": [
+        {
+          "id": "d08-scope",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "existing runner scope binding",
+          "captures": [
+            {
+              "binding": "d08-descriptor",
+              "from": {
+                "kind": "header-link",
+                "rel": "service-desc"
+              }
+            },
+            {
+              "binding": "d08-scope-response",
+              "from": {
+                "kind": "response-url"
+              }
+            }
+          ],
+          "assertionOracles": [
+            "success; current fixture204 empty body; registered service-desc Link parsed independently; current TX context and raw frame; Scope body never descriptor",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        {
+          "id": "d08-descriptor",
+          "family": "http",
+          "method": "GET",
+          "targetFromActualCapture": "d08-descriptor",
+          "captures": [],
+          "assertionOracles": [
+            "200 application/json; #/$defs/transactionalDiscovery closed full bundle; bdpVersion0; profile transactional; scope canonical equals actual run Scope via scope-relative normalization to empty; required current epoch/view/head and all navigation fields; response-json-header-equals for epoch/view/head",
+            "/limits/retention/idempotency MUST NOT exist, whether limits or retention is omitted/present; inspect actual raw JSON object, never serialize-away undefined",
+            "TX receipt retention and epoch-bound key dispositions stay governed by their own laws",
+            "request-authored-headers exact safe fields; authored entity absent, request write complete; no hidden retries",
+            "json-pointer /scope equalsBinding d08-scope-response (earlier actual canonical Scope response URL), never a new fixture scope binding"
+          ],
+          "requestBody": null,
+          "wireRequired": true,
+          "actualExecuted": false,
+          "neverReadyTargetMapOracle": true,
+          "credentialRef": "operator",
+          "authorization": "trusted same-cohort handle; secret resolved outside manifest and never serialized",
+          "requestHeaders": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "coreAssertions": [
+        "Bind absence to real received descriptor and exact TX closed schema; source counterfactual adds prohibited member and must refuse."
+      ],
+      "remainingWholeClauseCrossOwners": [
+        "No actual completed/failed receipt expiry, cross-carrier replay or restore/key-namespace result follows from absence of the advertised field."
+      ],
+      "wholeContract": false,
+      "actualResult": "UNKNOWN",
+      "fullLawEstablished": false
+    }
+  ],
+  "coreHTTPActions": 39,
+  "methods": {
+    "GET": 33,
+    "HEAD": 3,
+    "POST": 3
+  },
+  "runtimeCounts": "UNKNOWN until actual author freeze/execution; these are proposed required dispatch counts",
+  "conditionalWholeClauseCasesAdditionalAndUnresolved": true,
+  "noWireExecuted": true
+}

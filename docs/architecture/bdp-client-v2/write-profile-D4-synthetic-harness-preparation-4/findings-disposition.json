@@ -1,0 +1,11 @@
+{
+  "H3-N1": {
+    "rootDispositionSha256": "04852d016f775e7a1e0b3e860b0cb5d17090813d367de0f378d85ca023d4dc1a",
+    "authoredCorrection": "new_capture creates exclusive raw0600 files and prefix journal before bootstrap ACK; actual drain calls retain to account every received block, write all reported successful bytes unbuffered and hash saved prefixes BEFORE65536 acceptance check. Per-read/EOF/polled-exit/end/closed snapshots retained; caught failure includes all current prefix facts.",
+    "failureTruth": "Partial writes record only actual os.write returned bytes, separate received and hashed counts; write/hash/identity/close/journal errors are not positive closure. Unavailable bytes/full stream and post-snapshot observations remain UNKNOWN. Abrupt kill may leave raw file or incomplete journal tail; no reconstructed reads/hash/EOF/terminal.",
+    "normalTruth": "Original nonce/mask/TERM/raw-9 KILL/EOF/clock oracles and normal received-byte hashes remain unchanged; raw close, saved-count/hash/identity match and journal close must succeed before normal peer receipt.",
+    "approval": "Author completion only; OTHER-native/root exact authority required before any evaluation"
+  },
+  "allOtherSemanticHelpers": "byte-identical H3 except two Perl absolute namespace literals",
+  "allExecutionFlags": false
+}

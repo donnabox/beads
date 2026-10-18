@@ -1,0 +1,242 @@
+{
+  "fileCountExcludingIndex": 59,
+  "files": {
+    "basis/P10/audit-expectations.json": {
+      "bytes": 777,
+      "sha256": "59fd0eacaf860f076c815ac30a3350110d00c67d2dea0bc9ce252b83013c7766"
+    },
+    "basis/P10/audit.py": {
+      "bytes": 34757,
+      "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b"
+    },
+    "basis/P10/commands.json": {
+      "bytes": 75772,
+      "sha256": "3ac343c7538ddfc43100580a184d4abcf271dc160077d035ffb99ef02ee4b484"
+    },
+    "basis/P10/execution-gate.closed.json": {
+      "bytes": 2345,
+      "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+    },
+    "basis/P10/execution-gate.json": {
+      "bytes": 2345,
+      "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+    },
+    "basis/P10/gate.py": {
+      "bytes": 12588,
+      "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e"
+    },
+    "basis/P10/guarded-action-session-20261018-021624-549f.py": {
+      "bytes": 946,
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    },
+    "basis/P10/inputs/tx-discovery-validation9-actual-terminal-audit-1/gate-predicate-inventory.json": {
+      "bytes": 15137,
+      "sha256": "f45844ffd1c9be5b7b3a92dd13f4fa7740b0423bb024412a335e5af440920f8a"
+    },
+    "basis/P10/inputs/tx-discovery-validation9-actual-terminal-audit-1/root-authority-interface.json": {
+      "bytes": 6651,
+      "sha256": "3794d64cc477970ce236b95b1fd5cc02cf39852863ee13fbed38de23fa4fe24d"
+    },
+    "basis/P10/packages.py": {
+      "bytes": 8760,
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+    },
+    "basis/P10/run.py": {
+      "bytes": 5357,
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+    },
+    "basis/candidate/README.md": {
+      "bytes": 800,
+      "sha256": "f23868fbbf91becbf28ecb59b035bba844e2ea1382b51ac58a2eb628083faf92"
+    },
+    "basis/candidate/actual-code-disposition.json": {
+      "bytes": 4107,
+      "sha256": "c60dcb2420c18cedc63973781e3755a9b644e05b2f8bbd017e6131800cc75d80"
+    },
+    "basis/candidate/candidate-contract.json": {
+      "bytes": 1842,
+      "sha256": "c66d4ab66950b68425b34a01b997c043b6e6959ba126061a616a667ebda7af6c"
+    },
+    "basis/candidate/disposition.json": {
+      "bytes": 3565,
+      "sha256": "85eb1d06d9ffc52bdf694ce26ac1b5180600ef77710b1fcfc7fcc5c847ad700f"
+    },
+    "basis/candidate/execution-gate.proposed.json": {
+      "bytes": 2938,
+      "sha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea"
+    },
+    "basis/candidate/index.json": {
+      "bytes": 709,
+      "sha256": "31127f3ceceb6e8b0af5efcb4ef7d9c8e26fcb5231c8f81ae5a8129ef185ae58"
+    },
+    "basis/candidate/native-code-disposition.json": {
+      "bytes": 3992,
+      "sha256": "0daa3047b68a5c52c55e19211a61f4b5a97bc67c6444ac3a40c2b603341c7260"
+    },
+    "basis/resolved-documents/01-tx-discovery-code-root-disposition-1-disposition.json": {
+      "bytes": 5567,
+      "sha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705"
+    },
+    "basis/resolved-documents/02-tx-discovery-corrected-native-code-review-1-closure.json": {
+      "bytes": 1380,
+      "sha256": "dec1b0a4cf9054e6eea6cac4e64b4c96f926fb394e53c5a653becde104768a65"
+    },
+    "basis/resolved-documents/03-tx-discovery-corrected-native-code-review-1-index.json": {
+      "bytes": 8718,
+      "sha256": "cea24b6f8dcf175aa4600c4f0a419b022610339cf8d3f218a5602867b5320776"
+    },
+    "basis/resolved-documents/04-tx-discovery-corrected-root-semantic-acceptance-1-acceptance.json": {
+      "bytes": 2065,
+      "sha256": "765f42485308a5660f4cce69d3890de0a2b7c2ba34eec1770fcbc5b04e5e7614"
+    },
+    "basis/resolved-documents/05-tx-discovery-installed02-root-data-correction-release-1-release.json": {
+      "bytes": 3107,
+      "sha256": "e05328992877e9722a30aff69a5a5490deafa7eb884017a9de86c2d387e9f7f6"
+    },
+    "basis/resolved-documents/06-tx-discovery-installed03-root-source-data-correction-release-1-release.json": {
+      "bytes": 3159,
+      "sha256": "d9ca4ec57b39e024757b266fc2dceeff25dcc03bef169e7b6daf0e563cd89401"
+    },
+    "basis/resolved-documents/07-tx-discovery-lint-native-precision-1-closure.json": {
+      "bytes": 712,
+      "sha256": "87db880d20ec65335f3f40e418d6978d7a4c095f7b4b3fd3a693b5d6320c4aeb"
+    },
+    "basis/resolved-documents/08-tx-discovery-lint-root-source-acceptance-1-acceptance.json": {
+      "bytes": 887,
+      "sha256": "036d487ab7a4e5020aaf332c32f11a6ca1773d3b1de4275148eade11750ab4ba"
+    },
+    "basis/resolved-documents/09-tx-discovery-root-release-flags-disposition-1-disposition.json": {
+      "bytes": 1746,
+      "sha256": "3bf179ad54f4c6e0e3e579ea3ed11baf0bd448066cbcfd83d475fb17c5bb6be0"
+    },
+    "basis/resolved-documents/10-tx-discovery-snapshot-query-native-precision-1-closure.json": {
+      "bytes": 1141,
+      "sha256": "0f1eae0dd8b70cc1240122ba2ad368586b009f64d83fa83bd683bcabe86b4028"
+    },
+    "basis/resolved-documents/11-tx-discovery-snapshot-root-source-acceptance-1-acceptance.json": {
+      "bytes": 3177,
+      "sha256": "d310d113e13758197b6f430eb7c7fda1c0985aac545e82225d675731cb64de97"
+    },
+    "basis/resolved-documents/12-tx-discovery-snapshot-root-source-inspection-1-inspection.json": {
+      "bytes": 2947,
+      "sha256": "8e5814f79b3fe7da25b017bbdda1c7aae90e2d2de075a89538084db43b555182"
+    },
+    "basis/resolved-documents/13-tx-discovery-snapshot-target-source-correction-1-index.json": {
+      "bytes": 1826,
+      "sha256": "268ee16e9388dec80a80728d2890df1cec5f45953eef9880860432d99904b6d7"
+    },
+    "basis/resolved-documents/14-tx-discovery-validation-preparation-10-base-tools.candidate.json": {
+      "bytes": 1019,
+      "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+    },
+    "basis/resolved-documents/15-tx-discovery-validation-preparation-10-execution-gate.closed.json": {
+      "bytes": 2345,
+      "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+    },
+    "basis/resolved-documents/16-tx-discovery-validation-preparation-10-execution-gate.json": {
+      "bytes": 2345,
+      "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+    },
+    "basis/resolved-documents/17-tx-discovery-validation-preparation-10-implementation-hashes.json": {
+      "bytes": 19793,
+      "sha256": "9c25ab144b84cd3a6192bb5061664570367ccf070b1a972243bb97f3e8022b75"
+    },
+    "basis/resolved-documents/18-tx-discovery-validation-preparation-10-preparation-index.json": {
+      "bytes": 29026,
+      "sha256": "a7deb74f4de39bf7e87a0bea01b0fb750804506b72231f5ee7a9729c3223cdd0"
+    },
+    "basis/resolved-documents/19-tx-discovery-validation-preparation-10-source-binding.json": {
+      "bytes": 95100,
+      "sha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41"
+    },
+    "basis/resolved-documents/20-context-original-actual-code-terminal-closure.json": {
+      "bytes": 1669,
+      "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084"
+    },
+    "basis/resolved-documents/21-tx-discovery-validation-preparation10-native-mechanics-closure-1-closure.json": {
+      "bytes": 1188,
+      "sha256": "930f92d55d819b28fbf40346ae7b60dae379088fbed84b2be0877c700b3f9380"
+    },
+    "basis/resolved-documents/22-tx-discovery-validation-preparation10-native-mechanics-closure-1-index.json": {
+      "bytes": 31894,
+      "sha256": "59d90a3a5422f8433dce60738d6fabe5e270cad1a0ffb1a7b4a53345403ceef7"
+    },
+    "basis/resolved-documents/23-tx-discovery-validation-preparation10-native-mechanics-closure-1-report.md": {
+      "bytes": 7816,
+      "sha256": "cde86f63309622c1e97866610f3b6eb96b8857b651886cbc372bdda9eeeeaf20"
+    },
+    "basis/resolved-documents/24-tx-discovery-validation-root-helper-inspection-10-inspection.json": {
+      "bytes": 1980,
+      "sha256": "217d92b3b36fdff512670db9c71a73873cc14ec516074a7eb72962841922a14b"
+    },
+    "basis/resolved-documents/25-tx-discovery-validation-root-proposed-authority-10-actual-code-disposition.json": {
+      "bytes": 4107,
+      "sha256": "c60dcb2420c18cedc63973781e3755a9b644e05b2f8bbd017e6131800cc75d80"
+    },
+    "basis/resolved-documents/26-tx-discovery-validation-root-proposed-authority-10-disposition.json": {
+      "bytes": 3565,
+      "sha256": "85eb1d06d9ffc52bdf694ce26ac1b5180600ef77710b1fcfc7fcc5c847ad700f"
+    },
+    "basis/resolved-documents/27-tx-discovery-validation-root-proposed-authority-10-execution-gate.proposed.json": {
+      "bytes": 2938,
+      "sha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea"
+    },
+    "basis/resolved-documents/28-tx-discovery-validation-root-proposed-authority-10-native-code-disposition.json": {
+      "bytes": 3992,
+      "sha256": "0daa3047b68a5c52c55e19211a61f4b5a97bc67c6444ac3a40c2b603341c7260"
+    },
+    "basis/resolved-documents/29-tx-discovery-validation-root-release-4-actual-code-disposition.json": {
+      "bytes": 2291,
+      "sha256": "3caafa45e72835a467b60f0a3153d6725512720c44d58b718ab30f6e857f2287"
+    },
+    "basis/resolved-documents/30-tx-discovery-validation-root-release-4-native-code-disposition.json": {
+      "bytes": 2176,
+      "sha256": "a24bd2cdf5f447172c49ff0a3fa4fb1bb96454f36b276a3152b4b9c0035cd3c8"
+    },
+    "basis/resolved-documents/31-tx-discovery-validation-root-release-6-actual-code-disposition.json": {
+      "bytes": 3331,
+      "sha256": "2fc61e24d54ac01a280ec092ce2de1539be2eb037af9bffe81a3aef70980eccf"
+    },
+    "basis/resolved-documents/32-tx-discovery-validation-root-release-6-native-code-disposition.json": {
+      "bytes": 3216,
+      "sha256": "cef7dbea46c6dfc75c3f4d35923bbdd6992eb168a487bcfa4d2f638079b1a7cf"
+    },
+    "basis/resolved-documents/33-tx-discovery-validation3-native-mechanics-annotation-closure-1-annotation-closure.json": {
+      "bytes": 1259,
+      "sha256": "0132cf6454374afc98cca0f7163f090562b664ca040e0278df195bf020d65a6c"
+    },
+    "basis/resolved-documents/34-tx-discovery-validation3-root-disposition-1-disposition.json": {
+      "bytes": 2296,
+      "sha256": "293d3c637260f849b43f9938601f83a78f3d55e4f9c477ec2b1716934406964e"
+    },
+    "basis/resolved-documents/35-tx-discovery-validation9-actual-terminal-audit-1-closure.json": {
+      "bytes": 1769,
+      "sha256": "61cbb76c8bcee50c5f9ecce5e9d39c03262ab0d514f3bb25655b342a0a9b5d8d"
+    },
+    "basis/resolved-documents/36-tx-discovery-validation9-actual-terminal-audit-1-root-authority-interface.json": {
+      "bytes": 6651,
+      "sha256": "3794d64cc477970ce236b95b1fd5cc02cf39852863ee13fbed38de23fa4fe24d"
+    },
+    "closure.json": {
+      "bytes": 1250,
+      "sha256": "5e06f29f5792965220eca19e3150356afce101ba8d27d2bc181f2799ccc277e2"
+    },
+    "input-origins.json": {
+      "bytes": 22434,
+      "sha256": "6f1658fad3b812b149e7e83c3ddd4a9d18d51f3fe11cbc352f09de0b15de3c04"
+    },
+    "predicate-assessment.json": {
+      "bytes": 24166,
+      "sha256": "70b7b5e07adb6473fd49efa7d34e045d37b24fec0282d8b28a733a627aaf7631"
+    },
+    "report.md": {
+      "bytes": 5004,
+      "sha256": "405b1a235939180945da4902d73c54eb7ab2f3a97cea62558f563683f8009127"
+    },
+    "verification.json": {
+      "bytes": 2223,
+      "sha256": "89f1b31effdb21ba56041720405428f2343950ad4df2d1d1917570dea7501d48"
+    }
+  },
+  "state": "FROZEN independent DATA precision only"
+}

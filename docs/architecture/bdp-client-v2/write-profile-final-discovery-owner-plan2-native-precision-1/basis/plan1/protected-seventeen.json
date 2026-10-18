@@ -1,0 +1,111 @@
+{
+  "manifestSha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+  "orderedIDs": [
+    "read-update.idempotency.principal-isolation",
+    "read-update.http.command-minimum-fields",
+    "transactional.batch.atomic-commit",
+    "transactional.batch.rollback",
+    "transactional.batch.deletion-safety",
+    "transactional.batch.no-op-entries",
+    "transactional.set.mutation",
+    "transactional.set.zero-match",
+    "transactional.set.cardinality",
+    "transactional.set.singleton-targets",
+    "transactional.receipt.readable",
+    "transactional.receipt.pagination",
+    "transactional.idempotency.conflict",
+    "transactional.idempotency.cross-carrier",
+    "transactional.idempotency.failed-retained",
+    "transactional.sequence.member-transactions",
+    "transactional.http.conditional-reads"
+  ],
+  "owners": [
+    {
+      "id": "read-update.idempotency.principal-isolation",
+      "parsedOwnerSha256": "d19cd3b2b9bd3fb0d33b6fb9820daa02d16c7b0d96151869ce0ef9d72e2185a8",
+      "actions": 7
+    },
+    {
+      "id": "read-update.http.command-minimum-fields",
+      "parsedOwnerSha256": "6f3e7f7b1c59417c95a0944b1a2917f95c3fff2e75ccbec321be75a076b17e15",
+      "actions": 11
+    },
+    {
+      "id": "transactional.batch.atomic-commit",
+      "parsedOwnerSha256": "d5234cdb3f163e63f6f65ae6a7321945d09301318efd78d44335868ddec087d5",
+      "actions": 7
+    },
+    {
+      "id": "transactional.batch.rollback",
+      "parsedOwnerSha256": "6920bfbb139c976c34f338b2b25829cf81e37b8f02b47c4dac1a9cb089974c09",
+      "actions": 9
+    },
+    {
+      "id": "transactional.batch.deletion-safety",
+      "parsedOwnerSha256": "769be7c5e28525cc73668b80946a6e07ade0a9d9669fccfd01e262eee5885eca",
+      "actions": 21
+    },
+    {
+      "id": "transactional.batch.no-op-entries",
+      "parsedOwnerSha256": "a2d4ab81624fde00487215c119bd59c68e83caeb89d910075578fe3783e0891c",
+      "actions": 15
+    },
+    {
+      "id": "transactional.set.mutation",
+      "parsedOwnerSha256": "86dfce8d3e04f0b6dc8ca5d32cb21e22e99e22f7b60b3df2fdbb64c8624ca84a",
+      "actions": 30
+    },
+    {
+      "id": "transactional.set.zero-match",
+      "parsedOwnerSha256": "4e6c20cc1506d0ccf90dda6b1d3f043e53ec2da04ced5163ac92e6d74476bd1f",
+      "actions": 17
+    },
+    {
+      "id": "transactional.set.cardinality",
+      "parsedOwnerSha256": "8a2db3d143f0392b5e056146462770f650de36814b3d95f49bed9b147beea003",
+      "actions": 16
+    },
+    {
+      "id": "transactional.set.singleton-targets",
+      "parsedOwnerSha256": "b2df925ae69aefad6e065466a5acfc38b7950314ef6dbcd210d77144c9be77dd",
+      "actions": 22
+    },
+    {
+      "id": "transactional.receipt.readable",
+      "parsedOwnerSha256": "b3fe6991513a0867444382f3b01a2cd04d963c6f9454854676ae6be215dc1731",
+      "actions": 9
+    },
+    {
+      "id": "transactional.receipt.pagination",
+      "parsedOwnerSha256": "ca31e5b3449d085899a4f202dbac82773496ec24bbb7c2f5d744b95895fc105b",
+      "actions": 18
+    },
+    {
+      "id": "transactional.idempotency.conflict",
+      "parsedOwnerSha256": "29b43821ad6c48106d983874b333845ab950ef6874477b1c008e0a9e81d7c6fe",
+      "actions": 12
+    },
+    {
+      "id": "transactional.idempotency.cross-carrier",
+      "parsedOwnerSha256": "4833bc3853110f64a49d5d439d2d71788bc8c55b291933fe89f743da483b6ad5",
+      "actions": 12
+    },
+    {
+      "id": "transactional.idempotency.failed-retained",
+      "parsedOwnerSha256": "9ad23267b7468c8bac298db93424c5f12bf1629979238a39df10fb7afdaa31fd",
+      "actions": 11
+    },
+    {
+      "id": "transactional.sequence.member-transactions",
+      "parsedOwnerSha256": "b04a84346a2155b263dbf7696297d6f32c0012d40d871e613acf4f317e971afa",
+      "actions": 10
+    },
+    {
+      "id": "transactional.http.conditional-reads",
+      "parsedOwnerSha256": "e522276fffffe8645b9b95e375182036f772750375efa71226e6730ce0be61d6",
+      "actions": 14
+    }
+  ],
+  "unchangedMeaningRequired": true,
+  "wholeContractCredit": false
+}
