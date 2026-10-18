@@ -1,0 +1,57 @@
+{
+  "acceptedRootInspection": true,
+  "utc": "2026-10-18T07:18:38.612647+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceHead": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+  "sourceTree": "066da79d9b72f1c4aaf74c96c92be2551b9af71c",
+  "sourceFilesUnchanged": 682,
+  "ciRun": 39105905478,
+  "job": 117611570968,
+  "allStepsSuccess": 27,
+  "zipSha256": "0a49b3e5f549217eab713451a6146a10b278d49a13ece4fda449fa800ff360bc",
+  "zipMembers": 29,
+  "testsPassed": 9500,
+  "filesPassed": 187,
+  "testsSkipped": 1,
+  "skip": "scripts/demo-read.test.mjs established walkthrough",
+  "newLoaderCallbacksPassed": 25,
+  "requiredPreflightPassed": 7,
+  "installedPureLoaderSmokePassed": true,
+  "formatWarnings": 1,
+  "lintWarnings": 1136,
+  "lintInfos": 90,
+  "parsedKindObservationLines": 24,
+  "rawUnparseableKindObservationLines": [
+    {
+      "line": 10356,
+      "kind": "installed-tx-conditional",
+      "githubMaskPresent": true,
+      "lineSha256": "0b7717b74b2f9566b36d7c9cce3505d442773cff52ad856092e88721fe87a8c8"
+    }
+  ],
+  "rawEvidenceUnmodified": true,
+  "damagedObservationCredit": "No detailed credit from damaged JSON; full suite callback pass separate",
+  "historicalReadSeal": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "externalConsumerProof": "Root-bound fresh local external consumer retained separately; stock CI smoke consumer lock/proof unknown",
+  "nativeCIAudit": "PENDING",
+  "readyTransitionReleased": false,
+  "mainLandingReleased": false,
+  "fullWriteComplete": false,
+  "supersedesRootInspection": {
+    "sha256": "562c1b335041de24ea1965436dc4946fa7304dcb5a21455969e2f178f1a7df5a",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-exact-ci-1/root-inspection-1/inspection.json"
+  },
+  "observationExtractionCorrection": "Inspection1 searched nested kind fragments and test callback labels;27 false non-event matches retained in historical record. Corrected data-only inspection requires timestamp-stripped whole payload to begin with kind JSON. No log/source/runtime rerun or mutation."
+}

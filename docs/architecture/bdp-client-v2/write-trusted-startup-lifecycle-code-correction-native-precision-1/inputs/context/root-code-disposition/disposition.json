@@ -1,0 +1,96 @@
+{
+  "utc": "2026-10-18T10:51:09.720152+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "actualTerminalAccepted": true,
+  "nativeTerminalClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/actual-review-terminal-1/closure.json",
+    "sha256": "072d0df593db7d30f0e8598da42b5f4b7581a9409ae479233c7b68125ff13c05"
+  },
+  "nativeTerminalIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/actual-review-terminal-1/index.json",
+    "sha256": "35c5197e149ed34388c3b229a6705e68fa7a2830d266e449d305ec50dca02698"
+  },
+  "actualRaw": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review/stream.jsonl",
+    "sha256": "f4754c47b97fcf7183b150c2d1f56fb81b5d42ca1169e9ed96f43fb084cfdbdc"
+  },
+  "actualFinal": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review/final-review.txt",
+    "sha256": "20a9f04dcd928c000249a6f565cb338913d0c13f54a04140f99ca61de9f98cc7"
+  },
+  "innerExit0OuterExit0": true,
+  "validRecords": 5137,
+  "oneCompleteResult": true,
+  "all686ExactCleanSourceVerified": true,
+  "observedPidsAbsent": 232,
+  "observedGroupsAbsent": 91,
+  "actualReviewScope": "Candidate nine owned files and realdependencies ONLY. Root confirms prompt relative context paths resolved under productcwd; pinned780 evidence copies remained intact but were not cross-checked. Preparation error accepted/preserved, never repair/relabel/retry. Prior full native plan/source/root coverage is independent, not actualreview evidence.",
+  "rootFullFinalNativeReportAndSevenSourceSitesRead": true,
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "Medium",
+      "accepted": true,
+      "action": "Preserve invalid post-ready IPC stop-and-refuse behavior; document it. Extend existing I21 after existing publicRefusal and invalid-configuration guard with ONE ordinary TX ready generation, fixed invalid command, exactexit2+stdio close+fixed diagnostic+owner reopen probe. Keep21callbacks,126HTTP+2CONNECT and4guards; ordinarygenerations32->33, totalchildren36->37 explicitly reconciled in source/doc/report futurevalidation. No new callback, acceptedcontrol/API or budget."
+    },
+    {
+      "id": "F2",
+      "severity": "Low",
+      "accepted": true,
+      "qualification": "Latent robustness asymmetry; no concrete reachable rejection identified.",
+      "action": "Replace RU discarded finally-derived promise with symmetric task.then(successDelete,rejectionDelete), exactly TX pattern; retain original task pending/drain semantics. No new wire or test timeout."
+    },
+    {
+      "id": "F3",
+      "severity": "Low",
+      "accepted": true,
+      "qualification": "Current late guards traced unreachable; commenterror and defensive cleanup/primary preservation distinct.",
+      "action": "Plan concrete minimal structure: validate/capture prepared return facts inside existing startup try after last checkPrepared and before published=true, then use captured inert facts in finalreturn, leaving no throwing defensive guard outside cleanup scope. Preserve legacy result/order/close caching and no async gap. Do NOT move return ahead of lexical completion/ownerCompletion initialization (TDZ risk). Prepared wrapper invalidresult primary must survive cleanupfailure via AggregateError; check scope string with other scalar facts. Sourceplan must prove exact variable/try boundaries and no owner duplication before author release."
+    },
+    {
+      "id": "F4",
+      "severity": "Low",
+      "accepted": true,
+      "qualification": "Safety-net gap; no actual current credential echo demonstrated.",
+      "action": "Before any report stdout, screen raw Buffer wire bytes (or exact decoded captured base64 fields) against all f.secrets, including records and CONNECT refusal controls. Preserve raw evidence, no redaction/truncation/substitutehash; fixed error on unsafeoutput. Finite existing callback assertions only."
+    },
+    {
+      "id": "F5",
+      "severity": "Low",
+      "accepted": true,
+      "action": "Add private deep development-authority specifier to existing smoke refusal list; public export map remains exact unchanged."
+    },
+    {
+      "id": "F6",
+      "severity": "Low",
+      "accepted": true,
+      "action": "Prepared RU bind from handle.listener.host, retain legacy transport fallback; assert S02 successful listenArgs host+port equals genuine handle, same existingcallback/no new listener or IPv6 qualification claim."
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "accepted": true,
+      "action": "Replace opt-in phrase with optional entry overrides/workspace-dist default; retain fail-closed missingbuild and independently rootbound installed labels."
+    }
+  ],
+  "planOnlyAuthorRelease": {
+    "author": "/root/changefeed_native_review",
+    "packet": "write-trusted-startup-lifecycle-code-correction-plan-1",
+    "basisHead": "d181d9167fdf71d64ceb1d8dc73a86557ba8f032",
+    "sourceFiles": 686,
+    "possibleChangedPaths": [
+      "packages/server/src/development-runtime.ts",
+      "packages/server/src/transaction-runtime.ts",
+      "packages/server/src/reference-deployment-runtime.ts",
+      "packages/server/src/reference-deployment-runtime.test.ts",
+      "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "scripts/smoke-executables.mjs",
+      "docs/design/startup-configuration.md"
+    ],
+    "requirements": "Exact feasible bounded plan+actual source context+all7dispositions/count reconciliation and predecessororigins. Independent nativeprecision/root acceptance then NEW private source successor, do not edit frozen actualreviewcheckout. No sourceauthoringyet."
+  },
+  "sourceAuthoringReleased": false,
+  "productValidationReleased": false,
+  "secondActualCodeOrPlanAllowed": false,
+  "fullWriteComplete": false
+}

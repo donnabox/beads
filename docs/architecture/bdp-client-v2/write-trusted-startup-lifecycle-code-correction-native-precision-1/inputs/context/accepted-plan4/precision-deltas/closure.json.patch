@@ -1,0 +1,40 @@
+--- plan3/closure.json
++++ plan4/closure.json
+@@ -1,14 +1,29 @@
+ {
+   "planComplete": true,
+-  "currentPublishedBasisBound": true,
+-  "localStartup25NativeRootAccepted": true,
+-  "exactCIRootAcceptance": "UNRESOLVED; IN_PROGRESS run39105905478/job117611570968",
+-  "futureCombinedRebind": "UNRESOLVED",
+-  "nativePlan3Precision": "UNRESOLVED",
+-  "firstActualD3cPlanReview": "REQUIRED_NOT_YET_ATTEMPTED",
+-  "genuineDeltaInversePairs": 9,
++  "state": "CLOSED PLAN4 full actual-review precision successor",
++  "sourceBasis": "fdd682/map054d/spec677 unchanged",
++  "rootDispositionSha256": "fd945f3c76477fa8b000271fb749424f7efb184c7d3a3b0528f6b66ea8be458a",
++  "actualPlanTerminalClosureSha256": "900c4a2b05439f06a26be6a07b02f9e3006b8a24b1ca9755cd30cd4be6d98437",
++  "actualPlanSubstantiveComplete": true,
++  "actualPlanSupervisionClean": false,
++  "actualPlanCliExit": "UNKNOWN",
++  "secondActualPlanAllowed": false,
++  "nativePlan4Precision": "UNRESOLVED",
++  "rootPlan4Acceptance": "UNRESOLVED",
++  "sourceCallbacks": 51,
++  "persistedCases": 21,
++  "installedCallbacks": 21,
++  "finiteHttp": 126,
++  "rawConnect": 2,
++  "originalCandidateOrPublicGenerations": 32,
++  "additionalGuardHelpers": 4,
++  "totalOwnedChildren": 36,
++  "futurePaths": 9,
+   "sourceAuthoringReleased": false,
+   "reviewLaunchReleased": false,
+   "runtimeReleased": false,
+-  "publicAdmissionOrFullWriteClaim": false
++  "publicAdmissionOrFullWriteClaim": false,
++  "combinedBasis": "UNRESOLVED",
++  "source5sSubphaseFit": "PROSPECTIVE; concrete conflict must stop rather than widen or add callbacks",
++  "deltaManifest": "delta-manifest.json; self-referential manifest changes excluded from its own pairs and preserved as parent history"
+ }
