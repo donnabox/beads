@@ -1,0 +1,72 @@
+{
+  "reviewClaimedFindings": 11,
+  "labeledSubitems": 12,
+  "labels": [
+    {
+      "id": "F1",
+      "severity": "High",
+      "title": "Report `counts` are frozen literals, not observations; the new mandatory failure report makes them actively false"
+    },
+    {
+      "id": "F2",
+      "severity": "Medium",
+      "title": "\"all 23 source importers stay byte-identical\" contradicts the one owned file, which is one of the 23"
+    },
+    {
+      "id": "F3",
+      "severity": "Medium",
+      "title": "The metadata capture to be \"cached before launch\" currently lives at module scope, so M7's `nullReason`/partial-report path is unreachable as written"
+    },
+    {
+      "id": "F4a",
+      "severity": "Low",
+      "title": "The proposed `8MiB maxBuffer` is a widening, not a bound"
+    },
+    {
+      "id": "F4b",
+      "severity": "Medium",
+      "title": "\"capture failure aborts before launch\" collides with the external-consumer retarget run"
+    },
+    {
+      "id": "F5",
+      "severity": "Medium",
+      "title": "Attribute store-lock release to process **exit**; the stdio `close` event is evidence completeness, not the reopen precondition"
+    },
+    {
+      "id": "F6",
+      "severity": "Medium",
+      "title": "The CLOSED outer 150/TERM145/KILL149 proposal states no runner-startup budget, and the post-test detached drain is unaccounted for (assessment only)"
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "title": "\"cap dispatch at 32\" must be a distinctly labeled invariant, not an expected-count assertion"
+    },
+    {
+      "id": "F8",
+      "severity": "Low",
+      "title": "Per-row wire retention has no report-side bound, and the failure report enlarges what is serialized"
+    },
+    {
+      "id": "F9",
+      "severity": "Low",
+      "title": "Name the two fixed pre-ready launcher error shapes as failure-stage labels (without upgrading UNKNOWN)"
+    },
+    {
+      "id": "F10",
+      "severity": "Low",
+      "title": "\"retained\" should distinguish directory from store file, because product code unlinks a failed create"
+    },
+    {
+      "id": "F11",
+      "severity": "Low",
+      "title": "Two text-precision nits in the frozen plan"
+    }
+  ],
+  "severityCountsByLabeledSubitem": {
+    "High": 1,
+    "Medium": 5,
+    "Low": 6
+  },
+  "disposition": "UNRESOLVED; this audit preserves the raw wording and numbering. Root must disposition every labeled item F1–F11 including F4a/F4b; no finding acceptance inferred."
+}

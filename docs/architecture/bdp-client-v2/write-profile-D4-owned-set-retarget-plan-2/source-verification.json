@@ -1,0 +1,64 @@
+{
+  "sourceFiles": 679,
+  "mapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "allCurrentSourceHashesMatch": true,
+  "copiedSourceFiles": 15,
+  "allSourceCopiesByteIdenticalPlan1": true,
+  "originalOriginsRechecked": {
+    "exactCopies": 25,
+    "numberedExcerptOriginAndLines": 1,
+    "total": 26
+  },
+  "originalIndexedPlanArtifactsUnchanged": 38,
+  "requestConfigurationLineMapSourceMapUnchanged": true,
+  "preservedCloneOracleInventory": [
+    {
+      "id": "O1",
+      "lines": [
+        253,
+        264
+      ],
+      "mutant": "omit last receipt result",
+      "failure": "exact ordered 33-entry oracle"
+    },
+    {
+      "id": "O2",
+      "lines": [
+        273,
+        276
+      ],
+      "mutant": "omit first delete Event",
+      "failure": "exact96fact sequence"
+    },
+    {
+      "id": "O3",
+      "lines": [
+        277,
+        283
+      ],
+      "mutant": "swap first two complete 3-Event Link groups",
+      "failure": "exact canonical Link fact order"
+    },
+    {
+      "id": "O4",
+      "lines": [
+        355,
+        369
+      ],
+      "mutant": "mutually consistent actual n0 prestate, stale receipt/source/live Link",
+      "failure": "labeled requested owned Link properties literal n1 assertion"
+    },
+    {
+      "id": "O5",
+      "lines": [
+        370,
+        372
+      ],
+      "mutant": "wrong sourceRevision",
+      "failure": "sourceRevision equals actual live owner revision"
+    }
+  ],
+  "newProductSourceWritten": false,
+  "reviewerRuntimeGitHelperExecuted": false
+}
