@@ -25,7 +25,9 @@
     "prepare-package-directory",
     "pack-protocol",
     "pack-server",
-    "verify-archives"
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/base-tools.candidate.json",
@@ -58,8 +60,8 @@
   "nativeCodeReviewDisposed": true,
   "released": true,
   "rootArchiveAcceptance": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-archive-root-release-1/acceptance.json",
+    "sha256": "207d5666f7e2651c747f470f621ee6a42a848004a7e09c86ad92e3bd869e3175"
   },
   "rootBuildAcceptance": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-build-binding-root-release-1/acceptance.json",
