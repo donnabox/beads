@@ -1,0 +1,53 @@
+## Verification basis
+
+Frozen copies hash-match the worktree byte-for-byte (all four SHA-256s in `manifest.json` confirmed). I read the reader and both test files in full, then checked them against the actual seams: `collection_read.go`, `collection_read_bounds.go`, `backend.go` (`withTx`, `checkBinding`), `history_exact.go` (`readIssueVersionInTx`), `issue_delete.go` (`validateDeletedIssueInTx`, `validDeletedIssueAllocationInTx`), `issue_comments.go` + `issueops/comments.go`, `informational_types.go`, `types.go`, `records.go` (`showMemoryInTx`, `afterStage`), `issues.go` (`showIssueInTx`), `dependencies.go`/`informational.go` (`ownedLinksInTx`, `memoryOwnedLinksInTx`), `link_lifecycle.go` (`checkLinkMappingsInTx`), `schema.go` (previewDDL, `installPreview`), `graphops/types.go` (`Owns`/`Describes`/`IsZero`), `graphops/laws.go` (`CanonicalURL`), the `comments`/`config`/`wisps`/`wisp_*` DDL, and the `memoryDeleteStore`/`issueExperimentOptions`/`workflowState` helpers. No files written or modified; nothing built or run.
+
+## Findings
+
+Three Low findings, all in test quality or refusal ordering. **No confirmed correctness, fidelity, bounds, security, or consistency defect in the bounded reader itself.**
+
+### Low — `export_current_pure_test.go:43` — assertion is structurally incapable of failing
+
+`validateExportComment(comment types.Comment)` (`export_current.go:242`) takes its argument **by value**, and Go strings are immutable. `reflect.ValueOf(invalid).FieldByName(field).String() != "original\xffbytes"` reads the test's own local after passing a copy, so "validation replaced original bytes" can never trigger.
+
+*Impact:* the test reads as if it guards the hazard named at `export_current.go:218-219` ("before a later JSON encoder can silently replace their original bytes"), but that hazard lives in `encoding/json`, which this test never touches. If `validateExportComment` were ever relaxed, nothing here would notice the lossy path.
+
+*Fix:* drop the assertion, or replace it with one that exercises the real hazard — assert `json.Marshal` of the invalid comment yields U+FFFD (i.e. `!bytes.Contains(raw, []byte{0xff})`), which demonstrates why the UTF-8 refusal is load-bearing rather than asserting an impossibility.
+
+### Low — `export_current_test.go:84-103` — "detached" claim is broader than what is asserted
+
+The comment claims caller mutations "cannot affect records **or the next acquisition** and survive neither close nor reopen", but after `current.CommentsByIssuePath["beads/work"][0].Text = …` and `delete(current.CommentsByIssuePath, "beads/prereq")` the next step is `s.Close()`. The only re-acquisition is post-reopen, and `reflect.DeepEqual(before, exportSourceState(…))` at line 81 already proves no source row changed.
+
+*Impact:* the same-Store detachment property — the one that would catch a memoized or shared result map/slice if the reader ever gained caching — is unverified. The deleted `"beads/prereq"` key is never re-checked on a live store.
+
+*Fix:* immediately after the two mutations, re-acquire from the same `s` and assert the fresh result still has `"beads/prereq"` present-and-empty and `wantComments` intact, before `Close()`.
+
+### Low — `export_current.go:63-73` — three content refusals run before the in-transaction binding check
+
+`checkExportReadBounds`, `checkExportCommentOwners` and `checkExportPlanes` all execute before `currentSnapshotInTx` reaches `checkBinding` (`collection_read.go:46`). Every other read in the package checks the binding first in its own transaction: `showMemoryInTx` (`records.go:155`), `IssueComments` (`issue_comments.go:23`), `ReadVersion` (`history_exact.go:41`), `DeleteIssue` (`issue_delete.go:42`).
+
+*Impact:* if the database is rebound or re-initialized out of band between `OpenExisting` and the read, the export reports `ErrLimitExceeded: current export exceeds the 16777216-byte acquisition budget` (for any sizeable foreign database) or `ErrInvalidStore: … a comment without a live graph Issue`, instead of the accurate `ErrInvalidStore: persisted binding differs from workspace`. The `ErrLimitExceeded` class is the misleading one — it points a user at a size problem for a wrong-store condition. Narrow window, and `checkCurrentReadBytes` already precedes `checkBinding` for byte bounds, so this extends rather than regresses the house pattern.
+
+*Fix:* make `checkBinding(ctx, tx, s.options)` the first statement of `exportCurrentSnapshotInTx`; it is idempotent and `currentSnapshotInTx` re-runs it.
+
+## Checked and clean (not defects)
+
+- **Comment fidelity is complete.** `comments` has exactly 5 columns (`0004_create_comments.up.sql`) and `types.Comment` exactly 5 fields; all are acquired. `ORDER BY issue_id,created_at,id` matches `GetIssueCommentsInTx`'s `created_at ASC, id ASC` within an issue, so the `wantComments` DeepEqual and the forced equal-timestamp tie-break are sound.
+- **Aggregate budget is a true superset.** `exportReadSizeQueries` broadens the joined comment projection to the whole feed and appends the deleted-Issue head, so the export sum ≥ the `currentReadSizeQueries` sum; the second `checkCurrentReadBytes` inside `currentSnapshotInTx` is strictly weaker. `copies: 1` on the feed is correct — `showIssueInTx` calls `HydrateIssueOperationResult(…, false)`, so hydration does **not** re-read comments. `used` can never exceed `byteLimit`, so `byteLimit-used` cannot underflow.
+- **The new deleted-head charge matches what is actually decoded.** `m.issue_id,m.owned,v.durable_state,v.change_actor,v.attribution_status,v.change_at` is exactly `readIssueVersionInTx`'s payload read (`history_exact.go:286-288`), and the `c.path=m.path AND c.revision=m.version` join pins the head only. This genuinely closes the "N deleted Issues × 16 MiB" hole that the per-resource guard at `history_exact.go:280` left open. `checkLinkMappingsInTx` is COUNT-only, so no deleted-link snapshot bytes escape.
+- **Comment-owner closure is sound both ways.** `graph_preview_catalog`'s `UNIQUE KEY one_backing (backing, backing_key)` means the `LEFT JOIN` in `checkExportCommentOwners` matches at most one row, so no false refusal from a live/deleted pair; `showIssueInTx` enforces `issue.ID == backing_key`, so `issuePaths` keys and `comments.issue_id` share one domain; the independent scan-path check and the `acquired != count` postcondition both fail closed.
+- **Ownership closure agrees with the production readers.** `canonicalJSON(link)` in `expected` is byte-identical to `ownedLinksInTx`/`memoryOwnedLinksInTx` output (both are `canonicalJSON(showLinkInTx(path))`). Memory's wildcard `Owns` matches `memoryOwnedLinksInTx`'s unfiltered source enumeration; Issue's explicit `Owns(DependencyTypeURL)` matches `ownedLinksInTx`'s dependency-only enumeration. No false-negative direction exists. All 13 pure corruption cases reach the intended refusal (I traced each against the fixture indices).
+- **Prefix read is safe and lossless.** `CanonicalURL(scope, path)` is literally `scope + path`, so `TrimPrefix` is exact. `config.key` is PRIMARY KEY and `value` is `TEXT NOT NULL`, and `checkBinding` → `ReadConfigPrefix` has already proven the row exists and is non-empty in the same transaction, so the bare `Scan` cannot surface `sql.ErrNoRows`. The raw value (trailing hyphen intact) is the stated fidelity goal, and it is byte-charged.
+- **Zero-on-failure holds through cleanup.** For `write=false`, `withTx` returns `tx.Rollback()`'s error and joins `conn.Close()`'s, and `ExportCurrentSnapshot` discards `result` on any non-nil error. The `errors.Join(err, ctx.Err())` tail works for `nil, nil` and preserves `errors.Is` for both causes; the nil-`Store` pure test is safe because `withTx` checks `ctx` before touching `s.db`.
+- **No SQL reaches the engine from request or payload data** — every fragment is a package constant, a `sqlbuild` constant, or `fmt.Sprint` of a constant; `count+1` and the clamp are bound parameters.
+- **UTF-8 asymmetry is correctly scoped.** Memory (`records.go:216`) and Issue (`issues.go:236`) current state are already pinned by canonical-snapshot equality, which catches lossy U+FFFD substitution; comments have no such guard, which is precisely why `validateExportComment` exists.
+- **BUILD.bazel is correct and conventional.** `export_current.go` and both test files are inserted in sorted position; `//graphops`, `//internal/types`, `//issueops` are already present in the respective dep sets; `//go:build cgo` on the engine file and no tag on the pure file match the package's existing split (56 cgo-tagged vs 3 untagged test files), and the pure file references nothing from the cgo-gated file.
+- **Concurrency test is meaningful where it claims to be.** The server path really does force a committed overlapping writer against an open read transaction, which is the repeatable-read snapshot guarantee `engdocs/design/dolt-concurrency.md:149-150` asserts. The embedded path is serialized by `SetMaxOpenConns(1)`, which the test's own comment at line 327-329 discloses.
+
+## Pending milestones, not defects here
+
+Out of scope for this bounded reader and correctly absent: interchange envelope/serializer, CLI surface, history archive, file publication, release readiness. Also deliberately and documentedly out of scope, and not counted against the reader: `events`/`bd_events_journal`/`wisp_events` journals, child counters, non-`issue_prefix` config, and historical (non-head) revisions. Issue columns outside `sqlbuild.IssueBaseColumns` (`content_hash`, `current_revision`) are absent from the projection, but that is pre-existing `showIssueInTx` behaviour and `current == ordinal` is verified, so it belongs to the interchange-format milestone if it matters at all.
+
+## Acknowledged gaps I did not re-derive
+
+Per your framing: runtime tests are unexecuted (Janet owns the engine slot), and driver rollback/close fault injection is absent — the three `afterStage` callback faults exercise the in-`fn` error path only, not `tx.Rollback()`/`conn.Close()` failure, so the "transaction/connection cleanup returns zero state" clause of the doc contract at `export_current.go:43` remains asserted by code reading rather than by test.

@@ -1,0 +1,11 @@
+{
+  "source": "360f84fd0b161c8f47a147159551a8267e18cf92",
+  "manifest": "final-manifest.txt",
+  "prompt": "final-prompt.txt",
+  "reviewer": "actual Claude CLI",
+  "result": "interrupted at Donna overnight pause; no findings output",
+  "exitCode": 143,
+  "reason": "direct operator request to checkpoint and go idle for night",
+  "nativeReview": "complete with no finding",
+  "resume": "rerun bounded frozen successor audit; do not treat interruption as success or source failure"
+}
