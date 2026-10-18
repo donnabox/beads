@@ -1,0 +1,1807 @@
+{
+  "startup": {
+    "helperVersion": 4,
+    "reviewerPid": 51716,
+    "recordStaticChecks": {
+      "pidTypeAndRecordPgid": true,
+      "argvMatchesControl": true,
+      "recordFreshRelativeToOuterStart": true
+    },
+    "outerSamples": 613,
+    "outerSampleFailuresAgainstFinalRecord": 0,
+    "runnerReviewerRows": 22,
+    "runnerNonmatchingExecutableNames": 0,
+    "runnerRows": [
+      {
+        "elapsedSeconds": 0.3224475411698222,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "1.8",
+          "cpuTime": "0:00.01",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 30.372429541312158,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:00.75",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 60.56151245813817,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:00.97",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 90.7667428329587,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:01.11",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 120.91669579129666,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:01.41",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 151.15601820824668,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:01.64",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 181.20665837498382,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:01.82",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 211.46073479112238,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.00",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 241.62789554102346,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.5",
+          "cpuTime": "0:02.18",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 271.63140075001866,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.32",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 301.6853309581056,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.52",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 331.68655829131603,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.67",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 361.7226122911088,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "1.6",
+          "cpuTime": "0:02.91",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 391.9630598332733,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.6",
+          "cpuTime": "0:03.09",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 422.2071311250329,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:03.32",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 452.22718850011006,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:03.46",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 482.3195453332737,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:03.76",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 512.5525083751418,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "5.5",
+          "cpuTime": "0:03.94",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 542.6170132909901,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:04.12",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 572.7907241252251,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:04.30",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 602.9483810001984,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:04.48",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 633.1070759580471,
+        "row": {
+          "pid": 51716,
+          "ppid": 51688,
+          "pgid": 51716,
+          "cpuPercent": "0.6",
+          "cpuTime": "0:04.96",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      }
+    ],
+    "latestAggregateReplay": {
+      "row": {
+        "pid": 51716,
+        "ppid": 51688,
+        "pgid": 51716,
+        "state": "Z",
+        "start": "Sat Oct 17 21:31:57 2026",
+        "comm": "<defunct>"
+      },
+      "recordStaticChecks": {
+        "pidTypeAndRecordPgid": true,
+        "argvMatchesControl": true,
+        "recordFreshRelativeToOuterStart": true
+      },
+      "terminalStoredAuthenticationEqual": true,
+      "helperSpecificBranchPass": true,
+      "chronology": "Aggregate latest row, not identified as failure-triggering inventory"
+    },
+    "eventCounts": {
+      "preflight_complete": 1,
+      "wrapper_started": 1,
+      "process_sample": 614,
+      "signal": 1,
+      "signal_pass": 3,
+      "outer_terminal": 1
+    },
+    "lastPeriodicElapsed": 639.8211108329706,
+    "signals": [
+      {
+        "elapsedSeconds": 640.8407577918842,
+        "kind": "signal",
+        "pgid": 51688,
+        "signal": 15
+      },
+      {
+        "elapsedSeconds": 640.8408005419187,
+        "kind": "signal_pass",
+        "signal": 15,
+        "complete": true,
+        "signaledGroups": [
+          51688
+        ]
+      },
+      {
+        "elapsedSeconds": 641.9238717081025,
+        "kind": "signal_pass",
+        "signal": 17,
+        "complete": true,
+        "signaledGroups": []
+      },
+      {
+        "elapsedSeconds": 641.968272625003,
+        "kind": "signal_pass",
+        "signal": 9,
+        "complete": true,
+        "signaledGroups": []
+      }
+    ],
+    "rawRecords": 2519,
+    "resultCount": 1,
+    "resultTextSha256": "40ae1279e4747e6c245d8302df6d7febc99a9fe4dca25b01f9fd0d4e0c665502",
+    "lastResultProgressElapsed": 639.8144028331153,
+    "allRecordedRoleChecks": 42,
+    "allRecordedRoleChecksZero": true,
+    "classification": "process_ownership_or_cleanup_failure",
+    "wrapperExitCode": -15,
+    "elapsedSeconds": 642.0107433749363,
+    "errors": [
+      "reviewer_identity:RuntimeError"
+    ],
+    "ownershipUnknown": true,
+    "finalRoleVerified": false,
+    "absentRunnerOutputs": [
+      "exit.json",
+      "source-after.json",
+      "terminal-results.json",
+      "final-review.txt"
+    ],
+    "firstFailureInventoryAndPredicateRecorded": false
+  },
+  "d1-code": {
+    "helperVersion": 4,
+    "reviewerPid": 73969,
+    "recordStaticChecks": {
+      "pidTypeAndRecordPgid": true,
+      "argvMatchesControl": true,
+      "recordFreshRelativeToOuterStart": true
+    },
+    "outerSamples": 1724,
+    "outerSampleFailuresAgainstFinalRecord": 0,
+    "runnerReviewerRows": 60,
+    "runnerNonmatchingExecutableNames": 0,
+    "runnerRows": [
+      {
+        "elapsedSeconds": 0.3725277092307806,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:00.00",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 30.379126999992877,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:00.78",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 60.398335334379226,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:00.95",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 90.41646879212931,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:01.16",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 120.43187662540004,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:01.48",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 150.443935375195,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:01.67",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 180.44503120938316,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:01.94",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 210.46137670939788,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.11",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 240.4656826253049,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.29",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 270.4814297920093,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:02.49",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 300.5208868342452,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.7",
+          "cpuTime": "0:02.79",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 330.7580214170739,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:03.09",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 360.8077706252225,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "1.4",
+          "cpuTime": "0:03.37",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 391.04149541724473,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.6",
+          "cpuTime": "0:03.62",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 421.0551480422728,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:03.81",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 451.0650031673722,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.8",
+          "cpuTime": "0:04.03",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 481.093640584033,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:04.26",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 511.09303375007585,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "3.9",
+          "cpuTime": "0:04.47",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 541.3459134590812,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:04.77",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 571.3828104170971,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:04.94",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 601.4016606253572,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:05.24",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 631.6353760422207,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:05.50",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 661.8827192503959,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:05.68",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 691.8919161250815,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:05.95",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 722.1269545420073,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:06.16",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 752.154510917142,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "1.0",
+          "cpuTime": "0:06.37",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 782.182037959341,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.8",
+          "cpuTime": "0:06.67",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 812.2138632093556,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:06.85",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 842.4535262919962,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:07.03",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 872.4675428341143,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.6",
+          "cpuTime": "0:07.32",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 902.4856740422547,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:07.57",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 932.4894242919981,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:07.75",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 962.5258195423521,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:07.93",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 992.7686740001664,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:08.13",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1022.7781564593315,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:08.31",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1052.8180194171146,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.7",
+          "cpuTime": "0:08.46",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1082.812194542028,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:08.75",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1112.8351516253315,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:08.89",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1142.847217041999,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.8",
+          "cpuTime": "0:09.11",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1173.0832014591433,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:09.38",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1203.335158042144,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:09.60",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1233.5512883341871,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "1.2",
+          "cpuTime": "0:09.89",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1263.773134750314,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.5",
+          "cpuTime": "0:10.10",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1293.99630966736,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:10.36",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1324.0109331253916,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:10.62",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1354.2513579591177,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:10.87",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1384.2648929171264,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:11.05",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1414.3245986672118,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:11.36",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1444.5309863341972,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:11.76",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1474.7508187503554,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:11.98",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1505.0062473341823,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.7",
+          "cpuTime": "0:12.12",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1535.2023234171793,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:12.29",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1565.440887209028,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:12.44",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1595.6675816671923,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:12.58",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1625.7525350842625,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:13.10",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1655.9703817502595,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "1.1",
+          "cpuTime": "0:13.37",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1686.0419693752192,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:13.58",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1716.1134761250578,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.8",
+          "cpuTime": "0:13.82",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1746.2225979589857,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "0.9",
+          "cpuTime": "0:14.16",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1776.4718305841088,
+        "row": {
+          "pid": 73969,
+          "ppid": 73942,
+          "pgid": 73969,
+          "cpuPercent": "8.6",
+          "cpuTime": "0:14.57",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      }
+    ],
+    "latestAggregateReplay": {
+      "row": {
+        "pid": 73969,
+        "ppid": 73942,
+        "pgid": 73969,
+        "state": "Z",
+        "start": "Sat Oct 17 20:53:25 2026",
+        "comm": "<defunct>"
+      },
+      "recordStaticChecks": {
+        "pidTypeAndRecordPgid": true,
+        "argvMatchesControl": true,
+        "recordFreshRelativeToOuterStart": true
+      },
+      "terminalStoredAuthenticationEqual": true,
+      "helperSpecificBranchPass": true,
+      "chronology": "Aggregate latest row, not identified as failure-triggering inventory"
+    },
+    "eventCounts": {
+      "preflight_complete": 1,
+      "wrapper_started": 1,
+      "process_sample": 1726,
+      "outer_terminal": 1
+    },
+    "lastPeriodicElapsed": 1778.0198929579929,
+    "signals": [],
+    "rawRecords": 6613,
+    "resultCount": 1,
+    "resultTextSha256": "e664f7fdb2b6a7aca02cce29d52d69e9602ebb175459ec154d0ec0ed8051fbf9",
+    "lastResultProgressElapsed": 1776.425736584235,
+    "allRecordedRoleChecks": 117,
+    "allRecordedRoleChecksZero": true,
+    "classification": "review_complete_pending_root_adjudication",
+    "wrapperExitCode": 0,
+    "elapsedSeconds": 1778.759540207684,
+    "errors": [],
+    "ownershipUnknown": false,
+    "finalRoleVerified": true,
+    "absentRunnerOutputs": [],
+    "firstFailureInventoryAndPredicateRecorded": false
+  },
+  "d1-plan": {
+    "helperVersion": 2,
+    "reviewerPid": 5366,
+    "recordStaticChecks": {
+      "pidTypeAndRecordPgid": true,
+      "argvMatchesControl": true,
+      "recordFreshRelativeToOuterStart": true
+    },
+    "outerSamples": 1064,
+    "outerSampleFailuresAgainstFinalRecord": 0,
+    "runnerReviewerRows": 38,
+    "runnerNonmatchingExecutableNames": 0,
+    "runnerRows": [
+      {
+        "elapsedSeconds": 0.33774937503039837,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:00.01",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 30.57250429224223,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "1.3",
+          "cpuTime": "0:00.69",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 60.80245991703123,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:00.86",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 91.0217653750442,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:00.99",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 121.20482270931825,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:01.16",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 151.4402514169924,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "1.6",
+          "cpuTime": "0:01.46",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 181.47593816695735,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:01.66",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 211.72196100000292,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:01.97",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 241.9607901251875,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.2",
+          "cpuTime": "0:02.23",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 272.14366591721773,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.41",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 302.20475316699594,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.69",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 332.217078209389,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:02.89",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 362.44257754227147,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:03.11",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 392.6817329172045,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.4",
+          "cpuTime": "0:03.25",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 422.8538626250811,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "1.1",
+          "cpuTime": "0:03.46",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 453.03860558429733,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:03.63",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 483.19972175033763,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:03.77",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 513.3711525420658,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:03.94",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 543.3798410422169,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:04.18",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 573.5905174589716,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:04.41",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 603.8237906252034,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "1.0",
+          "cpuTime": "0:04.74",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 634.0290561253205,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:05.10",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 664.1971560423262,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:05.23",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 694.2222530003637,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:05.42",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 724.445919000078,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:05.56",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 754.6337783751078,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:05.73",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 784.8379680421203,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:05.93",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 815.0314046251588,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:06.25",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 845.228331875056,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.9",
+          "cpuTime": "0:06.43",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 875.4507607920095,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.1",
+          "cpuTime": "0:06.63",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 905.6843767501414,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:06.84",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 935.8917661672458,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:07.01",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 965.8911862922832,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:07.15",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 996.0988397500478,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.0",
+          "cpuTime": "0:07.32",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1026.3419024590403,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.5",
+          "cpuTime": "0:07.46",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1056.5749139171094,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.3",
+          "cpuTime": "0:07.63",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1086.6956543340348,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.6",
+          "cpuTime": "0:07.92",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      },
+      {
+        "elapsedSeconds": 1116.766043334268,
+        "row": {
+          "pid": 5366,
+          "ppid": 5342,
+          "pgid": 5366,
+          "cpuPercent": "0.6",
+          "cpuTime": "0:08.24",
+          "comm": "/opt/homebrew/bin/claude"
+        },
+        "executableNameMatches": true,
+        "fullIdentityReplay": "UNKNOWN: runner sample omits state and lstart"
+      }
+    ],
+    "latestAggregateReplay": {
+      "row": {
+        "pid": 5366,
+        "ppid": 5342,
+        "pgid": 5366,
+        "start": "Sat Oct 17 20:05:04 2026",
+        "comm": "<defunct>"
+      },
+      "recordStaticChecks": {
+        "pidTypeAndRecordPgid": true,
+        "argvMatchesControl": true,
+        "recordFreshRelativeToOuterStart": true
+      },
+      "terminalStoredAuthenticationEqual": false,
+      "helperSpecificBranchPass": false,
+      "chronology": "Aggregate latest row, not identified as failure-triggering inventory"
+    },
+    "eventCounts": {
+      "preflight_complete": 1,
+      "wrapper_started": 1,
+      "process_sample": 1065,
+      "signal": 1,
+      "signal_pass": 3,
+      "outer_terminal": 1
+    },
+    "lastPeriodicElapsed": 1131.76502233278,
+    "signals": [
+      {
+        "elapsedSeconds": 1132.7482711658813,
+        "kind": "signal",
+        "pgid": 5342,
+        "signal": 15
+      },
+      {
+        "elapsedSeconds": 1132.7494403747842,
+        "kind": "signal_pass",
+        "signal": 15,
+        "complete": false,
+        "signaledGroups": [
+          5342
+        ]
+      },
+      {
+        "elapsedSeconds": 1133.8080071248114,
+        "kind": "signal_pass",
+        "signal": 17,
+        "complete": false,
+        "signaledGroups": []
+      },
+      {
+        "elapsedSeconds": 1133.854764000047,
+        "kind": "signal_pass",
+        "signal": 9,
+        "complete": false,
+        "signaledGroups": []
+      }
+    ],
+    "rawRecords": 4500,
+    "resultCount": 1,
+    "resultTextSha256": "10332b579afe50fbf1cefe535292a931cadf7feefc008d7e6ff8dae463dbfc3a",
+    "lastResultProgressElapsed": 1131.4646281250753,
+    "allRecordedRoleChecks": 74,
+    "allRecordedRoleChecksZero": true,
+    "classification": "process_ownership_or_cleanup_failure",
+    "wrapperExitCode": -15,
+    "elapsedSeconds": 1133.902927415911,
+    "errors": [
+      "reviewer_identity:RuntimeError",
+      "signal:PermissionError",
+      "signal:PermissionError",
+      "signal:PermissionError"
+    ],
+    "ownershipUnknown": true,
+    "finalRoleVerified": false,
+    "absentRunnerOutputs": [
+      "exit.json",
+      "source-after.json",
+      "terminal-results.json",
+      "final-review.txt"
+    ],
+    "firstFailureInventoryAndPredicateRecorded": false
+  }
+}

@@ -1,0 +1,72 @@
+--- a/launch-supervision/supervise.py
++++ b/launch-supervision/supervise.py
+@@ -44,7 +44,8 @@
+              "known": {}, "groups": {}, "wrapperPid": None, "forced": False,
+              "lastRows": [], "ownershipUnknown": False, "direct": {},
+              "termAttemptCount": 0, "killAttemptCount": 0, "authenticatedReviewers": {},
+-             "unanchoredGroupsCurrent": {}, "unanchoredGroupsObserved": {}}
++             "unanchoredGroupsCurrent": {}, "unanchoredGroupsObserved": {},
++             "firstReviewerIdentityFailure": None}
+     finished = threading.Event()
+     wrapper = None
+     checks = []
+@@ -112,16 +113,25 @@
+             # to its authenticated process record, start time and expected command.
+             process_file = PACKET / "process.json"
+             if process_file.exists():
++                reviewer_stage = "record_decode"
++                reviewer_row = None
+                 try:
+                     record = json.loads(process_file.read_text())
++                    reviewer_stage = "record_pid_pgid"
+                     pid = record["pid"]
+                     require(type(pid) is int and record["pgid"] == pid, "Bad reviewer identity")
++                    reviewer_stage = "record_argv"
+                     require(record["argv"] == CONTROL["reviewerArgv"], "Reviewer command changed")
++                    reviewer_stage = "record_started_parse"
+                     observed = datetime.datetime.fromisoformat(record["started"]).timestamp()
++                    reviewer_stage = "record_freshness"
+                     require(observed >= epoch_begin - 1, "Stale reviewer process record")
+                     if pid in rows:
+                         row = rows[pid]
++                        reviewer_row = dict(row)
++                        reviewer_stage = "row_started_parse"
+                         process_start = time.mktime(time.strptime(row["start"], "%a %b %d %H:%M:%S %Y"))
++                        reviewer_stage = "row_pid_pgid_start"
+                         require(row["pgid"] == pid and abs(process_start - observed) < 2,
+                                 "Reviewer PID reused or process-group identity changed")
+                         authenticated = {"pid": pid, "pgid": row["pgid"], "start": row["start"],
+@@ -129,9 +139,11 @@
+                         if row["state"].startswith("Z"):
+                             # Zombie comm may be <defunct>. Only a reviewer previously
+                             # authenticated while live can retain ownership in that state.
++                            reviewer_stage = "row_bound_zombie"
+                             require(state["authenticatedReviewers"].get(pid) == authenticated,
+                                     "Unbound or changed zombie reviewer identity")
+                         else:
++                            reviewer_stage = "row_executable"
+                             require(Path(row["comm"]).name == "claude", "Reviewer executable identity changed")
+                             state["authenticatedReviewers"][pid] = authenticated
+                         owned.add(pid)
+@@ -140,6 +152,13 @@
+                     # A concurrent initial write may be incomplete; never signal from it.
+                     pass
+                 except Exception as exc:
++                    if state["firstReviewerIdentityFailure"] is None:
++                        # Fixed stage and the existing no-arguments inventory row.
++                        # No exception text, arbitrary process record or argv.
++                        state["firstReviewerIdentityFailure"] = {
++                            "elapsedSeconds": time.monotonic() - begin,
++                            "stage": reviewer_stage, "row": reviewer_row,
++                            "exceptionType": type(exc).__name__}
+                     error = "reviewer_identity:" + type(exc).__name__
+                     if error not in state["errors"]:
+                         state["errors"].append(error)
+@@ -443,6 +462,7 @@
+                   "termSignalPassAttempts": state["termAttemptCount"],
+                   "killSignalPassAttempts": state["killAttemptCount"],
+                   "signalStateMeaning": "Sent flags mean a complete successful inventory/signal pass, not a scheduled attempt; logs preserve per-group signals and failed passes.",
++                  "firstReviewerIdentityFailure": state["firstReviewerIdentityFailure"],
+                   "errors": state["errors"],
+                   "remainingOwned": remaining, "ownershipUnknown": state["ownershipUnknown"],
+                   "observedOwned": list(state["known"].values()), "observedGroups": state["groups"],

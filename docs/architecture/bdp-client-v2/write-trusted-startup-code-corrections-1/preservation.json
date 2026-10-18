@@ -1,0 +1,37 @@
+{
+  "protectedSource": {
+    "d1": {
+      "files": 679,
+      "unchanged": true,
+      "beforeMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "afterMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7"
+    },
+    "original": {
+      "files": 679,
+      "unchanged": true,
+      "beforeMapSha256": "1fb4209b11aa49ca8c77c17f825097b6bcc05eb8dd645be12d25415a5f5184e8",
+      "afterMapSha256": "1fb4209b11aa49ca8c77c17f825097b6bcc05eb8dd645be12d25415a5f5184e8"
+    }
+  },
+  "startup": {
+    "samePaths": true,
+    "total": 682,
+    "changed": 3,
+    "unchanged": 679,
+    "otherNineOwnedUnchanged": true,
+    "nonowned670Unchanged": true
+  },
+  "retainedFindings": [
+    "F4 pre-file tuple comparison and captured readOptions postcheck",
+    "F5 refactor tripwires",
+    "F6 bounded MAX+1 allocation",
+    "F9 separate equivalent path validators",
+    "F10 fixed non-echo error phases"
+  ],
+  "deferred": [
+    "F6 allocation optimization",
+    "F8 optional exact32MiB acceptance fixture"
+  ],
+  "forbiddenExecuted": false,
+  "ordinaryMainAndProfileAdmissionUnchanged": true
+}

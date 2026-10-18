@@ -1,0 +1,31 @@
+{
+  "recordedUtc": "2026-10-18T05:06:43.131359+00:00",
+  "scope": "Falsifiable partitions of the same generic error; ranking is inspection order, not inferred causal probability. No live reproduction authorized.",
+  "candidates": [
+    {
+      "order": 1,
+      "predicate": "reviewer executable basename",
+      "prediction": "An actual non-zombie triggering row with basename other than claude fails; saved periodic rows should expose it if that row was sampled.",
+      "statusBeforeReplay": "Unknown unsaved triggering row."
+    },
+    {
+      "order": 2,
+      "predicate": "reviewer PID/PGID/start tuple",
+      "prediction": "A saved triggering row with changed PGID or start delta >=2 fails; normal historical rows pass.",
+      "statusBeforeReplay": "Unknown unsaved triggering row."
+    },
+    {
+      "order": 3,
+      "predicate": "previous live authentication of zombie",
+      "prediction": "A same-tuple zombie with existing identical authentication passes helper4; an unbound or changed tuple fails.",
+      "statusBeforeReplay": "Latest aggregate row alone cannot prove first failure."
+    },
+    {
+      "order": 4,
+      "predicate": "process record identity/argv/freshness",
+      "prediction": "Captured final record fails if permanently malformed/stale/changed; an earlier unlogged transient record cannot be replayed from final bytes.",
+      "statusBeforeReplay": "Final record apparently valid; actual failing snapshot absent."
+    }
+  ],
+  "runtimeOrReviewerInvocation": false
+}

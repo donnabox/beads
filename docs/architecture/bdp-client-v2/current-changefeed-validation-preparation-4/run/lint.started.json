@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/biome.json",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "sourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+  "rootGateSha256": "b64ff127248c18f5a114c707d7234aa07adcceb2defd37eefe2118905440f6ad",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-current-changefeed-validation-lint-wgt0a0hp",
+  "npmCache": "/private/tmp/vickie-current-changefeed-validation-lint-wgt0a0hp/npm-cache"
+}
