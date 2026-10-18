@@ -1,0 +1,54 @@
+{
+  "accepted": true,
+  "actualCommonClockSeconds": 11.42131070792675,
+  "actualEvidencePublication": "5827b6494bed20a0df9493ac5766c64ff98d8098",
+  "actualToolExitCodes": [
+    0,
+    0,
+    0
+  ],
+  "actualToolIds": [
+    "842598",
+    "280721",
+    "14313e"
+  ],
+  "administrativeIdentities": "UNRETAINED; trusted-root attribution only",
+  "allCensusRows": 1382,
+  "allLater29Unattempted": true,
+  "evidenceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-typecheck-root-tool-evidence-1/index.json",
+    "sha256": "5f11de3e6db98e832eec2440dff99d42923e8ed093d601b8f1d868b00e1b7308"
+  },
+  "findings": [],
+  "finiteTaskPGIDs": 3,
+  "finiteTaskPIDs": 4,
+  "first4OrTypecheckReinvocationAuthorized": false,
+  "firstCompleteAuthorityPublication": "21be5a99c0e2f6d234860b6ee09586550a9ba351",
+  "innerElapsedSeconds": 5.641055082902312,
+  "innerRawExit": 0,
+  "later25Authorized": false,
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-typecheck-actual-native-audit-1/closure.json",
+    "sha256": "2b94a00ff811009437f4cfb27d15004b2e2f4fec1a63c678df3f05a51e7d9725"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-typecheck-actual-native-audit-1/index.json",
+    "sha256": "5c8a388cca1cc99fd9350a71fc6e8f3f2271ee1e937447c75e70deadaef0fa56"
+  },
+  "nextStage": "format-check",
+  "nextStageCondition": "Only after this exact FULL native/root acceptance is committed/pushed/allraw+modes+remote readback; then ONE new format-check A/B/C from unchanged prepublished next5 baselines under current779d/57d5. Full actual independent/root/durable barrier before lint. Nonzero/late/partial/UNKNOWN STOP/no retry.",
+  "noCleanupGlobalOrHardRealtimeClaim": true,
+  "originalRawToolReceiptsIndependentlyDecoded": false,
+  "publicOrWholeWriteCredit": false,
+  "rootInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-typecheck-root-final-acceptance-1/inspection.json",
+    "sha256": "e29766dba78dddbe9b016a019043093c1153543d1cf068cd0ac86f4b384cc6aa"
+  },
+  "scope": "EXACT_ONE_ACTUAL_P3_TYPECHECK_ONLY_FINITE_RECORDED_DOMAIN",
+  "secondActivationPublication": "32ddcc8e8ccc697e8987ead5b333cb6391eef407",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "stage": "typecheck",
+  "strictUnder115": true,
+  "temporaryRootRetained": true
+}
