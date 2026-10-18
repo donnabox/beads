@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-18T16:01:01.229820+00:00",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-root-acceptance-1/acceptance.json",
+    "sha256": "86ff5b37c4e7b8250fcc4d58d49507505bbb26e4928da6243e247b1fc02b66c8"
+  },
+  "gateSha256": "0f5cdeb46a8098d00242fa61801ecc57e7f5ea41205090341ef400d4c31c08e7",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "dispatchOnlyNext8": [
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "noRetry": true,
+  "preconditions": [
+    "Publish/readback candidate+FULLnative+root acceptance BEFORE activation",
+    "Byteexact activate independently reviewed candidate and publish/readback BEFORE dispatch",
+    "Sequential next8 fresh inner/raw0 whole-wrapper<120; immediate strict audit after each source group, first failure/late/unknown STOP no retry",
+    "Fresh source/build/process/semantic proof and independent native actual prefix17 audit before a separately reviewed package-prefix21 authority"
+  ],
+  "activationPerformed": false,
+  "executionDispatched": false
+}

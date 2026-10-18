@@ -1,0 +1,58 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/gate.py
+@@ -1,6 +1,6 @@
+ """CLOSED carrier681 gate. Root owns all releases and fresh measured proofs. WIP."""
+ from pathlib import Path
+-import hashlib,json,subprocess,os,math,shutil
++import hashlib,json,subprocess,os,math,shutil,base64
+ P=Path(__file__).resolve().parent
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum')
+ GUARD=P/'guarded-action-session-20261018-021624-549f.py'
+@@ -76,12 +76,47 @@
+     q=p.resolve(strict=True);require(q.is_relative_to(C.resolve()),'Consumer link escapes');links[r]={'link':os.readlink(p),'target':q.relative_to(C.resolve()).as_posix()}
+    elif p.is_file():files[r]=sha(p.read_bytes())
+  return {'files':files,'links':links}
++def verify_probe_terminal(name,g,v,watched,outer):
++ require(type(outer.get('rawExit'))is int and outer['rawExit']==0 and outer.get('parentStdoutEOF')is True and outer.get('parentStderrEOF')is True,'Actual parent raw0 AND both tool pipe EOF required')
++ pin=outer.get('censusProbeTerminal');require(type(pin)is dict and set(pin)=={'path','sha256'},'Exact parent tool stdout pin required')
++ p=Path(pin['path']);require(p.is_absolute()and p.is_file()and not p.is_symlink()and p.stat().st_size<=1048576,'Bounded actual parent tool stdout required')
++ raw=p.read_bytes();require(len(raw)<=1048576 and sha(raw)==pin['sha256']and raw.endswith(b'\n')and raw.count(b'\n')==1,'Unique complete parent probe-terminal event required')
++ t=json.loads(raw,object_pairs_hook=unique_object,parse_constant=invalid_constant)
++ require(type(t)is dict and set(t)=={'event','provisionalUntilActualOuterTerminal','stage','attemptId','sourceBindingSha256','watchdogPid','exitCodeCandidate','elapsedSeconds','probes','lastCompleteCensus','failurePrefix'},'Exact probe-terminal keys')
++ require(t['event']=='carrier-census-probe-terminal-v1'and t['provisionalUntilActualOuterTerminal']is True and t['stage']==name and t['attemptId']==v['attemptId']and t['sourceBindingSha256']==g['sourceBinding']['sha256']and type(t['watchdogPid'])is int and t['watchdogPid']>0 and t['watchdogPid']==watched['watchdogPid']and type(t['exitCodeCandidate'])is int and t['exitCodeCandidate']==0 and t['failurePrefix']is None,'Actual parent probe terminal identity/refusal')
++ require(type(t['elapsedSeconds'])in [int,float]and math.isfinite(t['elapsedSeconds'])and 0<=t['elapsedSeconds']<115,'Parent event alone is not timely whole-exit proof')
++ probes=t['probes'];require(type(probes)is list and 0<len(probes)<=2048,'Complete bounded probe registry required')
++ snapshot=watched.get('censusProbeReceiptsAtSnapshot');require(type(snapshot)is list and watched.get('censusSnapshotIsNotFinalParentRegistry')is True and snapshot==probes[:len(snapshot)],'Earlier watchdog probe snapshot must match complete final registry prefix')
++ keys={'sequence','pid','pgid','parentPid','registeredBy','createdAtSeconds','rawExit','stdoutEOF','stderrEOF','stdout','stderr','settledAtSeconds','parsedAsWholeCensus'}
++ for i,probe in enumerate(probes,1):
++  require(type(probe)is dict and set(probe)==keys and type(probe['sequence'])is int and probe['sequence']==i,'No omitted/extra probe receipt')
++  require(type(probe['pid'])is int and probe['pid']>0 and probe['pgid']==probe['pid']and type(probe['pgid'])is int and probe['parentPid']==t['watchdogPid']and probe['registeredBy']=='direct Popen start_new_session','Immediate owned probe identity required')
++  require(type(probe['rawExit'])is int and probe['rawExit']==0 and probe['stdoutEOF']is True and probe['stderrEOF']is True and probe['parsedAsWholeCensus']is True,'Raw terminal AND both actual EOF required before census use')
++  for key in ['createdAtSeconds','settledAtSeconds']:require(type(probe[key])in [int,float]and math.isfinite(probe[key])and 0<=probe[key]<=t['elapsedSeconds'],'Finite probe clock required')
++  require(0<=probe['settledAtSeconds']-probe['createdAtSeconds']<.2,'Original200ms probe window required')
++  for key,cap in [('stdout',262144),('stderr',4096)]:
++   fact=probe[key];require(type(fact)is dict and set(fact)=={'bytes','sha256'}and type(fact['bytes'])is int and 0<=fact['bytes']<=cap and type(fact['sha256'])is str and len(fact['sha256'])==64 and all(c in '0123456789abcdef'for c in fact['sha256']),'Exact bounded acquired probe byte/hash receipt')
++  require(probe['stdout']['bytes']>0 and probe['stderr']=={'bytes':0,'sha256':sha(b'')},'Complete nonempty stdout and empty stderr required')
++ last=t['lastCompleteCensus'];require(type(last)is dict and set(last)=={'probe','stdoutBase64','stderrBase64','availability'}and type(last['probe'])is int and last['probe']==len(probes),'Retain exact last used census bytes')
++ for key in ['stdout','stderr']:
++  data=base64.b64decode(last[key+'Base64'],validate=True);require({'bytes':len(data),'sha256':sha(data)}==probes[-1][key],'Last census raw bytes differ from receipt')
++ absence=document(outer.get('censusProbeClosure',{}));pids=sorted({p['pid']for p in probes});groups=sorted({p['pgid']for p in probes})
++ taskpids=sorted(set(watched['ownedPids'])|{watched['watchdogPid']}|{v['leader']for v in watched['knownGroups'].values()});taskgroups=sorted(int(gid)for gid in watched['knownGroups'])
++ require(absence.get('accepted')is True and absence.get('stage')==name and absence.get('attemptId')==v['attemptId']and absence.get('sourceBindingSha256')==g['sourceBinding']['sha256']and absence.get('parentProbeTerminalSha256')==pin['sha256']and absence.get('probePids')==pids and absence.get('probeGroups')==groups and absence.get('taskPids')==taskpids and absence.get('taskGroups')==taskgroups and absence.get('censusAfterActualParentExit')is True,'Fresh root closure of ALL recorded probe identities required')
++ require(type(absence.get('rawExit'))is int and absence['rawExit']==0 and absence.get('stdoutEOF')is True and absence.get('stderrEOF')is True and type(absence.get('stderrBytes'))is int and absence['stderrBytes']==0,'Actual fresh root census terminal/EOF required')
++ censuspin=absence.get('censusRaw');require(type(censuspin)is dict and set(censuspin)=={'path','sha256'},'Exact fresh root raw census pin')
++ p=Path(censuspin['path']);require(p.is_absolute()and p.is_file()and not p.is_symlink()and 0<p.stat().st_size<=262144,'Fresh root census ordinary bounded file')
++ raw=p.read_bytes();require(len(raw)<=262144 and sha(raw)==censuspin['sha256']and raw.endswith(b'\n'),'Fresh root census byte identity/complete rows')
++ for line in raw.decode('utf-8','strict').splitlines():
++  fields=line.split(None,9);require(len(fields)==10,'Fresh root census row shape')
++  require(int(fields[0])not in set(pids)|set(taskpids) and int(fields[2])not in set(groups)|set(taskgroups),'Recorded census probe PID/group remains or is unknown')
+ def complete(name,g):
+  v=read(E/(name+'.exit.json'))
+  watched=read(E/(name+'.watchdog.json'));require(watched.get('accepted') is True and watched.get('attemptId')==v['attemptId'] and watched.get('ownershipUnknown') is False and watched.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Watchdog terminal refused '+name)
+  outer=document(g['outerExitReceipts'].get(name,{}))
+  elapsed=outer.get('wholeParentElapsedSeconds');require(type(elapsed)in [int,float] and math.isfinite(elapsed) and 0<=elapsed<115,'Whole parent terminal clock absent/late '+name)
+  require(outer.get('accepted') is True and outer.get('rawExit')==0 and outer.get('stage')==name and outer.get('attemptId')==v['attemptId'] and outer.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and outer.get('stageExitSha256')==sha((E/(name+'.exit.json')).read_bytes()) and outer.get('watchdogSha256')==sha((E/(name+'.watchdog.json')).read_bytes()),'Actual outer receipt absent/mismatch '+name)
++ verify_probe_terminal(name,g,v,watched,outer)
+  require(v.get('stdioEOF')is True,'Child stdio EOF missing '+name)
+  require(v['accepted'] and v['exit'] in read(P/'commands.json')['commands'][name].get('acceptedRawExitCodes',[0]) and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)
+  require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)

@@ -1,0 +1,61 @@
+{
+  "state": "CLOSED DATA next authority, currentgate only9",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "0f5cdeb46a8098d00242fa61801ecc57e7f5ea41205090341ef400d4c31c08e7"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-proposed-authority-1/disposition.json",
+    "sha256": "d4f7d6d0d3957cb3743c9d5e458882100e06d3c91b814e6702a38ff4cda1dd13"
+  },
+  "activeGateBefore": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.json",
+    "sha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f"
+  },
+  "closedOriginalGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.closed.json",
+    "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+  },
+  "actualCompletedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "nextProspectiveStages": [
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-build-acceptance-1/acceptance.json",
+    "sha256": "f511e198d40e56a51c2959b7efbc1d86e9e8de5eb9c3b18642cd7f6962f7f438"
+  },
+  "nativeFirst9AuditIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-actual-prefix9-audit-1/index.json",
+    "sha256": "5e86c7ed7bdca2a8a2409df056f72e50cf44f886b92e4b531f3796723b42ad2f"
+  },
+  "rootAcceptedNative111FilesAndMirror": true,
+  "freshBuildFiles": 476,
+  "selectedCallbacksProspective": [
+    21,
+    32,
+    9,
+    1
+  ],
+  "requestAndCleanupAndReportGrammarUnchanged": true,
+  "noHelperEvaluationForPreview": true,
+  "independentFull26Key59PredicatePrecisionRequiredBeforeActivation": true,
+  "archiveConsumerInstalledProof": "UNKNOWN/outsideprefix",
+  "activationPerformed": false
+}

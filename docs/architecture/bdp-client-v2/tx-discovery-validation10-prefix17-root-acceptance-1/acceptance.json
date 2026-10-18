@@ -1,0 +1,71 @@
+{
+  "utc": "2026-10-18T16:01:01.229820+00:00",
+  "accepted": true,
+  "scope": "Root independently accepted complete proposed prefix17 source authority DATA; no next8 invoked",
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-authority-native-precision-1/index.json",
+    "sha256": "d79722938d3e0027400415a86c855b52b69e450ac3144dceef6a9f17606d12d8"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-authority-native-precision-1/closure.json",
+    "sha256": "81358b0aace9f094639c21e4cff378bd273d5260fdcb88362e1c65e181a4a35f"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-authority-native-precision-1/report.md",
+    "sha256": "eebf0c351e42dea6e1bb4ea79edda8824d1db84b3dd2afdeb6cecd335f8a6a9e"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 80,
+  "candidateIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-proposed-authority-1/index.json",
+    "sha256": "72fc6635f747720f5fd5216fdf79b67a8c6430088afa37fcc8e4efa04c4c960f"
+  },
+  "proposedGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "0f5cdeb46a8098d00242fa61801ecc57e7f5ea41205090341ef400d4c31c08e7"
+  },
+  "proposedDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-proposed-authority-1/disposition.json",
+    "sha256": "d4f7d6d0d3957cb3743c9d5e458882100e06d3c91b814e6702a38ff4cda1dd13"
+  },
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "currentSourceFilesVerified": 679,
+  "currentBuildFilesVerified": 476,
+  "currentWorkspaceToolsVerified": 11,
+  "all26Keys59PredicatesIndependentlyReviewed": true,
+  "actualFirst9Only": true,
+  "topLevelBuildAcceptanceConjunctive": true,
+  "sourceSemanticGroups": [
+    21,
+    32,
+    9,
+    1
+  ],
+  "immediateStrictAuditAfterEach": true,
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "activeGateBefore": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.json",
+    "sha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f"
+  },
+  "activationPerformed": false,
+  "laterArchiveConsumerInstalledProof": "UNKNOWN, outside17",
+  "noRetry": true,
+  "ownReadOnlyLookupError": "Initial acceptance filename guessed authority-root instead of actual prefix9-root; failed read only, corrected by inventory; no subject evaluation."
+}

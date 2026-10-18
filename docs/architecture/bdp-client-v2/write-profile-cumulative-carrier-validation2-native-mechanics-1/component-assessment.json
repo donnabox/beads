@@ -1,0 +1,88 @@
+{
+  "helpers": [
+    {
+      "path": "run.py",
+      "sha256": "f2d08b5e5d0ac4b60be436944ccb81cd3ce2ddf82967ac8061e6745b40078d2f",
+      "byteEqual1": false,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 4916
+    },
+    {
+      "path": "gate.py",
+      "sha256": "c05831b7949b383a4bc7550a33e453d102fa12d2111583522ca009dfc69707c4",
+      "byteEqual1": false,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 5265
+    },
+    {
+      "path": "packages.py",
+      "sha256": "acda7bcaee8b9a7422bb78ecca5b6dd895437f2aed6357de0e2be7508acb0345",
+      "byteEqual1": false,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 2047
+    },
+    {
+      "path": "worker.py",
+      "sha256": "3a41999eaea1edccc37097e59e1a37516a283db79283a10bb00ca34cae56da76",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 2506
+    },
+    {
+      "path": "audit.py",
+      "sha256": "1b8169b352d5ce1aaea5cb9d72f066b3e4cb389c96e38e60b4864f0e242894f4",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 2543
+    },
+    {
+      "path": "scanner.py",
+      "sha256": "c1227c030f6f409cbc1812a361caf4a269b9b583e15f226822add1488ce83770",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 2301
+    },
+    {
+      "path": "private_emit.py",
+      "sha256": "342491a1479d742ea23cd2b48760d8c3817d5c613738208e974214815c9aff89",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 1353
+    },
+    {
+      "path": "audit-common.mjs",
+      "sha256": "8e7c940a256dd6a2cc17be99d19a934a2c92169c2532a52089960283fd0d486c",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation"
+    },
+    {
+      "path": "carrier-audit.mjs",
+      "sha256": "c49e8447ffc6c6a74a9a33a67675540418bb6576a2a8c75ade77a32971d41005",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation"
+    },
+    {
+      "path": "private-graph.mjs",
+      "sha256": "8d2c0020cebe47cf916164bf457d46e6c4e94c58f9ef507d7881b895cd5674ac",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation"
+    },
+    {
+      "path": "guarded-action-session-20261018-021624-549f.py",
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "byteEqual1": true,
+      "review": "Full source text read, no module evaluation",
+      "ASTnodes": 164
+    }
+  ],
+  "changedBodiesOnly": [
+    "run.py",
+    "gate.py",
+    "packages.py"
+  ],
+  "protectedOwnershipASTFunctions": 5,
+  "all16OtherGateFunctionsASTExact": true,
+  "positiveChain": "actual one callback -> original9key wrapper+identical two final sidecars -> terminal/group/EOF/root proof -> strict ordinary0600 acquisition -> SAME emitted branded factories/verifier full-byte equality",
+  "privateGraph": "Unchanged native strict TS7 emission/Babel8 confined graph/CJS crosschecks; actual emit/graph/installed proof UNKNOWN",
+  "noNewRunnerProductCalls": true
+}

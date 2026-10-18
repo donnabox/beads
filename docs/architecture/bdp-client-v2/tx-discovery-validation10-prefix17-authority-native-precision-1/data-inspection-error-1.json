@@ -1,0 +1,4 @@
+{
+  "correction": "Read actual index format; compare explicit sha256 field (and unchanged bytes/mirror). No candidate hash mismatch or subject mutation.",
+  "operation": "Index verifier initially compared actual-prefix9 record object directly to SHA string, causing AssertionError before review-output creation"
+}

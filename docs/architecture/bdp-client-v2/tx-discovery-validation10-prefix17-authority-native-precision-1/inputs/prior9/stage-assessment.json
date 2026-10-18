@@ -1,0 +1,199 @@
+[
+  {
+    "stage": "node-version",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 14.106995958369225,
+    "innerElapsedSeconds": 5.734754499979317,
+    "consumedGateSha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea",
+    "startSha256": "77f73e299322795caf5e1af376d173474699ce9549b84bee0ff8bf5ab0546d88",
+    "exitSha256": "f459d97f9d34aa8540be085501b2688aa33b39cba81c8c2d5c2104365349cbd8",
+    "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+    "wrapperLogSha256": "8ee19c22f2938971751ffa8f47e4d5acec4163e39f425c5f154ea69811532a63",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "--version"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 1
+  },
+  {
+    "stage": "pnpm-version",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 13.128842249978334,
+    "innerElapsedSeconds": 6.075931875035167,
+    "consumedGateSha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea",
+    "startSha256": "6eabb75a09962b364af52010277f57b988b8d29512318c2bfc644f9fcb4d6718",
+    "exitSha256": "4369a35f8a88a635b25b561cb84c1d046ed58d9423594f721166b9bd792bc742",
+    "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201",
+    "wrapperLogSha256": "c53dfefd4a1367ae4bc79aa407b83e7cbb9f037aedc6394befb743c8812cc933",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "--version"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 4
+  },
+  {
+    "stage": "workspace-install",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 12.887761666905135,
+    "innerElapsedSeconds": 6.10802787495777,
+    "consumedGateSha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea",
+    "startSha256": "073096525c9bcac833bdcd141f270040093480c248db171e31492bc804ab75d1",
+    "exitSha256": "97598429638c6f56412a481734645f67a94980f17d810778f72ef841e10e21fd",
+    "logSha256": "6cb832c41391ee00abc0c862c230c24243d49f30a32c652addeba7c54c1adfa6",
+    "wrapperLogSha256": "becee27bd2abee8d804cc2a59fbb26ae12a7841e94293267da37ba6bb2a1f35d",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--frozen-lockfile"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 4
+  },
+  {
+    "stage": "bind-workspace-tools",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 20.107991416938603,
+    "innerElapsedSeconds": 13.223588583059609,
+    "consumedGateSha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea",
+    "startSha256": "b54f8fa148e3e83196184a2843c1b773539a67239fdd67c7468c3b864a5911a1",
+    "exitSha256": "99c89fe7a97731a136693234bee73272aa2ff8106a8a333f6f4725c50420f38a",
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wrapperLogSha256": "0da78a16263ee35baa909907e26ae93bdd1ffaea88d5eafa2abac8c528c2c16e",
+    "actualArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/audit.py",
+      "tools"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 66
+  },
+  {
+    "stage": "typecheck",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 15.002746833954006,
+    "innerElapsedSeconds": 7.157569833099842,
+    "consumedGateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+    "startSha256": "8b6557bc12e7fc8c2d21a20f14d5317c2c5492f0f9814b9705bfdc5b299eac38",
+    "exitSha256": "79013a4bc8cf51feca6adc990c66b0ae444640217728bd087082ba8520f4819e",
+    "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "wrapperLogSha256": "9e9e932263f3b3aeb2bfa2f4aa9b887acad5e13ef2f6c5d060ce010adbe791ff",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "run",
+      "typecheck"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 13
+  },
+  {
+    "stage": "format-check",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 13.581090208142996,
+    "innerElapsedSeconds": 5.814881124999374,
+    "consumedGateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+    "startSha256": "00ff150e44c0974f945c0b86f706fdddacbc217abd52fb051d13866dc943d3e4",
+    "exitSha256": "975aaad6c9675c8b203cae3e497d386ae17579fb00d1ddf8774c4e34f70a868e",
+    "logSha256": "8dffde74798d42fc0ae3e7a908fb73f03e60be6e161d24d8b007ef3731753a11",
+    "wrapperLogSha256": "5cbdcb84763b2b700259d7e2f83d24aebc6334507aa428a4edd90e6e82c388a2",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/@biomejs/biome/bin/biome",
+      "format",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/biome.json",
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 2
+  },
+  {
+    "stage": "lint",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 12.749598250258714,
+    "innerElapsedSeconds": 5.901378707960248,
+    "consumedGateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+    "startSha256": "6e5d2bc515adcfdbf82488360bba8df3c72d6fd8876b630dec4a8cc707f802a6",
+    "exitSha256": "1848d8efc508f2c3f8493224ce9c08779c0b4acc6e9eb543367ec1a16ca1d259",
+    "logSha256": "d2bc14d924b95266bf47e9d2e2d9a059054a26d38bb1f6e579de73475e8f0b21",
+    "wrapperLogSha256": "e719e9aaed70662097769c12337bd31df30e60e8581255b22be1170bb0e72870",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/@biomejs/biome/bin/biome",
+      "lint",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/biome.json",
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 3
+  },
+  {
+    "stage": "fresh-build",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 14.239753250032663,
+    "innerElapsedSeconds": 7.3457079590298235,
+    "consumedGateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+    "startSha256": "04383bf194e3f4f9d3ba3b65fe81c1218d99e8f3f7b63ed7c2c8703ec5a9ceb6",
+    "exitSha256": "5d09522c8a1c4b5987e99c073daa01136633802a1b84f6070b6ee79677f84bc5",
+    "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+    "wrapperLogSha256": "b787d6bed22e1244ef0d9a5af22df80bd208e5f692c23b53f94e76c3f2e28ab1",
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "run",
+      "build"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 12
+  },
+  {
+    "stage": "bind-fresh-build",
+    "innerRawExit": 0,
+    "innerAccepted": true,
+    "wholeWrapperRawExit": 0,
+    "wholeWrapperElapsedSeconds": 19.840632542036474,
+    "innerElapsedSeconds": 12.860644333064556,
+    "consumedGateSha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f",
+    "startSha256": "a2177b2d0d71fb5ccff9c88b698501f387f03c1dc645857ae445054b15529e12",
+    "exitSha256": "01aa06d20f1e50c38e5d8f04e561ff0dc37aea91dbb88fc1ee7a1f1213b819b8",
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wrapperLogSha256": "f4c51b0dd1e5c5a129f990c67340520725d58029a5121336f9973326c8c08422",
+    "actualArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/audit.py",
+      "build"
+    ],
+    "noForcedCleanup": true,
+    "processSamples": 63
+  }
+]
