@@ -1,0 +1,36 @@
+{
+  "accepted": false,
+  "findingCount": 2,
+  "findings": [
+    {
+      "evidenceKind": "Static source inference only; no control evaluated.",
+      "id": "CNH-N1",
+      "planAnchor": "control-matrix.json:1511-1521",
+      "priority": "Medium",
+      "problem": "The wrong-settings construction uses a packages/consumer tree with an upstream load_gate facade. That replaces the only selected comparison of pnpm-workspace.yaml to the independently pinned rootConsumerLockAcceptance. packages.py installed itself checks the lock at87, then merely records consumerSettingsSha256 at114. With unchanged graph/archive/payload and only settings bytes changed, that remaining path has no settings refusal to reach; a refusal supplied by the facade would test the facade.",
+      "revision": "Route wrong-settings explicitly through the original gate.load_gate verify-installed-consumer branch with all other gate inputs coherent; facade only earlier source/tools/prior-IO dependencies, keep document/hash/settings comparison original. Freeze exact one-leaf settings mutation and independent expected root hash and trace. Do not change product/helper predicates. Distinguish a producer digest observation from a comparison refusal.",
+      "subjectAnchors": [
+        "inputs/helper4/packages.py:12",
+        "inputs/helper4/packages.py:87",
+        "inputs/helper4/packages.py:114",
+        "inputs/helper4/gate.py:177-179"
+      ],
+      "title": "Keep the settings predicate in the C22 wrong-settings subject"
+    },
+    {
+      "evidenceKind": "Static reachability/contract precision; no measured failure or timing-fit claim.",
+      "id": "CNH-N2",
+      "planAnchor": "control-matrix.json:1056-1064",
+      "priority": "Low",
+      "problem": "IO-publication-after-cutoff does not identify the cutoff or finite schedule. The actual finish write loop uses begin+outer (120s); all harness setup/healthy-baseline/fault/publication/root closure share an earlier origin, while normal ROOT+owner must finish strictly before115 and late/UNKNOWN cannot match a completed control. A real subject finish120-expiry therefore cannot also satisfy the current normal match contract. If the intended cutoff is105 work or200ms census, it does not exercise finish120-expiry and needs an exact separate source event/oracle.",
+      "revision": "State the precise tested cutoff/phase and current immutable branch. Provide a finite earlier reachable ordering/publication-failure stimulus within the unchanged original clock if that is the intent, with limited coverage stated. Otherwise retain real120-expiry as explicitly blocked/unmatchable in this harness domain, not one of128 promised executable matches. Do not move origins, scale monotonic, add grace, widen deadlines or count missing terminal as a passed control.",
+      "subjectAnchors": [
+        "inputs/helper4/run.py:34-45",
+        "inputs/helper4/run.py:210-213",
+        "clock-and-ownership.json:3-11",
+        "clock-and-ownership.json:27"
+      ],
+      "title": "Name a reachable cutoff for the required C16 late-publication variant"
+    }
+  ]
+}

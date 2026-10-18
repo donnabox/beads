@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-18T17:19:52.710773+00:00",
+  "kind": "Root DATA wrapper filename assumption",
+  "exception": "AssertionError before source/consumer/process capture and inspection output",
+  "cause": "Selected only *.wrapper-terminal.json, while prior dispatch1-6 frozen receipts use *.wrapper-exit.json with wrapperPid/acceptedForFurtherDispatch; found only28not52.",
+  "correction": "Read both actual named historical receipt formats without mutation; normalize for root DATA observation, retain actual filenames/keys and distinct epochs.",
+  "productOrHelperAttempt": false,
+  "validationRetry": false
+}

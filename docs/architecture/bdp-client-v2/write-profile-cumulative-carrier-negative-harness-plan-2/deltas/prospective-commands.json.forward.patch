@@ -1,0 +1,33 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-1/prospective-commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-2/prospective-commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "DATA argv only, future source/release unresolved; do not invoke",
++  "state": "DATA argv inventory only;128names retained, required finish120 coverage BLOCKED, no invocation released",
+   "futureRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-preparation-1",
+   "literalCommands": [
+     {
+@@ -1500,7 +1500,10 @@
+       "cleanupInclusiveSeconds": 10,
+       "TERM": 115,
+       "KILL": 119,
+-      "actualExecutionAuthorized": false
++      "actualExecutionAuthorized": false,
++      "coverageStatus": "BLOCKED_REQUIRED_UNMATCHABLE_IN_CURRENT_FAULT_DOMAIN",
++      "doNotDispatch": true,
++      "normalMatchedResultPermitted": false
+     },
+     {
+       "id": "C17",
+@@ -3206,5 +3209,10 @@
+   "count": 128,
+   "approvedInvocations": [],
+   "oneFiniteVariantPerIndependentRootInvocation": true,
+-  "noAggregate120SecondSuiteOrFitClaim": true
++  "noAggregate120SecondSuiteOrFitClaim": true,
++  "requiredNamedSelectors": 128,
++  "blockedRequiredSelectors": [
++    "C16/IO-publication-after-cutoff"
++  ],
++  "all128ExecutableMatchesPromised": false
+ }

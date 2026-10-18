@@ -1,0 +1,43 @@
+{
+  "utc": "2026-10-18T17:26:40.169510+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptedForCodeReviewInputOnly": true,
+  "sourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-authoring-1/index.json",
+    "sha256": "b9ab835566c7e9e558b5562057f8aadad3f0013fa7a917fef96e1c7e43421db3"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-authoring-1/source-binding.json",
+    "sha256": "8839fea94add33ec60b46f6aa3ae38da4958b431fbdc68d2959c401328765b2c"
+  },
+  "canonical679": "eeb78c7d5c97f45b18f3c0465926d905915c302dae4da25a24f887e3e9247227",
+  "sixChanged": [
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "protected": 673,
+  "actualGitHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "actualCumulativeDirty": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "stagedOrUntracked": false,
+  "formatOnlyOneRaw0": true,
+  "productionThreeDeltasRead": true,
+  "nativeCodeReview": "PENDING",
+  "externalCodeReview": "UNATTEMPTED",
+  "productValidationReleased": false,
+  "rootDataObservation": "Initial rootG09 index loop assumed wrapped sha while source index uses primitive sha strings; TypeError BEFORE source inspection or new rootG09 outputs. Native52 full audit verification/root52acceptance JSON had completed; separate source check now corrected using actual observed index shape. No subject/helper/validation retry. One guessed old CODE packet preparation-state file read failed; actual directory inventory read instead."
+}

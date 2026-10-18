@@ -1,0 +1,586 @@
+{
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "resultsSha256": "177e44c3abfc44221baf0bc5e0a03b4562a89aaa0eb7d39c98841704e550c229",
+  "logSha256": "83a41930571cb2f87913d48844b6cc594c5473951572d4aa3ed7187643d4b421",
+  "selectedFullNames": [
+    "private installed discovery minimum ordering scope"
+  ],
+  "reports": [
+    {
+      "observation": "private installed discovery minimum ordering scope",
+      "declaredSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "workspaceDirty": true,
+      "entryLiteral": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "sourceAttribution": "externally bound by exact source/archive/consumer/lock/proof; no child attestation",
+      "metadata": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "claimEligible": false,
+        "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+        "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+        "policyIdentity": "bea47560ccf02d7c8522876db04f06937362bdb1c9a46d449696e96809b6bbc2",
+        "authenticationIdentity": "f802ac2a55393a495ede1fb3264e3bcf74416fcf5b7344fd6b3f6842d35ce6ba",
+        "runtimeConfigurationIdentity": "da9542ade4e039ce6f26c71a3547005a7007f919ab60d7b4250396b8012e0f89",
+        "authorityMode": "canonical"
+      },
+      "counts": {
+        "scheduled": 15,
+        "completed": 15,
+        "aborts": 0,
+        "exact": 15,
+        "raw": 0
+      },
+      "records": [
+        {
+          "id": "N1",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 204,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "be4872c5901246275136da9b4c709532dc65b3f5ef5e0c1db6c34c153803a7cb",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "N2",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "861",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 861,
+          "bodySha256": "73c1ddfaac2648161ebf0cd0df16f26c863ad4155ae0783755abc6d243a0703e",
+          "wireSha256": "a8d99bfeddae2885e09344e780d2c84259bad3e440d285e7daae52b30ec1bda4",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "N3",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "311",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 311,
+          "bodySha256": "c6928fb8a26446ad9775eadb34b3f53289bf7628d441f0418c7984361405127f",
+          "wireSha256": "c24fa8a88fd1cfce9cae36c23b56a5dc924380a57aa0fb9d095d3d40aa6e77a6",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "minimum-seed",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "d3-minimum-seed"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "667",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 667,
+          "bodySha256": "29ed3468f02d7372edad7dc97ca35ae95afa030d54bd22122e1ac24bde5894a1",
+          "wireSha256": "28f1a2165f9f7357c0014642ddb65c418c3bf0249b0ba9a586557764cf40071d",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "minimum-seed-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/db19b577-69e0-4c6f-a4f9-42f51869d733",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "667",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 667,
+          "bodySha256": "29ed3468f02d7372edad7dc97ca35ae95afa030d54bd22122e1ac24bde5894a1",
+          "wireSha256": "28f1a2165f9f7357c0014642ddb65c418c3bf0249b0ba9a586557764cf40071d",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "known-get",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-1"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            }
+          ],
+          "status": 204,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "07bddfd9e1b47b5e5c9c770341199874700b8a98019ebff8d8f5f50b82821c81",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "known-head",
+          "transport": "public-exact",
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-1"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            }
+          ],
+          "status": 204,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "07bddfd9e1b47b5e5c9c770341199874700b8a98019ebff8d8f5f50b82821c81",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "genesis",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-0"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            }
+          ],
+          "status": 204,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "07bddfd9e1b47b5e5c9c770341199874700b8a98019ebff8d8f5f50b82821c81",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "epoch-first",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "opaque-minimum"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "foreign-epoch"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "if-none-match",
+              "value": "*"
+            }
+          ],
+          "status": 410,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "125",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 125,
+          "bodySha256": "043ad15eb6751113e48fcc70e4d01595299a451fb3fe47144655738dd0cc1e9a",
+          "wireSha256": "2de4db7d1c35cb7fe905b53e892fe399c6c2c92d8c5b9d2125519428afc2d3bc",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "view-before-accept",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "opaque-minimum"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "foreign-view"
+            },
+            {
+              "name": "accept",
+              "value": "text/plain"
+            }
+          ],
+          "status": 409,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "wireSha256": "f091b933b7e4248bed62c520f0ec18c981996b9658794b63a7e932f073596dec",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "view-head",
+          "transport": "public-exact",
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "opaque-minimum"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "foreign-view"
+            },
+            {
+              "name": "if-match",
+              "value": "\"absent\""
+            }
+          ],
+          "status": 409,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:56 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "1d350323c44cb12e3b748f93c7ec3682b552758390f97e592ab882e27ff29fae",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "opaque-accept",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "opaque-minimum"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "accept",
+              "value": "text/plain"
+            }
+          ],
+          "status": 503,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "retry-after": "1",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:57 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "5c1f19e572cf81135fb8e14c29d4ca2172e41d40ff233d40a56c8703cff5080c",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "opaque-conditional",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "opaque-minimum"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "if-none-match",
+              "value": "*"
+            }
+          ],
+          "status": 503,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "retry-after": "1",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:58 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "931b96d71be985d465f9b59c9240418e1cf0f9830732936dff2fa796245ccf54",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "opaque-head",
+          "transport": "public-exact",
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "opaque-minimum"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "if-match",
+              "value": "\"absent\""
+            }
+          ],
+          "status": 503,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "retry-after": "1",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:10:59 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "b4eaf8675208b9c2065787b3687128c41615526b88c71fd81d9e8ca8241efdae",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "known-future",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-2"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "d14f7a58-a035-460d-b472-f010c92f91b4"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            }
+          ],
+          "status": 503,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "d14f7a58-a035-460d-b472-f010c92f91b4",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "retry-after": "1",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:11:00 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "dcc7b22545e86327d05bad55d5d6f2edd3074f986bf6bd7c9722420507c09856",
+          "requestWriteState": "complete"
+        }
+      ],
+      "child": {
+        "pid": 87915,
+        "exitSeen": true,
+        "closeSeen": true,
+        "code": 0,
+        "signal": null
+      },
+      "workSettled": true,
+      "cleanupKnown": true,
+      "pending": 0,
+      "directory": "/private/tmp/vickie-tx-discovery-validation-installed-06-f7dkycga/bdp-d3-installed-LDHXUb",
+      "directoryAbsent": true,
+      "elapsedMs": 4260.146667,
+      "failureCount": 0,
+      "outcome": "passed",
+      "claimEligible": false
+    }
+  ],
+  "claimEligible": false,
+  "limitations": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim."
+}

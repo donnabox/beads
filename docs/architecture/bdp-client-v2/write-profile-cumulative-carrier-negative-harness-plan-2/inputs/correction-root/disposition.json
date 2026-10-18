@@ -1,0 +1,37 @@
+{
+  "utc": "2026-10-18T17:14:09.669836+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan1-native-precision-1/index.json",
+    "sha256": "f0fbdb0112bab160406b47885347489c36a61af9e918f1f181108b4f9c456519"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan1-native-precision-1/closure.json",
+    "sha256": "17801685f7dfaa0a08d716d60184e3072d0a2f9e9ec803603030b9d0044bf9c0"
+  },
+  "nativeFindings": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan1-native-precision-1/findings.json",
+    "sha256": "d451adbe8b3c6a485ec4335c3bf68b5e33286f63427dad4bac3f582f9cae014a"
+  },
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-1/index.json",
+    "sha256": "826822df822c5ddc53f27cbdb97a90da85704f8a5f2a4ca2ac760b0087b1f632"
+  },
+  "acceptedAsExecutablePlan": false,
+  "findingsDisposition": [
+    {
+      "id": "CNH-N1",
+      "disposition": "ACCEPT exact wrong-settings must retain original gate.load_gate177-179 comparison; only upstream coherent IO facades, independently fixed settings hash/single leaf mutation/actualtrace, no injected refusal."
+    },
+    {
+      "id": "CNH-N2",
+      "disposition": "ACCEPT specify exact existing reachable cutoff/phase within unchanged105/115/119/120 origin and limited coverage; if actual finish120 expiry is intended it remains BLOCKED/unmatchable here, never late/UNKNOWN counted as pass. No moving origin, scaling monotonic, grace, retry or weakened required coverage."
+    }
+  ],
+  "otherUnresolved": "Genuine factory baseline reachability, external final-root current-probe/direct-handle settlement and actual same-clock fit remain explicit prerequisites. H5static native/root now accepted; measured availability UNKNOWN, not adopted clock proof.",
+  "planCorrectionOnlyAllowedAfterDurablePublication": true,
+  "executableAuthoring": false,
+  "helperOrRuntimeEvaluation": false,
+  "syntheticReleased": false,
+  "productReleased": false
+}
