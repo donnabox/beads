@@ -1,0 +1,15 @@
+{
+  "state": "Own data-inspection errors preserved; no reviewed code invoked",
+  "errors": [
+    {
+      "kind": "KeyError(slice)",
+      "cause": "Reviewer initially treated context-origins as a list; actual mapping then read and every origin verified."
+    },
+    {
+      "kind": "FileNotFoundError",
+      "cause": "Reviewer initially looked for historical actual files under predecessor6/run; actual explicit inventory uses predecessor6/actual-run. Correct path then verified all134/29/2."
+    }
+  ],
+  "sourceHelperGateOrPacketBytesChanged": false,
+  "errorsUsedAsRuntimeOrHelperEvidence": false
+}
