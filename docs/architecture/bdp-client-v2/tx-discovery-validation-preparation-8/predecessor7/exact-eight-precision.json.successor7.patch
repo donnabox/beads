@@ -1,0 +1,151 @@
+--- /dev/null
++++ exact-eight-precision.json
+@@ -0,0 +1,148 @@
++{
++  "P6Prior11Installed02ArraysExact": true,
++  "allOtherFieldsExact": true,
++  "changes": [
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "cold-transactional-carriers-batch-seed"
++        }
++      ],
++      "before": [],
++      "evidence": "MEASURED actual failed report + source command fields",
++      "id": "transactional-carriers-batch-seed",
++      "ordinal": 7,
++      "stage": "installed-03"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        }
++      ],
++      "before": [],
++      "evidence": "MEASURED actual failed report + source command fields",
++      "id": "sequence-turns",
++      "ordinal": 10,
++      "stage": "installed-03"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "cold-transactional-carriers-set-update"
++        }
++      ],
++      "before": [],
++      "evidence": "MEASURED actual failed report + source command fields",
++      "id": "transactional-carriers-set-update",
++      "ordinal": 13,
++      "stage": "installed-03"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "cold-transactional-carriers-set-delete"
++        }
++      ],
++      "before": [],
++      "evidence": "MEASURED actual failed report + source command fields",
++      "id": "transactional-carriers-set-delete",
++      "ordinal": 16,
++      "stage": "installed-03"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "cold-transactional-carriers-batch-seed"
++        }
++      ],
++      "before": [],
++      "evidence": "MEASURED actual failed report + source command fields",
++      "id": "replay-batch",
++      "ordinal": 19,
++      "stage": "installed-03"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "d3-minimum-seed"
++        }
++      ],
++      "before": [],
++      "evidence": "STATIC source1657\u20131660 f.send body/key, common fields666\u2013670; stage UNATTEMPTED",
++      "id": "minimum-seed",
++      "ordinal": 4,
++      "stage": "installed-06"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "d3-minimum-seed"
++        }
++      ],
++      "before": [],
++      "evidence": "STATIC source1657\u20131660 f.send body/key, common fields666\u2013670; stage UNATTEMPTED",
++      "id": "minimum-seed",
++      "ordinal": 4,
++      "stage": "installed-08"
++    },
++    {
++      "after": [
++        {
++          "name": "content-type",
++          "value": "application/json"
++        },
++        {
++          "name": "idempotency-key",
++          "value": "d3-minimum-seed"
++        }
++      ],
++      "before": [],
++      "evidence": "STATIC source1657\u20131660 f.send body/key, common fields666\u2013670; stage UNATTEMPTED",
++      "id": "minimum-seed",
++      "ordinal": 4,
++      "stage": "installed-10"
++    }
++  ],
++  "fiveMeasuredFailed03Rows": 5,
++  "newSchemaSha256": "c247f1b13bb475c9e29fe5c2d0f8b466ef0c086545c364bfa712a563caede6c9",
++  "oldSchemaSha256": "b74e093741780341c0094aebb4d629582e9abd2532052bd15eab8051b5f256e0",
++  "reverse8ToP6ByteExact": true,
++  "sourceInventory": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-actual-prefix-audit-1/observation-004-installed03-target-confinement/neighboring-occurrence-inventory.json",
++    "sha256": "b16aa29df14a92760e84380c26c4d666171c5ef99e75916044b9976c75236795"
++  },
++  "state": "DATA-only exact8 arrays; no helper equality/schema relaxation or actual pass",
++  "threeStaticUnattemptedMinimumRows": 3
++}

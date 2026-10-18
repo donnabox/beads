@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-18T12:40:06.533091+00:00",
+  "durableReleaseCommit": "84b64c67a0dff5d114ad32e97b74f464f03af7e6",
+  "rootReleaseSha256": "9c048ce2a825ef87b1995dada209614f1241262ec484c2946e8c1d4955fa4b50",
+  "gateSha256": "550219a75be7ec6f7e27ae8fa96a55285609900f402c363f11c13f08dcf5e6bc",
+  "stages": [
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "actualRootArgv": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "prepare-consumer"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run.py",
+      "final",
+      "consumer-install"
+    ]
+  ],
+  "freshAttemptNoRetry": true
+}

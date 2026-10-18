@@ -1,0 +1,16 @@
+{
+  "historicalIndicesIncluded": true,
+  "implementationExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor3.patch",
+    "execution-gate.json.successor3.inverse.patch",
+    "execution-gate.closed.json.successor3.patch",
+    "execution-gate.closed.json.successor3.inverse.patch",
+    "successor-delta.json"
+  ],
+  "reason": "Active/closed gates and their exact deltas/manifest contain implementation index hash. All other physical files INCLUDING all nested historical indices are implementation-pinned. Preparation index pins every exclusion except itself.",
+  "onlyReleaseMutationLater": "Only root active execution-gate.json via separately attributed durable release; closed snapshot/history immutable."
+}

@@ -1,0 +1,152 @@
+--- candidate/source-binding.json
++++ template/source-binding.json
+@@ -1,57 +1,8 @@
+ {
+-  "actualClaudeReadCorrectedBytes": false,
+-  "binaryDiffSha256": "6458c66715de3b6d2e86ae9c0d10efd1b7c146d81ba53da8028037ca9d0e4e89",
+-  "branch": "codex/vickie-tx-discovery-minimum",
+-  "dirtyPaths": [
+-    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+-    "apps/bdptest/src/transactional-schema-installed.test.ts",
+-    "packages/server/src/transaction-changefeed.test.ts",
+-    "packages/server/src/transaction-http.test.ts",
+-    "packages/server/src/transaction-http.ts",
+-    "packages/server/src/transaction-installed-contracts.test.ts"
+-  ],
+-  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "independentCorrectedSourceNative": {
+-    "closureSha256": "dec1b0a4cf9054e6eea6cac4e64b4c96f926fb394e53c5a653becde104768a65",
+-    "indexSha256": "cea24b6f8dcf175aa4600c4f0a419b022610339cf8d3f218a5602867b5320776"
+-  },
+-  "originalActualCodeOnly": true,
+-  "ownedFiles": {
+-    "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+-      "afterSha256": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33",
+-      "beforeSha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+-    },
+-    "apps/bdptest/src/transactional-schema-installed.test.ts": {
+-      "afterSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
+-      "beforeSha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759"
+-    },
+-    "packages/server/src/transaction-changefeed.test.ts": {
+-      "afterSha256": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8",
+-      "beforeSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+-    },
+-    "packages/server/src/transaction-http.test.ts": {
+-      "afterSha256": "367327ac3ff1ce1f2893b9b2b3b37a80cb586315d3c105c9c85f51ef6a7a5c27",
+-      "beforeSha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df"
+-    },
+-    "packages/server/src/transaction-http.ts": {
+-      "afterSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+-      "beforeSha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0"
+-    },
+-    "packages/server/src/transaction-installed-contracts.test.ts": {
+-      "afterSha256": "3626cc98357a0eddd4c6629c98d551793a2026f3f86f259c8a1c05ad5911867e",
+-      "beforeSha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1"
+-    }
+-  },
+-  "rootExactSourceAcceptance": {
+-    "scope": "static semantic closure only; no execution release",
+-    "sha256": "765f42485308a5660f4cce69d3890de0a2b7c2ba34eec1770fcbc5b04e5e7614"
+-  },
+-  "rootGitInspectionSha256": "787ba9624bc82aa30641c15cb683ac0289fd44eaac351be23ce6f3a216153727",
+-  "rootGitStatusAndStagedObservation": "root verified6unstaged/673unchanged/no cached or untracked; writer ran no Git",
+-  "sourceAuthorBindingSha256": "f4319c067c761f45c70ce59f6eb8b38b37b58afdea4e536e335c850faee642d7",
+-  "sourceAuthorFreezeSha256": "460702742fd52af5be7bb6e6b55fd58726d452c9ea424665449d4c5066ad35f0",
+-  "sourceBindingFinalized": true,
+-  "sourceIdentity": "6bbcce5e8d6c107607822b24853bb8121f7d612137f00d3f0f173b747773f6ea",
++  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
++  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
++  "branch": "codex/vickie-current-changefeed-minimum",
+   "trackedSourceFiles": {
+     ".github/workflows/ci.yml": "268c9563e8d2f4fa4b7314492cb6c4994f7c76da9b26cda7a74c7e5b3c6f664a",
+     ".gitignore": "ed05d0a2ee67a19f6319d2e33ba49de701b30fb7d172ece3a909d0fbbbcc9e48",
+@@ -104,7 +55,7 @@
+     "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "bc9d19959df0249b5b7c195c2f24a2cde4462db56de3e0b816c7fdf01f5ab048",
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+-    "apps/bdptest/src/transactional-discovery-installed.test.ts": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33",
++    "apps/bdptest/src/transactional-discovery-installed.test.ts": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+     "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "25f1738d78064670997c9b50aff503bf978e18eed0d7b02555d072165b02bf81",
+     "apps/bdptest/src/transactional-event-sse-installed.test.ts": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+     "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+@@ -115,7 +66,7 @@
+     "apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+     "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+     "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+-    "apps/bdptest/src/transactional-schema-installed.test.ts": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
++    "apps/bdptest/src/transactional-schema-installed.test.ts": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+     "apps/bdptest/src/transactional-selector-admission-installed.test.ts": "527baee6dec377680beaec1402f69039d044f45d2a36165f3b739e53a517b962",
+     "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+     "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts": "7861e55113e3e3bbf6621e526f2836a638e2bbcffafd2b321cc98e40846f1ba2",
+@@ -476,7 +427,7 @@
+     "packages/server/src/transaction-authorization.test.ts": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+     "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+     "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+-    "packages/server/src/transaction-changefeed.test.ts": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8",
++    "packages/server/src/transaction-changefeed.test.ts": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+     "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+     "packages/server/src/transaction-comparison.ts": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d",
+     "packages/server/src/transaction-consistency.test.ts": "a35b0e6050442a637df0bef96efe1d0d275c6bde7fdb423c78d01f198f894ce8",
+@@ -488,10 +439,10 @@
+     "packages/server/src/transaction-event-sse.test.ts": "6d7ec313c63d02ee157845ec8ab2e2cfab9107f137cdfc8a20d50c97f147fe64",
+     "packages/server/src/transaction-events.test.ts": "66d1995b35ba86265bcbf904d515aa52cf8a826273065ac46f32b381737a3a64",
+     "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+-    "packages/server/src/transaction-http.test.ts": "367327ac3ff1ce1f2893b9b2b3b37a80cb586315d3c105c9c85f51ef6a7a5c27",
+-    "packages/server/src/transaction-http.ts": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
++    "packages/server/src/transaction-http.test.ts": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
++    "packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+     "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+-    "packages/server/src/transaction-installed-contracts.test.ts": "3626cc98357a0eddd4c6629c98d551793a2026f3f86f259c8a1c05ad5911867e",
++    "packages/server/src/transaction-installed-contracts.test.ts": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+     "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+     "packages/server/src/transaction-installed.test.ts": "d664779fd64d50eb4736961472538473b2969fb9ce36e4fd39b6efe40c2d0327",
+     "packages/server/src/transaction-installed.ts": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+@@ -733,6 +684,44 @@
+     "vitest.config.ts": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+     "vitest.evidence.config.ts": "6b2fee31033acf4843bc923dd864ee5c65501ec658ce0fedc9ebc549e8870dda"
+   },
+-  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+-  "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum"
++  "dirtyPaths": [
++    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
++    "packages/server/src/transaction-changefeed.test.ts",
++    "packages/server/src/transaction-http.ts",
++    "packages/server/src/transaction-service.ts",
++    "packages/server/src/transaction-sse.test.ts",
++    "packages/server/src/transaction-store.ts"
++  ],
++  "ownedFiles": {
++    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
++      "beforeSha256": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b",
++      "afterSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77"
++    },
++    "packages/server/src/transaction-changefeed.test.ts": {
++      "beforeSha256": "e3717ff2dfcc9af743e5c963de7f1c75778f827768765e9eb3aebe1545efd4d0",
++      "afterSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
++    },
++    "packages/server/src/transaction-http.ts": {
++      "beforeSha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
++      "afterSha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0"
++    },
++    "packages/server/src/transaction-service.ts": {
++      "beforeSha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487",
++      "afterSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568"
++    },
++    "packages/server/src/transaction-sse.test.ts": {
++      "beforeSha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
++      "afterSha256": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589"
++    },
++    "packages/server/src/transaction-store.ts": {
++      "beforeSha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002",
++      "afterSha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
++    }
++  },
++  "binaryDiffSha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
++  "binaryDiffArtifact": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-typecheck-correction-1/full.patch",
++    "sha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745"
++  },
++  "attribution": "Exact dirty source after accepted CODE F1-F3 corrections; a562 base alone is not this candidate. No new runtime/CODE acceptance inferred."
+ }

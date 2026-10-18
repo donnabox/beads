@@ -1,0 +1,12 @@
+--- base-tools.candidate.json
++++ predecessor6/base-tools.candidate.json
+@@ -1,7 +1,7 @@
+ {
+-  "at": "2026-10-18T12:05:35.183337+00:00",
++  "at": "2026-10-18T11:10:12.563120+00:00",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+-  "state": "DATA7 static file/realpath candidates only; all actual versions/install/workspace tools still UNRESOLVED/fresh stages required",
++  "state": "DATA6 fresh read-only file/realpath candidates; versions/install/workspace tools remain unobserved and require all fresh execution.",
+   "tools": {
+     "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": {
+       "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",

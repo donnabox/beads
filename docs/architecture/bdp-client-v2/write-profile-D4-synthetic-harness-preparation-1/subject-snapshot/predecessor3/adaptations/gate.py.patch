@@ -1,0 +1,11 @@
+--- predecessor2/gate.py
++++ gate.py
+@@ -104,7 +104,7 @@
+   require(os.environ.get('D4_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('D4_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+- for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
++ for f,h in read(idx).items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+  for f,h in read(P/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)
+  b=document(g['sourceBinding']);sid=source_check(b);g={**g,'finalHead':b['head'],'finalTree':b['tree'],'sourceLockSha256':b['trackedSourceFiles']['pnpm-lock.yaml'],'_sourceIdentity':sid,'_sourceBinding':b}
+  disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')

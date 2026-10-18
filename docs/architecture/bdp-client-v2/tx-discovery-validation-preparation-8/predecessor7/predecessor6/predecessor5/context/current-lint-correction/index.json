@@ -1,0 +1,218 @@
+{
+  "state": "FROZEN bounded SOURCE ONLY",
+  "files": {
+    "after/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+      "bytes": 65401
+    },
+    "baseline/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+      "bytes": 11162
+    },
+    "baseline/apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+      "bytes": 18360
+    },
+    "baseline/packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "bytes": 96265
+    },
+    "baseline/packages/server/src/transaction-http.test.ts": {
+      "sha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+      "bytes": 247333
+    },
+    "baseline/packages/server/src/transaction-http.ts": {
+      "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "bytes": 28966
+    },
+    "baseline/packages/server/src/transaction-installed-contracts.test.ts": {
+      "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+      "bytes": 21902
+    },
+    "before/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33",
+      "bytes": 65354
+    },
+    "closure.json": {
+      "sha256": "2406279283d865eaf30ea85bcbd0267c069e976ad641a6e294e139f2250ed5fd",
+      "bytes": 768
+    },
+    "context/actual-lint-failure/diagnosis-and-release.json": {
+      "sha256": "3e4e931c6312cb49a3b190d62028fa79097335d42bc51cf87bf9414623884ed0",
+      "bytes": 2535
+    },
+    "context/actual-lint-failure/execution-gate.after.json": {
+      "sha256": "ea4ebb127216050e517c79203bc26c4ff3e64b4677a038233f5a9c4dedaaacd2",
+      "bytes": 2949
+    },
+    "context/actual-lint-failure/execution-gate.before.json": {
+      "sha256": "e404e2d2defe65cc2733b7531c133a08c0b95c2513b02e945f19c50787c30f54",
+      "bytes": 3134
+    },
+    "context/actual-lint-failure/format-check.exit.json": {
+      "sha256": "e1a99586929e538bd550df1e4bbe038da1e20cc905309d6a482cfd822f28b0e3",
+      "bytes": 518
+    },
+    "context/actual-lint-failure/format-check.log": {
+      "sha256": "e68af146be923cf7927f97bfac49fb9114d339da852ed51ae73638d8798ee602",
+      "bytes": 43
+    },
+    "context/actual-lint-failure/format-check.processes.jsonl": {
+      "sha256": "7cf5d07e74294afc9ef0167f8e852c84f526f8ee1fa5cd8578241a9c7fc268a5",
+      "bytes": 2095
+    },
+    "context/actual-lint-failure/format-check.started.json": {
+      "sha256": "17b90ad409f33ef99b9020b700b00ca9e7949678c97b0b7fdff1a69f0117c8c4",
+      "bytes": 1236
+    },
+    "context/actual-lint-failure/index.json": {
+      "sha256": "c4745af7f87b0f2dae47571ad2b9346a5320ff28ab71f9720da125edb07caf4c",
+      "bytes": 2262
+    },
+    "context/actual-lint-failure/lint.exit.json": {
+      "sha256": "35605bf537fd93af4ff51088dc076b458ba7184944edb8a285527d6c5856f290",
+      "bytes": 515
+    },
+    "context/actual-lint-failure/lint.log": {
+      "sha256": "f4b5e0e2b03812270cab4a66999ddb46e5fe7103f7a52167b3ad969738995631",
+      "bytes": 17641
+    },
+    "context/actual-lint-failure/lint.processes.jsonl": {
+      "sha256": "57e82a7985f4db8adfdc35664401381975f84a8ceea5c721c0aa3af2e5c39b37",
+      "bytes": 519
+    },
+    "context/actual-lint-failure/lint.started.json": {
+      "sha256": "f069082289fc44ee6f91ce657953a5b85021a50e809e804a9ea9ff4bb508a784",
+      "bytes": 1218
+    },
+    "context/actual-lint-failure/report.md": {
+      "sha256": "52e4444255153c5a84da84999b0691e724026dda052c270b307643e0fc35fe93",
+      "bytes": 547
+    },
+    "context/actual-lint-failure/typecheck.exit.json": {
+      "sha256": "d4904679512a2add072b37fdbfa4cd72d33725c17d16ba044cfa8b52d370eff6",
+      "bytes": 519
+    },
+    "context/actual-lint-failure/typecheck.log": {
+      "sha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "bytes": 29
+    },
+    "context/actual-lint-failure/typecheck.processes.jsonl": {
+      "sha256": "b0b37456fb1cfabda993897a0d48b1c71793c4bf38e59b6279e785f8e041fac1",
+      "bytes": 2436
+    },
+    "context/actual-lint-failure/typecheck.started.json": {
+      "sha256": "1a5fb5cc81e974688688bd3e2f858376b236be8c30c236f86a7bb4d2172f7872",
+      "bytes": 771
+    },
+    "context/previous-three-annotations-index.json": {
+      "sha256": "2219350a2f6bcbb84bcce2b912dc7454c10117eb2e27a52b2804109d832be498",
+      "bytes": 7494
+    },
+    "context/previous-three-annotations.patch": {
+      "sha256": "e39e7324acc4ace76779715ce634414ea99ec99d3cef931d42a9943b989d13ef",
+      "bytes": 1211
+    },
+    "context/previous-validation4-implementation-hashes.json": {
+      "sha256": "ef5f53f6d6852a28c46b5ced54294c968624ccc21e04e669586a3c78e77be750",
+      "bytes": 100142
+    },
+    "context/previous-validation4-preparation-index.json": {
+      "sha256": "0b7849160de598a98e2ddb35c3e3c657142e455d3311c18e67fc222f80d03435",
+      "bytes": 132031
+    },
+    "context/previous-validation4-source-binding.json": {
+      "sha256": "3de413096b0a8b04db892a0d25209f5d173012d95fa30aabb3dbade768710872",
+      "bytes": 93506
+    },
+    "correction.inverse.patch": {
+      "sha256": "3d340c399a3040abbaee29451c13018afc4aecaa09db334286638b0e1d577596",
+      "bytes": 1119
+    },
+    "correction.patch": {
+      "sha256": "bdd7d940dd250dce68c00dfaa626393ce448588830a92a5c1b7f8a613beedcc0",
+      "bytes": 1119
+    },
+    "cumulative-after/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+      "bytes": 65401
+    },
+    "cumulative-after/apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
+      "bytes": 18590
+    },
+    "cumulative-after/packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8",
+      "bytes": 96730
+    },
+    "cumulative-after/packages/server/src/transaction-http.test.ts": {
+      "sha256": "57148d60bc0e6f2bb8767331b7f190db9f36cf619b243451fd2ab726d8199381",
+      "bytes": 278299
+    },
+    "cumulative-after/packages/server/src/transaction-http.ts": {
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "bytes": 29774
+    },
+    "cumulative-after/packages/server/src/transaction-installed-contracts.test.ts": {
+      "sha256": "3626cc98357a0eddd4c6629c98d551793a2026f3f86f259c8a1c05ad5911867e",
+      "bytes": 23301
+    },
+    "cumulative-six-file.inverse.patch": {
+      "sha256": "333b548a9e582458a16095866a96977b3a9b27aab18f446b3c6054f5b7f3e9f4",
+      "bytes": 104790
+    },
+    "cumulative-six-file.patch": {
+      "sha256": "6c22bf0b2846334b63993040378f65d07fb78643cc2dd8bc20e6a4ef6f155534",
+      "bytes": 104790
+    },
+    "formatter-invocation.json": {
+      "sha256": "a3bce8252f1641feebd672c79d95ca96b80223be0293d67499e2c0ac63e98293",
+      "bytes": 535
+    },
+    "formatter-result.json": {
+      "sha256": "aa0781d836d6971cf87e303be9179afd2047bc9cada76fd8e30f53fc3d1e4824",
+      "bytes": 268
+    },
+    "formatter.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "formatter.stdout.log": {
+      "sha256": "f7013aa591b85d587494691ba044c4095440a167f4db5c2d573e8fe0dcdf5cd7",
+      "bytes": 44
+    },
+    "input-origins.json": {
+      "sha256": "b6d723b06b7db6d5f4bb3c26c3d07797c997aab60316a026c6fd02f183988cfd",
+      "bytes": 10258
+    },
+    "precision-witnesses.json": {
+      "sha256": "41d514439a59a1817a44ec15da2099932c68f48ada76e4b6a1a7020883d71023",
+      "bytes": 917
+    },
+    "preformat/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+      "bytes": 65401
+    },
+    "report.md": {
+      "sha256": "7d0fecdaeb6d58752a596329c38e9dca3a07243bd8cf325a71c29e70068fa73f",
+      "bytes": 1907
+    },
+    "source-after-map.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "source-base-cce-map.json": {
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874
+    },
+    "source-before-map.json": {
+      "sha256": "c5b25b6303366f53cf33c121293e3a9253cc40c030eea27b9fcbc29e213b63a0",
+      "bytes": 87874
+    },
+    "source-binding.json": {
+      "sha256": "cdd011b47077fb9db4eb9ddccf0e103b009891dc74f8ace718b704e51b0ddcd1",
+      "bytes": 2015
+    }
+  },
+  "physicalCountIncludingIndex": 54
+}

@@ -1,0 +1,39 @@
+{
+  "utc": "2026-10-18T10:48:06.461999+00:00",
+  "durableReleaseCommit": "1624b1f3651177100b4b2e19ccb82b682f220c0a",
+  "rootReleaseSha256": "d738f81e69d7c9895e9479d21214446d1a1da45e901361ed34dc932b3dbff46c",
+  "gateSha256": "faebf8513965ab0bf9cab6882c63634a5dee1b983086a94631c5603194b92a5f",
+  "stages": [
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "actualRootArgv": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run.py",
+      "final",
+      "prepare-package-directory"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run.py",
+      "final",
+      "pack-protocol"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run.py",
+      "final",
+      "pack-server"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run.py",
+      "final",
+      "verify-archives"
+    ]
+  ],
+  "freshAttemptNoRetry": true
+}

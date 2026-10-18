@@ -1,0 +1,24 @@
+{
+  "state": "FROZEN independent read-only actual failure diagnosis",
+  "firstMismatchOrdinal": 7,
+  "firstMismatchId": "resource-alias-create-a",
+  "cause": "Authored expected request occurrence arrays omit source-generated content-type and idempotency-key entries",
+  "exactOccurrenceMismatches": 11,
+  "rowCount": 43,
+  "epochViewSubstitutionCause": false,
+  "actualPrefix": {
+    "passed": 27,
+    "failed": 1,
+    "laterUnattempted": 24
+  },
+  "source679Exact": true,
+  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+  "sourceBindingSha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+  "rootProofAcceptanceSha256": "a2880b2e914d578eec8488be5d0ba062a121408d5126e56806a3c70cf4fe1e77",
+  "gateClosedSha256": "330d04a6af514b9c9b471ba73b3ad4a03e55be47c49ed7f45c3abdcaa6986780",
+  "reportSha256": "bdb82952e70e2a5f2e29c9049201a94a4447e666d808e2c4cc42d17746b5ac6f",
+  "strictAuditPassed": false,
+  "fixReleased": false,
+  "helperImportedOrEvaluated": false,
+  "runtimeOrRetryExecuted": false
+}

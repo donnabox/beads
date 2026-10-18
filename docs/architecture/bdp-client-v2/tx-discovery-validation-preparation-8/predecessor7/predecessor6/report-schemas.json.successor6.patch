@@ -1,0 +1,200 @@
+--- predecessor5/report-schemas.json
++++ current6/report-schemas.json
+@@ -148,7 +148,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-create-a"
++          }
++        ],
+         "id": "resource-alias-create-a",
+         "method": "POST",
+         "position": "pos-1",
+@@ -180,7 +189,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-create-b"
++          }
++        ],
+         "id": "resource-alias-create-b",
+         "method": "POST",
+         "position": "pos-2",
+@@ -212,7 +230,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-update-a"
++          }
++        ],
+         "id": "resource-alias-update-a",
+         "method": "POST",
+         "position": "pos-3",
+@@ -244,7 +271,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-create-l"
++          }
++        ],
+         "id": "resource-alias-create-l",
+         "method": "POST",
+         "position": "pos-4",
+@@ -276,7 +312,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-update-l"
++          }
++        ],
+         "id": "resource-alias-update-l",
+         "method": "POST",
+         "position": "pos-5",
+@@ -308,7 +353,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-put-alias"
++          }
++        ],
+         "id": "resource-alias-put-alias",
+         "method": "POST",
+         "position": "pos-5",
+@@ -350,7 +404,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-delete-alias"
++          }
++        ],
+         "id": "resource-alias-delete-alias",
+         "method": "POST",
+         "position": "pos-5",
+@@ -382,7 +445,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-delete-l"
++          }
++        ],
+         "id": "resource-alias-delete-l",
+         "method": "POST",
+         "position": "pos-6",
+@@ -414,7 +486,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-delete-b"
++          }
++        ],
+         "id": "resource-alias-delete-b",
+         "method": "POST",
+         "position": "pos-7",
+@@ -446,7 +527,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-delete-a"
++          }
++        ],
+         "id": "resource-alias-delete-a",
+         "method": "POST",
+         "position": "pos-8",
+@@ -478,7 +568,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-resource-alias-create-a"
++          }
++        ],
+         "id": "replay-create",
+         "method": "POST",
+         "position": "pos-8",

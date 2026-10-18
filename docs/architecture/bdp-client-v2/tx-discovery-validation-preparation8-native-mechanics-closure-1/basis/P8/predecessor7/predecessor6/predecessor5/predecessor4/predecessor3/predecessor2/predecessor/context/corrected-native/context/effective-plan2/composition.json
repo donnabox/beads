@@ -1,0 +1,47 @@
+{
+  "state": "CLOSED effective plan2 precise overlays only",
+  "parentRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-correction-plan-1",
+  "parentWholeTreeInventorySha256": "1549f7da815950fa290e225cb41615cbe91ca432334382e6b587a4fc796f51dc",
+  "parentFiles": 78,
+  "parentIndexSha256": "663469c3a69f009e03753ccb0e9f735e7301b8a57378dc9c22ba08f546bb6bd7",
+  "parentClientPrecisionIndexSha256": "d154b9d7afd12f4d68426d1cca66bd904a860266c7b42d2b3bd69e8a4f915d54",
+  "rootAll10DispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+  "rootAdditiveDispositionSha256": "8a83a9c4a7909c2810fe3643a3452b9474c180eb08a36075f383d8f756fea3ed",
+  "activePlan": "effective-plan.md",
+  "activeFixMatrix": "effective-correction-matrix.json",
+  "originalCandidateMapSha256": "f55e40725115eae0475b85af47d5d4eda0bbdd2897d1ecfd9a6672903a157dae",
+  "originalCandidateFiles": 679,
+  "inheritedSixSourceCopies": {
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "09e5ba9cd3203af9bffebc1db1e7840eae732dc4b506bed5d11ac9730bd0c015",
+      "baseCceSha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f",
+      "baseCceSha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df"
+    },
+    "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+      "baseCceSha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "baseCceSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    "packages/server/src/transaction-installed-contracts.test.ts": {
+      "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+      "baseCceSha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1"
+    },
+    "apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+      "baseCceSha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759"
+    }
+  },
+  "allOtherInheritedContracts": "Original plan1 unchanged except these exact F5/F10 meanings; plan4+plan5 inherited source/count/budget contracts remain as plan1 specifies. Historical fields are not new source/runtime permissions.",
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "secondActualCodeAllowed": false,
+  "secondActualPlanAllowed": false,
+  "nativePrecision": "UNRESOLVED",
+  "rootPlanAcceptance": "UNRESOLVED"
+}

@@ -1,0 +1,27 @@
+{
+  "sites": [
+    {
+      "beforeLine": 263,
+      "afterLine": 263,
+      "error": "missing immediate child terminal observers",
+      "before": "throw new Error then immediate local catch failures.push(error)",
+      "after": "failures.push(new Error) and ELSE-only close/cleanupKnowntrue",
+      "sessionFinallyUnchanged": true
+    },
+    {
+      "beforeLine": 531,
+      "afterLine": 533,
+      "error": "D3 unresolved work ownership",
+      "before": "throw new Error then immediate local catch failures.push(error)",
+      "after": "failures.push(new Error) at same final try statement"
+    }
+  ],
+  "exactTwoReplacementsOnly": true,
+  "sameErrorMessages": true,
+  "allRequestsAssertionsReportFieldsPrimaryCleanupUnknownRetentionAndDeadlinesUnchanged": true,
+  "ruleSuppressionAdded": false,
+  "allOther678Exact": true,
+  "formatOnlyExit": 0,
+  "formatNoFixesApplied": true,
+  "compilerLintTestsUnrun": true
+}

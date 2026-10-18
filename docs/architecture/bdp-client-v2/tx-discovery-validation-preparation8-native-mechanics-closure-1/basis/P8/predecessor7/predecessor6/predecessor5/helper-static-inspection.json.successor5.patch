@@ -1,0 +1,48 @@
+--- predecessor4/helper-static-inspection.json
++++ current5/helper-static-inspection.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "STATIC ONLY byte/AST reuse; never helper import/evaluation",
++  "state": "STATIC ONLY exact reuse, no helper import/evaluation/execution",
+   "helpers": {
+     "run.py": {
+       "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+@@ -22,15 +22,30 @@
+       "bytes": 946
+     }
+   },
+-  "helperBytesAndASTIdenticalToAccepted2And3": true,
+-  "indexValueShape": "SHA256 strings, accepted gate.py101 direct comparison compatible",
+-  "sourceChangesByThisPreparation": false,
+-  "semanticReportSchemasSelectionUnchanged": true,
++  "allFiveByteAndASTIdenticalAccepted4and2": true,
++  "implementationValuesSHAStrings": true,
++  "semanticSchemasSelectionGrammarsUnchanged": true,
+   "commandsPathOnly": true,
+   "stages": 52,
+   "immediateAuditPairs": 16,
+-  "sourceFiles": 679,
+-  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+-  "freshAllStagesRequired": true,
+-  "nativeMechanicsAcceptance": "PENDING"
++  "budgets": {
++    "automaticRetries": 0,
++    "installedCallbackMs": 60000,
++    "installedTotalCleanupMs": 10000,
++    "installedWorkMs": 45000,
++    "newDCleanupInclusiveStopMs": 4000,
++    "newDWorkMs": 3000,
++    "outerStageMs": 120000,
++    "recorderMs": 5000,
++    "requestMs": 5000,
++    "sourceDefaultCallbackMs": 5000,
++    "sourceDrainMs": 1000,
++    "sourceLatchMs": 1000,
++    "termAtMs": 115000
++  },
++  "currentSourceFiles": 679,
++  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
++  "actualRootGitBinary": "4d57679e34192081ce3a300cfc88efa25abcadd4353891b63866c8e0223065dd",
++  "allFreshRequired": true,
++  "nativeAcceptance": "PENDING"
+ }

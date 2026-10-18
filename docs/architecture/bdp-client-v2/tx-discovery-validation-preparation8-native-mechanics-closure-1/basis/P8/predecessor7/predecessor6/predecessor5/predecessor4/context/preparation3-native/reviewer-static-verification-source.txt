@@ -1,0 +1,55 @@
+from pathlib import Path
+import json,hashlib,difflib,ast
+L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs');D=Path('/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2');P=L/'tx-discovery-validation-preparation-3';C=L/'tx-discovery-typecheck-correction-1';R=Path('/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum')
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def rd(p):return json.loads(p.read_text())
+def pin(p):b=p.read_bytes();return {'sha256':sha(b),'bytes':len(b)}
+errors=[]
+def check(ok,msg):
+ if not ok:errors.append(msg)
+idx=rd(P/'preparation-index.json');impl=rd(P/'implementation-hashes.json');files={q.relative_to(P).as_posix():pin(q) for q in P.rglob('*') if q.is_file()}
+check(set(files)==set(idx['files'])|{'preparation-index.json'},'physical inventory')
+for rel,v in idx['files'].items():check(files[rel]==v,'index:'+rel)
+for rel,v in files.items():check(pin(D/P.name/rel)==v,'mirror:'+rel)
+check(set(impl['files'])==set(files)-set(impl['excludedControlRelativePaths']),'implementation exclusion closure')
+for rel,v in impl['files'].items():check(files[rel]==v,'implementation record:'+rel)
+orig=rd(P/'context-origins.json')
+for rel,v in orig.items():check({'sha256':v['sha256'],'bytes':v['bytes']}==pin(Path(v['origin'])),'origin source:'+rel);check(rel=='commands.json' or pin(P/rel)==pin(Path(v['origin'])),'literal copy:'+rel)
+refs=rd(P/'reference-pins.json')
+for loc,h in refs.items():check(sha(Path(loc).read_bytes())==h,'reference:'+loc)
+parent=rd(P/'predecessor2-physical-inventory.json')['files'];check(set(parent)=={q.relative_to(P/'predecessor2').as_posix() for q in (P/'predecessor2').rglob('*') if q.is_file()},'parent copy inventory')
+for rel,v in parent.items():check(pin(P/'predecessor2'/rel)==v==pin(L/'tx-discovery-validation-preparation-2'/rel),'parent:'+rel)
+oldidx=rd(P/'predecessor2/preparation-index.json');exceptions=[rel for rel,v in oldidx['files'].items() if pin(P/'predecessor2'/rel)!=v]
+check(exceptions==['execution-gate.json'],'historical gate only exception')
+helpers={}
+for n in ['run.py','gate.py','audit.py','packages.py','guarded-action-session-20261018-021624-549f.py']:
+ b=(P/n).read_bytes();old=(P/'predecessor2'/n).read_bytes();check(b==old,'helperbytes:'+n);check(ast.dump(ast.parse(b))==ast.dump(ast.parse(old)),'helperAST:'+n);helpers[n]=pin(P/n)
+deltas=rd(P/'successor-delta.json')['files'];delta_results={}
+for n,v in deltas.items():
+ before=(P/'predecessor2'/n).read_text();after=(P/n).read_text();fw=(P/(n+'.successor3.patch')).read_text();inv=(P/(n+'.successor3.inverse.patch')).read_text()
+ check(sha(before.encode())==v['beforeSha256'],'delta before:'+n);check(sha(after.encode())==v['afterSha256'],'delta after:'+n)
+ # Headers are descriptive; independently regenerate every hunk exactly.
+ def body(x):return ''.join(x.splitlines(keepends=True)[2:]) if x else ''
+ a=''.join(difflib.unified_diff(before.splitlines(keepends=True),after.splitlines(keepends=True),fromfile='a',tofile='b'));b=''.join(difflib.unified_diff(after.splitlines(keepends=True),before.splitlines(keepends=True),fromfile='b',tofile='a'))
+ check(body(a)==body(fw),'forward hunks:'+n);check(body(b)==body(inv),'inverse hunks:'+n);check(sha(fw.encode())==v['forwardSha256'] and sha(inv.encode())==v['inverseSha256'],'delta pins:'+n)
+ delta_results[n]={'changed':before!=after,'forwardHunksExact':body(a)==body(fw),'inverseHunksExact':body(b)==body(inv)}
+cb=rd(C/'source-binding.json');before=rd(C/'source-before-map.json');after=rd(C/'source-after-map.json');base=rd(C/'source-base-cce-map.json');binding=rd(P/'source-binding.json');changed=[n for n in before if before[n]!=after[n]]
+check(changed==['packages/server/src/transaction-http.test.ts'],'exact one source changed')
+check(len(after)==679 and after==binding['trackedSourceFiles'],'map binding')
+for rel,h in after.items():check(sha((R/rel).read_bytes())==h,'live source:'+rel)
+check(sha(json.dumps(after,sort_keys=True).encode())==binding['sourceIdentity'],'canonical source identity')
+owned=set(binding['ownedFiles']);check(len(owned)==6 and all(base[n]==after[n] for n in base if n not in owned),'673 protected baseline')
+name=changed[0];b=(C/'before'/name).read_text();a=(C/'after'/name).read_text();check(b.count('HeadersInit')==3 and b.replace('HeadersInit','Record<string, string>')==a,'exact three replacement source')
+for rel,v in rd(C/'index.json')['files'].items():check(pin(C/rel)==v,'correction index:'+rel);check(pin(D/C.name/rel)==v,'correction mirror:'+rel)
+for suf,left,right in [('patch',b,a),('inverse.patch',a,b)]:
+ diff=''.join(difflib.unified_diff(left.splitlines(keepends=True),right.splitlines(keepends=True),fromfile='a',tofile='b'));given=(C/('three-annotations.'+suf)).read_text();check(body(diff)==body(given),'annotation '+suf)
+check(sha((P/'context/current-root-source-inspection/tracked-source.git-binary.patch').read_bytes())==binding['binaryDiffSha256'],'root actual binary')
+commands=rd(P/'commands.json');oldcommands=rd(P/'predecessor2/commands.json');check(json.dumps(commands,sort_keys=True).replace(str(P),str(L/'tx-discovery-validation-preparation-2'))==json.dumps(oldcommands,sort_keys=True),'commands path-only')
+unchanged=['selection.json','report-schemas.json','source-audit-contract.json','installed-audit-contract.json','package-consumer-contract.json','audit-expectations.json']
+for n in unchanged:check((P/n).read_bytes()==(P/'predecessor2'/n).read_bytes(),'semantic data unchanged:'+n)
+gate=rd(P/'execution-gate.json');check((P/'execution-gate.json').read_bytes()==(P/'execution-gate.closed.json').read_bytes(),'closed gate snapshot');check(gate['approvedStages']==[] and all(gate[k] is False for k in ['released','rootExactSourceAccepted','rootPlanAccepted','nativeCodeReviewDisposed','actualClaudeReviewDisposed','staticValidationAuthorized']) and not (P/'run').exists(),'closed no attempt')
+order=commands['finalOrder'];testnames=[n for n in order if 'selectedFullNames' in commands['commands'][n]];check(len(order)==52 and len(testnames)==16,'52/16 count')
+for n in testnames:check(order[order.index(n)+1]=='audit-'+n,'immediate audit:'+n)
+for n in order:check(commands['commands'][n]['outerSeconds']==120 and commands['commands'][n]['termAtSeconds']==115 and commands['commands'][n]['automaticRetries']==0,'deadlines:'+n)
+result={'packet':str(P),'preparationIndex':pin(P/'preparation-index.json'),'implementationIndex':pin(P/'implementation-hashes.json'),'sourceBinding':pin(P/'source-binding.json'),'physicalFiles':len(files),'implementationFiles':len(impl['files']),'implementationExclusions':impl['excludedControlRelativePaths'],'origins':len(orig),'referencePins':len(refs),'predecessorObservedFiles':len(parent),'historicalOriginalIndexException':exceptions,'helpers':helpers,'deltaPairs':delta_results,'sourceFiles':len(after),'sourceIdentity':binding['sourceIdentity'],'sourceAfterMap':pin(C/'source-after-map.json'),'changedPathsVsPredecessor':changed,'unchangedOtherCandidate':len(after)-len(changed),'protectedBaseFiles':len(after)-len(owned),'annotationExactThreeStringReplacements':True,'sourceContractBinaryHash':rd(P/'source-audit-contract.json')['sourceBinaryDiffSha256'],'actualBinaryHash':binding['binaryDiffSha256'],'implementationValueTypes':sorted({type(v).__name__ for v in impl['files'].values()}),'gateExpectedValueType':'str SHA256 (direct comparison, gate.py line101)','commands':{'stages':len(order),'immediatePairs':len(testnames),'all52FreshRequired':True,'bounds':commands['bounds']},'errors':errors}
+Path('/tmp/tx-prep3-independent-results.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['helpers','deltaPairs','implementationExclusions']},indent=2))

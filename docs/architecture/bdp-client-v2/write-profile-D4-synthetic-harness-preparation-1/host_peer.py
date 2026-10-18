@@ -1,0 +1,68 @@
+"""Future zero-product process stimuli. No product imports/network/store.
+Every member has an independent finite self-expiry as a secondary containment
+backstop. This does not replace the actual immutable watchdog under test.
+"""
+import time
+import json,os,signal,socket,subprocess,sys
+from pathlib import Path
+
+def write(path,value):
+ with Path(path).open('x')as f:json.dump(value,f,allow_nan=False);f.write('\n')
+def wait_until(deadline):
+ while time.monotonic()<deadline:time.sleep(min(.02,max(0,deadline-time.monotonic())))
+def main():
+ role=sys.argv[1]
+ if role=='census-block':time.sleep(1);return 0
+ if role=='member':
+  origin=float(sys.argv[2]);path=Path(sys.argv[3]);mode=sys.argv[4]
+  write(path,{'pid':os.getpid(),'pgid':os.getpgrp(),'ppid':os.getppid(),'clock':time.monotonic(),'kind':'zero-product-owned-peer'})
+  if mode=='linger':
+   signal.signal(signal.SIGTERM,signal.SIG_IGN)
+   # If watchdog fails, no immortal synthetic child is left intentionally.
+   wait_until(min(origin+148.5,time.monotonic()+12));return 0
+  sys.stdout.write('zero-product pipe witness\n');sys.stdout.flush();time.sleep(.4);return 0
+ fd=int(sys.argv[2]);directory=Path(sys.argv[3]);scenario=sys.argv[4];origin=float(sys.argv[5]);channel=socket.socket(fileno=fd)
+ signal.pthread_sigmask(signal.SIG_SETMASK,set())
+ if role=='publish':
+  if scenario=='publisher-block':wait_until(min(origin+144,time.monotonic()+12));return 1
+  raw=b''
+  while b'\n'not in raw:
+   block=channel.recv(65536)
+   if not block:return 1
+   raw+=block
+   if len(raw)>1048576:return 1
+  record=json.loads(raw.split(b'\n')[0]);write(directory/'watchdog.json',record)
+  return 1 if scenario=='publisher-fail'else 0
+ def note(event,**fields):
+  raw=(json.dumps({'event':event,**fields})+'\n').encode();assert len(raw)<=4096;channel.sendall(raw)
+ def receive(expected):
+  raw=b'';channel.settimeout(max(.01,min(5,origin+144-time.monotonic())))
+  while b'\n'not in raw:
+   raw+=channel.recv(4096)
+   if len(raw)>8192:raise RuntimeError('peer-control-capacity')
+  value=json.loads(raw.split(b'\n')[0]);assert value['event']==expected;return value
+ note('attempt',attemptId='c'*32,sourceBindingSha256='d'*64)
+ write(directory/'worker-ready.json',{'pid':os.getpid(),'pgid':os.getpgrp(),'origin':origin,'scenario':scenario})
+ if scenario=='blocked-preflight':time.sleep(12);return 1
+ if scenario=='late-start':wait_until(origin+10.05);note('phase',phase='callback-start');time.sleep(1);return 1
+ if scenario=='blocked-final':
+  note('phase',phase='callback-start');time.sleep(.2);note('phase',phase='callback-end');time.sleep(7);return 1
+ note('phase',phase='callback-start')
+ member_mode='linger'if scenario in ['leader-exit-before-created','leader-exit-after-created']else'pipe'
+ p=subprocess.Popen([sys.executable,'-I','-B',str(Path(__file__).resolve()),'member',str(origin),str(directory/'member.json'),member_mode],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+ if scenario=='leader-exit-before-created':
+  # Child exists in the worker's new session before any created notification.
+  time.sleep(.2);note('failed');os._exit(1)
+ note('created',pid=p.pid,pgid=os.getpgrp(),ppid=os.getpid(),createdEpoch=time.time());receive('creation-ack')
+ if scenario=='leader-exit-after-created':time.sleep(.4);note('failed');os._exit(1)
+ output,errors=p.communicate(timeout=2)
+ write(directory/'pipe-close.json',{'pid':p.pid,'exit':p.returncode,'stdoutBytes':len(output),'stderrBytes':len(errors),'stdoutEofObserved':True,'stderrEofObserved':True,'clock':time.monotonic()})
+ assert p.returncode==0 and output==b'zero-product pipe witness\n'and not errors
+ note('phase',phase='callback-end');note('leader-exit',pid=p.pid,code=0);note('need-quiet');receive('quiet')
+ # Zero-product schema-check role exercises actual creation/check settlement
+ # protocol only; it never runs schema validation and cannot claim that credit.
+ check=subprocess.Popen([sys.executable,'-I','-B',str(Path(__file__).resolve()),'member',str(origin),str(directory/'check.json'),'pipe'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+ note('check-created',pid=check.pid,pgid=os.getpgrp(),ppid=os.getpid(),role='pinned-schema-audit')
+ out,err=check.communicate(timeout=2);assert check.returncode==0 and not err;note('check-exit',pid=check.pid,code=0)
+ note('verified');receive('finalize');note('published');return 0
+if __name__=='__main__':raise SystemExit(main())

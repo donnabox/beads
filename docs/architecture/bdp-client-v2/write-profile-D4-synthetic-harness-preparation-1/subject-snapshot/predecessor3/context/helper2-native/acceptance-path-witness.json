@@ -1,0 +1,28 @@
+{
+  "status": "STATIC symbolic path only, not an executed control/timing sample",
+  "productPhase": {
+    "begin": 0,
+    "verifiedFlush": 30,
+    "relativeDrainDeadline": 40,
+    "absoluteTERM": 145
+  },
+  "path": [
+    {
+      "event": "publisher already registered; earlier normal checks passed",
+      "time": 39.7
+    },
+    {
+      "event": "loop now sampled, phase test passes",
+      "time": 39.9
+    },
+    {
+      "event": "existing census completes within its200ms allowance; observes terminal/absent publisher and empty remaining groups",
+      "time": 40.001
+    },
+    {
+      "event": "line226 passes only currenttime<145 and can return0",
+      "time": 40.002
+    }
+  ],
+  "reason": "Final success has no direct effective-relative-deadline recheck after census/observe/reap. Host<145 receipt alone permits these numbers. No OS duration bound or actual scheduling observation is claimed."
+}
