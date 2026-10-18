@@ -1,0 +1,336 @@
+{
+  "cohorts": [
+    {
+      "id": "G09-I01",
+      "proposedFullName": "G09 installed exact schema current minimum",
+      "requests": 14,
+      "childrenOnSuccess": 1,
+      "requestTable": [
+        {
+          "ordinal": 1,
+          "method": "GET",
+          "target": "root",
+          "fields": "none",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "root"
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "target": "ref",
+          "fields": "none",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "ref"
+        },
+        {
+          "ordinal": 3,
+          "method": "POST",
+          "target": "operations/create-bead",
+          "fields": "valid fresh key",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "create"
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "target": "root",
+          "fields": "actual epoch/view; pos-0",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "root-min-zero"
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "target": "root",
+          "fields": "actual epoch/view; pos-1",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "root-head-min-one"
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "target": "ref",
+          "fields": "actual epoch/view; pos-1",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "ref-min-one"
+        },
+        {
+          "ordinal": 7,
+          "method": "GET",
+          "target": "root",
+          "fields": "pos-1; If-None-Match:*",
+          "expectedStatus": 304,
+          "credit": "bounded slice only",
+          "actualLabel": "not-modified"
+        },
+        {
+          "ordinal": 8,
+          "method": "HEAD",
+          "target": "ref",
+          "fields": "pos-1; If-Match:mismatch",
+          "expectedStatus": 412,
+          "credit": "bounded slice only",
+          "actualLabel": "precondition"
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "target": "root",
+          "fields": "pos-1; Accept:text/plain",
+          "expectedStatus": 406,
+          "credit": "bounded slice only",
+          "actualLabel": "unacceptable"
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "root",
+          "fields": "ahead pos-999; If-None-Match:*",
+          "expectedStatus": 503,
+          "credit": "bounded slice only",
+          "actualLabel": "ahead"
+        },
+        {
+          "ordinal": 11,
+          "method": "GET",
+          "target": "root",
+          "fields": "opaque unknown; If-Match:mismatch",
+          "expectedStatus": 503,
+          "credit": "bounded slice only",
+          "actualLabel": "opaque"
+        },
+        {
+          "ordinal": 12,
+          "method": "HEAD",
+          "target": "root",
+          "fields": "foreign epoch + opaque",
+          "expectedStatus": 410,
+          "credit": "bounded slice only",
+          "actualLabel": "foreign-epoch"
+        },
+        {
+          "ordinal": 13,
+          "method": "GET",
+          "target": "ref",
+          "fields": "foreign view + opaque",
+          "expectedStatus": 409,
+          "credit": "bounded slice only",
+          "actualLabel": "foreign-view"
+        },
+        {
+          "ordinal": 14,
+          "method": "GET",
+          "target": "root",
+          "fields": "none; final exact-byte control",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "root-final"
+        }
+      ],
+      "budgets": {
+        "requestSeconds": 5,
+        "workSeconds": 45,
+        "cleanupSeconds": 10,
+        "callbackSeconds": 60,
+        "outerSeconds": 120,
+        "TERM": 115,
+        "automaticRetries": 0
+      },
+      "partial": "derive actual attempted/settled/received/validated, actual live ownership/availability; failure never positive credit; no fabricated expected body",
+      "actualSelection": {
+        "id": "G09-I01",
+        "name": "G09-I01 installed exact schema current minimum",
+        "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "line": 808,
+        "fileSha256": "a496043a747b3e8f9bc9dd6e7f9849b3c4a400253b3d90e64d0405b7752b1c89",
+        "kind": "installed",
+        "observedExecution": false
+      },
+      "status": "AUTHORED_NOT_EXECUTED"
+    },
+    {
+      "id": "G09-I02",
+      "proposedFullName": "G09 installed receiving and exact retrieval membership",
+      "requests": 16,
+      "childrenOnSuccess": 1,
+      "requestTable": [
+        {
+          "ordinal": 1,
+          "method": "GET",
+          "target": "root",
+          "fields": "none baseline",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "root"
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "target": "root",
+          "fields": "partial tuple + If-None-Match:*",
+          "expectedStatus": 400,
+          "credit": "bounded slice only",
+          "actualLabel": "partial"
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "target": "root",
+          "fields": "comma-valued minimum + complete other fields",
+          "expectedStatus": 400,
+          "credit": "bounded slice only",
+          "actualLabel": "comma"
+        },
+        {
+          "ordinal": 4,
+          "method": "HEAD",
+          "target": "root",
+          "fields": "same malformed comma tuple",
+          "expectedStatus": 400,
+          "credit": "bounded slice only",
+          "actualLabel": "comma-head"
+        },
+        {
+          "ordinal": 5,
+          "method": "GET",
+          "target": "root",
+          "fields": "bad credential + partial tuple",
+          "expectedStatus": 401,
+          "credit": "bounded slice only",
+          "actualLabel": "unauthenticated"
+        },
+        {
+          "ordinal": 6,
+          "method": "POST",
+          "target": "root",
+          "fields": "bad credential + partial tuple",
+          "expectedStatus": 405,
+          "credit": "bounded slice only",
+          "actualLabel": "method"
+        },
+        {
+          "ordinal": 7,
+          "method": "GET",
+          "target": "root",
+          "fields": "Origin + partial tuple",
+          "expectedStatus": 403,
+          "credit": "bounded slice only",
+          "actualLabel": "origin"
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "target": "schemas/unknown",
+          "fields": "none",
+          "expectedStatus": 404,
+          "credit": "bounded slice only",
+          "actualLabel": "unknown"
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "target": "root?x=1",
+          "fields": "none; nonmember",
+          "expectedStatus": 404,
+          "credit": "bounded slice only",
+          "actualLabel": "query"
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "root?x=1",
+          "fields": "complete recognized minimum; preserved private gap",
+          "expectedStatus": 500,
+          "credit": "zero unsupported preservation",
+          "actualLabel": "query-minimum"
+        },
+        {
+          "ordinal": 11,
+          "method": "HEAD",
+          "target": "root",
+          "fields": "none; exact raw byte length",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "head"
+        },
+        {
+          "ordinal": 12,
+          "method": "GET",
+          "target": "schemas/unknown",
+          "fields": "complete recognized minimum; preserved private gap",
+          "expectedStatus": 500,
+          "credit": "zero unsupported preservation",
+          "actualLabel": "unknown-minimum"
+        },
+        {
+          "ordinal": 13,
+          "method": "GET",
+          "target": "schemas/unknown",
+          "fields": "complete opaque minimum; preserved private gap",
+          "expectedStatus": 500,
+          "credit": "zero unsupported preservation",
+          "actualLabel": "unknown-opaque"
+        },
+        {
+          "ordinal": 14,
+          "method": "GET",
+          "target": "beads/missing",
+          "fields": "complete opaque tuple",
+          "expectedStatus": 404,
+          "credit": "bounded slice only",
+          "actualLabel": "missing-bead"
+        },
+        {
+          "ordinal": 15,
+          "method": "HEAD",
+          "target": "links/missing?view=properties",
+          "fields": "complete opaque tuple",
+          "expectedStatus": 404,
+          "credit": "bounded slice only",
+          "actualLabel": "missing-link-properties"
+        },
+        {
+          "ordinal": 16,
+          "method": "GET",
+          "target": "ref",
+          "fields": "none final exact-byte control",
+          "expectedStatus": 200,
+          "credit": "bounded slice only",
+          "actualLabel": "ref-final"
+        }
+      ],
+      "budgets": {
+        "requestSeconds": 5,
+        "workSeconds": 45,
+        "cleanupSeconds": 10,
+        "callbackSeconds": 60,
+        "outerSeconds": 120,
+        "TERM": 115,
+        "automaticRetries": 0
+      },
+      "partial": "derive actual attempted/settled/received/validated, actual live ownership/availability; failure never positive credit; no fabricated expected body",
+      "actualSelection": {
+        "id": "G09-I02",
+        "name": "G09-I02 installed receiving and exact retrieval membership",
+        "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "line": 899,
+        "fileSha256": "a496043a747b3e8f9bc9dd6e7f9849b3c4a400253b3d90e64d0405b7752b1c89",
+        "kind": "installed",
+        "observedExecution": false
+      },
+      "status": "AUTHORED_NOT_EXECUTED"
+    }
+  ],
+  "newRequests": 30,
+  "newChildrenOnSuccessfulTwoCallbacks": 2,
+  "legacy14Callback": "BYTE-PRESERVE, separate unchanged report and audit; no report union",
+  "notRawRepeatedHeaderWitness": "comma-valued request is explicitly one value; genuine repeated-field coverage stays existing source/runtime controls",
+  "unknownSchema404Context": "absent, not pos-0; unlike missing ordinary Bead/Link owner404 with actual current context",
+  "actualTimesAndRuntimeHashes": "UNKNOWN_UNEXECUTED"
+}

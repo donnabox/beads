@@ -1,0 +1,49 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/native-command.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/native-command.json
+@@ -20,17 +20,17 @@
+     "/usr/bin/perl5.34",
+     "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+     "-I/System/Library/Perl/5.34",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_limit.pl",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability_limit.pl",
+     "AVAIL",
+     "availability",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/availability-release.proposed.json"
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/availability-release.proposed.json"
+   ],
+   "authoritySequence": [
+-    "FULL OTHER-native H5 mechanics and root static acceptance",
+-    "Separately named CLOSED exact H5 caller and native10-key authority; independent caller/native authority precision",
+-    "Separate independent full14-key root proposed execution authority review and durable exact release/readback",
+-    "ONE new exact-H5 availability attempt with actual PIPE/EOF/raw/whole-clock/fresh-process audit; H4 never retry/relabel",
+-    "Only separately measured root availability acceptance may establish clockDomainVerified; finite controls/product remain separately CLOSED"
++    "Exact H6 full source/native static acceptance and separate static availability native/root predicate documents",
++    "FULL OTHER-native caller/native10-key candidate precision and root static acceptance with durable publication/readback",
++    "Separately proposed14-key actual execution authority with independent precision and durable exact release/publication/readback",
++    "ONE new H6 availability attempt and full independent actual raw/EOF/terminal/source/tool/fresh ALL-recorded PID/group audit",
++    "Only root actual measured disposition may establish availability/clock; controls/product remain CLOSED"
+   ],
+   "clock": {
+     "KILL": 119,
+@@ -39,16 +39,16 @@
+     "bothNormalTerminalsStrictBefore": 115,
+     "whole": 120
+   },
+-  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5",
+-  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability-attempt",
++  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6",
++  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability-attempt",
+   "executed": false,
+   "finiteControlCalls": 0,
+-  "futureRootCaller": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/capture.py",
+-  "futureSeparateExecutionRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-2/release.json",
++  "futureRootCaller": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/capture.py",
++  "futureSeparateExecutionRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-3/release.json",
+   "noRetry": true,
+   "productCalls": 0,
+   "rootFreshAbsence": "UNRESOLVED",
+   "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+-  "state": "CLOSED exact H5 native argv, no invocation",
++  "state": "CLOSED exact H6 native argv, no invocation",
+   "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect"
+ }

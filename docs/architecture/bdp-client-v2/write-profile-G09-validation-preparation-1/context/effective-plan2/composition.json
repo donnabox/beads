@@ -1,0 +1,62 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "kind": "CLOSED minimal correction plan2 overlay; complete plan1 remains INPLACE",
+  "basePlanIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-correction-plan-1/index.json",
+    "sha256": "317510dea98ba63ef2d7179876a2a3b78db119c8725f13efe2e592e489a95912"
+  },
+  "completeEffectiveFiles": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-correction-plan-2/effective-files.json",
+    "sha256": "7c3b6c4795be28321878d7cac297a579d23deb7f9c44a7d23ba22520b592eb01",
+    "count": 56
+  },
+  "onlyChangedEffectiveFile": "source-cases.proposed.json",
+  "onlyChangedFields": "eight callbacks[*].proposedFullName now exact unchanged full names matching basisSelection.name and selection.proposed.json",
+  "changes": [
+    {
+      "id": "G09-S01",
+      "before": "schemaObserved zero-min/current and captured supplied tuple",
+      "after": "G09-S01 schemaObserved zero-min/current and captured supplied tuple"
+    },
+    {
+      "id": "G09-S02",
+      "before": "schemaObserved epoch and view errors",
+      "after": "G09-S02 schemaObserved epoch and view errors"
+    },
+    {
+      "id": "G09-S03",
+      "before": "schemaObserved ahead and opaque bounded attempts",
+      "after": "G09-S03 schemaObserved ahead and opaque bounded attempts"
+    },
+    {
+      "id": "G09-S04",
+      "before": "schema selector receiving and exact identity",
+      "after": "G09-S04 schema selector receiving and exact identity"
+    },
+    {
+      "id": "G09-S05",
+      "before": "schema selector HTTP/min failure order",
+      "after": "G09-S05 schema selector HTTP/min failure order"
+    },
+    {
+      "id": "G09-S06",
+      "before": "schema runtime satisfied and context errors",
+      "after": "G09-S06 schema runtime satisfied and context errors"
+    },
+    {
+      "id": "G09-S07",
+      "before": "schema runtime ahead before conditional",
+      "after": "G09-S07 schema runtime ahead before conditional"
+    },
+    {
+      "id": "G09-S08",
+      "before": "schema runtime unknown before HEAD/media",
+      "after": "G09-S08 schema runtime unknown before HEAD/media"
+    }
+  ],
+  "noOtherPlanCountOracleGrammarSourceBudgetChanges": true,
+  "sourceAuthoringReleased": false,
+  "helperRuntimeValidationReleased": false,
+  "independentPrecisionRootDurableSourceReleaseRequired": true,
+  "noSecondActualCODEorPLAN": true
+}

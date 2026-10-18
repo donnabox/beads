@@ -1,0 +1,59 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/static-verification.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/static-verification.json
+@@ -1,30 +1,31 @@
+ {
+-  "H5AvailabilityAttemptAbsent": true,
+-  "allActualH5Outcomes": "UNKNOWN",
+-  "caller1Original52PlusActual6": true,
++  "H6AvailabilityAttemptAbsent": true,
++  "actualInvocations": 0,
++  "actualNativeAndRootStaticPredicatesSatisfied": true,
++  "allActualH6Outcomes": "UNKNOWN/UNEXECUTED",
+   "callerAttemptAbsent": true,
+   "callerLines": 149,
+-  "callerOnlyTwoLiteralSubstitutions": true,
+-  "candidateExactKeys": 10,
+-  "copiedOrigins": 28,
+-  "entireInverseByteExact1": true,
+-  "externalPins": 6088,
+-  "futureExecutionRelease2Absent": true,
+-  "futureExecutionReleaseExactKeys": 14,
+-  "helper4FlatFiles": 857,
+-  "histories": [
+-    58,
+-    110,
+-    143,
+-    153,
+-    3
++  "candidateExactKeys": [
++    "approvedInvocations",
++    "availabilityOnly",
++    "durableRootRelease",
++    "harnessImplementationSha256",
++    "nativeHarnessAcceptance",
++    "noRetry",
++    "productReleased",
++    "scope",
++    "session",
++    "syntheticReleased"
+   ],
+-  "inheritedHistoriesFullRehashed": true,
+-  "nativeArgvOnlyFinalCandidateLiteral": true,
+-  "protectedFiles": 678,
+-  "sourceFiles": 679,
+-  "sourceProductGitGateMutations": false,
+-  "state": "Author own static source/DATA checks only; not independent approval",
+-  "subjectEvaluationOrCompileCheck": false,
+-  "toolIdentities": 13
++  "controlThreeEventsUnreleased": true,
++  "exactTwoLiteralInverse": true,
++  "futureReleaseAbsent": true,
++  "historicalCountDomainsExplicit": true,
++  "method": "Pure source/JSON/hash/AST-data analysis only; no helper imported/evaluated",
++  "nativeArgvOnlyLastCandidateChanged": true,
++  "otherNativePrecision": "PENDING",
++  "subjectImplementation": 857,
++  "subjectIndexed": 862,
++  "subjectPhysical": 863,
++  "twoEventAvailabilityParserUnchanged": true
+ }

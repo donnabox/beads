@@ -1,0 +1,20 @@
+--- G09/gate.py
++++ template/gate.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-schema-minimum')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum')
+ GUARD=P/'guarded-action-session-20261018-021624-549f.py'
+ MODE=os.environ.get('TX_DISCOVERY_VALIDATION_PHASE','final')
+ assert MODE=='final'
+@@ -34,7 +34,7 @@
+  require(sorted(git('diff','--name-only','HEAD').decode().splitlines())==b['dirtyPaths']==sorted(b['ownedFiles']) and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')
+  require(all(actual[p]==v['afterSha256'] and sha(git('show','HEAD:'+p))==v['beforeSha256'] for p,v in b['ownedFiles'].items()),'Owned source binding differs')
+  require(not git('diff','--cached','--binary').strip(),'Staged source is forbidden')
+- require(len(actual)==679 and len(b['ownedFiles'])==10,'Exact tracked/owned counts')
++ require(len(actual)==679 and len(b['ownedFiles'])==6,'Exact tracked/owned counts')
+  require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Source patch changed')
+  require(all(sha(git('show','HEAD:'+f))==v for f,v in actual.items() if f not in b['ownedFiles']),'Other tracked source differs from HEAD')
+  return sha(json.dumps(actual,sort_keys=True).encode())
