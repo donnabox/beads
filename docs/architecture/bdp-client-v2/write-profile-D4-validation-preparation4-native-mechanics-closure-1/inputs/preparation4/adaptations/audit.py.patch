@@ -1,0 +1,18 @@
+--- predecessor3/audit.py
++++ audit.py
+@@ -88,6 +88,7 @@
+   need(('requestBody'in row)==(post is not None),'failed-request-body-presence')
+   if post:need(strict_json(row['requestBody'].encode(),65536)==payloads[str(post)],'failed-exact-post')
+   need(not row['validated'] or row['received']and row['settled'],'failed-validation-implies-response')
++  need(not row['received'] or row['settled'],'failed-response-implies-settled')
+   body=None
+   if row['received']:
+    need((row['wireResponseBase64']is None)==(row['wireSha256']is None),'partial-wire-availability')
+@@ -100,6 +101,7 @@
+   else:
+    need(all(row[k]is None for k in ['status','headers','body','wireResponseBase64','wireSha256']),'unreceived-response-fields-null')
+    need(not row['settled'] or row['errorCategory']in ['abort','configuration','timeout','disconnect','header-limit','body-limit','invalid-body','network','unavailable'],'settled-rejection-category')
++   need(row['settled'] or row['errorCategory']is None and row['writeState']is None,'pending-category-write-state-null')
+   continuing=index+1<len(rows)
+   if row['validated']:
+    try:expected=plan.send((body,continuing))

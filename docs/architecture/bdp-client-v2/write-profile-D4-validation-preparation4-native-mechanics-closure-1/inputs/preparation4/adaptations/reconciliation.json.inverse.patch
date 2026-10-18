@@ -1,0 +1,19 @@
+--- reconciliation.json
++++ predecessor3/reconciliation.json
+@@ -26,14 +26,12 @@
+     "F6-N4 stat plus matching terminal-only comm exception; no zombie-as-absence/live identity weakening",
+     "D4-P2-N1 actual flat implementation mapping consumed in gate; every member remains checked",
+     "D4-P2-N2 BOTH acceptance sites recheck actual current monotonic against existing min(flush+10,absoluteTERM), no new clock/query",
+-    "D4-P2-N3 settled/unreceived category cannot be null; genuine unsettled remainsnullable",
+-    "D4-P3-N1 received implies settled; pending unreceived requires initial null category/writeState; exact nullable settled branch and existing nine categories remain"
++    "D4-P2-N3 settled/unreceived category cannot be null; genuine unsettled remainsnullable"
+   ],
+   "literalInputs": "complete copied top-level finite data +13 exact source/spec/schema inputs; entire186 origin corpus absolute pins, no ancestor recopy",
+   "newDependency": false,
+   "newProductCalls": 0,
+   "privateOnly": true,
+   "qualificationReady": false,
+-  "schemaOrSyntheticCompiledOrExecuted": false,
+-  "currentAuthorSuccessor": "helper4 audit.py only, no execution; prior helper3 semantics preserved otherwise"
++  "schemaOrSyntheticCompiledOrExecuted": false
+ }

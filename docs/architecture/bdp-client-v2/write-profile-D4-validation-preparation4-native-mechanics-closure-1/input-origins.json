@@ -1,0 +1,686 @@
+[
+  {
+    "bytes": 1756,
+    "copy": "inputs/preparation4/base-tools.candidate.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/base-tools.candidate.json",
+    "sha256": "601ab5f2ad46eb483ec7c9fa93207d501eb2de46adcd1bb9f7962b39e879b99c"
+  },
+  {
+    "bytes": 9711,
+    "copy": "inputs/preparation4/worker.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/worker.py",
+    "sha256": "0dd2a636948e47e1a9c6caae94bf45bbc3e34e4a2962cce82d3cb48025b47fd1"
+  },
+  {
+    "bytes": 16574,
+    "copy": "inputs/preparation4/run.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+    "sha256": "2a60b483b696984633fd41f42b5de57b20674d58a7fd1f1c82fe0241a17ebadb"
+  },
+  {
+    "bytes": 6615,
+    "copy": "inputs/preparation4/scanner.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+    "sha256": "e86cee2b4fd5b8a1723040971dad77ebf00c2894fdd95dbad0084f7bee5fa47f"
+  },
+  {
+    "bytes": 90561,
+    "copy": "inputs/preparation4/source-binding.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/source-binding.json",
+    "sha256": "3f51eaa3d62157bafa78a63d20b7162ccaec135a3d6ae6c10d997e553b2af649"
+  },
+  {
+    "bytes": 2675,
+    "copy": "inputs/preparation4/execution-gate.closed.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/execution-gate.closed.json",
+    "sha256": "6fd1f48d862bc85dbba00128bed68fd05ae9715721418a39cb353cbb3eeccbef"
+  },
+  {
+    "bytes": 1150,
+    "copy": "inputs/preparation4/phase-policy.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/phase-policy.json",
+    "sha256": "5c7a36d1db5d455196dde1c94a1a31db916bafad82a816608c45ffbd0a5f0019"
+  },
+  {
+    "bytes": 25858,
+    "copy": "inputs/preparation4/audit.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+    "sha256": "f29b7ad8a89ca85f022f494e77f59f62dcffcab29e1915931d62c0c15addd854"
+  },
+  {
+    "bytes": 3266,
+    "copy": "inputs/preparation4/reconciliation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/reconciliation.json",
+    "sha256": "50538840eaf78d9b311e183eb1864132ca33c2c24b4b286a3aca1d01a4f451e8"
+  },
+  {
+    "bytes": 2359,
+    "copy": "inputs/preparation4/release-gates.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/release-gates.md",
+    "sha256": "fe4dcc12037066e5700bc1a60b8f458b2ea893f56bb3a40427957d04f90cb45a"
+  },
+  {
+    "bytes": 2194,
+    "copy": "inputs/preparation4/preparation-binding.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/preparation-binding.json",
+    "sha256": "c12de044b1ea223a5d257c04c67373fe2f8de6ad470fb272d0ce979761773acf"
+  },
+  {
+    "bytes": 535,
+    "copy": "inputs/preparation4/preparation-failure-1.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/preparation-failure-1.json",
+    "sha256": "f3dff97fe4ce7d78dc728a29ea909eaa06fabbf0c4c1a1405caffaffd362b219"
+  },
+  {
+    "bytes": 2678,
+    "copy": "inputs/preparation4/report.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/report.md",
+    "sha256": "570290017faf91200755ee10a9f8e98d3ba46f7a2c6021cce6b6b436d0b72627"
+  },
+  {
+    "bytes": 1250,
+    "copy": "inputs/preparation4/unresolved-inputs.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/unresolved-inputs.json",
+    "sha256": "b035c1c6d3f25171778a5193f8c6bf281ac98b372fceea06fb18d8fc8b54f5ba"
+  },
+  {
+    "bytes": 1700,
+    "copy": "inputs/preparation4/static-inspection.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/static-inspection.json",
+    "sha256": "f69208579ed685ba818e69bdd59e75e3ad66896f42048a8283fc6aeff984eac5"
+  },
+  {
+    "bytes": 1552,
+    "copy": "inputs/preparation4/source-state-contract.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/source-state-contract.json",
+    "sha256": "017fc064c5b8de4739d7fbc3a06298c34cbac2877b2c53b79a6b6903290abf4b"
+  },
+  {
+    "bytes": 2367,
+    "copy": "inputs/preparation4/N2-design.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/N2-design.md",
+    "sha256": "097739532c1c7700ea6be341eb8bc12c413a4ec8f0d7e4f4d49b53168ff17501"
+  },
+  {
+    "bytes": 721,
+    "copy": "inputs/preparation4/control-namespace-delta.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/control-namespace-delta.json",
+    "sha256": "3e304cde790019076907820d09a68d3820b794cd432e4ac9e5726624c8872e5d"
+  },
+  {
+    "bytes": 11172,
+    "copy": "inputs/preparation4/adaptation-map.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptation-map.json",
+    "sha256": "1cbbdcb9adb2a6f8872cee455fdb546c8544ffd1edb9147b240c3b1507f090e5"
+  },
+  {
+    "bytes": 782,
+    "copy": "inputs/preparation4/findings-map.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/findings-map.json",
+    "sha256": "52179e82ff50e04fac29a502883daec5998dc1236133a0ac3de9d790d4958d8b"
+  },
+  {
+    "bytes": 8754,
+    "copy": "inputs/preparation4/packages.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/packages.py",
+    "sha256": "7a2408ee2020a05043d46934699fb01ed6d9da83b01c03cbcc84f8ece95a8494"
+  },
+  {
+    "bytes": 456776,
+    "copy": "inputs/preparation4/reference-pins.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/reference-pins.json",
+    "sha256": "32bc20f14d23372e55087ef5db21bb05049f51f7bb739e0953eaaf154bc4a813"
+  },
+  {
+    "bytes": 2629,
+    "copy": "inputs/preparation4/report-schemas.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/report-schemas.json",
+    "sha256": "3e2fe687ceb1d393ffe536e95b5f524556e18295f575503ac75d05a32c6e57a1"
+  },
+  {
+    "bytes": 946,
+    "copy": "inputs/preparation4/guarded-action-session-20261018-021624-549f.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+    "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+  },
+  {
+    "bytes": 3001,
+    "copy": "inputs/preparation4/ownership-and-clock-contract.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/ownership-and-clock-contract.json",
+    "sha256": "7c1a6ed590cc6109dfdafbee814335752e13f7ce2081d6c0bc2b9a5cc344f594"
+  },
+  {
+    "bytes": 14261,
+    "copy": "inputs/preparation4/commands.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/commands.json",
+    "sha256": "b2d55f8f336e20aadeb8134871401dff802203ba1a18e3abb66629e345ba9484"
+  },
+  {
+    "bytes": 2127,
+    "copy": "inputs/preparation4/README.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/README.md",
+    "sha256": "9748e983c36d0fe08a32e3281b69797a523eaa5f97834d220373b069ae061d4b"
+  },
+  {
+    "bytes": 159999,
+    "copy": "inputs/preparation4/preparation-index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/preparation-index.json",
+    "sha256": "da53881fc1cdf438746a089684d01dfe12431fd1105a8c87ad1e4e454c2c054c"
+  },
+  {
+    "bytes": 587,
+    "copy": "inputs/preparation4/index-closure-policy.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/index-closure-policy.json",
+    "sha256": "9f6f4dcc36660a3ef7ea4f3293c440f62b79d4fe73065ab6dfab804d55e13a93"
+  },
+  {
+    "bytes": 17575,
+    "copy": "inputs/preparation4/synthetic-controls-plan.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/synthetic-controls-plan.json",
+    "sha256": "1e550dc24e9fe06eb5fe7fc68aa0533cadb4be92a245819ecc43e07bf2adac7f"
+  },
+  {
+    "bytes": 118285,
+    "copy": "inputs/preparation4/implementation-hashes.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/implementation-hashes.json",
+    "sha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e"
+  },
+  {
+    "bytes": 14503,
+    "copy": "inputs/preparation4/gate.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/gate.py",
+    "sha256": "a2fea355b99968b588a085f7590ada6d945e9e8487fdb2a5a7612ff744277931"
+  },
+  {
+    "bytes": 2205,
+    "copy": "inputs/preparation4/schema-audit.mjs",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/schema-audit.mjs",
+    "sha256": "58ecbab423357aecc142e2240e99616839c1aee78d5f5735ac7c39c089f29a46"
+  },
+  {
+    "bytes": 414,
+    "copy": "inputs/preparation4/audit-expectations.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit-expectations.json",
+    "sha256": "015c3109ddb124819204e6549a78f75d1832f1c08176fdf078594fca90250471"
+  },
+  {
+    "bytes": 356,
+    "copy": "inputs/preparation4/WIP-status.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/WIP-status.json",
+    "sha256": "68cfa14d5370c017becc197eb9e80ae7b3328c5be7cc68dfd6c07f4acedc1a55"
+  },
+  {
+    "bytes": 2675,
+    "copy": "inputs/preparation4/execution-gate.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/execution-gate.json",
+    "sha256": "6fd1f48d862bc85dbba00128bed68fd05ae9715721418a39cb353cbb3eeccbef"
+  },
+  {
+    "bytes": 733,
+    "copy": "inputs/preparation4/predecessor-preservation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/predecessor-preservation.json",
+    "sha256": "b6fb0e8ec5c4a3a0315754296de9223899afa49beb380ac80c3f491541a335ac"
+  },
+  {
+    "bytes": 724,
+    "copy": "inputs/preparation4/preparation-failure-2.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/preparation-failure-2.json",
+    "sha256": "94c608df10675664bec56cc4fe2d12b2c3285b46ba88eee9af5f2b90a60d9c28"
+  },
+  {
+    "bytes": 1463,
+    "copy": "inputs/preparation4/closure.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/closure.json",
+    "sha256": "183a967717ff1d9b92adc2baf662fb3a527ea339a95bd317ed405ed36b5cbfb7"
+  },
+  {
+    "bytes": 612,
+    "copy": "inputs/preparation4/process-wait-call-inventory.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/process-wait-call-inventory.json",
+    "sha256": "c6ee7261492aa9f4d43027e9a89680937541cea1ee93fc218a5e9ba34851f209"
+  },
+  {
+    "bytes": 368848,
+    "copy": "inputs/preparation4/origins.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/origins.json",
+    "sha256": "2d4276ae3a645adb21cb21e54795d1cb44e8d7d2ba3dab9023fa8c848f5bc3bb"
+  },
+  {
+    "bytes": 1559,
+    "copy": "inputs/preparation4/preparation-inspection-failure-1.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/preparation-inspection-failure-1.json",
+    "sha256": "be464f262b073407592da285a3020dd3662b74b61d911f4c5be14d46ee1d41de"
+  },
+  {
+    "bytes": 40485,
+    "copy": "inputs/preparation4/semantic-contract-pins.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/semantic-contract-pins.json",
+    "sha256": "03b664e07a7363ddbc2a40e74d96761836cbb1e4782e3c8f9013f9dfce678b3b"
+  },
+  {
+    "bytes": 1578,
+    "copy": "inputs/preparation4/stdio-mechanics.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/stdio-mechanics.json",
+    "sha256": "24e1188e45aaa050686e4003b973473fb3e24301456001c9568b0a01e07a8e1c"
+  },
+  {
+    "bytes": 5432,
+    "copy": "inputs/preparation4/adaptations/synthetic-controls-plan.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/synthetic-controls-plan.json.patch",
+    "sha256": "eded695f6ea5c44d7388620797012b4ebf79d73c209a373954f9f426b297eb9a"
+  },
+  {
+    "bytes": 1654,
+    "copy": "inputs/preparation4/adaptations/preparation-inspection-failure-1.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/preparation-inspection-failure-1.json.patch",
+    "sha256": "a50d2997b39eb02f46f2ad5f9839897b16227f473013f0ff53a692fa5bb91373"
+  },
+  {
+    "bytes": 1265,
+    "copy": "inputs/preparation4/adaptations/reconciliation.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/reconciliation.json.inverse.patch",
+    "sha256": "fd58c86c775a0e6a1af9f82f2cc43a85aeb1788626946ae4bafa5bdf4edf39ee"
+  },
+  {
+    "bytes": 5567,
+    "copy": "inputs/preparation4/adaptations/report.md.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/report.md.inverse.patch",
+    "sha256": "879ee35b3829b02470676ee2d884b2580450b28f00a813af4c05c3ef8dd1d4d6"
+  },
+  {
+    "bytes": 5567,
+    "copy": "inputs/preparation4/adaptations/report.md.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/report.md.patch",
+    "sha256": "2cd875381bd60b684b9c5eb1a2b77930de51f915497103def65c67677da697f2"
+  },
+  {
+    "bytes": 3668,
+    "copy": "inputs/preparation4/adaptations/README.md.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/README.md.inverse.patch",
+    "sha256": "3239e4e07419d49199cd13eea52e9045700fbdaea3dd3f670eb2e1346a73ef74"
+  },
+  {
+    "bytes": 1533,
+    "copy": "inputs/preparation4/adaptations/control-namespace-delta.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/control-namespace-delta.json.patch",
+    "sha256": "08e2b3e104d2463177732193926e540298abe81e6fdc7c5eee8b5a1687786e79"
+  },
+  {
+    "bytes": 619,
+    "copy": "inputs/preparation4/adaptations/WIP-status.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/WIP-status.json.inverse.patch",
+    "sha256": "19dbf7f5714d3f30e871ebbecffb3ca5131f16cd7ae5a55c2ef86b9ccf9116c9"
+  },
+  {
+    "bytes": 544916,
+    "copy": "inputs/preparation4/adaptations/origins.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/origins.json.patch",
+    "sha256": "dc5719c0c62eb57d5e47e40ef77fa8e171021a54aeaf2e0bc8dc109318639b9b"
+  },
+  {
+    "bytes": 586441,
+    "copy": "inputs/preparation4/adaptations/origins.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/origins.json.inverse.patch",
+    "sha256": "bf59e51e62575e80a098cdce4590a7f5517b169285c3a9e611346cb62912cad5"
+  },
+  {
+    "bytes": 1838,
+    "copy": "inputs/preparation4/adaptations/findings-map.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/findings-map.json.patch",
+    "sha256": "af3c7be65c1e8dce89ad45ca490a8c8e1da56bf26fd61438c658622a7f6303b9"
+  },
+  {
+    "bytes": 1654,
+    "copy": "inputs/preparation4/adaptations/preparation-inspection-failure-1.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/preparation-inspection-failure-1.json.inverse.patch",
+    "sha256": "762103704fb98a2b2456fff0c40b1ce47deab9240f68318e85d5876fff363269"
+  },
+  {
+    "bytes": 5432,
+    "copy": "inputs/preparation4/adaptations/synthetic-controls-plan.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/synthetic-controls-plan.json.inverse.patch",
+    "sha256": "5be721427652be38fa5081bf72958042423c172b009b3211c9d438afd963f2cc"
+  },
+  {
+    "bytes": 143788,
+    "copy": "inputs/preparation4/adaptations/reference-pins.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/reference-pins.json.inverse.patch",
+    "sha256": "be14e29ced4968787531eb8fbf44de64928df7d0c5cc5f5520a409760904b7c8"
+  },
+  {
+    "bytes": 1152,
+    "copy": "inputs/preparation4/adaptations/audit.py.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/audit.py.inverse.patch",
+    "sha256": "df7cc1b872a7e008128f7ec443e36234eee4ae3df56c5cd5f27b159bb07ba79d"
+  },
+  {
+    "bytes": 3668,
+    "copy": "inputs/preparation4/adaptations/README.md.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/README.md.patch",
+    "sha256": "3eef8a5e295e0a0b189c017f17af7837bb0d17aaaf67149e7ca3921fdf0b9b6a"
+  },
+  {
+    "bytes": 143788,
+    "copy": "inputs/preparation4/adaptations/reference-pins.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/reference-pins.json.patch",
+    "sha256": "216b684e540599206670b79d8626ab39d683adfe932ed707d0c4d2d4ccc4eb2d"
+  },
+  {
+    "bytes": 1152,
+    "copy": "inputs/preparation4/adaptations/audit.py.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/audit.py.patch",
+    "sha256": "96ba3669cb58446e4057d011c9661483677921a947f1402c341c1536d6ffb393"
+  },
+  {
+    "bytes": 54137,
+    "copy": "inputs/preparation4/adaptations/predecessor-preservation.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/predecessor-preservation.json.patch",
+    "sha256": "72e8d9c9375e9ae0d7a66b81c0ebf99cc7cea74fe6ba4c8a58faed9a7ef62ea2"
+  },
+  {
+    "bytes": 1897,
+    "copy": "inputs/preparation4/adaptations/process-wait-call-inventory.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/process-wait-call-inventory.json.inverse.patch",
+    "sha256": "7dc1dd9f333e6f855f3bffdfdbfe9f67bfab5a1226779b3dbd0386109b37436a"
+  },
+  {
+    "bytes": 54137,
+    "copy": "inputs/preparation4/adaptations/predecessor-preservation.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/predecessor-preservation.json.inverse.patch",
+    "sha256": "34626c408fd53427673d538eb9de43a3c9ff268d1df68a5f6a6c96b2b65c38f4"
+  },
+  {
+    "bytes": 1265,
+    "copy": "inputs/preparation4/adaptations/reconciliation.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/reconciliation.json.patch",
+    "sha256": "3256e9af073cbcbdbaa72be2bbc1810f4cc0b4c4ac6e27704314e686422cda10"
+  },
+  {
+    "bytes": 1669,
+    "copy": "inputs/preparation4/adaptations/source-state-contract.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/source-state-contract.json.patch",
+    "sha256": "59741ab5e1f35966101f4805c50c2a52267d4fbc13af1e608c494b17b3641cb7"
+  },
+  {
+    "bytes": 1669,
+    "copy": "inputs/preparation4/adaptations/source-state-contract.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/source-state-contract.json.inverse.patch",
+    "sha256": "2be6c48ff54ab294e26771fff036465507a416f129e494c6a4cdb58161a35713"
+  },
+  {
+    "bytes": 1897,
+    "copy": "inputs/preparation4/adaptations/process-wait-call-inventory.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/process-wait-call-inventory.json.patch",
+    "sha256": "06a89385e14040048970d8fdf5eb8aadad4ab58a13d7c6a9278f3afe45a7fcb8"
+  },
+  {
+    "bytes": 4759,
+    "copy": "inputs/preparation4/adaptations/commands.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/commands.json.patch",
+    "sha256": "c25a32f3f851f902cecacf00048cdb0be223af41f0fb1881b571d0028f75742f"
+  },
+  {
+    "bytes": 2995,
+    "copy": "inputs/preparation4/adaptations/static-inspection.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/static-inspection.json.inverse.patch",
+    "sha256": "1ea6ad6ac9c4bf7d400ae1000453b40ea4113650aa91c9a5f7b9148a2e674513"
+  },
+  {
+    "bytes": 3006,
+    "copy": "inputs/preparation4/adaptations/static-inspection.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/static-inspection.json.patch",
+    "sha256": "e69bc42cf7b75b9772d2aa17de2d49226ac460aa0fad8cdc9cd964da4f1c7220"
+  },
+  {
+    "bytes": 1425,
+    "copy": "inputs/preparation4/adaptations/control-namespace-delta.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/control-namespace-delta.json.inverse.patch",
+    "sha256": "6bab64c37794238a1fc0b07446932519844ae1ec105589ba2b7c893ce64b27fe"
+  },
+  {
+    "bytes": 4759,
+    "copy": "inputs/preparation4/adaptations/commands.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/commands.json.inverse.patch",
+    "sha256": "8f54dd4a51b296b75ef51ad3a3e5928591d1979e6f8197e7391d570d7fd32e56"
+  },
+  {
+    "bytes": 619,
+    "copy": "inputs/preparation4/adaptations/WIP-status.json.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/WIP-status.json.patch",
+    "sha256": "3446a23cd84cce6fe5f14f003744b6614d8f96fbf4a64fbc90b701d69e5e62ca"
+  },
+  {
+    "bytes": 1838,
+    "copy": "inputs/preparation4/adaptations/findings-map.json.inverse.patch",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/adaptations/findings-map.json.inverse.patch",
+    "sha256": "10494f7b7a923d52a3bca50676bda3ca7f327dc919958f51da958e3ebc15e462"
+  },
+  {
+    "bytes": 5373,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/partial-and-lifecycle-policy.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/partial-and-lifecycle-policy.json",
+    "sha256": "211d32c23bfbce81afb4e52e44f1427e2641767f11fb98196e45770a7507d8d5"
+  },
+  {
+    "bytes": 1180,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source-line-anchors.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source-line-anchors.json",
+    "sha256": "58e2b8a9194ce3b50efa22c971cdc79c9c81bea6c7410f3d03a320af3e5f09a9"
+  },
+  {
+    "bytes": 16055,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/request-payloads.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/request-payloads.json",
+    "sha256": "fc2b69e69626c7b15024397982e9b4af0c7422215cec9bcf39d28e2b16342e62"
+  },
+  {
+    "bytes": 6891,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/semantic-obligations.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/semantic-obligations.json",
+    "sha256": "77144720405f1d6994e92e353baba26f50d7f52ac32cd80eb7abcd501a2fba8c"
+  },
+  {
+    "bytes": 25031,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/report-grammar.schema.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/report-grammar.schema.json",
+    "sha256": "6854e671fb20479445eafd35dc8027f2f3d6d9d1de6d6b40ef4abe6b047e2eef"
+  },
+  {
+    "bytes": 1436,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/basis.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/basis.json",
+    "sha256": "656716d8177194434d7d458d6f6bd1e3c354cf58273993f3e67009e2ae0fa7ad"
+  },
+  {
+    "bytes": 3681,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/wire-and-row-consistency.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/wire-and-row-consistency.json",
+    "sha256": "6afdf86fe44be06e66087f14813fe4a3d3cb56c3be0c3b456cda065895b70a82"
+  },
+  {
+    "bytes": 1455,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/phase-and-capacity-contract.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/phase-and-capacity-contract.json",
+    "sha256": "6bd76a98f4735eca6d860e13808f1da2d5c6269cdcbfe3b6331466a0f0432642"
+  },
+  {
+    "bytes": 1240,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/parent-inventories.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/parent-inventories.json",
+    "sha256": "a94652a741e20961eb68b838691ed818b493a38d2970df37003f839c837a59c8"
+  },
+  {
+    "bytes": 2574,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/README.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/README.md",
+    "sha256": "32cbe556f947b531513eb8151112bcb37108ed87d16541bcfb22d39e532cefba"
+  },
+  {
+    "bytes": 24794,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/positive-request-table.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/positive-request-table.json",
+    "sha256": "556de5b67c216a833da327dd61fa961b13311d55465ea54b42cb78ad48f6bb24"
+  },
+  {
+    "bytes": 948,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/closure.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/closure.json",
+    "sha256": "47b1a5fc5073546fa80b618248a63f27a04524fc2f86ee25fc070d120391398c"
+  },
+  {
+    "bytes": 87874,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source-map.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source-map.json",
+    "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda"
+  },
+  {
+    "bytes": 32630,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/index.json",
+    "sha256": "bebb66455e91f3b97429b7980f5dfddde1460a8e1c0f78b25f05f1e74a47f73f"
+  },
+  {
+    "bytes": 5116,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/binding-and-provenance.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/binding-and-provenance.json",
+    "sha256": "4f1c72ffad7a79f5e53f25a66516958eb27991ca069b08f70396a5c4dfe07d9b"
+  },
+  {
+    "bytes": 55111,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/input-origins.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/input-origins.json",
+    "sha256": "365f2bda9ca323d829868d2e8ebcf5ab519c12defb008988b826d4da37f96660"
+  },
+  {
+    "bytes": 133208,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/schemas/bdp-v0.schema.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/schemas/bdp-v0.schema.json",
+    "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+  },
+  {
+    "bytes": 3264,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/scripts/transaction-installed-observation.mjs",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/scripts/transaction-installed-observation.mjs",
+    "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+  },
+  {
+    "bytes": 364,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/apps/bdptest/test-support/installed-contract-identity.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/apps/bdptest/test-support/installed-contract-identity.ts",
+    "sha256": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165"
+  },
+  {
+    "bytes": 7378,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/apps/bdptest/test-support/transactional-execution-binding.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/apps/bdptest/test-support/transactional-execution-binding.ts",
+    "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
+  },
+  {
+    "bytes": 35849,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85"
+  },
+  {
+    "bytes": 15083,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/conformance/test-support/profile-contract-plan.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/conformance/test-support/profile-contract-plan.ts",
+    "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728"
+  },
+  {
+    "bytes": 50611,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/conformance/src/http-executor.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/conformance/src/http-executor.ts",
+    "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d"
+  },
+  {
+    "bytes": 716,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/conformance/test-support/transactional/fixture-v1.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/conformance/test-support/transactional/fixture-v1.json",
+    "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  },
+  {
+    "bytes": 1112,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/server/src/transaction-installed.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/server/src/transaction-installed.ts",
+    "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a"
+  },
+  {
+    "bytes": 2942,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/server/src/transaction-installed-configuration.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/server/src/transaction-installed-configuration.ts",
+    "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99"
+  },
+  {
+    "bytes": 16196,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/server/src/transaction-runtime-configuration.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/server/src/transaction-runtime-configuration.ts",
+    "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808"
+  },
+  {
+    "bytes": 2630,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/packages/server/src/transaction-installed-process.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/packages/server/src/transaction-installed-process.ts",
+    "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"
+  },
+  {
+    "bytes": 397107,
+    "copy": "inputs/preparation4/context/semantic-audit-contract/source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/semantic-audit-contract/source/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8"
+  },
+  {
+    "bytes": 15530,
+    "copy": "inputs/helper3-native/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/helper3-native/index.json",
+    "sha256": "035317a73c2b9496af3fb4182dbe54e6a669e80c5eb671c0c09dbab701f2f409"
+  },
+  {
+    "bytes": 1868,
+    "copy": "inputs/helper3-native/closure.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/helper3-native/closure.json",
+    "sha256": "06c987aec2e78933054273322c2f2d237e7705566997f951f98aafd2128684c1"
+  },
+  {
+    "bytes": 10674,
+    "copy": "inputs/helper3-native/report.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/helper3-native/report.md",
+    "sha256": "5546f28b3f5900727d9c256d74ff7f6483831dc167b6b984d11a94f7763f2c49"
+  },
+  {
+    "bytes": 2238,
+    "copy": "inputs/helper3-native/findings.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/helper3-native/findings.json",
+    "sha256": "698b948993f8622b35273f82ea7264aeab320c37dc13f0e895c1d87df79c6f93"
+  },
+  {
+    "bytes": 4664,
+    "copy": "inputs/helper3-native/source-state-truth-table.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/helper3-native/source-state-truth-table.json",
+    "sha256": "b68337c37d0a30d224b2772a24ae3347492646e28c799fc6bd5e7a40f473e406"
+  },
+  {
+    "bytes": 4900,
+    "copy": "inputs/helper3-native/prospective-D03-subcases.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/helper3-native/prospective-D03-subcases.json",
+    "sha256": "5f778c4a4ee7966e394ab927d7f7636c7de7d79c4b0224df11538903841988be"
+  },
+  {
+    "bytes": 2389,
+    "copy": "inputs/preparation4/context/root-helper4-author-release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/context/root-helper4-author-release.json",
+    "sha256": "8141ffb5cb57ce7b760eef5a2401fcc695d8b59ff36e2d7adf9936844a2ff584"
+  },
+  {
+    "bytes": 35849,
+    "copy": "inputs/actual-source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85"
+  },
+  {
+    "bytes": 1641,
+    "copy": "verification.json",
+    "origin": "/tmp/d4-preparation4-native-verification.json",
+    "sha256": "318b5cbc51e40f26399fdd73d42fd6bc624adfbe5bcf24017185612f42a31a8b"
+  }
+]

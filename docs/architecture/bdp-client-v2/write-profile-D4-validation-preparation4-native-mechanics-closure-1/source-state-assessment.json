@@ -1,0 +1,73 @@
+{
+  "D03": "Original three finite descriptions retained; exact20 additions are eight tuples+nine pending categories+three pending writeState mutations, all descriptions UNEXECUTED.48 IDs preserved.",
+  "anchors": {
+    "catch": [
+      486,
+      493
+    ],
+    "finally": [
+      494,
+      498
+    ],
+    "initialization": [
+      424,
+      440
+    ],
+    "onlyAwait": 461,
+    "response": [
+      462,
+      485
+    ],
+    "synchronousSerialization": 909
+  },
+  "method": "Manual source-path and boolean-expression inspection only; no audit/control evaluation",
+  "newASTExpressions": {
+    "audit.py:104": "settled or (errorCategory is None and writeState is None)",
+    "audit.py:91": "not received or settled"
+  },
+  "schema": "strict AJV envelope boolean flags/finite enum-null states remain prerequisite; no truthiness relaxation or schema change",
+  "sourceSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+  "tuples": [
+    {
+      "SRV": "000",
+      "observable": true,
+      "required": "all response facts null, errorCategory null AND writeState null; eligible only for remaining failed/no-credit derivation"
+    },
+    {
+      "SRV": "001",
+      "observable": false,
+      "refusal": "existing validated requires received+settled"
+    },
+    {
+      "SRV": "010",
+      "observable": false,
+      "refusal": "new received requires settled"
+    },
+    {
+      "SRV": "011",
+      "observable": false,
+      "refusal": "existing validated requires settled; new received implication also refuses"
+    },
+    {
+      "SRV": "100",
+      "observable": true,
+      "required": "nonnull one of original nine rejection categories; nullable genuinely captured writeState remains permitted; response facts null; no positive credit"
+    },
+    {
+      "SRV": "101",
+      "observable": false,
+      "refusal": "existing validated requires received"
+    },
+    {
+      "SRV": "110",
+      "observable": true,
+      "required": "actual received facts (including genuinely unavailable nullable captures), errorCategory null; no validated progress invented; only last refused response allowed"
+    },
+    {
+      "SRV": "111",
+      "observable": true,
+      "required": "settled true, actual expected status/write complete/available raw/context plus all current full protocol/semantic/source checks; tuple alone confers no positive credit"
+    }
+  ],
+  "whyNoReceivedUnsettledSnapshot": "There is no await between response assignments, catch and finally; console.log(JSON.stringify(report)) is synchronous later. Delayed RPC/stdio delivery cannot expose an intra-job received/unsettled state."
+}
