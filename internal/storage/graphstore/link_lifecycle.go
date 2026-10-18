@@ -14,12 +14,88 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 var (
 	ErrCapabilityUnavailable = errors.New("graph preview capability is unavailable")
 	ErrLimitExceeded         = errors.New("graph preview result limit exceeded")
 )
+
+// CollectLinks returns every matching current Link from one bounded,
+// authority-checked snapshot. The bound applies before filtering: a caller
+// cannot mistake a truncated workspace scan for a complete answer. Unlike
+// ListLinks, this is not a per-Bead incident walk.
+func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest) ([]LinkRecord, error) {
+	if err := s.validateLinkType(request.TypeURL, true); err != nil {
+		return nil, err
+	}
+	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
+		if path != "" {
+			if err := validatePath(path); err != nil {
+				return nil, err
+			}
+		}
+	}
+	var result []LinkRecord
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		if err := s.checkLinkMappingsInTx(ctx, tx); err != nil {
+			return err
+		}
+		if request.TypeURL != "" {
+			if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
+				return err
+			}
+		}
+		rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog
+ WHERE allocation_state='live' AND resource_kind='link' LIMIT ?`, PreviewSnapshotLimit+1)
+		if err != nil {
+			return err
+		}
+		paths := []string{}
+		for rows.Next() {
+			var path string
+			if err := rows.Scan(&path); err != nil {
+				return errors.Join(err, rows.Close())
+			}
+			paths = append(paths, path)
+		}
+		if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+			return err
+		}
+		if len(paths) > PreviewSnapshotLimit {
+			return fmt.Errorf("%w: complete Link collection exceeds %d live Links; pagination is unavailable", ErrLimitExceeded, PreviewSnapshotLimit)
+		}
+		sort.Slice(paths, func(i, j int) bool { return graph.CompareCodeUnits(paths[i], paths[j]) < 0 })
+		result = make([]LinkRecord, 0, len(paths))
+		for _, path := range paths {
+			link, err := s.showLinkInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			if request.TypeURL != "" && link.Type != request.TypeURL ||
+				request.SourcePath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.SourcePath) ||
+				request.TargetPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Target, request.TargetPath) ||
+				request.IncidentPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.IncidentPath) && !linkEndpointMatches(s.ScopeURL(), link.Target, request.IncidentPath) {
+				continue
+			}
+			result = append(result, link)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func linkEndpointMatches(scope, endpoint, path string) bool { return endpoint == scope+path }
 
 // ListLinks returns complete, canonically ordered live incident state, or an
 // explicit limit error. It performs no endpoint resolution outside this Scope.
@@ -62,6 +138,9 @@ func (s *Store) ListLinks(ctx context.Context, request LinksRequest) ([]LinkReco
 func (s *Store) validateLinkType(typ string, allowEmpty bool) error {
 	if (allowEmpty && typ == "") || IsInformationalTypeURL(s.ScopeURL(), typ) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
 		return nil
+	}
+	if _, known := nativeRelationshipDependencyType(s.ScopeURL(), typ); known {
+		return nil // The transaction also checks the installed Type.
 	}
 	return fmt.Errorf("%w: Link Type is not installed in this preview", storage.ErrValidation)
 }
@@ -140,8 +219,8 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err := s.validateLinkType(request.TypeURL, false); err != nil {
 			return LinkDeleteResult{}, err
 		}
-		if request.TypeURL == DependencyTypeURL(s.options.Binding.ScopeURL) {
-			return LinkDeleteResult{}, fmt.Errorf("%w: blocking Dependency unlink requires its canonical Link ID", ErrCapabilityUnavailable)
+		if request.TypeURL == DependencyTypeURL(s.options.Binding.ScopeURL) || !IsInformationalTypeURL(s.ScopeURL(), request.TypeURL) {
+			return LinkDeleteResult{}, fmt.Errorf("%w: native Dependency unlink requires its canonical Link ID", ErrCapabilityUnavailable)
 		}
 	}
 	var result LinkDeleteResult
@@ -162,9 +241,16 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err != nil {
 			return err
 		}
-		if link.Type == DependencyTypeURL(s.options.Binding.ScopeURL) {
+		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+		if err != nil {
+			return err
+		}
+		if isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) {
 			result, err = s.unlinkDependencyInTx(ctx, tx, path, link, request)
 			return err
+		}
+		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
+			return fmt.Errorf("%w: native relationship Link unlink is not admitted in this preview", ErrCapabilityUnavailable)
 		}
 		// Only informational Links reach this point. Resolve the CLI default
 		// here, after transactional selection, without a whole-workspace read.
@@ -257,12 +343,16 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 // A valid tombstone is distinct from missing or corrupt state. Missing retained
 // deletion/previous state must not be disguised as ordinary gone.
 func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path string) error {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
 	var kind, typ, revision, backing string
 	var key sql.NullString
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &backing, &key); err != nil {
 		return err
 	}
-	if !s.validDeletedLinkAllocation(kind, typ, backing, key) || !authorityID.MatchString(revision) {
+	if !s.validDeletedLinkAllocation(kind, typ, backing, key, issueType) || !authorityID.MatchString(revision) {
 		return fmt.Errorf("%w: invalid deleted allocation", ErrInvalidStore)
 	}
 	var snapshot []byte
@@ -305,17 +395,33 @@ func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path strin
 // mappings before a join can hide them as an apparently complete collection.
 func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	var invalidTypes int
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
 	ids, err := s.installedInformationalTypes(ctx, tx)
 	if err != nil {
 		return err
 	}
-	placeholders, args := informationalTypeSQL(ids)
-	args = append(args, DependencyTypeURL(s.ScopeURL()))
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url NOT IN (`+placeholders+`)) OR (backing='dependency' AND type_url<>?))`, args...).Scan(&invalidTypes); err != nil {
+	infoPlaceholders, args := informationalTypeSQL(ids)
+	dependencyTypes := dependencyLinkTypesForIssueType(s.ScopeURL(), issueType)
+	depPlaceholders, depArgs := informationalTypeSQL(dependencyTypes)
+	args = append(args, depArgs...)
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url NOT IN (`+infoPlaceholders+`)) OR (backing='dependency' AND type_url NOT IN (`+depPlaceholders+`)))`, args...).Scan(&invalidTypes); err != nil {
 		return err
 	}
 	if invalidTypes != 0 {
 		return fmt.Errorf("%w: Link Type differs from its authority", ErrInvalidStore)
+	}
+	// The one Link Type cannot identify a native kind. Reject malformed native
+	// kinds here; currentLinkInTx also checks this before projecting dep_type.
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key
+ WHERE c.backing='dependency' AND c.allocation_state='live' AND (d.type='' OR OCTET_LENGTH(d.type)>?)`,
+		types.MaxDependencyTypeLen).Scan(&invalidTypes); err != nil {
+		return err
+	}
+	if invalidTypes != 0 {
+		return fmt.Errorf("%w: invalid native Dependency kind", ErrInvalidStore)
 	}
 	for _, query := range []string{
 		`SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key

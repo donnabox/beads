@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -25,11 +26,15 @@ type Binding struct {
 // Options selects an explicit backend. Existing opens never provision or migrate.
 // DataDir is the already-created embedded engine directory, not a second DB.
 type Options struct {
-	Backend        string
-	DataDir        string
-	Database       string
-	Branch         string
-	Binding        Binding
+	Backend  string
+	DataDir  string
+	Database string
+	Branch   string
+	Binding  Binding
+	// TypeGeneration is the admitted workspace marker generation. Zero lets
+	// direct storage callers inspect the checked fresh installation; the CLI
+	// supplies generation 9 and requires that marker's installed Type count.
+	TypeGeneration int
 	ServerHost     string
 	ServerPort     int
 	ServerUser     string
@@ -100,11 +105,16 @@ var (
 	ErrOutcomeUnknown = errors.New("graph transaction outcome is unknown; do not replay automatically")
 )
 
-// DependencyRequest asserts one blocking Dependency between live local Issues.
-// Path is an optional never-reused Link allocation; empty allocates a fresh path.
+// DependencyRequest asserts one Issue-owned native Dependency between live
+// local Issues. Type preserves the legacy blocking-only caller contract and
+// rejects unsupported kinds; TypeURL selects an installed canonical Link Type
+// in the workspace generation. If both are set, they must agree. Path is an
+// optional never-reused Link allocation; empty allocates a fresh path.
 type DependencyRequest struct {
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
+	Type                   types.DependencyType
+	TypeURL                string
 	SourcePath             string
 	TargetPath             string
 	Path                   string
@@ -129,6 +139,24 @@ type DependencyResult struct {
 	Link    LinkRecord  `json:"link"`
 	Source  IssueRecord `json:"source"`
 	Changed bool        `json:"changed"`
+}
+
+// DependencyRemoveRequest keeps an explicit graph path authoritative. Native
+// ID fallback is supplied only for a bare CLI selector and resolved atomically
+// against the live Issue catalog, with collisions refused.
+type DependencyRemoveRequest struct {
+	SourcePath, TargetPath         string
+	SourceNativeID, TargetNativeID string
+	Actor                          string
+}
+
+// DependencyRemoveResult is the native pair-removal outcome. A missing edge
+// returns Removed=false with both checked live Issues and no Link tombstone.
+type DependencyRemoveResult struct {
+	Removed bool
+	Source  IssueRecord
+	Target  IssueRecord
+	Link    LinkTombstone
 }
 
 type IssueMutationResult struct {
@@ -176,6 +204,11 @@ type LinkMutationResult struct {
 // LinksRequest selects complete current incident state in one read transaction.
 // Empty direction means both. Empty TypeURL admits all installed Link Types.
 type LinksRequest struct{ BeadPath, Direction, TypeURL string }
+
+// LinkCollectionRequest selects current Links without enumerating Beads.
+// An empty selector is unconstrained; the preview refuses an incomplete
+// collection rather than returning a silently truncated page.
+type LinkCollectionRequest struct{ TypeURL, SourcePath, TargetPath, IncidentPath string }
 
 // PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
 const PreviewIncidentLinkLimit = 1000

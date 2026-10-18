@@ -30,6 +30,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewEdit(cmd, args)
+		}
 		CheckReadonly("edit")
 
 		evt := metrics.NewCommandEvent("edit")
@@ -150,7 +153,7 @@ Examples:
 			fieldToEdit: newValue,
 		}
 
-		err = issueStore.UpdateIssue(ctx, id, updates, actor)
+		err = issueStore.UpdateIssue(ctx, id, updates, currentActor())
 		if err != nil {
 			if accessor, ok := storage.UnwrapStore(issueStore).(storage.RawDBAccessor); ok {
 				if pingErr := accessor.DB().PingContext(ctx); pingErr != nil {
@@ -158,14 +161,14 @@ Examples:
 					_ = accessor.DB().PingContext(ctx)
 				}
 			}
-			err = issueStore.UpdateIssue(ctx, id, updates, actor)
+			err = issueStore.UpdateIssue(ctx, id, updates, currentActor())
 		}
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Your edits are preserved in: %s\n", tmpPath)
 			return HandleErrorRespectJSON("updating issue: %v", err)
 		}
 		editSaved = true
-		if err := commitPendingIfEmbedded(ctx, issueStore, actor, doltAutoCommitParams{
+		if err := commitPendingIfEmbedded(ctx, issueStore, currentActor(), doltAutoCommitParams{
 			Command:  "edit",
 			IssueIDs: []string{id},
 		}); err != nil {

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -36,7 +37,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			list := func(extra ...string) graphstore.IssueListPage {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json", "--bead-type", "types/preview-issue-v2"}, extra...)
+				args := append([]string{"list", "--format", "records-json", "--type", "types/preview-issue"}, extra...)
 				return graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 			}
 			beads := func(extra ...string) ([]graphListedBead, bool) {
@@ -60,9 +61,9 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call("remember", "private-memory-body", "--id", "beads/context", "--title", "Context")
 			call("create", "Work", "--id", "beads/work", "--priority", "1", "--labels", "release")
 			call("create", "Gate", "--id", "beads/gate", "--priority", "2")
-			related := scope + "types/preview-related-v2"
+			related := scope + "types/preview-related"
 			for _, edge := range [][3]string{{"plan", "context", "context"}, {"plan", "work", "work"}, {"context", "gate", "gate"}} {
-				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--resource-type", related, "--unconditional-source")
+				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--type", related)
 			}
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "ready", "--label=", "--json")
@@ -84,7 +85,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			// Complete the release journey in this same linked workspace before
 			// the existing query, close/reopen, explicit unlink and delete phases.
 			planBefore := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			workBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			workBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			unrelated := map[string]string{}
 			for _, path := range []string{"beads/context", "beads/gate", "links/context", "links/work", "links/gate", dep.Link.ID} {
 				unrelated[path] = call("show", path)
@@ -102,7 +103,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", "beads/plan")); !reflect.DeepEqual(got, memoryEdit.Memory) {
 				t.Fatal("fresh-process Memory differs from accepted edit")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work")); !reflect.DeepEqual(got, issueEdit.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work")); !reflect.DeepEqual(got, issueEdit.Issue) {
 				t.Fatal("fresh-process Issue differs from accepted edit")
 			}
 			for path, want := range unrelated {
@@ -160,16 +161,16 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if !more || !reflect.DeepEqual(firstPage, allBeads[:2]) {
 				t.Fatalf("bounded mixed Bead inventory: %+v more=%t", firstPage, more)
 			}
-			memories, more := beads("--bead-type", "types/preview-memory-v2", "--all")
+			memories, more := beads("--type", "types/preview-memory", "--all")
 			if more || len(memories) != 2 || !graphListNewestFirst(t, memories) || !slices.Equal(sortedIDs(memories), []string{scope + "beads/context", scope + "beads/plan"}) {
 				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
 			}
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--all"); !strings.Contains(got, "Beads (4;") || !strings.Contains(got, "Memory") || !strings.Contains(got, "Issue") || strings.Contains(got, "private-memory-body") {
 				t.Fatalf("mixed human inventory omitted kind or leaked Memory body: %s", got)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-related-v2", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/uninstalled", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory-v2", "--status", "open", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-related", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/uninstalled", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--status", "open", "--format", "records-json")
 
 			page := list("--limit", "1", "--sort", "priority")
 			if len(page.Items) != 1 || page.Items[0].ID != scope+"beads/work" || !page.HasMore {
@@ -257,7 +258,27 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			before[dep.Link.ID] = call("show", dep.Link.ID)
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "beads/plan", "--view", "generic", "--depth", "10", "--max-nodes", "2", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--json")
+			var legacyIssues []struct {
+				ID string `json:"id"`
+			}
+			legacyJSON := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--json", "--all")
+			if err := json.Unmarshal([]byte(legacyJSON), &legacyIssues); err != nil {
+				t.Fatalf("decode legacy Issue list: %v\n%s", err, legacyJSON)
+			}
+			legacyIDs := make([]string, 0, len(legacyIssues))
+			for _, issue := range legacyIssues {
+				legacyIDs = append(legacyIDs, issue.ID)
+			}
+			slices.Sort(legacyIDs)
+			if !slices.Equal(legacyIDs, []string{"beads/gate", "beads/work"}) {
+				t.Fatalf("legacy Issue list IDs = %v", legacyIDs)
+			}
+			status := graphMixedResult[struct {
+				Capabilities map[string]bool `json:"capabilities"`
+			}](t, call("status", "--graph"))
+			if !status.Capabilities["issueListLegacyJSON"] {
+				t.Fatal("graph status did not advertise legacy Issue list JSON")
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--format", "records-json", "--watch")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "graph", "https://foreign.invalid/beads/plan", "--view", "generic", "--json")
 			normalList, normalBlocked := list("--all"), blocked()
@@ -296,14 +317,14 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call("reopen", "beads/gate")
 			assertBlocked(true)
 			assertReady(false, true)
-			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
-			call("unlink", dep.Link.ID, "--if-revision", dep.Link.Revision, "--if-source-revision", source.Revision)
+			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
+			call("link", "delete", "--force", dep.Link.ID, "--if-revision", dep.Link.Revision, "--if-source-revision", source.Revision)
 			assertBlocked(false)
 			assertReady(true, true)
 			for _, path := range []string{"links/context", "links/work"} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("show", path))
 				memory := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-				call("unlink", path, "--if-revision", link.Revision, "--if-source-revision", memory.Revision)
+				call("link", "delete", "--force", path, "--if-revision", link.Revision, "--if-source-revision", memory.Revision)
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
 			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", memory.Revision))

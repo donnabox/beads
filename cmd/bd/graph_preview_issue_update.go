@@ -32,7 +32,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // broader workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "force", "metadata", "set-metadata", "unset-metadata", "properties"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}

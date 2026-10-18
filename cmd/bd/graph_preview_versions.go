@@ -184,8 +184,13 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 	b.WriteString("\nREV is local to this store and is NOT a citable address: two\n")
 	b.WriteString("clones can hold a different local revision for the same state. Cite the token\n")
 	b.WriteString("under each row instead:\n\n")
-	fmt.Fprintf(&b, "  bd show %s --version <token>\n", selector)
-	fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
+	if kind == graphstore.KindLink {
+		fmt.Fprintf(&b, "  bd link show %s --version <token>\n", selector)
+		fmt.Fprintf(&b, "  bd link compare %s --from <token> --to <token>\n", selector)
+	} else {
+		fmt.Fprintf(&b, "  bd show %s --version <token>\n", selector)
+		fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
+	}
 	if removed {
 		b.WriteString("\nThis Link has been removed. Its prior versions remain citable; deletion\n")
 		b.WriteString("did not create a Link version.\n")

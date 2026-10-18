@@ -45,7 +45,7 @@ func TestGraphPreviewCloseGuardWorkflow(t *testing.T) {
 			call(initArgs...)
 			call("create", "First", "--id", "first")
 			call("create", "Second", "--id", "second")
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "first"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "first"))
 			versionsBefore := call("versions", "first")
 			refuse(4, "revision_conflict", "close", "first", "--if-revision", "stale", "--reason", "done")
 			refuse(2, "invalid_selector", "close", "first", "second", "--if-revision", before.Revision)

@@ -68,7 +68,7 @@ var bazelPRLaneRCLines = map[string][]string{
 		"test:prcore --test_arg=-test.skip=^TestEmbedded",
 		"test:prcore --test_env=BEADS_TEST_SKIP=dolt",
 		"test:prcore --test_env=BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION=1",
-		"test:prcore --test_tag_filters=-requires-docker,-dolt-server,-dolt-server-proxied,-dolt-server-integration,-dolt-server-cmd,-embedded,-manual,-integration-only",
+		"test:prcore --test_tag_filters=-dolt-server,-dolt-server-proxied,-dolt-server-integration,-dolt-server-cmd,-embedded,-manual,-integration-only",
 	},
 	"ci": {
 		"test:ci --config=prcore",
@@ -86,6 +86,7 @@ var bazelPRLaneRCLines = map[string][]string{
 		"test:doltserver --test_arg=-test.parallel=4",
 		"test:doltserver --local_test_jobs=4",
 		"test:doltserver --remote_download_regex=.*/test\\.(log|xml)$",
+		"test:doltserver --norun_validations",
 	},
 	"pure": {
 		"build:pure --@rules_go//go/config:pure",
@@ -113,6 +114,8 @@ rc=0
 bazel test //... --config=ci ${BAZEL_SOLE_RUN:+"$BAZEL_SOLE_RUN"} ${BAZEL_FRESH:+"$BAZEL_FRESH"} \
   --profile="$RUNNER_TEMP/bazel-profile.json" \
   --build_event_json_file="$RUNNER_TEMP/bazel-bep.json" \
+  --execution_log_compact_file="$RUNNER_TEMP/bazel-exec.log.zst" \
+  --experimental_build_event_upload_strategy=local \
   2>&1 | tee "$RUNNER_TEMP/bazel-test.log" || rc=$?
 echo "bazel test: exit $rc, $(( $(date +%s) - start ))s wall" | tee -a "$GITHUB_STEP_SUMMARY"
 echo >> "$GITHUB_STEP_SUMMARY"
@@ -120,17 +123,28 @@ exit "$rc"`,
 	},
 	bazelPureJobName: {
 		"Start every pure-Go artifact (gozstd contamination check)": `set -euo pipefail
+# Not instrumented: no BEP/exec-log/profile is captured for this
+# one-off smoke invocation (design's bazel-pure invocation list
+# names build-wasm, build-pure, test-pure and test-bd only).
 bazel run --config=pure //cmd/bd:bd -- version
 bazel test --config=pure ${BAZEL_SOLE_RUN:+"$BAZEL_SOLE_RUN"} ${BAZEL_FRESH:+"$BAZEL_FRESH"} \
   //internal/storage/embeddeddolt:embeddeddolt_test \
   //internal/tracker:tracker_test \
   --test_sharding_strategy=disabled \
   '--test_arg=-test.run=^$' \
-  --test_env=BEADS_TEST_SKIP=dolt`,
+  --test_env=BEADS_TEST_SKIP=dolt \
+  --profile="$RUNNER_TEMP/bazel-profile-test-pure.json" \
+  --build_event_json_file="$RUNNER_TEMP/bazel-bep-test-pure.json" \
+  --execution_log_compact_file="$RUNNER_TEMP/bazel-exec-test-pure.log.zst" \
+  --experimental_build_event_upload_strategy=local`,
 		"Run pure-Go cmd/bd test subset (--config=pure)": `set -euo pipefail
 bazel test --config=pure ${BAZEL_SOLE_RUN:+"$BAZEL_SOLE_RUN"} ${BAZEL_FRESH:+"$BAZEL_FRESH"} //cmd/bd:bd_test \
   --test_sharding_strategy=disabled \
-  "--test_arg=-test.run=$PURE_CMD_BD_TESTS"
+  "--test_arg=-test.run=$PURE_CMD_BD_TESTS" \
+  --profile="$RUNNER_TEMP/bazel-profile-test-bd.json" \
+  --build_event_json_file="$RUNNER_TEMP/bazel-bep-test-bd.json" \
+  --execution_log_compact_file="$RUNNER_TEMP/bazel-exec-test-bd.log.zst" \
+  --experimental_build_event_upload_strategy=local
 n="$(grep -c '<testcase ' bazel-testlogs/cmd/bd/bd_test/test.xml || true)"
 echo "pure cmd/bd subset: $n test cases"
 (( n > 0 ))`,
@@ -139,8 +153,13 @@ echo "pure cmd/bd subset: $n test cases"
 		"bazel test //... --config=doltserver": `set -o pipefail
 start=$(date +%s)
 rc=0
-bazel test //... "--config=$BAZEL_DOLT_LANE" ${BAZEL_SOLE_RUN:+"$BAZEL_SOLE_RUN"} ${BAZEL_FRESH:+"$BAZEL_FRESH"} 2>&1 | tee "$RUNNER_TEMP/bazel-test.log" || rc=$?
-echo "bazel test --config=$BAZEL_DOLT_LANE: exit $rc, $(( $(date +%s) - start ))s wall" | tee -a "$GITHUB_STEP_SUMMARY"
+bazel test //... --config=doltserver ${BAZEL_SOLE_RUN:+"$BAZEL_SOLE_RUN"} ${BAZEL_FRESH:+"$BAZEL_FRESH"} \
+  --build_event_json_file="$RUNNER_TEMP/bazel-bep.json" \
+  --execution_log_compact_file="$RUNNER_TEMP/bazel-exec.log.zst" \
+  --profile="$RUNNER_TEMP/bazel-profile.json" \
+  --experimental_build_event_upload_strategy=local \
+  2>&1 | tee "$RUNNER_TEMP/bazel-test.log" || rc=$?
+echo "bazel test --config=doltserver: exit $rc, $(( $(date +%s) - start ))s wall" | tee -a "$GITHUB_STEP_SUMMARY"
 exit "$rc"`,
 	},
 }
@@ -404,10 +423,8 @@ func sortedKeys[V any](m map[string]V) []string {
 func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 	t.Helper()
 	workflow := readCIWorkflow(t, bazelWorkflowName)
-	// main.yml's own package-mcp/package-npm jobs (nightly, not gated by
-	// rbe) run the same language setup; bazel.yml's copy must not drift
-	// from it.
-	mainWorkflow := readCIWorkflow(t, "main.yml")
+	// The push workflow now delegates package coverage to bazel.yml, so pin
+	// these language setup versions here as the required PR gate's owners.
 	type pkgLane struct {
 		job, detectOutput, langStepName, makeTarget string
 	}
@@ -424,9 +441,13 @@ func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 		if !ok {
 			t.Fatalf("%s has no %s job", bazelWorkflowName, lane.job)
 		}
-		if !reflect.DeepEqual([]string(job.Needs), []string{bazelRBEJobName}) || job.If != bazelPackageGatesIf || job.RunsOn != bazelPackageRunsOn {
+		wantRunsOn := bazelPackageRunsOn
+		if lane.job == bazelPackageMCPJobName {
+			wantRunsOn = "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
+		}
+		if !reflect.DeepEqual([]string(job.Needs), []string{bazelRBEJobName}) || job.If != bazelPackageGatesIf || job.RunsOn != wantRunsOn {
 			t.Errorf("%s: needs %v, if %q, runs-on %q; want needs [%s], if %q, runs-on %q",
-				lane.job, job.Needs, job.If, job.RunsOn, bazelRBEJobName, bazelPackageGatesIf, bazelPackageRunsOn)
+				lane.job, job.Needs, job.If, job.RunsOn, bazelRBEJobName, bazelPackageGatesIf, wantRunsOn)
 		}
 
 		detectCond := "steps.detect.outputs." + lane.detectOutput + " == 'true'"
@@ -487,7 +508,7 @@ func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 		// e2b78f7d7a: both configs cquery to the identical
 		// bazel-out/k8-fastbuild-ST-.../bin/cmd/bd/bd_for_tests/bd path).
 		buildStep := job.step(t, "bazel build //cmd/bd:bd_for_tests")
-		if buildStep.If != bazelPathIf || buildStep.Run != `bazel build --@rules_go//go/config:race //cmd/bd:bd_for_tests --remote_download_regex='.*/bin/cmd/bd/bd_for_tests/bd$'` {
+		if buildStep.If != bazelPathIf || buildStep.Run != `bazel build --@rules_go//go/config:race //cmd/bd:bd_for_tests --remote_download_regex='.*/bin/cmd/bd/bd_for_tests/bd$' --norun_validations` {
 			t.Errorf("%s bazel build step: if %q, run %q; want if %q", lane.job, buildStep.If, buildStep.Run, bazelPathIf)
 		}
 		pkgBD := job.step(t, "Package the Bazel-built bd")
@@ -521,23 +542,19 @@ func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 			t.Errorf("%s step %q: if %q, want %q", lane.job, lane.langStepName, st.If, detectIf)
 		}
 
-		// The language setup itself must not drift from main.yml's copy of
-		// the same job (python-version / Node version / the uv install
-		// command): main.yml's jobs are ungated by rbe, so they are the one
-		// other place this exact setup is pinned.
-		mainJob := mainWorkflow.job(t, lane.job)
+		// The required package lane pins its own runtime independently of
+		// the now-deleted main.yml package jobs.
 		langStep := job.step(t, lane.langStepName)
-		mainLangStep := mainJob.step(t, lane.langStepName)
-		if langStep.Uses != mainLangStep.Uses || !reflect.DeepEqual(langStep.With, mainLangStep.With) {
-			t.Errorf("%s %q: uses %q, with %v; main.yml's %s has uses %q, with %v",
-				lane.job, lane.langStepName, langStep.Uses, langStep.With, lane.job, mainLangStep.Uses, mainLangStep.With)
-		}
 		if lane.job == bazelPackageMCPJobName {
-			installUv := job.step(t, "Install uv")
-			mainInstallUv := mainJob.step(t, "Install uv")
-			if installUv.Run != mainInstallUv.Run {
-				t.Errorf("%s Install uv: run %q; main.yml's has run %q", lane.job, installUv.Run, mainInstallUv.Run)
+			if langStep.Uses != "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97" || langStep.With["python-version"] != "3.14" {
+				t.Errorf("%s Python setup changed: uses %q, with %v", lane.job, langStep.Uses, langStep.With)
 			}
+			installUv := job.step(t, "Install uv")
+			if installUv.Run != "python -m pip install uv==0.11.16" {
+				t.Errorf("%s Install uv: run %q", lane.job, installUv.Run)
+			}
+		} else if langStep.Uses != "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020" || langStep.With["node-version"] != "24" {
+			t.Errorf("%s Node setup changed: uses %q, with %v", lane.job, langStep.Uses, langStep.With)
 		}
 		gateName := "Run " + map[string]string{bazelPackageMCPJobName: "MCP", bazelPackageNPMJobName: "npm"}[lane.job] + " package gate"
 		gate := job.step(t, gateName)
@@ -686,23 +703,16 @@ func TestPRRunsGoTestsBazelSkips(t *testing.T) {
 			}
 		}
 	}
-	// main.yml's push-only go-vet-cache job (F5.3) is the one explicit
-	// exception: it warms the vet cache pr.yml's vet leg restores, and
-	// nothing else in main.yml may run these scripts either.
+	// main.yml no longer warms the Go vet cache; the PR's scripts-go-checks
+	// matrix owns this check. A push workflow must not become a second owner.
 	for name, j := range readCIWorkflow(t, "main.yml").Jobs {
 		for _, st := range j.Steps {
 			for _, script := range []string{"allowlisted-go-tests.sh", "scripts-go-test.sh", "go-test-vet.sh"} {
-				if strings.Contains(st.Run, script) && name != "go-vet-cache" {
-					t.Errorf("main.yml %s step %q runs %s; only go-vet-cache may (go-test-vet.sh)", name, st.Name, script)
+				if strings.Contains(st.Run, script) {
+					t.Errorf("main.yml %s step %q runs %s; PR scripts-go-checks owns it", name, st.Name, script)
 				}
 			}
 		}
-	}
-	if got := readCIWorkflow(t, "main.yml").job(t, "go-vet-cache").step(t, "Go vet with go test's checks").Run; got != "bash scripts/ci/go-test-vet.sh" {
-		t.Errorf("main.yml go-vet-cache does not run go-test-vet.sh: %q", got)
-	}
-	if os.Getenv("TEST_SRCDIR") != "" {
-		return // scripts_test's runfiles hold none of the scripts (this part runs in that job itself)
 	}
 	root := sourceRepoRoot(t)
 	prelude := []string{

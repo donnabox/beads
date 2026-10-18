@@ -24,7 +24,7 @@ func runGraphPreviewComments(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	localTime, _ := cmd.Flags().GetBool("local-time")
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	return withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		comments, err := store.IssueComments(ctx, path)
 		if err != nil {
 			return nil, "", err
@@ -50,5 +50,14 @@ func runGraphPreviewComments(cmd *cobra.Command, args []string) error {
 			out.WriteByte('\n')
 		}
 		return comments, strings.TrimRight(out.String(), "\n"), nil
+	}, func(result any, human string) error {
+		if jsonOutput {
+			return outputJSON(result)
+		}
+		if quietFlag {
+			return nil
+		}
+		_, err := fmt.Fprintln(cmd.OutOrStdout(), human)
+		return err
 	})
 }

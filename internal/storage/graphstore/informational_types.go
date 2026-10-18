@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // These are real installed informational Types, not aliases for RelatedTypeURL.
-// The identities and original four descriptors remain immutable.
 func ExampleFollowsTypeURL(scope string) string { return scope + "types/example-follows" }
 func ExampleCitesTypeURL(scope string) string   { return scope + "types/example-cites" }
 
@@ -25,14 +25,23 @@ type previewTypeDefinition struct {
 	build func(string) (graph.TypeDescriptor, error)
 }
 
-// The original four entries are a complete legacy installation. Examples are
-// installed together only in new workspaces; reads never upgrade an old store.
+// Fresh preview workspaces install exactly one Type for each supported shape.
+// Earlier preview workspaces are intentionally not upgraded in place.
 func previewTypeDefinitions() []previewTypeDefinition {
-	return []previewTypeDefinition{
+	definitions := []previewTypeDefinition{
 		{"memory", memoryDescriptor}, {"issue", issueDescriptor},
 		{"dependency", dependencyDescriptor}, {"related", relatedDescriptor},
 		{"example-follows", exampleFollowsDescriptor}, {"example-cites", exampleCitesDescriptor},
 	}
+	for _, relation := range relationshipDependencyTypes {
+		if relation.native == types.DepBlocks {
+			continue // dependencyDescriptor is the sole installed blocks Type.
+		}
+		definitions = append(definitions, previewTypeDefinition{relation.installName, func(scope string) (graph.TypeDescriptor, error) {
+			return relationshipDependencyDescriptor(scope, relation.native)
+		}})
+	}
+	return definitions
 }
 
 // FreshTypeNames lists, in installation order, the Types a fresh init installs.
@@ -68,20 +77,19 @@ func exampleInformationalDescriptor(id, name, meaning string) (graph.TypeDescrip
 	})
 }
 
-// installedPreviewTypes admits exactly the original four or all six immutable
-// descriptors. Count and SQL byte-length guards bound metadata acquisition and
-// reject partial, unknown, replaced or oversized installations.
+// installedPreviewTypes admits only the current fresh Type set. Count and SQL
+// byte-length guards reject partial, unknown, replaced or oversized installs.
 func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]graph.TypeDescriptor, error) {
 	var count int
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
 		return nil, err
 	}
 	definitions := previewTypeDefinitions()
-	if count != 4 && count != len(definitions) {
+	if count != len(definitions) {
 		return nil, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	result := make([]graph.TypeDescriptor, 0, count)
-	for _, definition := range definitions[:count] {
+	for _, definition := range definitions {
 		expected, err := definition.build(scope)
 		if err != nil {
 			return nil, err
@@ -111,7 +119,7 @@ func (s *Store) informationalTypeInTx(ctx context.Context, tx *sql.Tx, id string
 }
 
 // Keep collection integrity based on the installed set, not every Type the
-// binary knows. A legacy store cannot silently acquire an example allocation.
+// binary knows.
 func (s *Store) installedInformationalTypes(ctx context.Context, tx *sql.Tx) ([]string, error) {
 	descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 	if err != nil {

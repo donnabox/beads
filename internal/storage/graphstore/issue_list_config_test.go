@@ -157,6 +157,9 @@ func TestGraphIssueListResolvedConfigRealStores(t *testing.T) {
 			setIssueListConfig(t, ctx, s, "types.custom", "table-kind")
 			want.CustomStatuses = []types.CustomStatus{{Name: "table-active", Category: types.CategoryActive}}
 			want.CustomTypes = []string{"table-kind"}
+			if got, err := s.ListCustomStatuses(ctx); err != nil || !reflect.DeepEqual(got, want.CustomStatuses) {
+				t.Fatalf("status discovery differs from Issue list policy: got=%+v err=%v", got, err)
+			}
 			// If populated normalized tables are authoritative, unsupported huge
 			// YAML fallbacks are not resolved or charged as effective policy.
 			config.Set("status.custom", names("ignoredstatus", 257))

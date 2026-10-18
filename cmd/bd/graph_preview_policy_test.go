@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -234,7 +235,7 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	cmd.Stdout, cmd.Stderr = &out, &stderr
 	err := cmd.Run()
 	if ctx.Err() != nil {
-		t.Fatalf("CLI did not complete within deadline: %v\n%s", ctx.Err(), stderr.String())
+		t.Fatalf("CLI did not complete within deadline: %v args=%v\n%s", ctx.Err(), args, stderr.String())
 	}
 	if code == "" {
 		if err != nil {
@@ -247,6 +248,14 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	}
 	if out.Len() != 0 {
 		t.Fatalf("refusal emitted success stdout: %s", out.String())
+	}
+	// Cobra's ordinary Args validators run before graph dispatch and retain
+	// their native plain-text errors, even for a graph workspace.
+	if strings.HasPrefix(code, "stderr:") {
+		if !strings.Contains(stderr.String(), strings.TrimPrefix(code, "stderr:")) {
+			t.Fatalf("expected Cobra refusal %q; stderr=%s", code, stderr.String())
+		}
+		return out.String()
 	}
 	var diagnostic struct {
 		Code      string `json:"code"`
@@ -275,7 +284,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
 		{"update", "beads/plan", "-l", "new", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
-		{"list", "--json"}, {"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
+		{"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
 		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {
@@ -284,6 +293,12 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		if args[0] == "close" {
 			// --force is now admitted; the Memory selector must still be
 			// refused by the graph writer without touching its workspace.
+			code = "invalid_properties"
+		}
+		if args[0] == "link" {
+			// Link creation is admitted. The default Dependency Type still
+			// requires live Issue endpoints, so this Memory selector fails
+			// validation before it can change the workspace.
 			code = "invalid_properties"
 		}
 		graphPolicyCLI(t, bd, work, home, nil, code, args...)
@@ -312,7 +327,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate", "issuePropertiesUpdate", "issuePropertiesPatch",
 		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueDatelessDeferral", "issueDatedDeferral", "issueReady", "genericRead",
-		"issueList", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
+		"issueList", "issueListLegacyJSON", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
 		// versionList is `bd versions` (and `bd history` as its graph-mode
 		// alias). It sits beside the exactVersion* pair deliberately: those
@@ -320,6 +335,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		// from historyExact, which stays false and describes the HTTP profile.
 		"versionList",
 		"memoryPropertiesPatch", "linkPropertiesPatch", "legacyImport",
+		"issueTodo", "issueHeartbeat", "issueReclaim", "issueStateRead", "issueStatus", "issueMergeSlot",
 	} {
 		wantEnabled[capability] = true
 		if !result.Result.Capabilities[capability] {
@@ -350,10 +366,7 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS).
 		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
-		{"delete", "beads/plan", "--unconditional"},
-		{"delete", "beads/plan", "--unconditional=false"},
 		{"forget", "beads/plan", "--if-revision="},
-		{"forget", "beads/plan", "--unconditional"},
 		{"show", "beads/plan", "--version=observed"},
 		{"recall", "beads/plan", "--version="},
 		{"compare", "beads/plan", "--from=observed", "--to=observed"},

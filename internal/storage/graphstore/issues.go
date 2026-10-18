@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -45,8 +46,10 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 // retained writer in the graph transaction. Specialized tables are the only
 // current authority; issue_versions is the only Issue snapshot store.
 func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.CreateRequest) (IssueRecord, error) {
-	if err := validatePath(path); err != nil {
-		return IssueRecord{}, err
+	if path != "" {
+		if err := validatePath(path); err != nil {
+			return IssueRecord{}, err
+		}
 	}
 	request = issueops.CloneCreateRequest(request)
 	if err := validateIssueCreate(request); err != nil {
@@ -66,19 +69,25 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+		if err != nil {
+			return err
+		}
 		if issueops.ResolveInfraTypesInTx(ctx, tx)[string(request.Issue.IssueType.Normalize())] {
 			return fmt.Errorf("%w: infrastructure Issue types are not admitted by the graph preview", storage.ErrValidation)
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		var exists int
-		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
-		if err == nil {
-			return ErrAlreadyExists
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
+		if path != "" {
+			var exists int
+			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
+			if err == nil {
+				return ErrAlreadyExists
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return err
+			}
 		}
 		unScope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unScope()
@@ -86,10 +95,21 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
+		if path == "" {
+			// An omitted graph --id follows the ordinary Issue writer, including
+			// its configured prefix, hash/counter mode and collision handling.
+			// The catalog may independently reserve an ID for a Memory or a
+			// deleted Bead. Keep the native Issue ID while choosing an unused
+			// canonical path in this same transaction.
+			path, err = generatedIssuePath(ctx, tx, created.Issue.ID)
+			if err != nil {
+				return err
+			}
+		}
 		// ExecuteCreate already owns the initial retained snapshot. Verify its
 		// hydrated values before publishing the graph mapping; a coercion rolls
 		// back that snapshot and all ordinary create effects in this transaction.
-		if !sameIssueCreateFields(request.Issue, created.Issue) {
+		if !sameIssueCreateFields(request.Issue, created.Issue, request.Actor) {
 			return fmt.Errorf("%w: Issue initial fields cannot be represented exactly by storage", storage.ErrValidation)
 		}
 		if issueops.IsWisp(created.Issue) {
@@ -104,7 +124,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
-            VALUES (?,'bead',?,?,'live','issue',?)`, path, IssueTypeURL(s.options.Binding.ScopeURL), revision, created.Issue.ID); err != nil {
+			VALUES (?,'bead',?,?,'live','issue',?)`, path, issueType, revision, created.Issue.ID); err != nil {
 			return err
 		}
 		if err := s.afterStage("issue-catalog"); err != nil {
@@ -132,6 +152,35 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		return IssueRecord{}, err
 	}
 	return result, nil
+}
+
+// generatedIssuePath prefers the native Issue ID. A Memory or deleted Bead can
+// independently reserve that canonical path, so only that rare collision gets
+// a new suffix; the native Issue ID and its counter/hash allocation stay put.
+func generatedIssuePath(ctx context.Context, tx *sql.Tx, issueID string) (string, error) {
+	base := "beads/" + issueID
+	for attempt := 0; attempt < 16; attempt++ {
+		path := base
+		if attempt != 0 {
+			token, err := freshToken()
+			if err != nil {
+				return "", err
+			}
+			path += "-" + token
+		}
+		if err := validatePath(path); err != nil {
+			return "", err
+		}
+		var exists int
+		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
+		if errors.Is(err, sql.ErrNoRows) {
+			return path, nil
+		}
+		if err != nil {
+			return "", err
+		}
+	}
+	return "", ErrAlreadyExists
 }
 
 // Read dispatches the immutable backing selection and reads its authoritative
@@ -194,8 +243,12 @@ func (s *Store) ShowIssue(ctx context.Context, path string) (IssueRecord, error)
 }
 
 func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (IssueRecord, error) {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return IssueRecord{}, err
+	}
 	var kind, typ, revision, state, backing, issueID string
-	err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key
+	err = tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key
         FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &issueID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return IssueRecord{}, ErrNotFound
@@ -209,7 +262,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 		}
 		return IssueRecord{}, ErrGone
 	}
-	if kind != "bead" || typ != IssueTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
+	if kind != "bead" || typ != issueType || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 	}
 	// Comments are a separate native Issue feed, outside durable_state and its
@@ -229,7 +282,21 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue retained mapping: %v", ErrInvalidStore, err)
 	}
-	canonical, err := canonicalJSON(issue)
+	// Lease liveness is node-local and deliberately unversioned. Compare the
+	// durable Issue against its retained version while preserving the live lease
+	// fields in the current projection. A heartbeat must not mint History.
+	var retainedIssue types.Issue
+	if err := json.Unmarshal(snapshot, &retainedIssue); err != nil {
+		return IssueRecord{}, fmt.Errorf("%w: malformed retained Issue", ErrInvalidStore)
+	}
+	// A claimed Issue can arrive on another replica without its granting node's
+	// ignored leases row. Native heartbeat may re-arm that lease locally; neither
+	// the missing row nor the later refresh changes durable Issue History.
+	comparison := *issue
+	comparison.LeaseExpiresAt = retainedIssue.LeaseExpiresAt
+	comparison.HeartbeatAt = retainedIssue.HeartbeatAt
+	comparison.LeaseGrantedNode = retainedIssue.LeaseGrantedNode
+	canonical, err := canonicalJSON(&comparison)
 	if err != nil {
 		return IssueRecord{}, err
 	}
@@ -248,7 +315,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if !bytes.Equal(retainedOwned, canonicalOwned) {
 		return IssueRecord{}, fmt.Errorf("%w: Issue owned state differs from retained version", ErrInvalidStore)
 	}
-	// The private v2 graph projection expresses dependencies once, canonically.
+	// The graph projection expresses dependencies once, canonically.
 	// Jim's authoritative Issue snapshot still retains its original domain shape.
 	metadata, err := commonMetadata(issue.Metadata)
 	if err != nil {
@@ -258,4 +325,17 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	issue.Metadata = nil
 	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
 		Properties: issue, Metadata: metadata, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
+}
+
+// The installed Type set, already fingerprint-checked by checkBinding, uses
+// one Issue allocation identity. Older preview stores require a fresh init.
+func installedIssueTypeURLInTx(ctx context.Context, tx *sql.Tx, scope string) (string, error) {
+	var count int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
+		return "", err
+	}
+	if count != len(previewTypeDefinitions()) {
+		return "", fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
+	}
+	return IssueTypeURL(scope), nil
 }

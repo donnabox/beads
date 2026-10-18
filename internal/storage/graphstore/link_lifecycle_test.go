@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
@@ -56,7 +57,7 @@ func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work"}, dep.Link, info.Link)
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work", Direction: "in"})
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work", TypeURL: RelatedTypeURL(o.Binding.ScopeURL)}, info.Link)
-			if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/work", TargetPath: "beads/prereq", TypeURL: DependencyTypeURL(o.Binding.ScopeURL), Actor: "author", Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
+			if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/work", TargetPath: "beads/prereq", TypeURL: dep.Link.Type, Actor: "author", Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
 				t.Fatalf("blocking removal: %v", err)
 			}
 			if _, err := s.ListLinks(ctx, LinksRequest{BeadPath: "beads/work", Direction: "other"}); !errors.Is(err, storage.ErrValidation) {
@@ -190,6 +191,61 @@ func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
 			}
 			if _, err := s.ShowLink(ctx, "links/a"); !errors.Is(err, ErrInvalidStore) {
 				t.Fatalf("corrupt deletion: %v", err)
+			}
+		})
+	}
+}
+
+func TestCollectLinksSelectsCompleteCurrentLinks(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			for _, path := range []string{"beads/source", "beads/target", "beads/other"} {
+				if _, err := store.Create(ctx, CreateRequest{Path: path}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			first, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/first", SourcePath: "beads/source", TargetPath: "beads/target", UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			second, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/second", SourcePath: "beads/other", TargetPath: "beads/source", UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			all, err := store.CollectLinks(ctx, LinkCollectionRequest{})
+			if err != nil || len(all) != 2 || all[0].ID != first.Link.ID || all[1].ID != second.Link.ID {
+				t.Fatalf("all current Links: %+v, %v", all, err)
+			}
+			for _, tc := range []struct {
+				request LinkCollectionRequest
+				want    string
+			}{
+				{LinkCollectionRequest{SourcePath: "beads/source"}, first.Link.ID},
+				{LinkCollectionRequest{TargetPath: "beads/source"}, second.Link.ID},
+				{LinkCollectionRequest{IncidentPath: "beads/target"}, first.Link.ID},
+				{LinkCollectionRequest{TypeURL: RelatedTypeURL(options.Binding.ScopeURL), SourcePath: "beads/other"}, second.Link.ID},
+			} {
+				links, err := store.CollectLinks(ctx, tc.request)
+				if err != nil || len(links) != 1 || links[0].ID != tc.want {
+					t.Fatalf("request %+v: %+v, %v", tc.request, links, err)
+				}
+			}
+			if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: "links/first", Unconditional: true, UnconditionalSource: true}); err != nil {
+				t.Fatal(err)
+			}
+			current, err := store.CollectLinks(ctx, LinkCollectionRequest{})
+			if err != nil || len(current) != 1 || current[0].ID != second.Link.ID {
+				t.Fatalf("after deletion: %+v, %v", current, err)
 			}
 		})
 	}
@@ -400,7 +456,7 @@ func TestLinkUnlinkConcurrentMutations(t *testing.T) {
 
 func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
-		for _, corruption := range []string{"informational-catalog", "informational-payload", "informational-type", "dependency-catalog", "dependency-payload"} {
+		for _, corruption := range []string{"informational-catalog", "informational-payload", "informational-type", "dependency-catalog", "dependency-payload", "dependency-type"} {
 			t.Run(backend+"/"+corruption, func(t *testing.T) {
 				ctx, o := issueExperimentOptions(t, backend)
 				s, err := OpenExisting(ctx, o)
@@ -420,7 +476,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 				typ := RelatedTypeURL(o.Binding.ScopeURL)
 				if strings.HasPrefix(corruption, "dependency") {
 					_, err = s.AddDependency(ctx, DependencyRequest{Path: "links/test", SourcePath: "beads/source", TargetPath: "beads/target", Actor: "author"})
-					typ = DependencyTypeURL(o.Binding.ScopeURL)
+					typ, _ = relationshipDependencyTypeURL(o.Binding.ScopeURL, types.DepBlocks)
 				} else {
 					_, err = s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/test", SourcePath: "beads/source", TargetPath: "beads/target"})
 				}
@@ -433,6 +489,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 					"informational-type":    `UPDATE graph_preview_catalog SET type_url='https://wrong.example/type' WHERE path='links/test'`,
 					"dependency-catalog":    `DELETE FROM graph_preview_catalog WHERE path='links/test'`,
 					"dependency-payload":    `DELETE FROM dependencies`,
+					"dependency-type":       `UPDATE graph_preview_catalog SET type_url='` + o.Binding.ScopeURL + `types/preview-parent-child' WHERE path='links/test'`,
 				}[corruption]
 				if _, err := s.db.ExecContext(ctx, query); err != nil {
 					t.Fatal(err)
@@ -444,7 +501,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 				// Blocking pair selection is outside the preview capability and
 				// refuses before reading storage, even when that storage is corrupt.
 				wantPairError := ErrInvalidStore
-				if typ == DependencyTypeURL(o.Binding.ScopeURL) {
+				if typ != RelatedTypeURL(o.Binding.ScopeURL) {
 					wantPairError = ErrCapabilityUnavailable
 				}
 				if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: typ, Unconditional: true, UnconditionalSource: true}); !errors.Is(err, wantPairError) {

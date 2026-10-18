@@ -3,10 +3,12 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -26,21 +28,60 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	// gatherListInput lowers the Changed state of the Issue filters once it has read
 	// them, so what the caller typed is read here, before anything gathers.
 	typed := graphIssueListTypedOptions(cmd)
+	selector, _ := cmd.Flags().GetString("type")
+	typeSelected := cmd.Flags().Changed("type")
+	nominal := typeSelected && graphPreviewNominalSelector(selector)
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
 	if err != nil {
 		return err
 	}
+	jsonFlag, _ := cmd.Flags().GetBool("json")
+	legacyJSON := !structured && (jsonOutput || jsonFlag)
 	selectedType := ""
-	if cmd.Flags().Changed("bead-type") {
-		selector, _ := cmd.Flags().GetString("bead-type")
+	if nominal {
 		selectedType, err = graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
+		if selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) && selectedType != graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return graphFailure("capability_unavailable", "bd list accepts only installed Bead Types", 5)
+		}
+		in.IssueType = ""
+		typed = slices.DeleteFunc(typed, func(option string) bool { return option == "type" })
+	} else if typeSelected && selector != "" {
+		// A named Issue classification already says which Beads to list.
+		// Avoid a redundant warning that the query did not include Memories.
+		selectedType = graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL)
 	}
-	plan := planGraphList(typed, graphIssueListConfigLabel(cmd, in), selectedType, graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL))
+	plan := planGraphList(typed, graphIssueListConfigLabel(cmd, in), selectedType, graphPreviewIssueTypeURL(graphPreviewConfig.GraphScopeURL))
 	if plan.refuse {
-		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --bead-type", 5)
+		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --type", 5)
+	}
+	if legacyJSON {
+		if selectedType != "" && selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return graphFailure("capability_unavailable", "legacy list JSON contains Issues only", 5)
+		}
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			page, err := s.ListIssuesLegacy(ctx, in.ListRequest)
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			return page, "", err
+		}, func(value any, _ string) error {
+			page := value.(graphstore.LegacyIssueListPage)
+			encoded, err := json.Marshal(page.Items)
+			if err != nil {
+				return err
+			}
+			if len(encoded) > graphIssueListOutputLimit {
+				return graphFailure("capability_unavailable", fmt.Sprintf("Issue list JSON exceeds %d bytes; narrow the query", graphIssueListOutputLimit), 5)
+			}
+			if err := outputJSON(page.Items); err != nil {
+				return err
+			}
+			printTruncationHint(page.HasMore, in.effectiveLimit)
+			return nil
+		})
 	}
 	if !plan.issueQuery {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
@@ -69,17 +110,21 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "format", "bead-type", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
 	structured := format == "records-json"
-	if cmd.Flags().Changed("json") || (jsonOutput && !structured) {
-		return fail("capability_unavailable", "graph list preserves the Issue JSON compatibility gate; use --format records-json for experimental graph records", 5)
+	jsonFlag, _ := cmd.Flags().GetBool("json")
+	if cmd.Flags().Changed("json") && !jsonFlag && !jsonOutput {
+		return fail("capability_unavailable", "graph list does not support explicit --json=false", 5)
+	}
+	if cmd.Flags().Changed("include-comments") && (structured || !(jsonOutput || jsonFlag)) {
+		return fail("capability_unavailable", "--include-comments requires legacy Issue --json", 5)
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
 	if (cmd.Flags().Changed("format") && !structured) || (cmd.Flags().Changed("flat") && !flat) {
-		return fail("capability_unavailable", "graph list supports flat output or --format records-json; tree and legacy JSON are unavailable", 5)
+		return fail("capability_unavailable", "graph list supports flat output, Issue-only --json, or --format records-json; tree and --format json are unavailable", 5)
 	}
 	if err := graphIssueListRepeatedFilters(cmd, argv); err != nil {
 		return fail("capability_unavailable", err.Error(), 5)
@@ -166,7 +211,7 @@ func graphIssueListRepeatedFilters(cmd *cobra.Command, argv []string) error {
 	if err := probe.Parse(argv); err != nil {
 		return fmt.Errorf("cannot validate graph list filter occurrences: %w", err)
 	}
-	for _, name := range []string{"status", "state", "type", "assignee", "bead-type"} {
+	for _, name := range []string{"status", "state", "type", "assignee"} {
 		if count := counts[name]; count != nil && count.n > 1 {
 			return fmt.Errorf("graph list does not yet support repeated --%s; supply one filter", name)
 		}

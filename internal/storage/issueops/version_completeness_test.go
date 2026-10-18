@@ -77,8 +77,10 @@ func versionMintEdges(fns map[string]*journalscan.FuncInfo) func(*journalscan.Fu
 // its own RecordVersionInTx: nothing it calls with the gate off can carry it
 // on its behalf. TestCompositeMutationsCarryTheirOwnMint is what turns
 // reviewer Probe 2 (delete ExecuteUpdate's final mint block) into a failure.
+// ExecuteUpdate's body is executeUpdate (ExecuteUpdate is it with the template
+// guard on), so the composite named here is the body that carries the mint.
 var versionCompositeMutations = []string{
-	"ExecuteUpdate",
+	"executeUpdate",
 	"applyLabelPatch",
 	"applyParentPatch",
 }
@@ -88,6 +90,12 @@ var versionCompositeMutations = []string{
 // does. Every write plumbing bottoms out in one of these; the structural
 // cross-check (TestEveryBeadMutatorMintsOrIsExempt) keeps the list complete.
 var versionedEntryPoints = []string{
+	// the heartbeat family mints on its RE-ARM path only (recorded as a
+	// mutation); a refresh writes only the clone-local leases table and mints
+	// nothing.
+	"RenewLeaseInTx",
+	"HeartbeatIssueInTx",
+	"ExecuteHeartbeatInTx",
 	// create — the singular path mints in place; the batch path defers the
 	// mint past PersistDependenciesWithOptionsResult so the first version
 	// carries the creation-time edge set.
@@ -253,7 +261,6 @@ var versionNeverMints = map[string]string{
 	"UpdateIssueIDInTx":                "rename: out of contract by design",
 	"ApplyCompactionInTx":              "compaction bookkeeping: out of contract by design",
 	"RestoreFromSnapshotInTx":          "restore: Phase 3",
-	"HeartbeatIssueInTx":               "lease keepalive: writes only the clone-local leases table, never a durable bead field",
 	"BootstrapInTx":                    "bootstrap: config and metadata tables only, no issue-plane row",
 }
 

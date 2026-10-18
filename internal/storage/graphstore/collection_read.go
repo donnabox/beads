@@ -121,14 +121,19 @@ func (s *Store) checkCollectionMappingsInTx(ctx context.Context, tx *sql.Tx) err
 	if err := s.checkLinkMappingsInTx(ctx, tx); err != nil {
 		return err
 	}
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
 	var deletedInvalid int
 	ids, err := s.installedInformationalTypes(ctx, tx)
 	if err != nil {
 		return err
 	}
-	placeholders, args := informationalTypeSQL(ids)
-	args = append(args, DependencyTypeURL(s.ScopeURL()))
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND ((backing='informational' AND type_url NOT IN (`+placeholders+`)) OR (backing='dependency' AND type_url<>?) OR type_url IS NULL)`, args...).Scan(&deletedInvalid); err != nil {
+	infoPlaceholders, args := informationalTypeSQL(ids)
+	depPlaceholders, depArgs := informationalTypeSQL(dependencyLinkTypesForIssueType(s.ScopeURL(), issueType))
+	args = append(args, depArgs...)
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND ((backing='informational' AND type_url NOT IN (`+infoPlaceholders+`)) OR (backing='dependency' AND type_url NOT IN (`+depPlaceholders+`)) OR type_url IS NULL)`, args...).Scan(&deletedInvalid); err != nil {
 		return err
 	}
 	if deletedInvalid != 0 {

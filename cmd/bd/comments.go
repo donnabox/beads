@@ -200,6 +200,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewAddComment(cmd, args, true)
+		}
 		CheckReadonly("comment add")
 
 		evt := metrics.NewCommandEvent("comments-add")
@@ -261,7 +264,7 @@ Examples:
 		if err != nil {
 			return HandleErrorRespectJSON("adding comment: %v", err)
 		}
-		if err := commitPendingIfEmbedded(ctx, result.Store, actor, doltAutoCommitParams{
+		if err := commitPendingIfEmbedded(ctx, result.Store, currentActor(), doltAutoCommitParams{
 			Command:  "comments add",
 			IssueIDs: []string{issueID},
 		}); err != nil {

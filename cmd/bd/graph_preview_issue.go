@@ -24,6 +24,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if cmd.Flags().Changed("file") {
+		return runGraphPreviewCreateMarkdown(cmd, args)
+	}
 	beadType, err := graphPreviewCreateBeadType(cmd, graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return err
@@ -31,16 +34,39 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
+	}
+	parentSelector, _ := cmd.Flags().GetString("parent")
+	if cmd.Flags().Changed("parent") && parentSelector == "" {
+		return graphFailure("invalid_selector", "--parent requires an Issue ID", 2)
+	}
+	if parentSelector != "" && graphPreviewTypeGeneration != 9 {
+		return graphFailure("capability_unavailable", "create --parent requires a fresh graph workspace", 5)
+	}
+	if parentSelector != "" && cmd.Flags().Changed("id") {
+		return graphFailure("invalid_selector", "cannot specify both --id and --parent", 2)
+	}
+	if parentSelector == "" && cmd.Flags().Changed("no-inherit-labels") {
+		return graphFailure("invalid_selector", "--no-inherit-labels requires --parent", 2)
+	}
+	parentPath := ""
+	if parentSelector != "" {
+		parentPath, err = graphPreviewBeadSelector(parentSelector)
+		if err != nil {
+			return err
+		}
 	}
 	properties, err := graphPreviewCreateProperties(cmd)
 	if err != nil {
 		return err
 	}
-	path, err := graphPreviewCreateBeadPath(cmd)
-	if err != nil {
-		return err
+	path := ""
+	if cmd.Flags().Changed("id") {
+		path, err = graphPreviewCreateBeadPath(cmd)
+		if err != nil {
+			return err
+		}
 	}
 	titleFlag, _ := cmd.Flags().GetString("title")
 	if value, ok := properties["title"]; ok {
@@ -98,8 +124,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
 	classification, _ := cmd.Flags().GetString("type")
+	nominalIssue := cmd.Flags().Changed("type") && graphPreviewNominalSelector(classification)
+	if nominalIssue {
+		classification = "task"
+	}
 	if value, ok := properties["issue_type"]; ok {
-		if cmd.Flags().Changed("type") {
+		if cmd.Flags().Changed("type") && !nominalIssue {
 			return graphFailure("invalid_properties", "Issue type was supplied by both --properties and --type", 2)
 		}
 		text, ok := value.(string)
@@ -135,10 +165,29 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		record, err := store.CreateIssue(ctx, path, request)
-		if err != nil {
-			return nil, "", err
+		var record graphstore.IssueRecord
+		if parentPath != "" {
+			parent, err := store.ShowIssue(ctx, parentPath)
+			if err != nil {
+				return nil, "", fmt.Errorf("parent Issue %s: %w", parentSelector, err)
+			}
+			noInherit, _ := cmd.Flags().GetBool("no-inherit-labels")
+			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
+				ParentPath: parentPath, ExpectedParentRevision: parent.Revision,
+				InheritLabels: !noInherit, Create: request,
+			})
+			if err != nil {
+				return nil, "", err
+			}
+			record = created.Child
+		} else {
+			var err error
+			record, err = store.CreateIssue(ctx, path, request)
+			if err != nil {
+				return nil, "", err
+			}
 		}
+		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, fmt.Sprintf("Created %s\n", path), nil
 	})
 	if err == nil {
@@ -312,18 +361,33 @@ func graphPreviewApplyIssueCreateProperties(cmd *cobra.Command, issue *types.Iss
 	return nil
 }
 
-// Nominal bead type is separate from the Issue classification selected by -t.
-// Only the two installed graph descriptors have a create writer in this slice.
 func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error) {
-	if !cmd.Flags().Changed("bead-type") {
-		return graphstore.IssueTypeURL(scope), nil
+	issueType := graphPreviewIssueTypeURL(scope)
+	if !cmd.Flags().Changed("type") {
+		return issueType, nil
 	}
-	selector, _ := cmd.Flags().GetString("bead-type")
+	selector, _ := cmd.Flags().GetString("type")
+	if selector == "" {
+		return "", graphFailure("invalid_selector", "--type requires a value", 2)
+	}
+	if !graphPreviewNominalSelector(selector) {
+		classification := types.IssueType(selector).Normalize()
+		if !classification.IsBuiltIn() {
+			customTypes, err := resolveWorkspaceCustomTypes(getRootContext())
+			if err != nil {
+				return "", graphStorageError(err)
+			}
+			if !classification.IsValidWithCustom(customTypes) {
+				return "", graphFailure("capability_unavailable", "Bead type is not registered in this workspace: "+selector, 5)
+			}
+		}
+		return issueType, nil
+	}
 	typeURL, err := graphPreviewTypeURL(scope, selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if typeURL != graphstore.IssueTypeURL(scope) && typeURL != graphstore.MemoryTypeURL(scope) {
+	if typeURL != issueType && typeURL != graphstore.MemoryTypeURL(scope) {
 		return "", graphFailure("capability_unavailable", "graph create supports only the installed Issue and Memory bead types", 5)
 	}
 	return typeURL, nil
@@ -366,7 +430,7 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 // Inline text only: validate aliases and explicit presence before the ordinary
 // description helper can read stdin. Issue-only flags cannot be silently lost.
 func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, string, error) {
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
 		return "", "", err
 	}
 	properties, err := graphPreviewCreateProperties(cmd)

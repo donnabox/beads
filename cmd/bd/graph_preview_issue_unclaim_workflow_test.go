@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"reflect"
 	"testing"
@@ -42,7 +43,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				t.Fatalf("open assigned Issue did not follow native release: %+v", openRelease)
 			}
 			call("remember", "Context", "--id", "beads/context")
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "work"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed || claimed.Issue.Properties.Status != types.StatusInProgress {
 				t.Fatalf("claim did not start work: %+v", claimed)
@@ -53,18 +54,21 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			refuse("permission_denied", "unclaim", "work", "--actor", "rig.agent", "--readonly")
 			refuse("invalid_properties", "unclaim", "context", "--actor", "rig.agent")
 			refuse("invalid_selector", "unclaim", "links/context", "--actor", "rig.agent")
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work")); !reflect.DeepEqual(got, claimed.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, claimed.Issue) {
 				t.Fatal("refused releases changed live claim")
 			}
 			released := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "work", "--actor", "rig_agent", "--reason", "handoff"))
 			if !released.Changed || released.Issue.Properties.Status != types.StatusOpen || released.Issue.Properties.Assignee != "" || released.Issue.Properties.LeaseExpiresAt != nil || released.Issue.Revision == claimed.Issue.Revision || released.Issue.Attribution.Actor != "rig_agent" {
 				t.Fatalf("incomplete release: %+v", released)
 			}
-			comments := graphMixedResult[[]*types.Comment](t, call("comments", "work"))
-			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" {
+			var comments []*types.Comment
+			if err := json.Unmarshal([]byte(call("comments", "work")), &comments); err != nil {
+				t.Fatalf("decode native comment array: %v", err)
+			}
+			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" || comments[0].IssueID != "beads/work" {
 				t.Fatalf("reason was not a native comment: %+v", comments)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work")); !reflect.DeepEqual(got, released.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, released.Issue) {
 				t.Fatal("comment changed retained Issue read")
 			}
 			for _, record := range []graphstore.IssueRecord{before, claimed.Issue, released.Issue} {

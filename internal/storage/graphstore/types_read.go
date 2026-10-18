@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -13,8 +12,8 @@ import (
 )
 
 // ListInstalledTypes returns the persisted, validated descriptor set in stable
-// ID order. In particular, an older four-Type installation remains four Types;
-// this read never installs the newer examples or enumerates binary-only Types.
+// ID order. Partial or older preview installations are refused; this read
+// never installs Types or enumerates binary-only descriptors.
 func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor, error) {
 	var descriptors []graph.TypeDescriptor
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
@@ -81,14 +80,15 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 	case ExampleCitesTypeURL(s.ScopeURL()):
 		name = "example-cites"
 	default:
-		return graph.TypeDescriptor{}, ErrNotFound
+		var ok bool
+		name, ok = relationshipDependencyInstallName(s.ScopeURL(), id)
+		if !ok {
+			return graph.TypeDescriptor{}, ErrNotFound
+		}
 	}
 	var raw []byte
 	var fingerprint string
 	if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=?`, name).Scan(&raw, &fingerprint); err != nil {
-		if errors.Is(err, sql.ErrNoRows) && (name == "example-follows" || name == "example-cites") {
-			return graph.TypeDescriptor{}, ErrNotFound
-		}
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: read installed %s descriptor: %v", ErrInvalidStore, name, err)
 	}
 	parsed, err := graph.ParseTypeDescriptor(raw)

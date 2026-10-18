@@ -9,10 +9,9 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
-// Allocate once, then let the existing writer reserve the identity atomically.
+// Allocate a Memory path once, then let its writer reserve it atomically.
 // Explicit IDs (including explicitly empty ones) are never replaced or retried.
-// The 128-bit random suffix follows graph workspace/token allocation; it avoids
-// using the Issue hash generator's title/time/nonce collision protocol here.
+// Issue creation instead uses its native writer's generated ID as the graph path.
 func graphPreviewCreateBeadPath(cmd *cobra.Command) (string, error) {
 	path, _ := cmd.Flags().GetString("id")
 	if !cmd.Flags().Changed("id") {

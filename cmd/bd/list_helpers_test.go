@@ -14,15 +14,6 @@ import (
 	"github.com/steveyegge/beads/internal/workapi"
 )
 
-type watchListDependencyStoreStub struct {
-	allDeps map[string][]*types.Dependency
-	err     error
-}
-
-func (s watchListDependencyStoreStub) GetAllDependencyRecords(_ context.Context) (map[string][]*types.Dependency, error) {
-	return s.allDeps, s.err
-}
-
 func TestListParseTimeFlag(t *testing.T) {
 	cases := []string{
 		"2025-12-26",
@@ -293,7 +284,7 @@ func TestListDisplayPrettyListHonorsSort(t *testing.T) {
 		}
 
 		out := captureStdout(t, func() error {
-			displayPrettyListWithDepsMode(issues, false, nil, "", false, false, "closed", "closed", false)
+			displayPrettyListWithDepsMode(issues, false, nil, "", false, false, "closed", "closed", false, nil)
 			return nil
 		})
 		newAt, oldAt := strings.Index(out, "bd-new"), strings.Index(out, "bd-old")
@@ -309,7 +300,7 @@ func TestListDisplayPrettyListHonorsSort(t *testing.T) {
 		}
 
 		out := captureStdout(t, func() error {
-			displayPrettyListWithDepsMode(issues, false, nil, "", false, false, "", "", true)
+			displayPrettyListWithDepsMode(issues, false, nil, "", false, false, "", "", true, nil)
 			return nil
 		})
 		p3At, p0At := strings.Index(out, "bd-p3"), strings.Index(out, "bd-p0")
@@ -328,7 +319,7 @@ func TestListDisplayPrettyListHonorsSort(t *testing.T) {
 		}
 
 		out := captureStdout(t, func() error {
-			displayPrettyListWithDepsMode([]*types.Issue{parent, oldChild, newChild}, false, deps, "", false, false, "closed", "closed", false)
+			displayPrettyListWithDepsMode([]*types.Issue{parent, oldChild, newChild}, false, deps, "", false, false, "closed", "closed", false, nil)
 			return nil
 		})
 		newAt, oldAt := strings.Index(out, newChild.ID), strings.Index(out, oldChild.ID)
@@ -373,7 +364,7 @@ func TestListDisplayPrettyList_TruncatedSummary(t *testing.T) {
 	}
 
 	out := captureStdout(t, func() error {
-		displayPrettyListWithDepsMode(issues, false, nil, "", true, false, "", "", false)
+		displayPrettyListWithDepsMode(issues, false, nil, "", true, false, "", "", false, nil)
 		return nil
 	})
 	if !strings.Contains(out, "Showing 2 issues") {
@@ -390,8 +381,8 @@ func TestListDisplayPrettyList_TruncatedSummary(t *testing.T) {
 func TestDisplayWatchedIssueList_UsesDependencyHierarchy(t *testing.T) {
 	parent := &types.Issue{ID: "bd-zparent", Title: "Parent", Status: types.StatusOpen, Priority: 1, IssueType: types.TypeEpic}
 	child := &types.Issue{ID: "bd-achild", Title: "Child", Status: types.StatusOpen, Priority: 1, IssueType: types.TypeTask}
-	store := watchListDependencyStoreStub{
-		allDeps: map[string][]*types.Dependency{
+	store := &edgeSourceStub{
+		edges: map[string][]*types.Dependency{
 			child.ID: {
 				{IssueID: child.ID, DependsOnID: parent.ID, Type: types.DepParentChild},
 			},

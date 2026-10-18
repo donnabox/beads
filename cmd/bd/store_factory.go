@@ -104,7 +104,8 @@ func newDoltStore(ctx context.Context, cfg *dolt.Config) (s storage.DoltStorage,
 		// Working-set-reconcile commands (bd dolt commit, bd vc commit) must
 		// not be bricked by a pending-migration dirty-table refusal: that
 		// refusal's documented recovery is exactly the commit these commands
-		// run, so failing the open here would deadlock (#4566). The server
+		// run, so failing the open here would deadlock (#4566). The same goes
+		// for the migration-consent refusal that precedes it. The server
 		// arm above honors the same cfg.LenientOpen inside dolt.New; this
 		// branch is the embedded half of one policy, not the whole of it.
 		return embeddeddolt.OpenForWorkingSetReconcile(ctx, cfg.BeadsDir, cfg.Database, "main")
@@ -156,7 +157,27 @@ func acquireEmbeddedLock(beadsDir string, serverMode bool) (util.Unlocker, error
 // keeps that true for the dolt.shared-server layer; the one deliberate
 // exception is BEADS_DOLT_SHARED_SERVER, which is machine-global in every
 // resolver in the tree (see sharedServerModeForWorkspace).
-func newDoltStoreFromConfig(ctx context.Context, beadsDir string) (s storage.DoltStorage, err error) {
+func newDoltStoreFromConfig(ctx context.Context, beadsDir string) (storage.DoltStorage, error) {
+	return openDoltStoreFromConfig(ctx, beadsDir, false)
+}
+
+// newExistingDoltStoreFromConfig is newDoltStoreFromConfig for a write routed
+// to another workspace (a prefix route or an auto-route, see
+// openRoutedTargetStore): it opens that workspace's database writable, but
+// refuses an embedded workspace that holds no database yet instead of creating
+// one there. The routed open runs before the lookup it serves, so a created
+// database would outlive an id that misses, and `bd bootstrap` would then take
+// the empty database for the real one and skip the clone from sync.remote. The
+// probe is embeddeddolt.HasRepository, the adapter's own marker check. A
+// server-mode open already refuses a missing database: it does not set
+// CreateIfMissing.
+func newExistingDoltStoreFromConfig(ctx context.Context, beadsDir string) (storage.DoltStorage, error) {
+	return openDoltStoreFromConfig(ctx, beadsDir, true)
+}
+
+// openDoltStoreFromConfig is the body of newDoltStoreFromConfig and
+// newExistingDoltStoreFromConfig; requireExisting selects the latter.
+func openDoltStoreFromConfig(ctx context.Context, beadsDir string, requireExisting bool) (s storage.DoltStorage, err error) {
 	defer func() { s, err = activateVersionedHistoryStore(ctx, s, err) }()
 	defer func() { s, err = activateEventsJournalStore(beadsDir, s, err) }()
 	cfg, err := configfile.Load(beadsDir)
@@ -180,6 +201,12 @@ func newDoltStoreFromConfig(ctx context.Context, beadsDir string) (s storage.Dol
 	}
 	if effectiveServerMode(beadsDir, cfg) {
 		return dolt.NewFromConfig(ctx, beadsDir)
+	}
+	// Refuse before the sanitize migration below, which renames the legacy
+	// directory and rewrites metadata.json: a refused open writes nothing.
+	if requireExisting && !embeddeddolt.HasRepository(beadsDir) {
+		return nil, fmt.Errorf("embeddeddolt: no embedded database at %s; a routed write does not create one (run 'bd bootstrap' in that repository first)",
+			filepath.Join(beadsDir, "embeddeddolt"))
 	}
 	database := configfile.DefaultDoltDatabase
 	if cfg != nil {
@@ -261,6 +288,16 @@ func newPreviewStoreFromConfig(ctx context.Context, beadsDir string) (storage.Do
 // OpenForPreviewCommand, ReadOnly server config), so there is no mutation for a
 // journal row to accompany. Registered in the construction guard's exemption
 // list with that reason.
+//
+// The registry arm is the exception: it returns whatever the backend's
+// OpenReadOnly means, and that one hook also serves the root pre-run's
+// classified reads, `bd ready --claim` included, so it may be writable. The
+// http client backend's read-only open is (httpclient.NewReadOnlyFromConfig),
+// and a write through it reaches its bd serve. The journal exemption still
+// holds there: recording that write is the business of the server that applies
+// it, and the client has no journal of its own to activate. A separate
+// OpenNonMutating hook on backends.Backend, which this function would call
+// instead, is the follow-up that closes the exception.
 func openNonMutatingStoreFromConfig(ctx context.Context, beadsDir string, preview bool) (storage.DoltStorage, error) {
 	cfg, err := configfile.Load(beadsDir)
 	if err != nil {

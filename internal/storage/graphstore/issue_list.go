@@ -227,6 +227,27 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 
 type issueListConfigSource struct{ config workapi.ListConfig }
 
+// ListCustomStatuses reads the same resolved Issue status configuration as
+// graph Issue list. It does not open the legacy store or modify the workspace.
+func (s *Store) ListCustomStatuses(ctx context.Context) ([]types.CustomStatus, error) {
+	var statuses []types.CustomStatus
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		cfg, err := issueListConfigInTx(ctx, tx)
+		if err != nil {
+			return err
+		}
+		statuses = cfg.CustomStatuses
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return statuses, nil
+}
+
 func (s issueListConfigSource) GetCustomStatuses(context.Context) ([]types.CustomStatus, error) {
 	return s.config.CustomStatuses, nil
 }
@@ -278,6 +299,14 @@ func issueListConfigInTx(ctx context.Context, tx *sql.Tx) (workapi.ListConfig, e
 // retained-state verification remains scoped to queried Issues and their owned
 // Links, including the query's probe row.
 func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
+	dependencyTypes := map[string]bool{}
+	for _, id := range dependencyLinkTypesForIssueType(s.ScopeURL(), issueType) {
+		dependencyTypes[id] = true
+	}
 	ids, err := s.installedInformationalTypes(ctx, tx)
 	if err != nil {
 		return err
@@ -317,9 +346,9 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		case "generic":
 			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == MemoryTypeURL(s.ScopeURL()) && !key.Valid && memoryExists
 		case "issue":
-			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == IssueTypeURL(s.ScopeURL()) && key.Valid && key.String != "" && issueExists
+			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == issueType && key.Valid && key.String != "" && issueExists
 		case "dependency":
-			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && typ == DependencyTypeURL(s.ScopeURL()) && key.Valid && key.String != "" && dependencyExists
+			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && dependencyTypes[typ] && key.Valid && key.String != "" && dependencyExists
 		case "informational":
 			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && informational[typ] && !key.Valid && informationalExists
 		default:

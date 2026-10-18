@@ -13,6 +13,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // These tables are deliberately preview-specific. They share the standard
@@ -51,9 +52,9 @@ var previewDDL = []string{
         PRIMARY KEY (path, version), UNIQUE KEY one_issue_version (issue_id, issue_revision))`,
 }
 
-// MemoryTypeURL is a Scope-local experimental descriptor, not the eventual
-// production Memory Type URI. Its payload is title/body and it owns outgoing Links.
-func MemoryTypeURL(scope string) string { return scope + "types/preview-memory-v2" }
+// MemoryTypeURL is a Scope-local preview descriptor. Its payload is
+// title/body and it owns outgoing Links.
+func MemoryTypeURL(scope string) string { return scope + "types/preview-memory" }
 
 func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
 	owns, err := graph.NewWildcardOwnedLinkDecl(PreviewOwnedLinkLimit)
@@ -61,29 +62,18 @@ func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
 		return graph.TypeDescriptor{}, err
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: MemoryTypeURL(scope), Name: "Experimental Memory v2", Describes: graph.KindBead,
+		ID: MemoryTypeURL(scope), Name: "Preview Memory", Describes: graph.KindBead,
 		Description:  "Disposable C0 preview. The installed writer accepts exactly UTF-8 title and body strings, owns up to 1000 outgoing Links, and always records a complete retained snapshot. This descriptor does not claim the complete Memory or History contract.",
 		OwnsOutgoing: []graph.OwnedLinkDecl{owns},
 	})
 }
 
 // IssueTypeURL deliberately avoids settling the nominal Task/Bug discussion.
-func IssueTypeURL(scope string) string { return scope + "types/preview-issue-v2" }
+func IssueTypeURL(scope string) string { return scope + "types/preview-issue" }
 
-func issueDescriptor(scope string) (graph.TypeDescriptor, error) {
-	owns, err := graph.NewOwnedLinkDecl(DependencyTypeURL(scope), "", PreviewOwnedLinkLimit)
-	if err != nil {
-		return graph.TypeDescriptor{}, err
-	}
-	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: IssueTypeURL(scope), Name: "Experimental Issue v2", Describes: graph.KindBead,
-		Description:  "Disposable specialized Issue adapter. Issue classification remains a property. Admits durable create, checked close, ready work and up to 1000 outgoing blocking Dependencies owned by their source. Complete canonical owned-Link state is retained with each Issue version. No production Type or complete History contract is established.",
-		OwnsOutgoing: []graph.OwnedLinkDecl{owns},
-	})
-}
-
-// DependencyTypeURL is a registered private blocking-Dependency Type.
-func DependencyTypeURL(scope string) string { return scope + "types/preview-blocks-v1" }
+// DependencyTypeURL is the one native Dependency Link Type. The kind is stored
+// in the Link's dep_type property, not its nominal Type URL.
+func DependencyTypeURL(scope string) string { return scope + "types/preview-dependency" }
 
 func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope)}, graph.ExternalNone)
@@ -91,14 +81,89 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 		return graph.TypeDescriptor{}, err
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: DependencyTypeURL(scope), Name: "Experimental blocking Dependency v1", Describes: graph.KindLink,
-		Description: "Disposable Dependency adapter. Unpinned live local durable Issue endpoints; empty properties. The source depends on the target and owns this Link. Issue-domain pair uniqueness applies. No generic multiedge or production Dependency contract is established.",
+		ID: DependencyTypeURL(scope), Name: "Preview Dependency", Describes: graph.KindLink,
+		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; no other properties or metadata edits are supported. One ordered Issue pair has at most one Dependency.",
 		Source:      &endpoint, Target: &endpoint,
 	})
 }
 
+// The one installed Issue Type owns the native Dependency Links exposed by
+// this fresh workspace. Issue classification remains an unconstrained property.
+func issueDescriptor(scope string) (graph.TypeDescriptor, error) {
+	owned := make([]graph.OwnedLinkDecl, 0, len(relationshipDependencyTypes))
+	for _, relation := range relationshipDependencyTypes {
+		link, err := graph.NewOwnedLinkDecl(scope+relation.path, "", PreviewOwnedLinkLimit)
+		if err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		owned = append(owned, link)
+	}
+	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
+		ID: IssueTypeURL(scope), Name: "Preview Issue", Describes: graph.KindBead,
+		Description:  "Disposable specialized Issue adapter with source-owned Dependency Links. Issue classification remains a property. Native Issue writers own lifecycle and retained History; these Link Types do not define a close reason or authorize an edge-plus-close operation.",
+		OwnsOutgoing: owned,
+	})
+}
+
+type relationshipDependencyType struct {
+	native      types.DependencyType
+	installName string
+	path        string
+	name        string
+}
+
+// Kept temporarily for the old installer seam while the fresh generation's
+// Type catalog is consolidated. Every valid kind uses one nominal Type.
+var relationshipDependencyTypes = [...]relationshipDependencyType{
+	{types.DepBlocks, "dependency", "types/preview-dependency", "Preview Dependency"},
+}
+
+func relationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
+	if native.IsValid() {
+		return DependencyTypeURL(scope), true
+	}
+	return "", false
+}
+
+// RelationshipDependencyTypeURL names a native Dependency Link Type. This
+// is an identity lookup, not permission to create the relationship.
+func RelationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
+	return relationshipDependencyTypeURL(scope, native)
+}
+
+// RelationshipBlockingTypeURL is the installed blocking Link identity.
+func RelationshipBlockingTypeURL(scope string) string {
+	id, _ := relationshipDependencyTypeURL(scope, types.DepBlocks)
+	return id
+}
+
+func nativeRelationshipDependencyType(scope, id string) (types.DependencyType, bool) {
+	if id == DependencyTypeURL(scope) {
+		// The Type identifies a Dependency, while dependencies.type supplies
+		// its kind. Callers must not infer a kind from this return value.
+		return types.DepBlocks, true
+	}
+	return "", false
+}
+
+func relationshipDependencyInstallName(scope, id string) (string, bool) {
+	for _, relation := range relationshipDependencyTypes {
+		if id == scope+relation.path {
+			return relation.installName, true
+		}
+	}
+	return "", false
+}
+
+func relationshipDependencyDescriptor(scope string, native types.DependencyType) (graph.TypeDescriptor, error) {
+	if native.IsValid() {
+		return dependencyDescriptor(scope)
+	}
+	return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
+}
+
 // RelatedTypeURL names the private experimental informational Link descriptor.
-func RelatedTypeURL(scope string) string { return scope + "types/preview-related-v2" }
+func RelatedTypeURL(scope string) string { return scope + "types/preview-related" }
 
 func relatedDescriptor(scope string) (graph.TypeDescriptor, error) {
 	// Endpoint conformsTo is a conjunction, not an alternative-Type list.
@@ -109,7 +174,7 @@ func relatedDescriptor(scope string) (graph.TypeDescriptor, error) {
 		return graph.TypeDescriptor{}, err
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: RelatedTypeURL(scope), Name: "Experimental informational Link v2", Describes: graph.KindLink,
+		ID: RelatedTypeURL(scope), Name: "Preview Related", Describes: graph.KindLink,
 		Description: "Disposable informational Link with live unpinned local Issue or Memory endpoints and independent multiedge identity. Closed properties record admits only optional UTF-8 string note. Memory sources own outgoing Links; Issue sources do not own this Type. No scheduling effect or production Type contract.",
 		Source:      &endpoint, Target: &endpoint,
 	})
@@ -203,8 +268,13 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	if b != o.Binding || !authorityID.MatchString(token) {
 		return fmt.Errorf("%w: persisted binding differs from workspace", ErrInvalidStore)
 	}
-	if _, err := installedPreviewTypes(ctx, tx, b.ScopeURL); err != nil {
+	installed, err := installedPreviewTypes(ctx, tx, b.ScopeURL)
+	if err != nil {
 		return err
+	}
+	count := len(installed)
+	if count != len(previewTypeDefinitions()) {
+		return fmt.Errorf("%w: workspace marker and installed Type generation differ", ErrInvalidStore)
 	}
 	if _, err := issueops.ReadConfigPrefix(ctx, tx); err != nil {
 		return fmt.Errorf("%w: Issue configuration: %v", ErrInvalidStore, err)

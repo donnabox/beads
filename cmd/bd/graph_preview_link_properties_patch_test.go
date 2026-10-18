@@ -29,9 +29,8 @@ func TestGraphPreviewLinkPropertiesPatchRequest(t *testing.T) {
 	}{
 		{"literal-dual-guard", raw, []string{"--if-revision=link-old", "--if-source-revision=source-old"}, "link-old", "source-old", false, false},
 		{"file-Link-unconditional", "@" + file, []string{"--if-source-revision=source-old"}, "", "source-old", true, false},
-		{"stdin-source-unconditional", "@-", []string{"--if-revision=link-old", "--unconditional-source"}, "link-old", "", false, true},
+		{"stdin-source-current", "@-", []string{"--if-revision=link-old"}, "link-old", "", false, true},
 		{"default-source-unconditional", raw, []string{}, "", "", true, true},
-		{"both-unconditional", raw, []string{"--unconditional-source"}, "", "", true, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := memoryPropertiesPatchCommand(t, append([]string{"--patch=" + tc.input}, tc.flags...)...)
@@ -61,11 +60,10 @@ func TestGraphPreviewLinkPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"invalid-Link-token", []string{"--if-revision=\xff"}, 2},
 		{"oversized-Link-token", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, 2},
 		{"empty-source-guard", []string{"--if-source-revision="}, 2},
-		{"both-source-guards", []string{"--if-source-revision=old", "--unconditional-source"}, 2},
-		{"false-source-unconditional", []string{"--unconditional-source=false"}, 2},
 		{"invalid-source-token", []string{"--if-source-revision=\xff"}, 2},
 		{"oversized-source-token", []string{"--if-source-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, 2},
-		{"replacement-conflict", []string{"--properties={}"}, 5},
+		{"merge-with-patch", []string{"--properties={}"}, 5},
+		{"replace-with-patch", []string{"--replace-properties={}"}, 2},
 		{"Issue-title-conflict", []string{"--title=x"}, 5},
 		{"claim-conflict", []string{"--claim"}, 5},
 		{"false-claim-conflict", []string{"--claim=false"}, 5},

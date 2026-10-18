@@ -11,7 +11,7 @@ import (
 // The read chooses a writer only. It supplies no guard or update base: each
 // selected writer re-reads and checks the current Resource in its transaction.
 func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	patch, err := graphPreviewMetadataPatch(cmd)
@@ -22,7 +22,7 @@ func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, false)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -34,13 +34,13 @@ func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
 		}
 		switch current.(type) {
 		case graphstore.IssueRecord:
-			if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
+			if cmd.Flags().Changed("if-source-revision") {
 				return nil, "", graphFailure("invalid_selector", "Issue updates have no owning-source guard", 2)
 			}
 			result, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{Path: path, Actor: actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: patch})
 			return result, fmt.Sprintf("Updated %s", result.Issue.ID), err
 		case graphstore.Record:
-			if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
+			if cmd.Flags().Changed("if-source-revision") {
 				return nil, "", graphFailure("invalid_selector", "Memory updates have no owning-source guard", 2)
 			}
 			result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{Path: path, Actor: actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: patch})

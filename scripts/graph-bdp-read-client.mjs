@@ -26,12 +26,12 @@ const success = value => { assert.equal(isBdpClientProblem(value), false, JSON.s
 const id = path => scope + path;
 const planID = id('beads/plan');
 const contextID = id('links/context');
-const memoryType = id('types/preview-memory-v2');
-const relatedType = id('types/preview-related-v2');
+const memoryType = id('types/preview-memory');
+const relatedType = id('types/preview-related');
 const exampleFollowsType = id('types/example-follows');
 const exampleCitesType = id('types/example-cites');
-const installedTypeIDs = [memoryType, id('types/preview-issue-v2'),
-  relatedType, id('types/preview-blocks-v1'), exampleFollowsType, exampleCitesType].sort();
+const installedTypeIDs = [memoryType, id('types/preview-issue'),
+  relatedType, id('types/preview-dependency'), exampleFollowsType, exampleCitesType].sort();
 
 // Observational decoration only: delegates to native fetch without synthesizing
 // any status, body, routing, or discovery. It does not log credentials.
@@ -144,6 +144,7 @@ try {
   const targetBefore = await perform({ kind: 'resource', resource: 'bead', id: targetID });
   const dependencyBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
   assert.deepEqual(dependencyBefore.metadata, {});
+  assert.deepEqual(dependencyBefore.properties, { dep_type: 'blocks' });
   assert.equal(dependencyBefore.source, workID);
   assert.equal(dependencyBefore.target, targetID);
   assert.deepEqual(Object.values(workBefore.ownedLinks).flat(), [dependencyBefore]);
@@ -518,7 +519,7 @@ try {
     assert.equal(retainedFirst.items[0].id, id('beads/alpha'));
     assert.ok(retainedFirst.next);
 
-    const deletionArgs = ['unlink', dependencyID, '--if-revision', deletionLinkBefore.revision,
+    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', deletionLinkBefore.revision,
       '--if-source-revision', deletionSourceBefore.revision, '--actor', 'bdp-read-dependency-remover', '--json'];
     const deletionBinary = digest(await readFile(process.env.BDP_BD));
     let deletionExecution;

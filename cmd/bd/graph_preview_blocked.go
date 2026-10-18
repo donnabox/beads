@@ -10,6 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/workapi"
 )
 
 const graphIssueBlockedOutputLimit = 16 << 20
@@ -40,7 +41,10 @@ func runGraphPreviewBlocked(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewBlockedInput(cmd, args); err != nil {
 		return err
 	}
-	filter := blockedFilterFromFlags(cmd)
+	// Graph preview rejects --parent at input admission. The shared request
+	// still carries the label flags, which workapi converts for this native
+	// graph-store read without constructing a storage filter in the CLI.
+	filter := workapi.BuildGraphBlockedFilter(blockedRequestFromFlags(cmd))
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		issues, err := s.BlockedIssuesFiltered(ctx, filter)
 		if err != nil {

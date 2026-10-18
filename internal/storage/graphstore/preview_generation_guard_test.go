@@ -6,6 +6,8 @@ import (
 	"errors"
 	"slices"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // The workspace format generation is checked against the Types a fresh init
@@ -28,6 +30,62 @@ func TestFreshTypeNamesFollowPreviewTypeDefinitions(t *testing.T) {
 	}
 }
 
+// Direct Store callers may omit TypeGeneration. The checked installed set, not
+// an implied older generation, decides whether relationship journeys are safe.
+func TestUnspecifiedStoreGenerationRequiresCompleteFreshTypes(t *testing.T) {
+	ctx, options := issueExperimentOptions(t, "embedded")
+	if options.TypeGeneration != 0 {
+		t.Fatalf("direct Store fixture should omit TypeGeneration, got %d", options.TypeGeneration)
+	}
+	store, err := OpenExisting(ctx, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	epicRequest := plainIssue("Release epic")
+	epicRequest.Issue.IssueType = types.TypeEpic
+	epic, err := store.CreateIssue(ctx, "beads/epic", epicRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := EpicCloseRequest{Path: "beads/epic", ExpectedRevision: epic.Revision, Reason: "Done", Actor: "author"}
+	if _, err := store.ListChildren(ctx, "beads/epic"); err != nil {
+		t.Fatalf("fresh children rejected: %v", err)
+	}
+	if _, err := store.ListChildrenLegacy(ctx, "beads/epic"); err != nil {
+		t.Fatalf("fresh counted children rejected: %v", err)
+	}
+	if _, err := store.EpicStatuses(ctx); err != nil {
+		t.Fatalf("fresh epic progress rejected: %v", err)
+	}
+	if _, err := store.CloseEligibleEpic(ctx, request); !errors.Is(err, ErrConflict) {
+		t.Fatalf("empty epic should reach eligibility check, got %v", err)
+	}
+	var fingerprint string
+	if err := store.db.QueryRowContext(ctx, `SELECT fingerprint FROM graph_preview_types WHERE name='dependency'`).Scan(&fingerprint); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint='wrong' WHERE name='dependency'`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.EpicStatuses(ctx); !errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("altered fingerprint admitted: %v", err)
+	}
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint=? WHERE name='dependency'`, fingerprint); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.ListChildren(ctx, "beads/epic"); !errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("partial installation admitted: %v", err)
+	}
+}
+
 // The common-metadata columns change the preview storage layout and require
 // SchemaVersion 7. Older workspaces remain pinned to their original binary;
 // this binary refuses them rather than silently upgrading their data. The
@@ -37,7 +95,7 @@ func TestFreshTypeNamesFollowPreviewTypeDefinitions(t *testing.T) {
 // engines, so only the embedded engine is exercised here.
 func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 	if SchemaVersion != 7 {
-		t.Fatalf("SchemaVersion is %d, want 7 for the common-metadata storage layout", SchemaVersion)
+		t.Fatalf("SchemaVersion is %d, want 7 for common metadata", SchemaVersion)
 	}
 	ctx, o := issueExperimentOptions(t, "embedded")
 	s, err := OpenExisting(ctx, o)
@@ -63,20 +121,12 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		return len(descriptors), err
 	}
 	if count, err := installed(); err != nil || count != 6 {
-		t.Fatalf("fresh installation admitted %d Types with %v, want all 6", count, err)
+		t.Fatalf("fresh installation has %d Types with %v; want 6", count, err)
 	}
-	// Five Types is neither the legacy installation nor the current one.
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='example-cites'`); err != nil {
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := installed(); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("five Types admitted: %d Types with %v, want ErrInvalidStore", count, err)
-	}
-	// Removing the second example row leaves precisely the original four.
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='example-follows'`); err != nil {
-		t.Fatal(err)
-	}
-	if count, err := installed(); err != nil || count != 4 {
-		t.Fatalf("legacy installation admitted %d Types with %v, want the original 4", count, err)
+		t.Fatalf("five-Type partial installation admitted: %d, %v", count, err)
 	}
 }

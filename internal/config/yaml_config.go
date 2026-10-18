@@ -78,6 +78,14 @@ var YamlOnlyKeys = map[string]bool{
 	// the database is reachable, so they must live in yaml)
 	"prime.max-memories":     true,
 	"prime.max-memory-chars": true,
+	// Turns bd prime off for sessions whose host briefs the agent itself;
+	// read at session start like the caps, usually as BD_PRIME_DISABLED.
+	"prime.disabled": true,
+
+	// Memory-corpus budget enforced by `bd remember` (0 = off). Yaml for the
+	// same reason the prime caps are: it is read through viper (config.GetInt),
+	// so a DB-backed write would be set successfully and then never read.
+	"memories.budget-chars": true,
 
 	// Validation settings (bd-t7jq)
 	// Values: "warn" | "error" | "none"
@@ -1595,6 +1603,19 @@ func validateYamlConfigValue(key, value string) error {
 		}
 		if n < 0 {
 			return fmt.Errorf("prime.max-memory-chars must be a non-negative integer (0 = unlimited), got %q", value)
+		}
+	case "prime.disabled":
+		// The set viper's GetBool reads, so a stored value means what it says.
+		if _, err := strconv.ParseBool(value); err != nil {
+			return fmt.Errorf("prime.disabled must be true or false, got %q", value)
+		}
+	case "memories.budget-chars":
+		n, err := strconv.Atoi(value)
+		if err != nil {
+			return fmt.Errorf("memories.budget-chars must be a non-negative integer (0 = off), got %q", value)
+		}
+		if n < 0 {
+			return fmt.Errorf("memories.budget-chars must be a non-negative integer (0 = off), got %q", value)
 		}
 	}
 	return nil

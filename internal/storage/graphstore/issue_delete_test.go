@@ -90,7 +90,7 @@ func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 			}
 			old, err := s.ReadVersion(ctx, "beads/work", final.Version)
 			retainedIssue, ok := old.(IssueRecord)
-			if err != nil || !ok || retainedIssue.ID != final.ID || retainedIssue.Version != final.Version ||
+			if err != nil || !ok || retainedIssue.ID != final.ID || retainedIssue.Type != final.Type || retainedIssue.Version != final.Version ||
 				retainedIssue.Properties == nil || retainedIssue.Properties.ID != final.Properties.ID ||
 				retainedIssue.Properties.Title != final.Properties.Title || len(retainedIssue.Owned) != 0 {
 				t.Fatalf("final live snapshot: %+v %v", old, err)

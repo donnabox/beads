@@ -270,11 +270,11 @@ def main():
                 "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ",
                 "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z"]
             records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, *fields, "--json"]))
-        related = scope + "types/preview-related-v2"
-        capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--resource-type", related,
+        related = scope + "types/preview-related"
+        capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--type", related,
             "--id", "links/context", "--properties", '{"note":"before page"}', "--metadata", '{"origin":"manual"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--link-type", "types/example-cites",
+        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--type", "types/example-cites",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
         dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", "beads/work", "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:

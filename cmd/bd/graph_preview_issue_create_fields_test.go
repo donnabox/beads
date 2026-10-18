@@ -118,14 +118,14 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	if fromProperties.Properties.Title != "Typed issue" || fromProperties.Properties.Description != "Exact description" || fromProperties.Properties.Priority != 1 || fromProperties.Properties.EstimatedMinutes == nil || *fromProperties.Properties.EstimatedMinutes != 45 || fromProperties.Properties.Assignee != "reviewer" || len(fromProperties.Properties.Labels) != 1 || string(fromProperties.Metadata) != `{"team":"docs"}` {
 		t.Fatalf("Issue properties initializer lost typed values or metadata: %+v", fromProperties)
 	}
-	memory := graphMixedResult[graphstore.Record](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "--bead-type", "types/preview-memory-v2", "--id", "beads/memory-properties", "--properties", `{"title":"Typed memory","body":"Exact body"}`, "--json"))
+	memory := graphMixedResult[graphstore.Record](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "--type", "types/preview-memory", "--id", "beads/memory-properties", "--properties", `{"title":"Typed memory","body":"Exact body"}`, "--json"))
 	if memory.Properties.Title != "Typed memory" || memory.Properties.Body != "Exact body" {
 		t.Fatalf("Memory properties initializer lost typed values: %+v", memory)
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/duplicate-properties", "--title", "Title", "--properties", `{"title":"Title"}`, "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/immutable-properties", "--properties", `{"title":"Refused","status":"closed"}`, "--json")
 	for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
-		args := append([]string{"show", "beads/work", "--json"}, flags...)
+		args := append([]string{"show", "beads/work", "--format", "graph-json", "--json"}, flags...)
 		if got := graphPolicyCLI(t, bd, work, home, nil, "", args...); got != created {
 			t.Fatal("fresh current/exact read differs from the complete first record")
 		}
@@ -153,7 +153,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--design-file=/missing-create-design", "--readonly", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
-	if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json"); got != created {
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--format", "graph-json", "--json"); got != created {
 		t.Fatal("refused creates changed accepted record")
 	}
 }

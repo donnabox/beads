@@ -681,16 +681,7 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 }
 
 // TestVersionsOfExampleInformationalLinks pins that a listing accepts every
-// informational Link Type the store has installed, not only the original
-// Related one, and refuses an informational Type the store has not installed.
-//
-// This fails on the code before it: versionsInTx compared the informational
-// backing's type_url against RelatedTypeURL alone, so every Link of the
-// example-follows and example-cites Types, live or deleted, was refused as an
-// unsupported retained allocation (ErrInvalidStore) while ReadVersion resolved
-// the very tokens the list should have returned. The legacy half pins the other
-// direction: accepting the example Types must not let a four-Type installation
-// list an allocation of a Type it never installed, which ReadVersion refuses.
+// installed informational Link Type, including examples and deleted Links.
 func TestVersionsOfExampleInformationalLinks(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -706,9 +697,6 @@ func TestVersionsOfExampleInformationalLinks(t *testing.T) {
 			// The Memory owns each Link it is the source of, so every write to
 			// such a Link also mints a Memory version that the next write guards.
 			source := policy.Revision
-			// Every example allocation and one of its tokens, for the legacy half.
-			type allocation struct{ path, token string }
-			var allocated []allocation
 			for _, typ := range []string{ExampleCitesTypeURL(s.ScopeURL()), ExampleFollowsTypeURL(s.ScopeURL())} {
 				name := strings.TrimPrefix(typ, s.ScopeURL()+"types/")
 				path := "links/" + name
@@ -768,35 +756,6 @@ func TestVersionsOfExampleInformationalLinks(t *testing.T) {
 				if kind, rows, err := s.Versions(ctx, path+"-live"); err != nil || kind != KindLink || len(rows) != 1 || rows[0].Version != kept.Link.Revision {
 					t.Fatalf("%s: kept Link history: kind=%q rows=%+v err=%v", name, kind, rows, err)
 				}
-				allocated = append(allocated, allocation{path, added.Link.Version}, allocation{path + "-live", kept.Link.Version})
-			}
-			related, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/related",
-				SourcePath: "beads/policy", TargetPath: "beads/work", ExpectedSourceRevision: source, Actor: "linker"})
-			if err != nil || related.Link.Type != RelatedTypeURL(s.ScopeURL()) {
-				t.Fatalf("Related Link: %+v %v", related, err)
-			}
-			// Removing both example rows leaves exactly the original four-Type
-			// installation, as in TestExampleTypesLegacyInstallation. Such a store
-			// can hold an example allocation only if it is corrupt.
-			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
-				t.Fatal(err)
-			}
-			for _, subject := range allocated {
-				kind, rows, err := s.Versions(ctx, subject.path)
-				if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
-					t.Fatalf("%s on a four-Type installation: kind=%q rows=%+v err=%v; want ErrInvalidStore", subject.path, kind, rows, err)
-				}
-				// Parity is the contract: the single read refuses this allocation
-				// too, and the list must not be the lenient one.
-				if _, err := s.ReadVersion(ctx, subject.path, subject.token); !errors.Is(err, ErrInvalidStore) {
-					t.Fatalf("%s single read on a four-Type installation: %v; want ErrInvalidStore", subject.path, err)
-				}
-			}
-			// The refusal belongs to the uninstalled Types, not to the informational
-			// backing: the installed Related Type still lists on the same store.
-			kind, rows, err := s.Versions(ctx, "links/related")
-			if err != nil || kind != KindLink || len(rows) != 1 || rows[0].Version != related.Link.Revision {
-				t.Fatalf("Related Link on a four-Type installation: kind=%q rows=%+v err=%v", kind, rows, err)
 			}
 		})
 	}

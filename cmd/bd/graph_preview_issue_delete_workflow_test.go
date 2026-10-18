@@ -38,26 +38,31 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			if !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Issue, issue) {
 				t.Fatal("default preview did not disclose unchanged Issue")
 			}
-			refuse("invalid_selector", "delete", "work", "--force")
+			unguarded := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unguarded deletion", "--id", "beads/unguarded"))
+			applied := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "unguarded", "--force"))
+			if !applied.Deleted || applied.Preview || !reflect.DeepEqual(applied.Issue, unguarded) {
+				t.Fatal("unguarded --force did not delete the current Issue")
+			}
+			refuse("gone", "show", "unguarded")
 			refuse("revision_conflict", "delete", "work", "--force", "--if-revision", "stale")
-			refuse("capability_unavailable", "forget", "work", "--unconditional")
+			refuse("capability_unavailable", "forget", "work")
 			call("create", "Other", "--id", "beads/other")
-			call("link", "work", "other", "--link-type", "types/preview-related-v2", "--id", "links/relation")
+			call("link", "work", "other", "--type", "types/preview-related", "--id", "links/relation")
 			refuse("constraint_violation", "delete", "work")
 			refuse("constraint_violation", "delete", "work", "--force", "--if-revision", issue.Revision)
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work")); !reflect.DeepEqual(got, issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, issue) {
 				t.Fatal("incident Link refusal changed Issue")
 			}
 			link := graphMixedResult[graphstore.LinkRecord](t, call("show", "links/relation"))
-			call("unlink", "links/relation", "--if-revision", link.Revision)
-			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "work"))
+			call("link", "delete", "--force", "links/relation", "--if-revision", link.Revision)
+			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work"))
 			before := call("versions", "work")
 			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "work", "--force", "--if-revision", final.Revision))
 			if !deleted.Deleted || deleted.Preview || !reflect.DeepEqual(deleted.Issue, final) {
 				t.Fatal("apply did not disclose final live Issue")
 			}
 			refuse("gone", "show", "work")
-			refuse("gone", "delete", "work", "--force", "--unconditional")
+			refuse("gone", "delete", "work", "--force")
 			refuse("identity_reserved", "create", "Replacement", "--id", "beads/work")
 			if after := call("versions", "work"); after != before {
 				t.Fatal("deletion invented or lost an Issue version")

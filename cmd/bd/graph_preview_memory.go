@@ -13,8 +13,11 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if cmd.Flags().Changed("replace-properties") && (cmd.Flags().Changed("properties") || cmd.Flags().Changed("patch") || graphPreviewIssueEditFlagsChanged(cmd)) {
+		return graphFailure("invalid_properties", "--replace-properties cannot combine with --properties, --patch or Issue property flags", 2)
+	}
 	if len(args) == 0 {
-		if cmd.Flags().Changed("properties") || cmd.Flags().Changed("patch") {
+		if cmd.Flags().Changed("properties") || cmd.Flags().Changed("replace-properties") || cmd.Flags().Changed("patch") {
 			return graphFailure("invalid_selector", "Memory and Link property updates require an explicit Resource ID", 2)
 		}
 		lastTouched := GetLastTouchedID()
@@ -30,7 +33,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if cmd.Flags().Changed("patch") {
+	if cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties") {
 		if strings.HasPrefix(path, "links/") {
 			return runGraphPreviewLinkPropertiesPatch(cmd, path)
 		}
@@ -70,7 +73,7 @@ func graphPreviewMemoryProperties(properties map[string]any) (*string, *string, 
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") {

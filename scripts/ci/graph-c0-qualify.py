@@ -45,7 +45,7 @@ def require(condition, message):
 
 def require_memory_creation(record, scope):
     require(record.get("id") == scope + "beads/plan"
-            and record.get("type") == scope + "types/preview-memory-v2"
+            and record.get("type") == scope + "types/preview-memory"
             and record.get("properties") == {"title": "Plan", "body": "Durable C0 body — 記憶"}
             and record.get("owned") == []
             and isinstance(record.get("revision"), str) and bool(record["revision"])

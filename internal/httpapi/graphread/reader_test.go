@@ -105,10 +105,11 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal("fabricated actor")
 			}
 			firstIssue := readBead("beads/task")
+			blockingType := graphstore.RelationshipBlockingTypeURL(o.Binding.ScopeURL)
 			if string(firstIssue.Metadata["team"]) != `"triage"` {
 				t.Fatalf("Issue metadata projection = %#v", firstIssue.Metadata)
 			}
-			if group, ok := firstIssue.OwnedLinks[graphstore.DependencyTypeURL(o.Binding.ScopeURL)]; !ok || len(group) != 0 {
+			if group, ok := firstIssue.OwnedLinks[blockingType]; !ok || len(group) != 0 {
 				t.Fatal("missing declared empty owned group")
 			}
 			wantProperties, _ := json.Marshal(issue.Properties)
@@ -153,10 +154,10 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal("incoming Link changed target")
 			}
 			withBlock := readBead("beads/task")
-			if len(withBlock.OwnedLinks[graphstore.DependencyTypeURL(o.Binding.ScopeURL)]) != 1 || withBlock.Revision == firstIssue.Revision {
+			if len(withBlock.OwnedLinks[blockingType]) != 1 || withBlock.Revision == firstIssue.Revision {
 				t.Fatal("Issue owned state did not advance")
 			}
-			for _, typ := range []string{memory.Type, issue.Type, created.Type, graphstore.DependencyTypeURL(o.Binding.ScopeURL), graphstore.ExampleFollowsTypeURL(o.Binding.ScopeURL), graphstore.ExampleCitesTypeURL(o.Binding.ScopeURL)} {
+			for _, typ := range []string{memory.Type, issue.Type, created.Type, blockingType, graphstore.ExampleFollowsTypeURL(o.Binding.ScopeURL), graphstore.ExampleCitesTypeURL(o.Binding.ScopeURL)} {
 				d, err := r.Type(ctx, strings.TrimPrefix(typ, o.Binding.ScopeURL))
 				if err != nil {
 					t.Fatal(err)

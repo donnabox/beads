@@ -89,7 +89,11 @@ in total before any individual status trips it.`,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if graphPreviewActive {
-			return runGraphPreviewGeneric(cmd, args)
+			view, _ := cmd.Flags().GetString("view")
+			if view == "generic" {
+				return runGraphPreviewGeneric(cmd, args)
+			}
+			return runGraphPreviewDependencyGraph(cmd, args)
 		}
 		evt := metrics.NewCommandEvent("graph")
 		defer func() {
@@ -285,6 +289,9 @@ Returns exit code 0 if the graph is clean, 1 if issues are found.`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewCheck(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("graph-check")
 		defer func() {
 			if c := metrics.Global(); c != nil {

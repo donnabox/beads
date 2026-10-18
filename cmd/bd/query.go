@@ -88,6 +88,9 @@ Examples:
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+		if graphPreviewActive {
+			return runGraphPreviewQuery(cmd, args)
+		}
 
 		if usesProxiedServer() {
 			return runQueryProxiedServer(cmd, rootCtx, args)

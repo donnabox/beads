@@ -75,8 +75,7 @@ func graphIfRevisionRefused(t *testing.T, bd, work, home string, wantExit int, w
 
 // Who owns --if-revision on each verb is part of the CLI contract, visible in
 // --help: upstream's definition on the four verbs it owns, the preview's own
-// on the three it does not. Only destructive preview verbs retain an explicit
-// --unconditional choice.
+// on the three it does not. Missing guards accept the current revision.
 func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 	for _, cmd := range []*cobra.Command{updateCmd, deleteCmd, closeCmd, assignCmd} {
 		flag := cmd.Flags().Lookup("if-revision")
@@ -88,7 +87,7 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 			t.Errorf("bd %s --if-revision is not upstream's compare-and-swap flag; usage = %q", cmd.Name(), flag.Usage)
 		}
 	}
-	for _, cmd := range []*cobra.Command{rememberCmd, forgetCmd, graphUnlinkCmd} {
+	for _, cmd := range []*cobra.Command{rememberCmd, forgetCmd, linkDeleteCmd} {
 		flag := cmd.Flags().Lookup("if-revision")
 		if flag == nil {
 			t.Errorf("bd %s lost its graph preview --if-revision", cmd.Name())
@@ -98,15 +97,9 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 			t.Errorf("bd %s --if-revision claims upstream's decimal compare-and-swap meaning; usage = %q", cmd.Name(), flag.Usage)
 		}
 	}
-	for _, tc := range []struct {
-		cmd  *cobra.Command
-		want bool
-	}{
-		{updateCmd, false}, {deleteCmd, true}, {forgetCmd, true}, {rememberCmd, false}, {graphUnlinkCmd, true},
-		{closeCmd, false}, {assignCmd, false},
-	} {
-		if has := tc.cmd.Flags().Lookup("unconditional") != nil; has != tc.want {
-			t.Errorf("bd %s has --unconditional = %t, want %t (fork-only flag)", tc.cmd.Name(), has, tc.want)
+	for _, command := range []*cobra.Command{updateCmd, deleteCmd, forgetCmd, rememberCmd, linkCmd, linkCreateCmd, linkUpdateCmd, linkDeleteCmd, deferCmd, undeferCmd, closeCmd, assignCmd} {
+		if command.Flags().Lookup("unconditional") != nil || command.Flags().Lookup("unconditional-source") != nil {
+			t.Errorf("bd %s still exposes a removed unconditional guard", command.Name())
 		}
 	}
 }
@@ -114,7 +107,7 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 // Outside link mode the preview must stay out of the way: a stale decimal token
 // on update or delete is upstream's compare-and-swap (exit 13, nothing written),
 // not a graph-only flag refused with capability_unavailable (exit 5). What stays
-// graph-only is --unconditional and, on forget, --if-revision.
+// graph-only on forget is --if-revision.
 func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
@@ -176,8 +169,6 @@ func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	}
 
 	for _, args := range [][]string{
-		{"delete", id, "--force", "--unconditional"},
-		{"forget", "ifrev-key", "--unconditional"},
 		{"forget", "ifrev-key", "--if-revision", "1"},
 	} {
 		graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", args...)
@@ -247,9 +238,8 @@ func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 	}
 }
 
-// In graph mode close now interprets --if-revision as the opaque observed graph
-// Issue token. Assign has no graph route and still refuses the flag rather than
-// quietly dropping its upstream numeric guard.
+// In graph mode close and assign interpret --if-revision as the opaque observed
+// graph Issue token; neither accepts an upstream numeric revision as a guard.
 func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
@@ -259,15 +249,15 @@ func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	}
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
 	call("create", "Close guard", "--id", "beads/close-guard")
-	before := call("show", "beads/close-guard")
+	before := call("show", "--format", "graph-json", "beads/close-guard")
 	for _, args := range [][]string{
 		{"close", "beads/close-guard", "--if-revision", "1"},
 		{"close", "beads/close-guard", "--reason", "Done", "--if-revision", "1"},
 	} {
 		graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", args...)
 	}
-	graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", "assign", "beads/close-guard", "alice", "--if-revision", "1")
-	if call("show", "beads/close-guard") != before {
+	graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", "assign", "beads/close-guard", "alice", "--if-revision", "1")
+	if call("show", "--format", "graph-json", "beads/close-guard") != before {
 		t.Fatal("a refused guarded close changed the Issue")
 	}
 	observed := graphMixedResult[graphstore.IssueRecord](t, before)

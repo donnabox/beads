@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -61,9 +62,13 @@ func validateVersionToken(version string) error {
 // readVersionInTx uses the caller's authority-checked transaction and validated
 // path/token. It never joins current payloads into retained state.
 func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version string) (any, error) {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return nil, err
+	}
 	var backing, kind, state, head string
 	var typ, key sql.NullString
-	err := tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,revision,
+	err = tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,revision,
  CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
  FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&backing, &kind, &state, &head, &typ, &key)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -98,19 +103,20 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			if err := s.validDeletedIssueAllocationInTx(ctx, tx, path, kind, typ.String, head, state, backing, key); err != nil {
 				return nil, err
 			}
-		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key) {
+		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType) {
 			return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
 		}
 	}
 	if backing == "issue" {
-		if kind != "bead" || typ.String != IssueTypeURL(s.ScopeURL()) || !key.Valid || key.String == "" {
+		if kind != "bead" || typ.String != issueType || !key.Valid || key.String == "" {
 			return nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		return s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
 	}
+	dependencyType := isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String)
 	if !((backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL())) ||
 		(backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String)) ||
-		(backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()))) {
+		(backing == "dependency" && kind == "link" && dependencyType)) {
 		return nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
 	}
 	if backing == "informational" {
@@ -214,7 +220,14 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 		}
 		return s.validateRetainedInformational(link, raw, actor)
 	}
-	if link.Type != DependencyTypeURL(s.ScopeURL()) || link.Properties == nil || len(link.Properties) != 0 {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
+	depType, hasKind := link.Properties["dep_type"].(string)
+	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
+		!hasKind || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
+		!utf8.ValidString(depType) || !bytes.Equal(link.Metadata, []byte(`{}`)) {
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
@@ -226,19 +239,25 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	return nil
 }
 
-func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, typ string, owned []json.RawMessage) error {
+func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ownerType string, owned []json.RawMessage) error {
 	if owned == nil || len(owned) > PreviewOwnedLinkLimit {
 		return fmt.Errorf("%w: invalid retained owned set", ErrInvalidStore)
 	}
-	// typ is the owner's Bead Type for a Memory, which owns only informational
-	// Links, and the one owned Link Type for an Issue. The Memory Type is never an
-	// owned Link Type, so it must not pass the Link Type equality.
-	memoryOwner := typ == MemoryTypeURL(s.ScopeURL())
+	// A retained Issue owns only installed native Dependency Link Types.
+	// Memory owns only informational Links.
+	memoryOwner := ownerType == MemoryTypeURL(s.ScopeURL())
+	if !memoryOwner && ownerType != IssueTypeURL(s.ScopeURL()) {
+		return fmt.Errorf("%w: unsupported retained owner Type", ErrInvalidStore)
+	}
 	previous := ""
 	for _, raw := range owned {
 		var link LinkRecord
-		if json.Unmarshal(raw, &link) != nil || link.Source != source ||
-			(memoryOwner && !IsInformationalTypeURL(s.ScopeURL(), link.Type)) || (!memoryOwner && link.Type != typ) ||
+		if json.Unmarshal(raw, &link) != nil {
+			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
+		}
+		nativeOwned := isNativeDependencyLinkType(s.ScopeURL(), ownerType, link.Type)
+		if link.Source != source ||
+			(memoryOwner && !IsInformationalTypeURL(s.ScopeURL(), link.Type)) || (!memoryOwner && !nativeOwned) ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
@@ -290,14 +309,18 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		return IssueRecord{}, err
 	}
 	var issue publicops.Issue
-	result := IssueRecord{ID: s.ScopeURL() + path, Type: IssueTypeURL(s.ScopeURL()), Revision: version, Version: version,
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	result := IssueRecord{ID: s.ScopeURL() + path, Type: issueType, Revision: version, Version: version,
 		Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
 	if json.Unmarshal(raw, &issue) != nil || !sameVersionJSON(raw, &issue) || issue.ID != issueID ||
 		json.Unmarshal(owned, &result.Owned) != nil || !sameVersionJSON(owned, result.Owned) ||
 		!validVersionAttribution(result.Attribution, actor) {
 		return IssueRecord{}, fmt.Errorf("%w: invalid retained Issue state", ErrInvalidStore)
 	}
-	if err := s.validateVersionOwned(ctx, tx, result.ID, DependencyTypeURL(s.ScopeURL()), result.Owned); err != nil {
+	if err := s.validateVersionOwned(ctx, tx, result.ID, result.Type, result.Owned); err != nil {
 		return IssueRecord{}, err
 	}
 	// Match the current graph projection without duplicating Jim's domain body.

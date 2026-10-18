@@ -131,20 +131,20 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 			before := call("show", "beads/plan")
 			refuse("revision_conflict", "remember", "--update", "beads/plan", "--title", "Final plan", "--if-revision", memory.Revision)
-			if call("show", "beads/plan") != before || call("show", "beads/context") != other || call("show", "beads/gate") != gate {
+			if call("show", "beads/plan") != before || call("show", "beads/context") != other || call("show", "beads/gate", "--format", "graph-json") != gate {
 				t.Fatal("stale Memory update changed state")
 			}
 
-			related := scope + "types/preview-related-v2"
-			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--resource-type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
+			related := scope + "types/preview-related"
+			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
 			current := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			call("link", "beads/plan", "beads/work", "--resource-type", related, "--id", "links/work", "--if-source-revision", current.Revision)
+			call("link", "beads/plan", "beads/work", "--type", related, "--id", "links/work", "--if-source-revision", current.Revision)
 			issueBefore := call("show", "beads/work")
-			call("link", "beads/work", "beads/context", "--resource-type", related, "--id", "links/unowned")
+			call("link", "beads/work", "beads/context", "--type", related, "--id", "links/unowned")
 			if call("show", "beads/work") != issueBefore || call("show", "beads/context") != other {
 				t.Fatal("unowned informational Link versioned an endpoint")
 			}
-			incident := graphMixedResult[[]graphstore.LinkRecord](t, call("links", "beads/plan"))
+			incident := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "beads/plan"))
 			if len(incident) != 2 {
 				t.Fatalf("Memory incident Links = %d, want 2", len(incident))
 			}
@@ -155,7 +155,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 			before = call("show", "beads/plan")
 			linkBefore := call("show", "links/context")
-			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", first.Link.Revision, "--unconditional-source")
+			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", first.Link.Revision)
 			if call("show", "beads/plan") != before || call("show", "links/context") != linkBefore {
 				t.Fatal("stale Link update changed Link or owning Memory")
 			}
@@ -164,10 +164,10 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			// Memory endpoint, as source or target, keeps the invalid_properties
 			// code and the store's cause, adds the hint naming an informational
 			// Type to use instead, and changes neither endpoint.
-			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: "
+			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related for Memory endpoints: "
 			planBefore, workBefore := call("show", "beads/plan"), call("show", "beads/work")
 			for _, endpoints := range [][2]string{{"beads/plan", "beads/work"}, {"beads/work", "beads/plan"}} {
-				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--link-type", "types/preview-blocks-v1", "--unconditional-source", "--json")
+				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", "types/preview-dependency", "--json")
 				var diagnostic struct {
 					Code      string `json:"code"`
 					Message   string `json:"message"`
@@ -199,23 +199,23 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			if !readyContains("beads/work") {
 				t.Fatal("closing prerequisite did not unblock Issue")
 			}
-			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
-			call("unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
+			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
+			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
 			call("close", "beads/work", "--reason", "Done")
 			call("reopen", "beads/work", "--reason", "One more change")
-			workIssue = graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			workIssue = graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--description", "Revised Issue", "--if-revision", workIssue.Revision))
 			if !edited.Changed || edited.Issue.Properties.Description != "Revised Issue" {
 				t.Fatal("Issue text edit was not retained")
 			}
 			refuse("revision_conflict", "update", "beads/work", "--description", "Revised Issue", "--if-revision", workIssue.Revision)
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work")); !reflect.DeepEqual(got, edited.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work")); !reflect.DeepEqual(got, edited.Issue) {
 				t.Fatal("stale same-value Issue update changed state")
 			}
 
 			for _, linkPath := range []string{"links/context", "links/work", "links/unowned"} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("show", linkPath))
-				args := []string{"unlink", linkPath, "--if-revision", link.Revision}
+				args := []string{"link", "delete", "--force", linkPath, "--if-revision", link.Revision}
 				if linkPath != "links/unowned" {
 					owner := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
 					args = append(args, "--if-source-revision", owner.Revision)
@@ -223,7 +223,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				call(args...)
 				refuse("gone", "show", linkPath)
 			}
-			if links := graphMixedResult[[]graphstore.LinkRecord](t, call("links", "beads/plan")); len(links) != 0 {
+			if links := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "beads/plan")); len(links) != 0 {
 				t.Fatal("unlinked Memory retained current incident Links")
 			}
 			final := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
