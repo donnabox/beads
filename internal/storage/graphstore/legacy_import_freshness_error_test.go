@@ -88,6 +88,11 @@ func TestLegacyImportInterruptedInspection(t *testing.T) {
 	if !errors.Is(err, context.Canceled) || !errors.Is(err, cause) || errors.Is(err, ErrInvalidStore) || strings.ContainsAny(err.Error(), "\r\n") {
 		t.Fatalf("interrupted inspection lost context or driver cause: %v", err)
 	}
+	wrappedContext := fmt.Errorf("scan: %w", context.Canceled)
+	err = legacyTargetInspectionError(ctx, "config.issue_prefix", wrappedContext)
+	if !errors.Is(err, wrappedContext) || !errors.Is(err, context.Canceled) || errors.Is(err, ErrInvalidStore) || strings.Count(err.Error(), context.Canceled.Error()) != 1 || strings.ContainsAny(err.Error(), "\r\n") {
+		t.Fatalf("interrupted inspection duplicated an existing context cause: %v", err)
+	}
 	if got := legacyTargetInspectionError(t.Context(), "config.issue_prefix", sql.ErrNoRows); !errors.Is(got, ErrInvalidStore) || !errors.Is(got, sql.ErrNoRows) || !strings.Contains(got.Error(), "Issue prefix configuration is missing or unreadable") {
 		t.Fatalf("missing prefix lost its configuration diagnostic: %v", got)
 	}

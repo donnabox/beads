@@ -218,8 +218,7 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Binding/Types, migration cursors, ordinary workflow/routing settings and
 	// repository/clone bookkeeping (metadata/local_metadata) are configuration,
 	// not resource allocations. They remain permitted and are not a proof of an
-	// unused workspace. See engdocs/evidence/
-	// legacy-import-preview3-preparation-2026-10-18/freshness-inventory.md.
+	// unused workspace. See engdocs/evidence/legacy-import-preview3-preparation-2026-10-18/freshness-inventory.md.
 	tables = append(tables, issueops.DeleteCascadeTables(false)...)
 	tables = append(tables, issueops.DeleteCascadeTables(true)...)
 	seen := make(map[string]bool, len(tables))
