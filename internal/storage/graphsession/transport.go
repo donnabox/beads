@@ -58,7 +58,7 @@ func (c *connector) Connect(ctx context.Context) (driver.Conn, error) {
 
 // config is always made from NewConfig, never parsed from an arbitrary DSN.
 // The dialer bypasses the driver's process-global registered dialer map.
-func (s *session) config(e endpoint) *mysql.Config {
+func (s *session) config(e endpoint) (*mysql.Config, error) {
 	c := mysql.NewConfig()
 	c.Net = "tcp"
 	c.Addr = e.address
@@ -82,5 +82,8 @@ func (s *session) config(e endpoint) *mysql.Config {
 		s.transport = &transport{Conn: conn}
 		return s.transport, nil
 	}
-	return c
+	if err := c.Apply(mysql.DisableLocalInfile(true)); err != nil {
+		return nil, err
+	}
+	return c, nil
 }

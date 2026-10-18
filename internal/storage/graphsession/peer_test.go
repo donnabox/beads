@@ -79,7 +79,14 @@ func readPacket(c net.Conn) ([]byte, error) {
 	return b, err
 }
 func handshake(c net.Conn) error {
+	_, err := handshakeCapabilities(c, false)
+	return err
+}
+func handshakeCapabilities(c net.Conn, localFiles bool) (uint32, error) {
 	caps := uint32(1 | 4 | 8 | 512 | 8192 | 32768 | 131072 | 524288)
+	if localFiles {
+		caps |= 0x80
+	}
 	b := append([]byte{10}, []byte("8.0.0-fixture\x00")...)
 	b = binary.LittleEndian.AppendUint32(b, 41)
 	b = append(b, []byte("12345678\x00")...)
@@ -91,12 +98,16 @@ func handshake(c net.Conn) error {
 	b = append(b, make([]byte, 10)...)
 	b = append(b, []byte("abcdefghijkl\x00mysql_native_password\x00")...)
 	if err := packet(c, 0, b); err != nil {
-		return err
+		return 0, err
 	}
-	if _, err := readPacket(c); err != nil {
-		return err
+	response, err := readPacket(c)
+	if err != nil {
+		return 0, err
 	}
-	return packet(c, 2, []byte{0, 0, 0, 2, 0, 0, 0})
+	if len(response) < 4 {
+		return 0, io.ErrUnexpectedEOF
+	}
+	return binary.LittleEndian.Uint32(response[:4]), packet(c, 2, []byte{0, 0, 0, 2, 0, 0, 0})
 }
 func lenString(b []byte, s string) []byte {
 	if len(s) < 251 {
