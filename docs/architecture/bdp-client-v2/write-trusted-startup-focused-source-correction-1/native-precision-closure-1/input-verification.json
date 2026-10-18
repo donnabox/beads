@@ -1,0 +1,57 @@
+{
+  "reviewedUtc": "2026-10-18T06:24:54.483856+00:00",
+  "correctionIndexSha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
+  "indexedArtifactsVerified": 8,
+  "mirroredIncludingIndex": 9,
+  "sourceFiles": 682,
+  "other681Unchanged": true,
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "fullPatchReconstructedAll682": true,
+  "fullPatchPaths": [
+    "docs/design/startup-configuration.md",
+    "packages/config/src/index.test.ts",
+    "packages/config/src/index.ts",
+    "packages/server/package.json",
+    "packages/server/src/read-sequence-lifecycle.test.ts",
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "scripts/smoke-executables.mjs",
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs"
+  ],
+  "rawCurrentIndex": {
+    "gitDirectory": "/Users/dbox/repos/wt/vickie/vickie-noop-conformance/.git/worktrees/vickie-trusted-startup-configuration",
+    "indexSha256": "a69b651751b9026a37d68c74444d9abd2a01c82b23924bcf5317f7d0aef1122c",
+    "indexVersion": 3,
+    "entryCount": 682,
+    "headRef": "refs/heads/codex/vickie-trusted-startup-configuration",
+    "headCommit": "a56254d682cf4623cab22a552e3d2f695f691795"
+  },
+  "rawBaselineIndex": {
+    "gitDirectory": "/Users/dbox/repos/wt/vickie/vickie-noop-conformance/.git/worktrees/vickie-event-admission-replay-minimum",
+    "indexSha256": "cfb1de2fec79fd89b6cbe17d88e4c4387e2c98fb8c5f4e61d5ae7354a1e08f51",
+    "indexVersion": 2,
+    "entryCount": 679,
+    "headRef": "refs/heads/codex/vickie-event-admission-replay-minimum",
+    "headCommit": "a56254d682cf4623cab22a552e3d2f695f691795"
+  },
+  "all679BaselineIndexEntriesAndBlobBytesIdentical": true,
+  "onlyThreeEmptyIntentToAddEntries": [
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "noStagedSourceChangesFromBase": true,
+  "derivedTrackedSourceStatus": " M docs/design/startup-configuration.md\n M packages/config/src/index.test.ts\n M packages/config/src/index.ts\n M packages/server/package.json\n M packages/server/src/read-sequence-lifecycle.test.ts\n A packages/server/src/reference-deployment-state.ts\n A packages/server/src/reference-deployment.test.ts\n A packages/server/src/reference-deployment.ts\n M packages/server/src/transaction-snapshot.test.ts\n M scripts/smoke-executables.mjs\n M scripts/smoke-safety.mjs\n M scripts/smoke-safety.test.mjs\n",
+  "exact12TrackedDirtySourcePaths": true,
+  "untrackedIgnoredFilesCensus": "Not performed; no Git process. Gate/root revalidation remains external.",
+  "forwardInverseAppliedInMemory": true,
+  "appliedPatchExactlyMatchesAcceptedInertProposal": true,
+  "selected44AndTestTitlesBudgetsUnchanged": true,
+  "productionModulesUnchanged": true,
+  "failed4ActualTenStagesPreserved": true,
+  "fourHelpersInvokedAfterSourceChange": false,
+  "NodeProbeCompilerProductGitSourceGateAction": false
+}

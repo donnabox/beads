@@ -1,0 +1,57 @@
+{
+  "state": "STATIC byte/hash checks only; no runtime validation",
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "sourceFiles": 682,
+  "unchangedSourceFiles": 681,
+  "onlyChangedSourcePath": "packages/server/src/reference-deployment.test.ts",
+  "helperChecks": {
+    "run.py": {
+      "beforeSha256": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+      "afterSha256": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+      "delta": "byte-identical"
+    },
+    "gate.py": {
+      "beforeSha256": "79ebbbb9697807bb6fabe98d168800fc84ff83c0206629fda98602a67564da4a",
+      "afterSha256": "79ebbbb9697807bb6fabe98d168800fc84ff83c0206629fda98602a67564da4a",
+      "delta": "byte-identical"
+    },
+    "audit.py": {
+      "beforeSha256": "e775d1e4f2ab226d1f5cbd89989738fb4de376c1186e5a3ad927976cf399acfd",
+      "afterSha256": "e775d1e4f2ab226d1f5cbd89989738fb4de376c1186e5a3ad927976cf399acfd",
+      "delta": "byte-identical"
+    },
+    "packages.py": {
+      "beforeSha256": "4e779f7d95dffec9534f258dec1fe3102f5e0d7419559bd8cb8c97631b529449",
+      "afterSha256": "4e779f7d95dffec9534f258dec1fe3102f5e0d7419559bd8cb8c97631b529449",
+      "delta": "byte-identical"
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "beforeSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "afterSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "delta": "byte-identical"
+    },
+    "bound-consumer-loader.mjs": {
+      "beforeSha256": "5c6572df8216188bf58a563f224cc1b968798a900f701de609cdab169c51b137",
+      "afterSha256": "9638844c05dfa24fca2f85ea9f4a4a744542249dda197940e6a63b10d5327990",
+      "delta": "one executionRoot literal"
+    }
+  },
+  "unchangedSchemasAndInventories": {
+    "report-schemas.json": "2743d8e1fcb2c73e2527e4f030e4007f7227fd29246773c89605b7560c3602fd",
+    "audit-expectations.json": "2285c43b42993f9bf46e118e6cc3853ebe316d05c4f80e90d187c9e65379ad52",
+    "packaging-inventory.json": "816b0cf72d732ce80921507738d6a0add32fa5061abcb9cb21e0d37dbec082aa",
+    "base-tools.required.json": "b75f63d22691c526eafecc3e1ac391709ba8bfd1ea6a7254b56953a78c8a67a9"
+  },
+  "selectedCallbacks": 44,
+  "selectedNamesOwnershipRegexAndOtherFileHashesUnchanged": true,
+  "onlySelectionDelta": "current corrected fixture hash",
+  "stages": 25,
+  "commandsOnlyPathRebound": true,
+  "privateSpecifierCount": 71,
+  "loaderCalls": 6,
+  "predecessorRunFiles": 43,
+  "predecessorRunUnchanged": true,
+  "newRunAbsent": true,
+  "executionReleased": false,
+  "compiledOrRuntimeVerified": false
+}

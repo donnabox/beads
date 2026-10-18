@@ -1,0 +1,9 @@
+# Applied startup fixture correction native precision closure
+
+Accepted statically with no findings. The actual one-file correction is byte-identical to the reviewed inert proposal089370f6: test5b9 becomes adfbf6b0, and the genuine inverse reconstructs5b9. Only existing negative-loop row10 changes to the existing artifacts() descriptor/ownership bundle and its referenced schemas/item with matching$id and dangling external$ref. The existing graph/evaluator now receives a real schema entry; no production compiler/loader behavior is tightened.44 callback names/counts, all budgets, other assertions and all other681 source files are unchanged.
+
+All8 frozen artifacts plus index/mirror match. Current682 source/map054d/source identity0c53a6bb are exact. Applying full12 patch515e to the original679 bytes reconstructs all682 including the original three additions. Reading raw index/HEAD bytes, with no Git process, verifies679 baseline entries/modes/blobs unchanged and exactly3 empty intent-to-add entries. The12 tracked-source dirty paths match the binding, with no staged source content or mode changes. An untracked/ignored filesystem census and future root/helper Git revalidation are not claimed here.
+
+The actual failed validation4 remains a first9-pass/tenth-fail prefix, with15 later stages unattempted and its gate closed. Actual row ordinal was not logged; row10 diagnosis is static inference. Source correction was applied only after that failure; no validation4 helper was called here after source changed. Corrected source has no compiler/test/runtime pass. Root must bind a separate fresh validation5; no actual reviewer retry or corrected-byte Claude coverage is claimed.
+
+Auditor actions were role verification, data reads/hash and in-memory patch/index analysis plus new immutable records. No source/helper/Node/probe/compiler/product/Git/gate action occurred.

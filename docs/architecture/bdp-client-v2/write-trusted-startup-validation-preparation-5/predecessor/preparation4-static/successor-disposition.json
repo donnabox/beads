@@ -1,0 +1,30 @@
+{
+  "state": "CLOSED minimal two-regex lint correction data successor4; unexecuted",
+  "predecessorIndexSha256": "e72bd91b92a78da93a9e05550482faba347466457ff10db9887c6af86d41582e",
+  "correctionIndexSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
+  "sourcePatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "sourceFiles": 682,
+  "unchangedSinceValidation3SourceFiles": 680,
+  "changedPaths": [
+    "packages/config/src/index.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "fixtureTestSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+  "callbacks": 44,
+  "stages": 25,
+  "privateSpecifierCount": 71,
+  "loaderCalls": 6,
+  "allStagesFresh": true,
+  "bootstrapReuse": [],
+  "executionReleased": false,
+  "schemaOrBudgetChanges": false,
+  "priorPrefix": "Historical first4+typecheck+format passed; lint failed four noControlCharactersInRegex diagnostics. Fresh build and later stages unattempted. No old stage reused.",
+  "currentSourceQualification": "UNATTEMPTED; root pure-data predicate proof is not product validation.",
+  "nativeCorrectionAcceptance": {
+    "knownStaticClosureSha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d",
+    "nativeIndexSha256": "6394aaef0615adeda91f0de7140c86debe63d7ccffd0e4926455b8e3742e6116",
+    "executableWrapper": "UNRESOLVED"
+  },
+  "newActualCodeReviewAttempt": false
+}

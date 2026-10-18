@@ -1,0 +1,62 @@
+{
+  "observedUtc": "2026-10-18T06:05:09.540243+00:00",
+  "preparationIndexSha256": "0bff51f3c4f142c641a585152756d504a9efd7d0fc2ab2d65f19b93f3e14012b",
+  "sourceBindingSha256": "5ba54d754dc0512206f3eb9883970063f0acb07001c788aaaf0bfc17a92cca50",
+  "implementationIndexSha256": "c906833ed996333c305bd1f29e77db67b6250fd73753206757cc9ebceb747a24",
+  "indexedArtifactsVerified": 360,
+  "mirroredFilesIncludingIndexVerified": 361,
+  "completeInventoryNoUnindexedAttemptFiles": true,
+  "implementationPinsVerified": 315,
+  "externalReferencePinsVerified": 82,
+  "originRecordsVerified": 294,
+  "directPreservationRecordsVerified": 292,
+  "twoExplicitHistoricalIndexReferences": [
+    "successor-delta.patch",
+    "successor-inverse.patch"
+  ],
+  "originLiveHashesAndFrozenCurrentDerivationsVerified": true,
+  "genuineForwardInversePairsAppliedInMemory": 19,
+  "sourceFilesVerified": 682,
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "sourceMapSha256": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
+  "fullPatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+  "onlySourceChangesFrom3": [
+    "packages/config/src/index.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "other680SourceIdenticalIncludingAllTestsAndFixture5b9": true,
+  "newOwnedHeadAbsenceIntentToAddEmptyBlobContractPreserved": true,
+  "unchangedFivePythonHelpers": [
+    "run.py",
+    "gate.py",
+    "audit.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "onlyMjsChange": "executionRoot literal preparation3/run -> preparation4/run",
+  "selectionByteIdentical": true,
+  "selectedCallbacks": 44,
+  "reportSchemasByteIdentical": true,
+  "privateSpecifiers": 71,
+  "loaderCalls": 6,
+  "commandsAll25ExactlyPathOnlyRebound": true,
+  "freshPipeline": true,
+  "bootstrapReuse": [],
+  "budgetsMs": {
+    "sourceDefaultCallback": 5000,
+    "installedWork": 45000,
+    "singleTotalCleanup": 10000,
+    "installedProcessGuard": 60000,
+    "outerStage": 120000,
+    "termAt": 115000
+  },
+  "automaticRetries": 0,
+  "previousValidation3RunRecordsVerifiedUnchanged": 30,
+  "priorPrefix": "six accepted stages then lint exit1, later18 unattempted",
+  "newRunAbsent": true,
+  "bothGatesByteIdenticalAndAllAcceptanceFlagsFalse": true,
+  "allExecutableWrappersUnresolved": true,
+  "actualCodeStillOld00faFailedSupervisorAndNoCorrectedByteClaim": true,
+  "copiedNativeRegexClosureSha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d",
+  "NodeProbeHelperCompilerLintProductGitFlagsExecution": false
+}

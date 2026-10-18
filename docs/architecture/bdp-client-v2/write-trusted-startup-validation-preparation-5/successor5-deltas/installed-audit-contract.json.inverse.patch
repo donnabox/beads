@@ -1,0 +1,23 @@
+--- preparation5/installed-audit-contract.json
++++ preparation4/installed-audit-contract.json
+@@ -1,9 +1,9 @@
+ {
+   "mode": "PURE NONLISTENING LOADER",
+-  "consumerRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer",
++  "consumerRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/consumer",
+   "entrySpecifier": "@bdp/server/reference-configuration",
+   "actualEntryPath": "UNRESOLVED until root accepted fresh installed proof",
+-  "program": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/bound-consumer-loader.mjs",
++  "program": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/bound-consumer-loader.mjs",
+   "origin": {
+     "script": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/scripts/smoke-executables.mjs",
+     "scriptSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+@@ -41,7 +41,7 @@
+       "reference-deployment-state.js",
+       "reference-deployment-state.js.map"
+     ],
+-    "exactNames": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packaging-inventory.json",
++    "exactNames": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packaging-inventory.json",
+     "actualBytes": "UNRESOLVED fresh build/archive/consumer"
+   },
+   "privacy": "exact shared export checker, public root values absent, loader public d.ts private capture-name scan, bare/deep loader+registry+Snapshot and every copied private module path must produce ERR_PACKAGE_PATH_NOT_EXPORTED",

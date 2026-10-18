@@ -1,0 +1,25 @@
+--- preparation4/static-preparation-checks.json
++++ preparation5/static-preparation-checks.json
+@@ -1,16 +1,17 @@
+ {
+-  "state": "STATIC preparation4 data checks only",
++  "state": "STATIC preparation5 data checks only",
+   "helperExecution": false,
+   "sourceExecution": false,
+   "allSixHelperRelationsVerified": true,
+   "all682SourceBytesMatchRootAfterMap": true,
+-  "only680SourceFilesUnchangedSinceValidation3": true,
+-  "selectedCallbacks": 44,
+-  "selectionByteIdentical": true,
++  "other681SourceFilesUnchanged": true,
++  "selectionNamesFilesRegexCount44Unchanged": true,
++  "selectionOnlyFixtureHashChanged": true,
+   "reportSchemasByteIdentical": true,
+   "all25CommandsOnlyExecutionPathRebound": true,
+   "all25StagesFresh": true,
++  "exactCorrectedSourceNativeAndRootMechanicsAcceptance": "UNRESOLVED",
++  "actualFailedOrdinal": "UNLOGGED; source prediction remains separate",
+   "executionReleased": false,
+-  "rootAndNativeMechanicsAcceptance": "UNRESOLVED",
+   "noNewRunDirectory": true
+ }

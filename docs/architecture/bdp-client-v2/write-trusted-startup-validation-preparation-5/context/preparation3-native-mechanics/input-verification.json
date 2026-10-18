@@ -1,0 +1,46 @@
+{
+  "accepted": true,
+  "observedUtc": "2026-10-18T05:44:00.724732+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "remoteClaimSha": "32036b3579c869353bd6914c2901d68668cc0d0f",
+  "preparationIndexSha256": "e72bd91b92a78da93a9e05550482faba347466457ff10db9887c6af86d41582e",
+  "implementationIndexSha256": "e971c7a4e3d60b9c554212be7a794667c4d479671cb58c61a96edfad20fe3401",
+  "sourceBindingSha256": "c13b8c6b8003cd60542e64ce8158523881397326e8ca73c4bfa67ba3ab48ac62",
+  "indexedFiles": 241,
+  "mirroredFilesIncludingIndex": 242,
+  "implementationPins": 196,
+  "origins": 170,
+  "originLiveDifferencesPreserved": [],
+  "referencePins": 28,
+  "genuineDeltaPairs": 19,
+  "helpersByteIdentical": [
+    "run.py",
+    "gate.py",
+    "audit.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "externalHelperOnlyExecutionRootRebound": true,
+  "sourceFiles": 682,
+  "onlySourceChange": [
+    "packages/server/src/reference-deployment.test.ts"
+  ],
+  "sourceHashesAllMatch": true,
+  "baseline679Unchanged": true,
+  "ownedFiles12New3Unchanged": true,
+  "sourcePatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+  "callback44Stage25SchemaAndBudgetUnchanged": true,
+  "closedFlags": {
+    "released": false,
+    "rootPlanAccepted": false,
+    "rootExactSourceAccepted": false,
+    "actualClaudeReviewDisposed": false,
+    "nativeCodeReviewDisposed": false,
+    "staticValidationAuthorized": false
+  },
+  "priorRunFilesPreserved": 22,
+  "newRunAbsent": true,
+  "execution": false,
+  "gitOrSourceMutations": false,
+  "findings": []
+}

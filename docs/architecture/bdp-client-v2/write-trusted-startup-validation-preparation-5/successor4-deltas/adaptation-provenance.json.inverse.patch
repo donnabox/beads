@@ -1,0 +1,30 @@
+--- preparation4/adaptation-provenance.json
++++ preparation3/adaptation-provenance.json
+@@ -1,18 +1,17 @@
+ {
+-  "state": "CLOSED data-only validation4 successor; no execution",
+-  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3",
+-  "predecessorIndexSha256": "e72bd91b92a78da93a9e05550482faba347466457ff10db9887c6af86d41582e",
+-  "sourceCorrectionIndexSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
++  "state": "CLOSED data-only validation3 successor; no execution",
++  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2",
++  "predecessorIndexSha256": "03fb7810376c9e71dcdd5af5ef9d7e6723b101c138e97183fe24c95a9c302337",
++  "sourceCorrectionIndexSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
++  "nativeFixtureClosureSha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
+   "changes": [
+-    "exact682 source map/full12patch/two production-file after hashes and sourceIdentity",
+-    "active execution/data paths3 to4",
++    "exact682 source map/full12patch/test hash and sourceIdentity rebind",
++    "validation2 to validation3 active data paths",
+     "bound-consumer-loader.mjs executionRoot literal only",
+-    "fresh closed acceptance wrappers; all25 stages fresh"
++    "all executable acceptance wrappers unresolved and all25 stages fresh"
+   ],
+   "helperSemanticChanges": false,
+   "oldN1N2MechanicsPreserved": true,
+-  "selectedTestHashesChanged": false,
+   "sourceEdits": false,
+-  "executionReleased": false,
+-  "regexProof": "Root frozen pure-data predicate result preserved; no Node/probe execution here."
++  "executionReleased": false
+ }
