@@ -1,0 +1,425 @@
+[
+  {
+    "availability": "found",
+    "lines": [
+      20
+    ],
+    "path": "packages/server/src/reference-deployment-state.ts",
+    "text": "const states"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      28
+    ],
+    "path": "packages/server/src/reference-deployment-state.ts",
+    "text": "referenceDeploymentState"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      21
+    ],
+    "path": "packages/server/src/reference-deployment-state.ts",
+    "text": "registerReferenceDeployment"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      137
+    ],
+    "path": "packages/server/src/reference-deployment.ts",
+    "text": "function snapshot"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      194
+    ],
+    "path": "packages/server/src/reference-deployment.ts",
+    "text": "async function readDeployment"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      228
+    ],
+    "path": "packages/server/src/reference-deployment.ts",
+    "text": "function boundLossless"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      254
+    ],
+    "path": "packages/server/src/reference-deployment.ts",
+    "text": "export async function loadReferenceDeployment"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      11
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.ts",
+    "text": "referenceDeploymentState(handle)"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      27
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.ts",
+    "text": "const primary"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      38
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.ts",
+    "text": "return Object.freeze"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      72
+    ],
+    "path": "packages/server/src/reference-deployment-process.ts",
+    "text": "qualification.ready"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      14,
+      56,
+      83
+    ],
+    "path": "packages/server/src/reference-deployment-process.ts",
+    "text": "controlFailure"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      88
+    ],
+    "path": "packages/server/src/reference-deployment-process.ts",
+    "text": "await runtime.close"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      178,
+      204
+    ],
+    "path": "packages/server/src/development-runtime.ts",
+    "text": "assemblePreparedDevelopmentArguments"
+  },
+  {
+    "availability": "label not literal; full file copied",
+    "lines": [],
+    "path": "packages/server/src/development-runtime.ts",
+    "text": "async function acquireOwner"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      716
+    ],
+    "path": "packages/server/src/development-runtime.ts",
+    "text": "preparedFacts ="
+  },
+  {
+    "availability": "found",
+    "lines": [
+      750
+    ],
+    "path": "packages/server/src/development-runtime.ts",
+    "text": "let ownerCompletion"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      788
+    ],
+    "path": "packages/server/src/development-runtime.ts",
+    "text": "listenUrl: preparedFacts"
+  },
+  {
+    "availability": "label not literal; full file copied",
+    "lines": [],
+    "path": "packages/server/src/transaction-runtime.ts",
+    "text": "async function prepareOwner"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      404
+    ],
+    "path": "packages/server/src/transaction-runtime.ts",
+    "text": "configurationMetadata = captured.metadata(actual"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      468
+    ],
+    "path": "packages/server/src/transaction-runtime.ts",
+    "text": "preparedFacts ="
+  },
+  {
+    "availability": "found",
+    "lines": [
+      515
+    ],
+    "path": "packages/server/src/transaction-runtime.ts",
+    "text": "function close():"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      555
+    ],
+    "path": "packages/server/src/transaction-runtime.ts",
+    "text": "history: preparedFacts"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      275
+    ],
+    "path": "packages/server/src/transaction-http.ts",
+    "text": "async function route"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      589
+    ],
+    "path": "packages/server/src/transaction-http.ts",
+    "text": "const scopeProbe"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      590
+    ],
+    "path": "packages/server/src/transaction-http.ts",
+    "text": "const descriptor"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      591
+    ],
+    "path": "packages/server/src/transaction-http.ts",
+    "text": "const directory"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      489
+    ],
+    "path": "packages/server/src/transaction-http.ts",
+    "text": "current-changefeed"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      267
+    ],
+    "path": "packages/server/src/transaction-service.ts",
+    "text": "discoveryObserved"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      140
+    ],
+    "path": "packages/server/src/transaction-service.ts",
+    "text": "function run<T>"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      777
+    ],
+    "path": "packages/server/src/transaction-service.ts",
+    "text": "close(): Promise<void>"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      131
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "function unsafeLifecycleWire"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      576
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "async function launch"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      622
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "async function stop"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      787
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "async function ownerProbe"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1096
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "async function cold"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1164
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "[\"I02\""
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1178
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "[\"I04\""
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1335
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "[\"I13\""
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1337
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "[\"I15\""
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1339
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "[\"I17\""
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1376
+    ],
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "text": "[\"I19\""
+  },
+  {
+    "availability": "found",
+    "lines": [
+      2,
+      237
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "text": "afterEach"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      449,
+      486
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "text": "S01"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      489,
+      536
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "text": "S02"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      538,
+      561
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "text": "S03"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      610,
+      728
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "text": "S05"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      895,
+      936
+    ],
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "text": "S12"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      353,
+      354
+    ],
+    "path": "scripts/smoke-executables.mjs",
+    "text": "development-authority.d.ts"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      389,
+      390
+    ],
+    "path": "scripts/smoke-executables.mjs",
+    "text": "reference-deployment-state.d.ts"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      625
+    ],
+    "path": "scripts/smoke-executables.mjs",
+    "text": "@bdp/server/dist/development-authority.js"
+  },
+  {
+    "availability": "found",
+    "lines": [
+      1214
+    ],
+    "path": "scripts/smoke-executables.mjs",
+    "text": "async function observePackedDeploymentLoader"
+  }
+]
