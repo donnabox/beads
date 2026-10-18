@@ -1,0 +1,55 @@
+{
+  "releasedAt": "2026-10-18T03:41:05.973641+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "reviewTarget": "Trusted installed Write startup plan2; exact11file scope; no implementation or activation",
+  "planSha256": "8748e35c3c8a4c97078805eb5ec67cd7723f7e3d55a39866aa2e59d50164cf3c",
+  "nativeAdapterClosureSha256": "287a032e228c268456a1596f768a8750442629ae16cb3ee5556eb95b65a5891b",
+  "nativeGeneric4ClosureSha256": "3c966ee5492f4c978f50d5b47257bf9b4bc68ad4c5847e5937bd164d4a1c40a0",
+  "supervisorCodeSha256": "e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b",
+  "rootVerified": {
+    "supplementIndexEntries": 8,
+    "supplementFiles": 9,
+    "packetFiles": 52,
+    "sourceFiles": 679,
+    "contexts": 39,
+    "artifacts": 15,
+    "code4ByteIdentical": true,
+    "genuineFixDeltasInspected": true,
+    "originalParentPreservedEntriesIncludingIndex": 67
+  },
+  "releaseDeltas": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/binding.json",
+      "closedSha256": "5927874e700f0d4e8da2a4ede4b45a18090cad9c3655570d266c430eb484d95f",
+      "releasedSha256": "94627365f1326ecc6cfa78bef5661cb998b682baecf85f097b119e55f149d6c0",
+      "onlyChange": "rootLaunchReleased false to true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/control.json",
+      "closedSha256": "e653a21c2764abe1455dc73da6857ad8641b632b22cf9bb2d2aaee7ce0705db4",
+      "releasedSha256": "c48395307a49bbfd2395b822bc78fb6168dba9fab91b91cf8c02668f81ba786a",
+      "onlyChange": "rootLaunchReleased false to true"
+    }
+  ],
+  "singleAttempt": true,
+  "defaultModel": true,
+  "allowedTools": [
+    "Read",
+    "Glob",
+    "Grep"
+  ],
+  "termSeconds": 1790,
+  "killSeconds": 1798,
+  "totalSeconds": 1800,
+  "invocation": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/supervise.py"
+  ],
+  "sourceAuthoringReleased": false,
+  "runtimeValidationReleased": false,
+  "noRetry": true,
+  "requiresAfter": [
+    "independent actual terminal/source/packet/process audit",
+    "explicit substantive findings disposition"
+  ]
+}

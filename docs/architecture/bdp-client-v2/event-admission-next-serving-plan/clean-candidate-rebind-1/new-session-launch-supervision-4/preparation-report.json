@@ -1,0 +1,57 @@
+{
+  "createdUtc": "2026-10-18T03:37:48.373027+00:00",
+  "state": "CLOSED supervision4 correction; no execution",
+  "finding": "T2: known authenticated PGID omitted when leader reaped and never-sampled same-group child survives reparented",
+  "scope": "Smallest known-group census/unknown closure correction, plus explicit evidence fields",
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-3",
+    "indexSha256": "c0c08fb25496dad113a6dab2a5cdf1009a6704c04d9eebc6584460a0ee1860d2",
+    "supervisorSha256": "26f6625c5eebe7a7f09d5134ffdd73fb565ff55c399e2a698fa0d27d7a9a93ea"
+  },
+  "changes": [
+    "Fresh membership census for every historically authenticated PGID, not only current owned-row PGIDs",
+    "Surviving membership without current verified PID/start anchor is recorded as unanchored ownership unknown/failure",
+    "Normal wrapper exit rejects owned OR unanchored known-group survivors",
+    "Signal passes with unanchored survivors cannot report complete success",
+    "No signal authorization from numeric PGID history alone; no unsafe inference under reuse",
+    "Preserve last-inventory and observed unanchored group evidence"
+  ],
+  "caseDisposition": {
+    "liveSameGroupWithAuthenticatedAnchor": "Existing same-group cleanup remains authorized",
+    "leaderReapedNeverSampledChildSurvives": "Explicit unanchored known_group_membership_unanchored/ownershipUnknown failure; not silently absent or signaled as proven owned",
+    "PGIDPotentiallyReusedNoCurrentIdentityAnchor": "Same explicit unknown/failure; no unrelated-group signal",
+    "noMembersAcrossKnownGroups": "No new unknown membership inferred; all ordinary source/session/runner/closure predicates still required",
+    "allZombieAuthenticatedGroup": "Presence retained until reaped/absent; skip needless signals"
+  },
+  "unchanged": [
+    "Prior-live reviewer PID/start/PGID/argv/record-start authentication",
+    "Strict live claude identity and exact session guard checks",
+    "Immediate Popen registration and safe unreaped direct-child fallback",
+    "Retryable attempted/successful TERM/KILL signal state",
+    "TERM1790/KILL1798/absolute1800",
+    "Exclusive attempt/no retry",
+    "Original consumed packet preflight refuses relaunch"
+  ],
+  "preservation": {
+    "supervision3Files": 10,
+    "startupAdapter3Files": 9,
+    "sourceDesignLaunchOriginalPacketEdits": false,
+    "failedSupervision2Relabeled": false
+  },
+  "staticVerification": [
+    "AST parses without execution",
+    "Known-group census set is all state.groups minus currently anchored groups",
+    "Unanchored detection sets sticky ownershipUnknown/reason and never extends owned signal set",
+    "Explicit normal completion check excludes unanchored current members",
+    "Terminal includes current and historical unanchored membership records",
+    "No raw waitpid/new budget/supervisor infrastructure; code/control genuine inverse",
+    "All predecessor3+startup-adapter3 bytes rehashed unchanged"
+  ],
+  "runtimeFaultInjection": "NOT RUN",
+  "launchState": "CLOSED flag false; no attempt exists; referenced consumed changefeed packet cannot be retried",
+  "limitations": [
+    "Static mechanics correction only; no future runtime success is claimed",
+    "Uncertain surviving membership is deliberately left unknown/failing rather than risking unrelated group signals",
+    "Prior T1 trigger likely, exact require/three PermissionErrors remain unattributed"
+  ]
+}
