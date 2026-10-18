@@ -1,0 +1,39 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/prospective-negative-controls.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/prospective-negative-controls.json
+@@ -85,9 +85,9 @@
+       "target": "run.py"
+     },
+     {
+-      "expected": "register direct handle and preserve worker anchor, no group-wide quiet exclusion; both actual pipe EOF+raw terminal before ANY census use, complete retained probe registry; current reset/no old-buffer attribution, observed acquired identity retained even if setup fails",
++      "expected": "register direct handle and preserve worker anchor, no group-wide quiet exclusion; both actual pipe EOF+raw terminal before ANY census use, complete retained probe registry",
+       "id": "C13",
+-      "input": "worker/primary/group spawn before ack and descendant quiet race; native census EAGAIN then final complete-row suffix+exit; finite setup exception after current acquired handle and a later Popen failure after a prior completed probe",
++      "input": "worker/primary/group spawn before ack and descendant quiet race; native census EAGAIN then final complete-row suffix+exit",
+       "observed": "UNEXECUTED",
+       "target": "run.py"
+     },
+@@ -99,16 +99,16 @@
+       "target": "run.py"
+     },
+     {
+-      "expected": "sticky unknown/refuse, no unsafe historical barePGID signaling; retain exact received failure prefix/UNKNOWN suffix, no partial-prefix census; preserve first failurePrefix AND separate current censusIoFailurePrefix/last complete/full registry best effort before cleanup, positive null requirement",
++      "expected": "sticky unknown/refuse, no unsafe historical barePGID signaling; retain exact received failure prefix/UNKNOWN suffix, no partial-prefix census",
+       "id": "C15",
+-      "input": "unknown birth/changed livecomm/census failure/known group unanchored; native census missing EOF/held writer/late last bytes/nonzero stderr; non-EAGAIN read or poll exception after actual partial acquisition, including after an earlier refused probe",
+-      "observed": "UNEXECUTED",
+-      "target": "run.py"
+-    },
+-    {
+-      "expected": "bounded repeated owned escalation; raw failure or UNKNOWN, never retry; immediate direct probe ownership and bounded terminal evidence, fresh root absence of ALL recorded task/probe PIDs/groups; actual missing facts UNKNOWN, no guaranteed durability or cleanup, no new probe after finish",
++      "input": "unknown birth/changed livecomm/census failure/known group unanchored; native census missing EOF/held writer/late last bytes/nonzero stderr",
++      "observed": "UNEXECUTED",
++      "target": "run.py"
++    },
++    {
++      "expected": "bounded repeated owned escalation; raw failure or UNKNOWN, never retry; immediate direct probe ownership and bounded terminal evidence, fresh root absence of ALL recorded task/probe PIDs/groups",
+       "id": "C16",
+-      "input": "SIGTERM ignored/slow closure/publisher failure; census probe survives cutoff or parent terminal publication blocks; ordinary I/O failure publication itself unavailable/partial or after cutoff",
++      "input": "SIGTERM ignored/slow closure/publisher failure; census probe survives cutoff or parent terminal publication blocks",
+       "observed": "UNEXECUTED",
+       "target": "run.py"
+     },

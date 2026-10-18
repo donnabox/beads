@@ -1,0 +1,28 @@
+{
+  "correction": [
+    "reset current probe state before Popen/setup",
+    "retain each acquired direct Popen identity immediately",
+    "fixed-class ordinary acquisition/setup/read/poll exceptions refresh current actual counts/EOF/observed terminal without polling again",
+    "preserve FIRST failurePrefix and distinct current censusIoFailurePrefix",
+    "same-clock best-effort finish(1) before existing finally; no further probe/retry",
+    "strict exact terminal keys plus positive new field null"
+  ],
+  "executionReleased": false,
+  "finding": "CV2-N1 Medium",
+  "otherNativeAndRootRequired": true,
+  "rootAcceptedFinding": true,
+  "rootDispositionSha256": "1f0e7a4a42824e9e73a27a0204e97cc7965bb88b65b10bbe7e60bdb667d0717f",
+  "rootReleaseSha256": "7c1a4b94d2eaea95e7d823783609e1669315ebd37ae7399e2f3cfed792038bbb",
+  "state": "AUTHOR correction proposal implemented in CLOSED successor3; OTHER-native/root not yet accepted",
+  "unchanged": [
+    "all normal both-EOF/raw-terminal parsing/ownership/quiet/root all PID-PGID absence predicates",
+    "all clean/dirty source tuple checks and attribution",
+    "all source/product callbacks/selection/schema/workload/budgets/caps",
+    "all genuine brands/private compiler graph/auth-policy limitations/unknown cleanup"
+  ],
+  "unknowns": [
+    "publication can fail or be partial; no guaranteed host durability",
+    "existing cleanup is not new per-child closure proof",
+    "all synthetic/runtime outcomes unexecuted"
+  ]
+}

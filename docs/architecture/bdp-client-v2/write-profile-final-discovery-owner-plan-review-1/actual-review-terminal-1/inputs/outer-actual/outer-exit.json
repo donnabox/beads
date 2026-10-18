@@ -1,0 +1,999 @@
+{
+  "classification": "process_ownership_or_cleanup_failure",
+  "approvalInferred": false,
+  "started": "2026-10-18T15:52:34.945481+00:00",
+  "elapsedSeconds": 471.87795995920897,
+  "deadlineSeconds": 1800,
+  "termAfterSeconds": 1790,
+  "killAfterSeconds": 1798,
+  "wrapperPid": 24966,
+  "wrapperExitCode": -15,
+  "roleChecks": [
+    {
+      "pid": 24959,
+      "startedElapsed": 0.012464208994060755,
+      "exitCode": 0
+    },
+    {
+      "pid": 25144,
+      "startedElapsed": 15.52245037490502,
+      "exitCode": 0
+    },
+    {
+      "pid": 26051,
+      "startedElapsed": 31.04824333405122,
+      "exitCode": 0
+    },
+    {
+      "pid": 26183,
+      "startedElapsed": 46.59036945924163,
+      "exitCode": 0
+    },
+    {
+      "pid": 26322,
+      "startedElapsed": 62.02284362493083,
+      "exitCode": 0
+    },
+    {
+      "pid": 26485,
+      "startedElapsed": 77.47787966718897,
+      "exitCode": 0
+    },
+    {
+      "pid": 27527,
+      "startedElapsed": 92.96828270889819,
+      "exitCode": 0
+    },
+    {
+      "pid": 27676,
+      "startedElapsed": 108.34582316689193,
+      "exitCode": 0
+    },
+    {
+      "pid": 27817,
+      "startedElapsed": 123.82288087485358,
+      "exitCode": 0
+    },
+    {
+      "pid": 28066,
+      "startedElapsed": 139.27724504191428,
+      "exitCode": 0
+    },
+    {
+      "pid": 28965,
+      "startedElapsed": 154.6836920422502,
+      "exitCode": 0
+    },
+    {
+      "pid": 29118,
+      "startedElapsed": 170.6419144589454,
+      "exitCode": 0
+    },
+    {
+      "pid": 29251,
+      "startedElapsed": 186.02606833400205,
+      "exitCode": 0
+    },
+    {
+      "pid": 29580,
+      "startedElapsed": 201.42753829201683,
+      "exitCode": 0
+    },
+    {
+      "pid": 30406,
+      "startedElapsed": 216.8325288342312,
+      "exitCode": 0
+    },
+    {
+      "pid": 30602,
+      "startedElapsed": 232.32762512518093,
+      "exitCode": 0
+    },
+    {
+      "pid": 30754,
+      "startedElapsed": 247.74814383406192,
+      "exitCode": 0
+    },
+    {
+      "pid": 31132,
+      "startedElapsed": 263.2415550420992,
+      "exitCode": 0
+    },
+    {
+      "pid": 31888,
+      "startedElapsed": 278.6104083750397,
+      "exitCode": 0
+    },
+    {
+      "pid": 32937,
+      "startedElapsed": 294.03694874979556,
+      "exitCode": 0
+    },
+    {
+      "pid": 35977,
+      "startedElapsed": 309.475542999804,
+      "exitCode": 0
+    },
+    {
+      "pid": 40575,
+      "startedElapsed": 324.9374923747964,
+      "exitCode": 0
+    },
+    {
+      "pid": 45076,
+      "startedElapsed": 340.31767258420587,
+      "exitCode": 0
+    },
+    {
+      "pid": 47056,
+      "startedElapsed": 355.788310542237,
+      "exitCode": 0
+    },
+    {
+      "pid": 48660,
+      "startedElapsed": 371.2971208342351,
+      "exitCode": 0
+    },
+    {
+      "pid": 51443,
+      "startedElapsed": 386.7751558339223,
+      "exitCode": 0
+    },
+    {
+      "pid": 52818,
+      "startedElapsed": 402.3404257502407,
+      "exitCode": 0
+    },
+    {
+      "pid": 53719,
+      "startedElapsed": 417.7609247500077,
+      "exitCode": 0
+    },
+    {
+      "pid": 54918,
+      "startedElapsed": 433.2023493340239,
+      "exitCode": 0
+    },
+    {
+      "pid": 56602,
+      "startedElapsed": 448.67789841722697,
+      "exitCode": 0
+    },
+    {
+      "pid": 59481,
+      "startedElapsed": 464.5988083751872,
+      "exitCode": 0
+    }
+  ],
+  "finalRoleVerified": false,
+  "forcedCleanup": true,
+  "termSentAtDeadline": false,
+  "killSentAtDeadline": false,
+  "termSignalPassAttempts": 0,
+  "killSignalPassAttempts": 0,
+  "signalStateMeaning": "Sent flags mean a complete successful inventory/signal pass, not a scheduled attempt; logs preserve per-group signals and failed passes.",
+  "firstReviewerIdentityFailure": {
+    "elapsedSeconds": 470.7517262501642,
+    "stage": "row_executable",
+    "row": {
+      "pid": 24992,
+      "ppid": 1,
+      "pgid": 24992,
+      "state": "?Es",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(claude)"
+    },
+    "exceptionType": "RuntimeError"
+  },
+  "errors": [
+    "TimeoutExpired",
+    "reviewer_identity:RuntimeError"
+  ],
+  "remainingOwned": [],
+  "ownershipUnknown": true,
+  "observedOwned": [
+    {
+      "pid": 24959,
+      "ppid": 24957,
+      "pgid": 24959,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:52:34 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 24961,
+      "ppid": 24959,
+      "pgid": 24959,
+      "state": "S",
+      "start": "Sun Oct 18 08:52:34 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 24966,
+      "ppid": 24957,
+      "pgid": 24966,
+      "state": "Z",
+      "start": "Sun Oct 18 08:52:35 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 24970,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:35 2026",
+      "comm": "(git)"
+    },
+    {
+      "pid": 24979,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "S",
+      "start": "Sun Oct 18 08:52:35 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 24980,
+      "ppid": 24979,
+      "pgid": 24966,
+      "state": "S",
+      "start": "Sun Oct 18 08:52:35 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 24986,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "S",
+      "start": "Sun Oct 18 08:52:35 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 24987,
+      "ppid": 24986,
+      "pgid": 24966,
+      "state": "S",
+      "start": "Sun Oct 18 08:52:35 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 24992,
+      "ppid": 1,
+      "pgid": 24992,
+      "state": "?Es",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(claude)"
+    },
+    {
+      "pid": 24993,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 24996,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 24997,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 25010,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "Z",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 25011,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "Z",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 25012,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "Z",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 25013,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "Z",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 25014,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(git)"
+    },
+    {
+      "pid": 25015,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "Z",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 25016,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:36 2026",
+      "comm": "(ioreg)"
+    },
+    {
+      "pid": 25144,
+      "ppid": 24957,
+      "pgid": 25144,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:52:50 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 25145,
+      "ppid": 25144,
+      "pgid": 25144,
+      "state": "S",
+      "start": "Sun Oct 18 08:52:50 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 25151,
+      "ppid": 25144,
+      "pgid": 25144,
+      "state": "R",
+      "start": "Sun Oct 18 08:52:50 2026",
+      "comm": "(true)"
+    },
+    {
+      "pid": 26051,
+      "ppid": 24957,
+      "pgid": 26051,
+      "state": "Z",
+      "start": "Sun Oct 18 08:53:05 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 26052,
+      "ppid": 26051,
+      "pgid": 26051,
+      "state": "S",
+      "start": "Sun Oct 18 08:53:06 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 26183,
+      "ppid": 24957,
+      "pgid": 26183,
+      "state": "Z",
+      "start": "Sun Oct 18 08:53:21 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 26184,
+      "ppid": 26183,
+      "pgid": 26183,
+      "state": "S",
+      "start": "Sun Oct 18 08:53:21 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 26313,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:53:36 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 26322,
+      "ppid": 24957,
+      "pgid": 26322,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:53:36 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 26323,
+      "ppid": 26322,
+      "pgid": 26322,
+      "state": "S",
+      "start": "Sun Oct 18 08:53:36 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 26485,
+      "ppid": 24957,
+      "pgid": 26485,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:53:52 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 26486,
+      "ppid": 26485,
+      "pgid": 26485,
+      "state": "S",
+      "start": "Sun Oct 18 08:53:52 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 27527,
+      "ppid": 24957,
+      "pgid": 27527,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:54:07 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 27529,
+      "ppid": 27527,
+      "pgid": 27527,
+      "state": "S",
+      "start": "Sun Oct 18 08:54:07 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 27676,
+      "ppid": 24957,
+      "pgid": 27676,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:54:23 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 27677,
+      "ppid": 27676,
+      "pgid": 27676,
+      "state": "S",
+      "start": "Sun Oct 18 08:54:23 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 27792,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:54:36 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 27817,
+      "ppid": 24957,
+      "pgid": 27817,
+      "state": "Z",
+      "start": "Sun Oct 18 08:54:38 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 27818,
+      "ppid": 27817,
+      "pgid": 27817,
+      "state": "S",
+      "start": "Sun Oct 18 08:54:38 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 28066,
+      "ppid": 24957,
+      "pgid": 28066,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:54:54 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 28067,
+      "ppid": 28066,
+      "pgid": 28066,
+      "state": "S",
+      "start": "Sun Oct 18 08:54:54 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 28965,
+      "ppid": 24957,
+      "pgid": 28965,
+      "state": "Z",
+      "start": "Sun Oct 18 08:55:09 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 28966,
+      "ppid": 28965,
+      "pgid": 28965,
+      "state": "S",
+      "start": "Sun Oct 18 08:55:09 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 29054,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "R",
+      "start": "Sun Oct 18 08:55:18 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 29118,
+      "ppid": 24957,
+      "pgid": 29118,
+      "state": "Z",
+      "start": "Sun Oct 18 08:55:25 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 29119,
+      "ppid": 29118,
+      "pgid": 29118,
+      "state": "S",
+      "start": "Sun Oct 18 08:55:25 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 29216,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:55:36 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 29251,
+      "ppid": 24957,
+      "pgid": 29251,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:55:40 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 29252,
+      "ppid": 29251,
+      "pgid": 29251,
+      "state": "S",
+      "start": "Sun Oct 18 08:55:41 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 29580,
+      "ppid": 24957,
+      "pgid": 29580,
+      "state": "Z",
+      "start": "Sun Oct 18 08:55:56 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 29581,
+      "ppid": 29580,
+      "pgid": 29580,
+      "state": "S",
+      "start": "Sun Oct 18 08:55:56 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 30357,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:56:06 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 30406,
+      "ppid": 24957,
+      "pgid": 30406,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:56:11 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 30407,
+      "ppid": 30406,
+      "pgid": 30406,
+      "state": "?E",
+      "start": "Sun Oct 18 08:56:11 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 30602,
+      "ppid": 24957,
+      "pgid": 30602,
+      "state": "Rs",
+      "start": "Sun Oct 18 08:56:27 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 30603,
+      "ppid": 30602,
+      "pgid": 30602,
+      "state": "S",
+      "start": "Sun Oct 18 08:56:27 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 30754,
+      "ppid": 24957,
+      "pgid": 30754,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:56:42 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 30755,
+      "ppid": 30754,
+      "pgid": 30754,
+      "state": "S",
+      "start": "Sun Oct 18 08:56:42 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 31187,
+      "ppid": 31132,
+      "pgid": 31132,
+      "state": "S",
+      "start": "Sun Oct 18 08:56:58 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 31132,
+      "ppid": 24957,
+      "pgid": 31132,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:56:58 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 31799,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:57:07 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 31888,
+      "ppid": 24957,
+      "pgid": 31888,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:57:13 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 31889,
+      "ppid": 31888,
+      "pgid": 31888,
+      "state": "?E",
+      "start": "Sun Oct 18 08:57:13 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 32937,
+      "ppid": 24957,
+      "pgid": 32937,
+      "state": "Z",
+      "start": "Sun Oct 18 08:57:28 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 32938,
+      "ppid": 32937,
+      "pgid": 32937,
+      "state": "S",
+      "start": "Sun Oct 18 08:57:29 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 33211,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "R",
+      "start": "Sun Oct 18 08:57:30 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 35990,
+      "ppid": 35977,
+      "pgid": 35977,
+      "state": "S",
+      "start": "Sun Oct 18 08:57:44 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 35977,
+      "ppid": 24957,
+      "pgid": 35977,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:57:44 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 40604,
+      "ppid": 40575,
+      "pgid": 40575,
+      "state": "S",
+      "start": "Sun Oct 18 08:57:59 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 40575,
+      "ppid": 24957,
+      "pgid": 40575,
+      "state": "Z",
+      "start": "Sun Oct 18 08:57:59 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 44467,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "U",
+      "start": "Sun Oct 18 08:58:12 2026",
+      "comm": "(claude)"
+    },
+    {
+      "pid": 45076,
+      "ppid": 24957,
+      "pgid": 45076,
+      "state": "Z",
+      "start": "Sun Oct 18 08:58:15 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 45077,
+      "ppid": 45076,
+      "pgid": 45076,
+      "state": "S",
+      "start": "Sun Oct 18 08:58:15 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 47056,
+      "ppid": 24957,
+      "pgid": 47056,
+      "state": "Z",
+      "start": "Sun Oct 18 08:58:30 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 47057,
+      "ppid": 47056,
+      "pgid": 47056,
+      "state": "S",
+      "start": "Sun Oct 18 08:58:30 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 47686,
+      "ppid": 24992,
+      "pgid": 24992,
+      "state": "U",
+      "start": "Sun Oct 18 08:58:36 2026",
+      "comm": "(claude)"
+    },
+    {
+      "pid": 48660,
+      "ppid": 24957,
+      "pgid": 48660,
+      "state": "Z",
+      "start": "Sun Oct 18 08:58:46 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 48664,
+      "ppid": 48660,
+      "pgid": 48660,
+      "state": "S",
+      "start": "Sun Oct 18 08:58:46 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 51443,
+      "ppid": 24957,
+      "pgid": 51443,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:59:01 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 51470,
+      "ppid": 51443,
+      "pgid": 51443,
+      "state": "S",
+      "start": "Sun Oct 18 08:59:01 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 52512,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:59:07 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 52818,
+      "ppid": 24957,
+      "pgid": 52818,
+      "state": "Z",
+      "start": "Sun Oct 18 08:59:17 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 52820,
+      "ppid": 52818,
+      "pgid": 52818,
+      "state": "S",
+      "start": "Sun Oct 18 08:59:17 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 53719,
+      "ppid": 24957,
+      "pgid": 53719,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:59:32 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 53727,
+      "ppid": 53719,
+      "pgid": 53719,
+      "state": "S",
+      "start": "Sun Oct 18 08:59:32 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 54357,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 08:59:38 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 54918,
+      "ppid": 24957,
+      "pgid": 54918,
+      "state": "Ss",
+      "start": "Sun Oct 18 08:59:48 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 54919,
+      "ppid": 54918,
+      "pgid": 54918,
+      "state": "S",
+      "start": "Sun Oct 18 08:59:48 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 56602,
+      "ppid": 24957,
+      "pgid": 56602,
+      "state": "Z",
+      "start": "Sun Oct 18 09:00:03 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 56603,
+      "ppid": 56602,
+      "pgid": 56602,
+      "state": "S",
+      "start": "Sun Oct 18 09:00:03 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 57101,
+      "ppid": 24966,
+      "pgid": 24966,
+      "state": "R",
+      "start": "Sun Oct 18 09:00:08 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 59481,
+      "ppid": 24957,
+      "pgid": 59481,
+      "state": "?Es",
+      "start": "Sun Oct 18 09:00:19 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 59486,
+      "ppid": 59481,
+      "pgid": 59481,
+      "state": "S",
+      "start": "Sun Oct 18 09:00:19 2026",
+      "comm": "gh"
+    }
+  ],
+  "observedGroups": {
+    "24959": "session-check",
+    "24966": "wrapper",
+    "24992": "reviewer",
+    "25144": "session-check",
+    "26051": "session-check",
+    "26183": "session-check",
+    "26322": "session-check",
+    "26485": "session-check",
+    "27527": "session-check",
+    "27676": "session-check",
+    "27817": "session-check",
+    "28066": "session-check",
+    "28965": "session-check",
+    "29118": "session-check",
+    "29251": "session-check",
+    "29580": "session-check",
+    "30406": "session-check",
+    "30602": "session-check",
+    "30754": "session-check",
+    "31132": "session-check",
+    "31888": "session-check",
+    "32937": "session-check",
+    "35977": "session-check",
+    "40575": "session-check",
+    "45076": "session-check",
+    "47056": "session-check",
+    "48660": "session-check",
+    "51443": "session-check",
+    "52818": "session-check",
+    "53719": "session-check",
+    "54918": "session-check",
+    "56602": "session-check",
+    "59481": "session-check"
+  },
+  "authenticatedReviewers": [
+    {
+      "pid": 24992,
+      "pgid": 24992,
+      "start": "Sun Oct 18 08:52:36 2026",
+      "recordStarted": "2026-10-18T15:52:36.218969+00:00",
+      "argv": [
+        "/opt/homebrew/bin/claude",
+        "--safe-mode",
+        "-p",
+        "--tools",
+        "Read,Glob,Grep",
+        "--allowedTools",
+        "Read,Glob,Grep",
+        "--disable-slash-commands",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--no-session-persistence",
+        "--output-format",
+        "stream-json",
+        "--verbose",
+        "--include-partial-messages"
+      ]
+    }
+  ],
+  "unanchoredKnownGroupsAtLastInventory": {},
+  "unanchoredKnownGroupsObserved": {},
+  "noRetry": true,
+  "localEvidenceAfterSupersessionAllowed": true,
+  "remoteWritesPerformed": false,
+  "limitation": "PID/start-time/ancestry and authenticated runner process record provide owned-group evidence; no system-wide socket census or hard-real-time OS guarantee. Terminal local evidence adds no reviewer execution allowance."
+}

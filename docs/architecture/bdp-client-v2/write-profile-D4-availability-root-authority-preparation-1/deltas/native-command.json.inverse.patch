@@ -1,0 +1,66 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/native-command.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-command.json
+@@ -1,8 +1,5 @@
+ {
+-  "actualClockEpochCompatibility": "UNRESOLVED",
+-  "actualSignalBootstrapPipeAvailability": "UNRESOLVED",
+-  "actualToolClockResolution": "UNRESOLVED",
+-  "approved": false,
++  "state": "CLOSED",
+   "argv": [
+     "/usr/bin/env",
+     "-u",
+@@ -23,8 +20,24 @@
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl",
+     "AVAIL",
+     "availability",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/availability-release.proposed.json"
++    "UNKNOWN_FUTURE_DURABLE_AVAILABILITY_ONLY_RELEASE_ABSOLUTE_PATH"
+   ],
++  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4",
++  "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
++  "approved": false,
++  "executed": false,
++  "noRetry": true,
++  "productCalls": 0,
++  "finiteControlCalls": 0,
++  "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect",
++  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt",
++  "clock": {
++    "whole": 120,
++    "TERM": 115,
++    "KILL": 119,
++    "bothNormalTerminalsStrictBefore": 115,
++    "authBootstrapBefore": 10
++  },
+   "authoritySequence": [
+     "OTHER-native FULL H3 including actual availability code",
+     "separately durable root availability-only release bound to exact H3 and pinned tools",
+@@ -32,23 +45,8 @@
+     "root measured availability acceptance; clockDomainVerified may only now become true in separate immutable acceptance",
+     "separate durable finite-control release; no automatic suite/product"
+   ],
+-  "clock": {
+-    "KILL": 119,
+-    "TERM": 115,
+-    "authBootstrapBefore": 10,
+-    "bothNormalTerminalsStrictBefore": 115,
+-    "whole": 120
+-  },
+-  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4",
+-  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt",
+-  "executed": false,
+-  "finiteControlCalls": 0,
+-  "futureRootCaller": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/capture.py",
+-  "futureSeparateExecutionRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-1/release.json",
+-  "noRetry": true,
+-  "productCalls": 0,
+-  "rootFreshAbsence": "UNRESOLVED",
+-  "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+-  "state": "CLOSED exact future native argv; NO invocation",
+-  "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect"
++  "actualToolClockResolution": "UNRESOLVED",
++  "actualClockEpochCompatibility": "UNRESOLVED",
++  "actualSignalBootstrapPipeAvailability": "UNRESOLVED",
++  "rootFreshAbsence": "UNRESOLVED"
+ }

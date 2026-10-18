@@ -1,0 +1,35 @@
+{
+  "reviewComplete": true,
+  "mechanicsAccepted": false,
+  "findings": [
+    {
+      "id": "CV2-N1",
+      "severity": "Medium",
+      "title": "Census I/O exception path skips the required failure-prefix publication attempt",
+      "locations": [
+        "run.py:207–210",
+        "run.py:212–227",
+        "run.py:269–283",
+        "census-probe-contract.json acquisition/rawRetention",
+        "root clarification0173cce3 approvedRepresentation1–5"
+      ],
+      "evidence": "The per-stream loop catches only BlockingIOError at222. Another read/setup/poll exception exits main directly through finally273, which kills/closes handles but never calls retain_prefix or finish. After earlier successful reads/whole censuses, actual psout/pserr/last_complete_census and full registry remain memory-only and are lost even when tool stdout is still writable. The timeout/capacity/nonzero/malformed paths do preserve a prefix; this ordinary exception path does not try.",
+      "impact": "Missing final event correctly defeats gate.complete, so no observed leak/false acceptance/product failure is claimed. Honest UNKNOWN does not satisfy the independently required bounded best-effort preservation attempt for already acquired diagnostic bytes.",
+      "minimumCorrection": "In a separately released successor, use a fixed-class sticky failure and bounded best-effort publication of actual known current probe/received prefix/last complete census/registry via finish(1) on the SAME original clock before existing cleanup. Spawn no further probes after that event. Guard current-probe association: never borrow previous completed probe buffers if a new Popen/setup fails before reset/registration. Preserve immediate owned handles, existing cleanup, caps/EOF/raw predicates/no retries, and actual failure return. If preservation/publication itself fails or is killed, leave missing/partial/unsaved facts UNKNOWN; no guaranteed host durability or repaired receipt.",
+      "validation": "Existing finite C13/C15/C16 may include a later separately reviewed zero-product non-EAGAIN read/poll/setup exception after a retained prefix. Require actual prefix/registry attempt under same clock and original raw failure/UNKNOWN, no product callback or new control ID. No control was evaluated.",
+      "rootScopeResponse": "Trusted parent message during this review confirmed bounded BEST-EFFORT publication is required when stdout remains writable; missing publication is fail-closed but does not satisfy omitted preservation attempt. Durable root disposition/source release remains separate."
+    }
+  ],
+  "priorCorrections": [
+    {
+      "id": "CV1-N1",
+      "status": "Normal/known-refusal EOF+terminal acquisition, complete per-probe registry, final postpublisher event and strict root verification are statically corrected; exception-prefix preservation incomplete as CV2-N1."
+    },
+    {
+      "id": "CV1-N2",
+      "status": "Statically closed: packages48 clean/sourceAttribution derive accepted dirtyPaths; all source_check checks AST unchanged."
+    }
+  ],
+  "executionReleased": false,
+  "actualControlOrProductRuns": 0
+}

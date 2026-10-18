@@ -1,0 +1,15 @@
+{
+  "clean": {
+    "clean": true,
+    "dirtyPaths": [],
+    "prerequisite": "Root actual clean tuple with all681 exact reviewed bytes in actual HEAD, no staged/untracked; existing gate strict checks unchanged",
+    "text": "Actual accepted clean HEAD/tree contains all681 reviewed source bytes, independently verified with fresh build and archives; not child-attested source."
+  },
+  "dirty": {
+    "clean": false,
+    "dirtyPaths": "exact four allowed on reviewed base283, actual before/after checks unchanged",
+    "text": "Base HEAD/tree plus independently verified reviewed dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source."
+  },
+  "futureActualTuple": "UNRESOLVED; no guessed HEAD/tree/branch/patch or execution claim",
+  "state": "CLOSED source-attribution correction only"
+}

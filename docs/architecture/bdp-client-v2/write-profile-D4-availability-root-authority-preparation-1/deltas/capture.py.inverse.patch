@@ -1,0 +1,152 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/capture.py
++++ /dev/null
+@@ -1,149 +0,0 @@
+-"""CLOSED ROOT one-invocation native availability capture. Never imports H4/product.
+-A complete capture is provisional until actual root terminal/fresh process audit.
+-"""
+-import time
+-ORIGIN=time.monotonic() # before every other caller import/setup/hash/guard/publication
+-import os,sys,json,math,hashlib,subprocess,select,signal,shutil
+-from pathlib import Path
+-HERE=Path(__file__).resolve().parent
+-H=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4')
+-FUTURE_RELEASE=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-1/release.json')
+-PYTHON='/opt/homebrew/opt/python@3.14/bin/python3.14'
+-GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py')
+-SESSION='2026-10-18T02:16:24Z-549f'
+-CAP=1048576
+-
+-def need(ok,reason):
+- if not ok:raise RuntimeError(reason)
+-def unique(pairs):
+- d={}
+- for k,v in pairs:need(k not in d,'duplicate-key');d[k]=v
+- return d
+-def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+-def read(p,cap):
+- p=Path(p);need(p.is_absolute()and p.is_file()and not p.is_symlink()and p.stat().st_size<=cap,'ordinary-bounded-document')
+- raw=p.read_bytes();need(len(raw)<=cap,'document-size');return json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite')))
+-def pinned(pin,cap=1048576):
+- need(type(pin)is dict and set(pin)=={'path','sha256'},'exact-pin');need(sha(pin['path'])==pin['sha256'],'pin-bytes');return read(pin['path'],cap)
+-def main():
+- need(len(sys.argv)==1,'no-arbitrary-command-or-retry-arguments')
+- states=[];handles=[];journal=None;attempt=HERE/'attempt';failure=None;normal=False
+- def before(limit=115):need(time.monotonic()-ORIGIN<limit,'caller-whole-clock')
+- def identity(fd):
+-  s=os.fstat(fd);return {'device':s.st_dev,'inode':s.st_ino,'mode':s.st_mode,'uid':s.st_uid,'bytes':s.st_size,'mtimeNs':s.st_mtime_ns,'ctimeNs':s.st_ctime_ns}
+- def snapshot(reason):
+-  values=[]
+-  for st in states:
+-   streams=[]
+-   for x in st['streams']:
+-    streams.append({'path':str(x['path']),'receivedBytes':x['received'],'savedBytes':x['saved'],'hashedPrefixBytes':x['hashed'],'savedPrefixSha256':x['hash'].hexdigest()if x['hashKnown']else'UNKNOWN','actualEOF':x['eof'],'rawDescriptorClosed':x['closed'],'writeError':x['writeError'],'closeError':x['closeError'],'fileIdentity':x['identity'],'fullStreamSha256':x['hash'].hexdigest()if st['complete']and x['eof']and x['closed']and x['hashKnown']and x['received']==x['saved']==x['hashed']else'UNKNOWN','fullStreamState':'COMPLETE_ACTUAL_CAPTURE'if st['complete']else'UNKNOWN/prefix-as-of-only'})
+-   values.append({'role':st['role'],'pid':st['proc'].pid,'pgid':st['proc'].pid,'parentPid':os.getpid(),'creationPGIDBasis':'direct Popen start_new_session','createdAtSeconds':st['created'],'rawExitIfObserved':st['proc'].returncode,'termRequested':st['term'],'completeCapture':st['complete'],'streams':streams})
+-  return {'event':'D4-root-availability-capture','reason':reason,'callerPid':os.getpid(),'callerPgid':os.getpgrp(),'elapsedSeconds':time.monotonic()-ORIGIN,'nativeInvocations':sum(s['role']=='native'for s in states),'captures':values,'failure':failure,'availabilityAccepted':False,'clockDomainVerified':False,'syntheticReleased':False,'productReleased':False,'requiresActualRootTerminalAndFreshAllRecordedAbsence':True}
+- def checkpoint(reason):
+-  before(120);raw=(json.dumps(snapshot(reason),separators=(',',':'),allow_nan=False)+'\n').encode();need(len(raw)<=65536,'caller-checkpoint-cap')
+-  offset=0
+-  while offset<len(raw):before(120);n=os.write(journal,raw[offset:]);need(n>0,'caller-checkpoint-write');offset+=n
+- def retain(x,block):
+-  x['received']+=len(block);offset=0
+-  try:
+-   while offset<len(block):
+-    before(120);n=os.write(x['fd'],block[offset:]);need(n>0,'caller-raw-write');x['saved']+=n
+-    try:x['hash'].update(block[offset:offset+n]);x['hashed']+=n
+-    except BaseException:x['hashKnown']=False;raise
+-    offset+=n
+-  except BaseException as e:x['writeError']=type(e).__name__;raise
+- def capture(role,argv,cwd,relative_limit):
+-  before();raws=[]
+-  # These are root TOOL capture files, not precreated product output destinations.
+-  for suffix in ['stdout','stderr']:
+-   p=attempt/(role+'.'+suffix);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
+-   raws.append({'path':p,'fd':fd,'received':0,'saved':0,'hashed':0,'hash':hashlib.sha256(),'hashKnown':True,'eof':False,'closed':False,'writeError':None,'closeError':None,'identity':identity(fd)})
+-  created=time.monotonic();p=subprocess.Popen(argv,cwd=cwd,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,umask=0o077)
+-  handles.append(p) # FIRST after return, before metadata/IO; retain unreaped direct ownership.
+-  st={'role':role,'proc':p,'created':created-ORIGIN,'streams':raws,'complete':False,'term':False};states.append(st);checkpoint('direct-handle-registered')
+-  for pipe in [p.stdout,p.stderr]:os.set_blocking(pipe.fileno(),False)
+-  end=min(ORIGIN+120,created+relative_limit)
+-  while time.monotonic()<end:
+-   for x,pipe in zip(raws,[p.stdout,p.stderr]):
+-    if x['eof']:continue
+-    try:block=os.read(pipe.fileno(),65536)
+-    except BlockingIOError:continue
+-    if block:
+-     retain(x,block);x['identity']=identity(x['fd']);checkpoint('actual-crossing-chunk-retained-before-capacity-check');need(x['received']<=CAP,'caller-stream-capacity')
+-    else:x['eof']=True;checkpoint('actual-pipe-EOF')
+-   p.poll()
+-   if p.returncode is not None and all(x['eof']for x in raws):break
+-   if time.monotonic()>=ORIGIN+115 and p.returncode is None and not st['term']:
+-    # Safe direct handle only. Never KILL native limiter or cancel its independent alarm.
+-    p.terminate();st['term']=True;checkpoint('caller-TERM-direct-handle-alarm-not-cancelled')
+-   select.select([],[],[],.002)
+-  need(p.returncode is not None and all(x['eof']for x in raws),'caller-missing-terminal-or-EOF')
+-  for pipe in [p.stdout,p.stderr]:pipe.close()
+-  for x in raws:
+-   try:x['identity']=identity(x['fd']);os.close(x['fd']);x['fd']=None;x['closed']=True
+-   except OSError as e:x['closeError']=type(e).__name__;raise
+-  need(all(x['writeError']is None and x['closeError']is None and x['hashKnown']and x['received']==x['saved']==x['hashed']==x['identity']['bytes']for x in raws),'caller-full-byte-identity')
+-  st['complete']=True;checkpoint('both-EOF-raw-terminal-raw-close-complete');before()
+-  need(p.returncode==0 and not st['term'],'caller-nonzero-or-forced')
+-  return st
+- old={sig:signal.signal(sig,lambda *_:(_ for _ in ()).throw(KeyboardInterrupt()))for sig in [signal.SIGTERM,signal.SIGINT]}
+- try:
+-  # Absent separate future execution release refuses before attempt/native creation.
+-  release=read(FUTURE_RELEASE,65536);schema=read(HERE/'execution-release-schema.json',65536);need(type(release)is dict and set(release)==set(schema['exactKeys']),'caller-release-keys')
+-  need(release['accepted']is True and release['session']==SESSION and release['scope']=='ONE D4 availability native invocation only'and release['availabilityOnly']is True and release['syntheticReleased']is False and release['productReleased']is False and release['noRetry']is True,'caller-not-released')
+-  need(release['callerSha256']==sha(Path(__file__))and release['candidateSha256']==sha(HERE/'availability-release.proposed.json')and release['preparationImplementationSha256']==sha(HERE/'implementation-hashes.json')and release['harnessImplementationSha256']==sha(H/'implementation-hashes.json'),'caller-exact-source-authority')
+-  native=pinned(release['otherNativePrecision']);need(native.get('accepted')is True and native.get('callerSha256')==release['callerSha256']and native.get('candidateSha256')==release['candidateSha256']and native.get('preparationImplementationSha256')==release['preparationImplementationSha256'],'caller-other-native-precision')
+-  need(release['approvedInvocations']==['AVAIL--availability']and type(release['durablePublicationReadback'])is str and len(release['durablePublicationReadback'])==40 and all(c in '0123456789abcdef'for c in release['durablePublicationReadback']),'caller-exact-one-invocation-publication-attribution')
+-  os.umask(0o077);attempt.mkdir(mode=0o700,exist_ok=False);journal=os.open(attempt/'capture.jsonl',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600);checkpoint('exclusive-attempt-before-fallible-pins-no-retry')
+-  for p,digest in read(HERE/'reference-pins.json',16777216).items():need(sha(p)==digest,'caller-pinned-input');before()
+-  for rel,digest in read(HERE/'implementation-hashes.json',16777216).items():need(sha(HERE/rel)==digest,'caller-preparation-input');before()
+-  for item in read(H/'tool-identity-read.json',65536)['tools']:need(str(Path(item['path']).resolve())==item['realpath']and sha(item['path'])==item['sha256'],'caller-tool');before()
+-  need(not(H/'availability-attempt').exists(),'native-attempt-already-exists-no-retry')
+-  for item in read(HERE/'additional-tools.json',65536)['tools']:
+-   need(str(Path(item['path']).resolve())==item['realpath']and sha(item['path'])==item['sha256'],'caller-guard-tools');before()
+-  need(str(Path(shutil.which('gh')or'').resolve())==str(Path('/opt/homebrew/bin/gh').resolve()),'caller-guard-gh-resolution')
+-  argv=read(HERE/'native-command.json',65536)['argv']
+-  guard=capture('guard',[PYTHON,'-I','-B',str(GUARD),'/usr/bin/true'],str(HERE),30)
+-  need(all(x['received']==0 for x in guard['streams']),'guard-unexpected-output');before()
+-  # No fallible preflight/hash or arbitrary command is inserted after exact guard.
+-  native_state=capture('native',argv,str(H),120)
+-  need(native_state['streams'][1]['received']==0,'native-stderr')
+-  raw=native_state['streams'][0]['path'].read_bytes();before();need(len(raw)<=CAP and raw.endswith(b'\n'),'native-full-raw')
+-  values=[json.loads(line,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite')))for line in raw.splitlines()]
+-  need(len(values)==2 and [v.get('event')for v in values]==['availability-owner-terminal','availability-native-limiter-terminal'],'native-owner-terminal-order')
+-  owner,limiter=values;need(limiter['limiterPid']==native_state['proc'].pid and limiter['ownerPid']==owner['pid']and type(limiter['rawOwnerExit'])is int and limiter['rawOwnerExit']==0 and limiter['forced']is False and limiter['localStatus']=='SETTLED_PENDING_ROOT_AUDIT'and owner['limiterPid']==limiter['limiterPid'],'actual-native-owner-identities')
+-  need(type(limiter['elapsedSeconds'])in [int,float]and math.isfinite(limiter['elapsedSeconds'])and 0<=limiter['elapsedSeconds']<115 and type(owner['pythonLast'])in [int,float]and math.isfinite(owner['pythonLast'])and 0<=owner['pythonLast']-owner['nativeOrigin']<115,'actual-normal-native-owner-clocks')
+-  before();normal=True;checkpoint('normal-raw-capture-pending-independent-root-audit')
+- except BaseException as e:
+-  failure=type(e).__name__;normal=False
+-  # Do not kill/cancel the independent native alarm on missing owner closure.
+-  for st in states:
+-   if st['proc'].returncode is None and not st['term']:
+-    try:st['proc'].terminate();st['term']=True
+-    except OSError:pass
+-  try:
+-   if journal is not None:checkpoint('failed-prefix-only-missing-tail-terminal-UNKNOWN')
+-  except BaseException:pass
+- finally:
+-  for st in states:
+-   for x in st['streams']:
+-    if x['fd']is not None:
+-     try:x['identity']=identity(x['fd']);os.close(x['fd']);x['fd']=None;x['closed']=True
+-     except OSError as e:x['closeError']=type(e).__name__;normal=False
+-   for pipe in [st['proc'].stdout,st['proc'].stderr]:
+-    try:pipe.close()
+-    except OSError:normal=False
+-  if journal is not None:
+-   try:
+-    before(120);checkpoint('final-as-of-capture-snapshot');os.close(journal);journal=None
+-    value=snapshot('root-terminal-provisional');value['normalCaptureCandidate']=normal;value['wholeCallerTerminalStillRequiresRootReceipt']=True
+-    raw=(json.dumps(value,separators=(',',':'),allow_nan=False)+'\n').encode();need(len(raw)<=65536,'caller-final-cap')
+-    fd=os.open(attempt/'caller-terminal.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
+-    try:
+-     offset=0
+-     while offset<len(raw):before(120);n=os.write(fd,raw[offset:]);need(n>0,'caller-terminal-write');offset+=n
+-    finally:os.close(fd)
+-   except BaseException:normal=False
+-  for sig,handler in old.items():signal.signal(sig,handler)
+- return 0 if normal and time.monotonic()-ORIGIN<115 else 1
+-if __name__=='__main__':raise SystemExit(main())

@@ -1,0 +1,13 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/gate.py
+@@ -82,8 +82,8 @@
+  p=Path(pin['path']);require(p.is_absolute()and p.is_file()and not p.is_symlink()and p.stat().st_size<=1048576,'Bounded actual parent tool stdout required')
+  raw=p.read_bytes();require(len(raw)<=1048576 and sha(raw)==pin['sha256']and raw.endswith(b'\n')and raw.count(b'\n')==1,'Unique complete parent probe-terminal event required')
+  t=json.loads(raw,object_pairs_hook=unique_object,parse_constant=invalid_constant)
+- require(type(t)is dict and set(t)=={'event','provisionalUntilActualOuterTerminal','stage','attemptId','sourceBindingSha256','watchdogPid','exitCodeCandidate','elapsedSeconds','probes','lastCompleteCensus','failurePrefix','censusIoFailurePrefix'},'Exact probe-terminal keys')
+- require(t['event']=='carrier-census-probe-terminal-v1'and t['provisionalUntilActualOuterTerminal']is True and t['stage']==name and t['attemptId']==v['attemptId']and t['sourceBindingSha256']==g['sourceBinding']['sha256']and type(t['watchdogPid'])is int and t['watchdogPid']>0 and t['watchdogPid']==watched['watchdogPid']and type(t['exitCodeCandidate'])is int and t['exitCodeCandidate']==0 and t['failurePrefix']is None and t['censusIoFailurePrefix']is None,'Actual parent probe terminal identity/refusal')
++ require(type(t)is dict and set(t)=={'event','provisionalUntilActualOuterTerminal','stage','attemptId','sourceBindingSha256','watchdogPid','exitCodeCandidate','elapsedSeconds','probes','lastCompleteCensus','failurePrefix'},'Exact probe-terminal keys')
++ require(t['event']=='carrier-census-probe-terminal-v1'and t['provisionalUntilActualOuterTerminal']is True and t['stage']==name and t['attemptId']==v['attemptId']and t['sourceBindingSha256']==g['sourceBinding']['sha256']and type(t['watchdogPid'])is int and t['watchdogPid']>0 and t['watchdogPid']==watched['watchdogPid']and type(t['exitCodeCandidate'])is int and t['exitCodeCandidate']==0 and t['failurePrefix']is None,'Actual parent probe terminal identity/refusal')
+  require(type(t['elapsedSeconds'])in [int,float]and math.isfinite(t['elapsedSeconds'])and 0<=t['elapsedSeconds']<115,'Parent event alone is not timely whole-exit proof')
+  probes=t['probes'];require(type(probes)is list and 0<len(probes)<=2048,'Complete bounded probe registry required')
+  snapshot=watched.get('censusProbeReceiptsAtSnapshot');require(type(snapshot)is list and watched.get('censusSnapshotIsNotFinalParentRegistry')is True and snapshot==probes[:len(snapshot)],'Earlier watchdog probe snapshot must match complete final registry prefix')
