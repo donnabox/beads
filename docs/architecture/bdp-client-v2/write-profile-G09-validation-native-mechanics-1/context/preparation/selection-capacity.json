@@ -1,0 +1,28 @@
+{
+  "collectionCapacity": "Full fresh build before collection. Actual Vitest total/pending census UNKNOWN until execution; audit selected singleton/name multiset and all other callbacks pending/skipped/todo. No predicted observed counts.",
+  "exactSelectedNames": 14,
+  "fullSourceFiles": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "independentlyBoundPerCallback": true,
+  "installed": [
+    14,
+    16,
+    14
+  ],
+  "kind": "STATIC text inventory only; no collection/evaluation",
+  "normalChildLifetimes": 3,
+  "otherSource": {
+    "legacySchemaCallbacks": 2,
+    "pureConfinementCallbacks": 1,
+    "reports": 0
+  },
+  "sourceG09": {
+    "callbacks": 8,
+    "direct": 26,
+    "reports": 8,
+    "wire": 9
+  }
+}

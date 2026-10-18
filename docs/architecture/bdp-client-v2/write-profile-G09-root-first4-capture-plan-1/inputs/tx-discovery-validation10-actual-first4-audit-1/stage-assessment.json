@@ -1,0 +1,140 @@
+[
+  {
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "--version"
+    ],
+    "errors": [],
+    "innerAccepted": true,
+    "innerElapsedSeconds": 5.734754499979317,
+    "innerRawExit": 0,
+    "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+    "noForcedCleanup": true,
+    "sampledPids": [
+      73119
+    ],
+    "stage": "node-version",
+    "wholeWrapperElapsedSeconds": 14.106995958369225,
+    "wrapperLogSha256": "8ee19c22f2938971751ffa8f47e4d5acec4163e39f425c5f154ea69811532a63",
+    "wrapperPid": 72391,
+    "wrapperRawExit": 0
+  },
+  {
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "--version"
+    ],
+    "errors": [],
+    "innerAccepted": true,
+    "innerElapsedSeconds": 6.075931875035167,
+    "innerRawExit": 0,
+    "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201",
+    "noForcedCleanup": true,
+    "sampledPids": [
+      74573
+    ],
+    "stage": "pnpm-version",
+    "wholeWrapperElapsedSeconds": 13.128842249978334,
+    "wrapperLogSha256": "c53dfefd4a1367ae4bc79aa407b83e7cbb9f037aedc6394befb743c8812cc933",
+    "wrapperPid": 73853,
+    "wrapperRawExit": 0
+  },
+  {
+    "actualArgv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--frozen-lockfile"
+    ],
+    "errors": [],
+    "innerAccepted": true,
+    "innerElapsedSeconds": 6.10802787495777,
+    "innerRawExit": 0,
+    "logSha256": "6cb832c41391ee00abc0c862c230c24243d49f30a32c652addeba7c54c1adfa6",
+    "noForcedCleanup": true,
+    "sampledPids": [
+      76085
+    ],
+    "stage": "workspace-install",
+    "wholeWrapperElapsedSeconds": 12.887761666905135,
+    "wrapperLogSha256": "becee27bd2abee8d804cc2a59fbb26ae12a7841e94293267da37ba6bb2a1f35d",
+    "wrapperPid": 75354,
+    "wrapperRawExit": 0
+  },
+  {
+    "actualArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/audit.py",
+      "tools"
+    ],
+    "errors": [],
+    "innerAccepted": true,
+    "innerElapsedSeconds": 13.223588583059609,
+    "innerRawExit": 0,
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "noForcedCleanup": true,
+    "sampledPids": [
+      78361,
+      78393,
+      78411,
+      78425,
+      78443,
+      78459,
+      78477,
+      78510,
+      78527,
+      78542,
+      78558,
+      78575,
+      78593,
+      78610,
+      78627,
+      78644,
+      78663,
+      78683,
+      78700,
+      78718,
+      78736,
+      78751,
+      78769,
+      78784,
+      78795,
+      78811,
+      78834,
+      78850,
+      78870,
+      78884,
+      78914,
+      78941,
+      78955,
+      78969,
+      78992,
+      79005,
+      79016,
+      79032,
+      79047,
+      79064,
+      79079,
+      79103,
+      79123,
+      79154,
+      79167,
+      79192,
+      79208,
+      79221,
+      79235,
+      79249,
+      79310,
+      79325,
+      79340,
+      79341
+    ],
+    "stage": "bind-workspace-tools",
+    "wholeWrapperElapsedSeconds": 20.107991416938603,
+    "wrapperLogSha256": "0da78a16263ee35baa909907e26ae93bdd1ffaea88d5eafa2abac8c528c2c16e",
+    "wrapperPid": 76851,
+    "wrapperRawExit": 0
+  }
+]

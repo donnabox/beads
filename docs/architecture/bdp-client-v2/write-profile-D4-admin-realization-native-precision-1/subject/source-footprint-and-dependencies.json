@@ -1,0 +1,172 @@
+{
+  "actualPaths": [
+    {
+      "anchors": "196-248,318-343,358-450,584-639,877-924,1305-1400,1848-1915,1931-1989,2284-2336",
+      "path": "packages/server/src/transaction-store.ts",
+      "purpose": "Keep enter/atomic/owner-fence; add identity-level version commitments, permanent ledger, per-view floor, private admin commit and guarded history import into intact identity tables. Existing format11 has no such tables; exact new format/migration requires separate review.",
+      "role": "CORE",
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+    },
+    {
+      "anchors": "75-155,296-370,726-758,774-798",
+      "path": "packages/server/src/transaction-service.ts",
+      "purpose": "Coordinate private admin admission/drain and read/stream publication barrier; reuse lifetime/active/mutations/streams ownership without treating policy replacement as erasure.",
+      "role": "CORE",
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568"
+    },
+    {
+      "anchors": "5-68,78-125",
+      "path": "packages/server/src/transaction-authorization.ts",
+      "purpose": "Actual subject-history disclosure and per-view observability policy binding; current all-visible→empty is insufficient evidence for richer fixture. No parallel credential/policy compiler.",
+      "role": "CORE",
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2"
+    },
+    {
+      "anchors": "38-77,128-193",
+      "path": "packages/server/src/transaction-changefeed.ts",
+      "purpose": "Accept/project real erasure-only groups and per-view ledger while preserving identifier-free advances and existing token/error order. Current never[]/nonempty refusal must deliberately change.",
+      "role": "CORE",
+      "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e"
+    },
+    {
+      "anchors": "191-270",
+      "path": "packages/server/src/transaction-events.ts",
+      "purpose": "Erase retained Event content, withhold correct facts, retain stable original ordinals/gaps and cursors; current ordinal===array index assumes unsanitized full storage.",
+      "role": "CORE",
+      "sha256": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a"
+    },
+    {
+      "anchors": "23-39,156-177,282-305,567-614,763-811",
+      "path": "packages/server/src/transaction-snapshot.ts",
+      "purpose": "Discard affected retained records/pages, expire pre-P handles by receiving view, include complete projected permanent ledger and capacity proof.",
+      "role": "CORE",
+      "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83"
+    },
+    {
+      "anchors": "8-56",
+      "path": "packages/server/src/transaction-discovery.ts",
+      "purpose": "Read actual per-view minimumReplayPosition; remove constant pos0 assumption only with owner state proof.",
+      "role": "CORE",
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef"
+    },
+    {
+      "anchors": "47-170",
+      "path": "packages/server/src/transaction-sse.ts",
+      "purpose": "Same serialized eligibility/floor/publish barrier reaches queued packet and backpressure boundary; preserve complete frame and receiver-not-ack semantics.",
+      "role": "CORE",
+      "sha256": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c"
+    },
+    {
+      "anchors": "97-105,193-246,326-373",
+      "path": "packages/server/src/transaction-runtime.ts",
+      "purpose": "Bind trusted owner/service admin capability to actual deployment; ordinary transport streams keep existing lifetime/cleanup. No new HTTP target.",
+      "role": "INTEGRATION",
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4"
+    },
+    {
+      "anchors": "197-363",
+      "path": "packages/server/src/transaction-read.ts",
+      "purpose": "Project positively evidenced erased disposition before conditional shortcut through same actual owner authorization entry, preserving ordinary Read defaults and minimum ordering.",
+      "role": "INTEGRATION",
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683"
+    },
+    {
+      "anchors": "161-682",
+      "path": "packages/server/src/transaction-http.ts",
+      "purpose": "Existing routes/status/media/non-disclosure must remain; no erasure POST or new discoverable operation. A new wire shape is not proposed.",
+      "role": "REVIEW_DEPENDENCY",
+      "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0"
+    },
+    {
+      "anchors": "17-66",
+      "path": "packages/server/src/transaction-installed-configuration.ts",
+      "purpose": "Reuse exact trusted capture/policy/credentials boundary. Existing allowlist is not silently expanded with SQL/epoch/fault/ledger controls.",
+      "role": "REVIEW_DEPENDENCY",
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99"
+    },
+    {
+      "anchors": "10-59",
+      "path": "packages/server/src/transaction-installed-process.ts",
+      "purpose": "Close-only IPC remains strict; existing test private import cannot be called supported operator administration.",
+      "role": "REVIEW_DEPENDENCY",
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"
+    },
+    {
+      "anchors": "115-194,270-280,631-680",
+      "path": "packages/server/src/recovery-store.ts",
+      "purpose": "Only a later separately reviewed RU continuity/restore slice if selected; do not add TX epochs/receipts or erase-ledger API to RU in this plan.",
+      "role": "RU_SEPARATE",
+      "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9"
+    },
+    {
+      "anchors": "whole file",
+      "path": "packages/server/src/authority-read.ts",
+      "purpose": "Existing owner read capability/non-disclosure seam; any necessary narrow internal extension needs separate footprint review, no default Read weakening.",
+      "role": "READ_DEPENDENCY",
+      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734"
+    },
+    {
+      "anchors": "whole file",
+      "path": "packages/server/src/resource-evaluator.ts",
+      "purpose": "Existing graph/type/deletion/owned closure logic is reusable for admin successor validation; do not bypass via raw SQL.",
+      "role": "READ_DEPENDENCY",
+      "sha256": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2"
+    },
+    {
+      "anchors": "747-897",
+      "path": "packages/server/src/transaction-batch.ts",
+      "purpose": "Existing staged effect/owned-link/commit Event logic; no fake BDP batch or receipt used for admin transaction.",
+      "role": "READ_DEPENDENCY",
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d"
+    },
+    {
+      "anchors": "1-46",
+      "path": "packages/conformance/src/canonical-json.ts",
+      "purpose": "Existing RFC8785 reference implementation only; server has no dependency/export edge permitting a new direct conformance internal import.",
+      "role": "READ_DEPENDENCY",
+      "sha256": "645a9f3a84572574e587cdfac61b675eaba54d2036ee10060add6209f23f0432"
+    },
+    {
+      "anchors": "whole file",
+      "path": "packages/server/package.json",
+      "purpose": "Only . and ./development exports; private future administration does not imply public subpath/bin.",
+      "role": "PROTECTED_BOUNDARY",
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e"
+    },
+    {
+      "anchors": "4580-4609",
+      "path": "schemas/bdp-v0.schema.json",
+      "purpose": "Existing erasureRecord/changeGroup/snapshot/receipt definitions already describe wire; no schema edit proposed.",
+      "role": "PROTECTED_CONTRACT",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+    },
+    {
+      "anchors": "8-19,851-1194",
+      "path": "packages/client/src/index.ts",
+      "purpose": "Existing Read/History/RU client is not a persistent TX changefeed/ledger store; new consumer cannot be inferred from file presence.",
+      "role": "CONSUMER_DEPENDENCY",
+      "sha256": "4b482bdd1310e5c024a7670897b534561b9ac6c5ccbea3f034c7c639c04bc793"
+    }
+  ],
+  "candidateNewPrivatePaths": [
+    {
+      "path": "packages/server/src/transaction-erasure.ts",
+      "purpose": "Pure bounded digest/closure and sanitized carrier planning; no DB handle, credentials, clock or wire route escapes.",
+      "status": "PROPOSED_NOT_CREATED"
+    },
+    {
+      "path": "packages/server/src/transaction-erasure.test.ts",
+      "purpose": "Independent digest/domain/fallback/closure data controls before owner integration.",
+      "status": "PROPOSED_NOT_CREATED"
+    },
+    {
+      "path": "packages/server/src/transaction-administration-process.ts",
+      "purpose": "OPTION only if root selects separate private trusted operator composition instead of an existing owner-host capability; must actually document/install/operator-support it, no API selected.",
+      "status": "CONDITIONAL_NOT_CREATED"
+    }
+  ],
+  "firstPlanBoundary": "One owner transaction design plus every retained-carrier/publication dependency must be independently reviewed before exposing any supported admin entry; a four-file ledger-only slice is not realization or qualification.",
+  "futureTests": "Prefer existing transaction-store.test.ts/transaction-snapshot.test.ts/transaction-sse.test.ts/transaction-recovery.test.ts and a separately exact-named installed administration witness; no callback names/counts/budgets/files adopted now.",
+  "notAFixedAuthoringFootprint": true,
+  "status": "PROSPECTIVE_DESIGN_BOUNDARY_NOT_AUTHORED_OR_EXACT_SOURCE_RELEASE"
+}

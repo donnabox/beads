@@ -1,0 +1,11 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/report_controls.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/report_controls.py
+@@ -12,7 +12,7 @@
+  try:call()
+  except RuntimeError as exc:
+   assert str(exc)==expected,('wrong-full-auditor-predicate',expected,str(exc))
+-  return {'refused':True,'exceptionType':'RuntimeError','reason':str(exc),'sameCasePositiveBaselineRequired':True}
++  return {'refused':True,'exceptionType':type(exc).__name__,'reason':str(exc),'sameCasePositiveBaselineRequired':True}
+  raise AssertionError('full auditor accepted counterfactual')
+ def wire(row,body):
+  text=json.dumps(body,separators=(',',':'));headers={'content-length':str(len(text.encode())),'bdp-scope-epoch':'unit-epoch','bdp-authorization-view':'unit-view','bdp-scope-position':'unit-pos'}

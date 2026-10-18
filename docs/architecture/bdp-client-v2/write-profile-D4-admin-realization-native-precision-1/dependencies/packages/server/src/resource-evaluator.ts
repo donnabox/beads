@@ -1,0 +1,1185 @@
+import { jsonValueEqual } from "./json-value-equality.js";
+import {
+  type RevisionActor,
+  type BeadRecord,
+  type BeadTypeDescriptor,
+  type RevisionProvenance,
+  type RevisionProvenanceInput,
+  type LinkRecord,
+  type MaximumEndpointMultiplicityPolicy,
+  type PropertyChange,
+  type PropertyDiagnosticEmitter,
+  type PropertyValidator,
+  type ReadUpdateInputs,
+  type ReadUpdateMutationResult,
+  type ReadUpdateProblem,
+  type Reference,
+  type TypeDescriptor,
+  type ValidationDiagnostic,
+  assertCanonicalPathSegments,
+  compareCanonicalIds,
+  createTypeConformanceIndex,
+  parseBeadRecord,
+  parseCanonicalHttpUrl,
+  parseCanonicalScope,
+  parseRevisionProvenance,
+  parseLinkRecord,
+  parseReadUpdateProblem,
+  parseTypeDescriptor,
+  referenceUri,
+  stringifyJsonValue,
+} from "@bdp/protocol";
+
+export type ResourceKind = "bead" | "link";
+export type ResourceRecord = BeadRecord | LinkRecord;
+export type ResourceOperation = Exclude<keyof ReadUpdateInputs, "putAlias" | "deleteAlias">;
+export type ResourceMutation = {
+  [K in ResourceOperation]: { readonly operation: K; readonly input: ReadUpdateInputs[K] };
+}[ResourceOperation];
+export type EvaluatorStoredResource = {
+  readonly id: string;
+  readonly bodyJson: string;
+} & (
+  | { readonly kind: "bead"; readonly source?: never; readonly target?: never }
+  | { readonly kind: "link"; readonly source: string; readonly target: string }
+);
+/** Revision allocator result; the tag requires positively established persistent unsafety. */
+export type ResourceAllocation = string | { readonly kind: "allocation-unsafe" };
+/** Structural subset of the single S6 owned-member transaction. All IDs and
+ * endpoint indexes are normalized Scope-relative IDs or opaque external URIs.
+ * Allocation and writes MUST roll back together when the member fails.
+ */
+export interface ResourceTransaction {
+  resource(id: string): EvaluatorStoredResource | undefined;
+  incidentLinks(id: string): readonly EvaluatorStoredResource[];
+  outgoingLinks(id: string): readonly EvaluatorStoredResource[];
+  identityWasCommitted(id: string): boolean;
+  alias(path: string): string | undefined;
+  installedType(id: string): string | undefined;
+  allocateResourceId(kind: ResourceKind): string;
+  allocateRevision(): ResourceAllocation;
+  putResource(resource: EvaluatorStoredResource): void;
+  deleteResource(id: string): void;
+}
+export interface InstalledResourceContract {
+  readonly descriptor: TypeDescriptor;
+  /** Required exactly when the pinned descriptor declares propertiesSchema.
+   * The installer compiles its complete immutable schema closure offline.
+   * Only confirmed final diagnostics reach the emitter. Compiler intermediate
+   * storage/work budgeting is a separate installer obligation, not proved here.
+   */
+  readonly validateProperties?: PropertyValidator;
+}
+export interface ResourceContractRegistry {
+  /** Return only the validator compiled from these exact installed bytes.
+   * No network, refresh, lazy installation or fallback on validator absence.
+   */
+  get(type: string, installedArtifact: string): InstalledResourceContract | undefined;
+}
+/** Captured by the authority for this member's current request projection.
+ * No credentials, principal inference or independent policy snapshot here.
+ */
+export interface ResourceMutationPolicy {
+  canRead(resource: ResourceRecord): boolean;
+  canCreate(resource: ResourceRecord): boolean;
+  canWrite(before: ResourceRecord, after: ResourceRecord | undefined): boolean;
+}
+export interface ResourceEvaluationOptions {
+  readonly scope: string;
+  readonly contracts: ResourceContractRegistry;
+  readonly policy: ResourceMutationPolicy;
+  /** Complete Scope policy set current in this member transaction. */
+  readonly maximumEndpointMultiplicity: readonly MaximumEndpointMultiplicityPolicy[];
+  /** Authority clock, captured at entry and observed late inside this member.
+   * Requires exclusive synchronous ownership and immutable member-turn policy.
+   * Never supply a closure around an admission-time or caller-provided sample.
+   */
+  readonly observeCommitTime: () => number;
+  /** Native History recording policy; neither this flag nor a parser is admission. */
+  readonly recordChangeContext: boolean;
+  /** Bounds must match advertised validation limits; absent means complete diagnostics. */
+  readonly limits: {
+    readonly diagnosticCount?: number;
+    readonly diagnosticBytes?: number;
+    readonly patchOperations?: number;
+    readonly patchPathBytes?: number;
+    readonly patchPathDepth?: number;
+    readonly propertiesBytes?: number;
+    readonly representationBytes?: number;
+  };
+}
+/** Internal S4/S5 metadata, never additional public response members. Values
+ * are captured by the same transaction reads used for this successful member.
+ * S5 retains original @binding provenance before substituting input to S2.
+ */
+export interface ResourceReferenceResolution {
+  readonly inputPointer: "/id" | "/bead" | "/link" | "/source" | "/target";
+  readonly original: Reference;
+  readonly resolved: Reference;
+}
+export type ResourceEvaluation =
+  | {
+      readonly effect: "success";
+      readonly outcome: ReadUpdateMutationResult;
+      readonly resolutions: readonly ResourceReferenceResolution[];
+      readonly changed: readonly string[];
+      readonly deleted: readonly string[];
+    }
+  | {
+      readonly effect: "failure";
+      readonly outcome: ReadUpdateProblem;
+      readonly resolutions: readonly [];
+      readonly changed: readonly [];
+      readonly deleted: readonly [];
+    };
+class Failure extends Error {
+  constructor(readonly problem: ReadUpdateProblem) {
+    super(problem.code);
+  }
+}
+const failures = {
+  "resource-not-found": ["not-found", 404, "after-state-change"],
+  forbidden: ["authorization", 403, "after-state-change"],
+  "identity-taken": ["conflict", 409, "never"],
+  "alias-path-taken": ["conflict", 409, "after-state-change"],
+  "type-not-installed": ["validation", 422, "after-state-change"],
+  "revision-mismatch": ["conflict", 409, "after-state-change"],
+  "incident-links-exist": ["conflict", 409, "after-state-change"],
+  "aggregate-constraint-violation": ["conflict", 409, "after-state-change"],
+  "limit-exceeded": ["size", 413, "never"],
+  "revision-allocation-unsafe": ["conflict", 409, "after-state-change"],
+} as const;
+function fail(code: keyof typeof failures): never {
+  const [family, status, retry] = failures[code];
+  throw new Failure(
+    parseReadUpdateProblem({
+      type: `https://github.com/gastownhall/bdp/problems/${family}`,
+      code,
+      status,
+      retry,
+    }),
+  );
+}
+/** First emitter fault survives every Type, result getter and later callback
+ * until the member leaves its owning transaction. It never becomes a refusal.
+ */
+function createDiagnosticFault() {
+  let failure: { readonly error: unknown } | undefined;
+  return {
+    record(error: unknown): void {
+      failure ??= { error };
+    },
+    check(): void {
+      if (failure) throw failure.error;
+    },
+  };
+}
+type DiagnosticFault = ReturnType<typeof createDiagnosticFault>;
+/** One accumulator across effective Types; fixed one-cause diagnostics reuse
+ * the same accounting without changing the evaluator's refusal precedence.
+ */
+function collectDiagnostics(limits: ResourceEvaluationOptions["limits"]) {
+  const { diagnosticCount, diagnosticBytes } = limits;
+  const retained: ValidationDiagnostic[] = [];
+  let bytes = 2; // JSON array brackets; include commas and complete UTF-8 entries.
+  let truncated = false;
+  return {
+    get hasDiagnostics() {
+      return retained.length > 0;
+    },
+    get truncated() {
+      return truncated;
+    },
+    append(diagnostic: ValidationDiagnostic): boolean {
+      // Snapshot only closed wire fields before measuring. No caller mutation,
+      // arbitrary extension or toJSON can change the retained entry's byte cost.
+      const { message, type, schemaLocation, instanceLocation, document } = diagnostic;
+      const entry = parseReadUpdateProblem({
+        type: "https://github.com/gastownhall/bdp/problems/validation",
+        code: "validation-failed",
+        status: 422,
+        retry: "never",
+        diagnostics: [
+          {
+            message,
+            ...(type === undefined ? {} : { type }),
+            ...(schemaLocation === undefined ? {} : { schemaLocation }),
+            ...(instanceLocation === undefined ? {} : { instanceLocation }),
+            ...(document === undefined ? {} : { document }),
+          },
+        ],
+      }).diagnostics?.[0];
+      if (!entry) throw new TypeError("validator produced no diagnostic");
+      const nextBytes =
+        bytes + (retained.length ? 1 : 0) + Buffer.byteLength(JSON.stringify(entry));
+      if (
+        (diagnosticCount !== undefined && retained.length >= diagnosticCount) ||
+        (diagnosticBytes !== undefined && nextBytes > diagnosticBytes)
+      ) {
+        if (retained.length === 0)
+          throw new Error("diagnostic configuration cannot retain one complete diagnostic");
+        truncated = true;
+        return false;
+      }
+      retained.push(entry);
+      bytes = nextBytes;
+      return true;
+    },
+    fail(): never {
+      if (!retained.length) throw new TypeError("validation failure requires a diagnostic");
+      throw new Failure(
+        parseReadUpdateProblem({
+          type: "https://github.com/gastownhall/bdp/problems/validation",
+          code: "validation-failed",
+          status: 422,
+          retry: "never",
+          diagnostics: retained,
+          ...(truncated ? { diagnosticsTruncated: true } : {}),
+        }),
+      );
+    },
+  };
+}
+function diagnosticFailure(
+  diagnostics: readonly ValidationDiagnostic[],
+  limits: ResourceEvaluationOptions["limits"],
+): never {
+  const collector = collectDiagnostics(limits);
+  for (const diagnostic of diagnostics) if (!collector.append(diagnostic)) break;
+  return collector.fail();
+}
+function validatePropertyContracts(
+  effective: readonly InstalledResourceContract[],
+  properties: Readonly<Record<string, unknown>>,
+  limits: ResourceEvaluationOptions["limits"],
+  fault: DiagnosticFault,
+): void {
+  const collector = collectDiagnostics(limits);
+  for (const entry of effective) {
+    if (!entry.validateProperties) continue;
+    let active = true;
+    let emitted = false;
+    let stopped = false;
+    const emitter = Object.freeze<PropertyDiagnosticEmitter>({
+      emit(diagnostic) {
+        try {
+          if (!active || stopped)
+            throw new TypeError("validator emitted outside its active diagnostic traversal");
+          const { message, schemaLocation, instanceLocation } = diagnostic;
+          if (
+            typeof message !== "string" ||
+            typeof schemaLocation !== "string" ||
+            typeof instanceLocation !== "string"
+          )
+            throw new TypeError(
+              "property diagnostic requires message, schemaLocation and instanceLocation strings",
+            );
+          emitted = true;
+          const accepted = collector.append({
+            message,
+            schemaLocation,
+            instanceLocation,
+            type: entry.descriptor.id,
+          });
+          stopped = !accepted;
+          return accepted;
+        } catch (error) {
+          fault.record(error);
+          throw error;
+        }
+      },
+    });
+    let result: ReturnType<PropertyValidator>;
+    try {
+      result = entry.validateProperties(properties, emitter);
+    } finally {
+      active = false;
+    }
+    // A validator may not swallow a configuration/entry error and return a
+    // guessed valid or truncated result. Such faults escape the member owner.
+    const valid = result?.valid;
+    const complete = valid === false ? result.diagnosticsComplete : undefined;
+    fault.check();
+    if (valid === true) {
+      if (emitted) throw new TypeError("valid schema emitted a failure diagnostic");
+    } else if (valid !== false || !emitted || complete !== !stopped) {
+      throw new TypeError("validator result contradicts its diagnostic traversal");
+    }
+    if (collector.truncated) break;
+  }
+  fault.check();
+  if (collector.hasDiagnostics) collector.fail();
+}
+
+function bad(
+  message: string,
+  options: ResourceEvaluationOptions,
+  instanceLocation?: string,
+  document?: "properties" | "metadata",
+): never {
+  return diagnosticFailure(
+    [
+      {
+        message,
+        ...(instanceLocation === undefined ? {} : { instanceLocation }),
+        ...(document === undefined ? {} : { document }),
+      },
+    ],
+    options.limits,
+  );
+}
+function local(scope: string, uri: string): string | undefined {
+  return uri.startsWith(scope) ? uri.slice(scope.length) : undefined;
+}
+function canonical(scope: string, spelling: string): string {
+  if (spelling.startsWith("@"))
+    throw new TypeError("S5 must resolve bindings before Resource evaluation");
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(spelling)) return spelling;
+  assertCanonicalPathSegments(spelling, "admitted local reference");
+  return new URL(spelling, scope).href;
+}
+function resourcePath(scope: string, uri: string, kind: ResourceKind): string | undefined {
+  const path = local(scope, uri);
+  if (!path?.startsWith(kind === "bead" ? "beads/" : "links/")) return undefined;
+  try {
+    parseCanonicalHttpUrl(uri);
+    assertCanonicalPathSegments(path, "Resource path");
+  } catch {
+    return undefined;
+  }
+  return path;
+}
+export { storedRecord as readStoredResource };
+
+function storedRecord(stored: EvaluatorStoredResource, scope: string): ResourceRecord {
+  const value = JSON.parse(stored.bodyJson) as unknown;
+  // Legacy retained bodies have no common metadata member. Project the empty
+  // object for reads without changing their stored bytes or revision token.
+  const withMetadata = (candidate: unknown): unknown =>
+    candidate && typeof candidate === "object" && !Array.isArray(candidate)
+      ? { ...candidate, metadata: "metadata" in candidate ? candidate.metadata : {} }
+      : candidate;
+  let projected = withMetadata(value);
+  if (stored.kind === "bead" && projected && typeof projected === "object") {
+    const bead = projected as Record<string, unknown>;
+    const owned = bead.ownedLinks;
+    if (owned && typeof owned === "object" && !Array.isArray(owned))
+      projected = {
+        ...bead,
+        ownedLinks: Object.fromEntries(
+          Object.entries(owned).map(([type, links]) => [
+            type,
+            Array.isArray(links) ? links.map(withMetadata) : links,
+          ]),
+        ),
+      };
+  }
+  const record = stored.kind === "bead" ? parseBeadRecord(projected) : parseLinkRecord(projected);
+  if (resourcePath(scope, record.id, stored.kind) !== stored.id)
+    throw new Error("stored Resource identity differs from its index");
+  return record;
+}
+
+function copy(value: unknown): unknown {
+  if (value === null || typeof value !== "object") return value;
+  const result: unknown[] | Record<string, unknown> = Array.isArray(value)
+    ? []
+    : (Object.create(null) as Record<string, unknown>);
+  const pending = [{ source: value, target: result }];
+  while (pending.length) {
+    const entry = pending.pop();
+    if (!entry) break;
+    for (const [key, child] of Object.entries(entry.source)) {
+      const next =
+        child && typeof child === "object"
+          ? Array.isArray(child)
+            ? []
+            : (Object.create(null) as Record<string, unknown>)
+          : child;
+      Object.defineProperty(entry.target, key, {
+        value: next,
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      });
+      if (child && typeof child === "object")
+        pending.push({ source: child, target: next as unknown[] | Record<string, unknown> });
+    }
+  }
+  return result;
+}
+function freeze<T>(value: T): T {
+  const pending: unknown[] = [value];
+  while (pending.length) {
+    const item = pending.pop();
+    if (item && typeof item === "object" && !Object.isFrozen(item)) {
+      for (const child of Object.values(item)) pending.push(child);
+      Object.freeze(item);
+    }
+  }
+  return value;
+}
+function patch(
+  properties: Readonly<Record<string, unknown>>,
+  changes: PropertyChange,
+  document: "properties" | "metadata",
+  options: ResourceEvaluationOptions,
+): Readonly<Record<string, unknown>> {
+  function invalid(message: string, pointer: string): never {
+    return bad(
+      document === "metadata" ? `metadata: ${message}` : message,
+      options,
+      pointer,
+      document === "metadata" ? document : undefined,
+    );
+  }
+  let result = copy(properties);
+  for (const change of changes) {
+    const tokens =
+      change.path === ""
+        ? []
+        : change.path
+            .slice(1)
+            .split("/")
+            .map((token) => token.replace(/~1/g, "/").replace(/~0/g, "~"));
+    if (tokens.length === 0) {
+      if (change.op !== "add" && result === undefined)
+        invalid("Property Change target does not exist", change.path);
+      if (change.op === "remove") result = undefined;
+      else result = copy(change.value);
+      continue;
+    }
+    let parent = result;
+    for (const token of tokens.slice(0, -1)) {
+      if (
+        !parent ||
+        typeof parent !== "object" ||
+        !Object.hasOwn(parent, token) ||
+        (Array.isArray(parent) && !/^(0|[1-9][0-9]*)$/.test(token))
+      )
+        invalid("Property Change parent does not exist", change.path);
+      parent = (parent as Record<string, unknown>)[token];
+    }
+    const key = tokens[tokens.length - 1];
+    if (key === undefined || !parent || typeof parent !== "object")
+      invalid("Property Change target does not exist", change.path);
+    if (Array.isArray(parent)) {
+      const index =
+        key === "-" && change.op === "add"
+          ? parent.length
+          : /^(0|[1-9][0-9]*)$/.test(key)
+            ? Number(key)
+            : NaN;
+      if (
+        !Number.isSafeInteger(index) ||
+        index < 0 ||
+        index > parent.length ||
+        (change.op !== "add" && index === parent.length)
+      )
+        invalid("Property Change array index does not exist", change.path);
+      if (change.op === "add") parent.splice(index, 0, copy(change.value));
+      else if (change.op === "remove") parent.splice(index, 1);
+      else parent[index] = copy(change.value);
+    } else {
+      if (change.op !== "add" && !Object.hasOwn(parent, key))
+        invalid("Property Change target does not exist", change.path);
+      if (change.op === "remove") delete (parent as Record<string, unknown>)[key];
+      else
+        Object.defineProperty(parent, key, {
+          value: copy(change.value),
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        });
+    }
+  }
+  if (!result || typeof result !== "object" || Array.isArray(result))
+    bad(
+      `resulting ${document} must be an object`,
+      options,
+      "",
+      document === "metadata" ? document : undefined,
+    );
+  return freeze(result as Record<string, unknown>);
+}
+
+/** One synchronous member; the owning transaction commits returned outcome and
+ * staged Resources atomically. It must roll back counters/writes on failure.
+ * No keys, auth credentials, scheduler, network or recovery state live here.
+ */
+export function evaluateResourceMutation(
+  tx: ResourceTransaction,
+  mutation: ResourceMutation,
+  options: ResourceEvaluationOptions,
+): ResourceEvaluation {
+  // Capture every supplied limit before any policy/store/validator callback.
+  options = { ...options, limits: Object.freeze({ ...options.limits }) };
+  if (typeof options.observeCommitTime !== "function")
+    throw new TypeError("a synchronous authority commit clock is required");
+  parseCanonicalScope(options.scope);
+  for (const bound of [options.limits.diagnosticCount, options.limits.diagnosticBytes]) {
+    if (bound !== undefined && (!Number.isSafeInteger(bound) || bound < 1))
+      throw new TypeError("positive usable diagnostic limits required");
+  }
+  const fault = createDiagnosticFault();
+  try {
+    const result = evaluate(tx, mutation, options, fault);
+    fault.check();
+    return result;
+  } catch (error) {
+    fault.check();
+    if (error instanceof Failure)
+      return freeze({
+        effect: "failure",
+        outcome: error.problem,
+        resolutions: [],
+        changed: [],
+        deleted: [],
+      });
+    throw error;
+  }
+}
+/** Shared current-view closure check for Resource and alias member evaluators.
+ * The caller supplies its validated canonical Scope and same-turn policy/store.
+ * A visible Bead includes every owned Link and its local endpoints; a visible
+ * Link includes its local endpoint Beads. This grants no mutation permission.
+ */
+export function isResourceVisible(
+  tx: Pick<ResourceTransaction, "resource">,
+  record: ResourceRecord,
+  scope: string,
+  policy: Pick<ResourceMutationPolicy, "canRead">,
+): boolean {
+  const pending: ResourceRecord[] = [record];
+  const seen = new Set<string>();
+  while (pending.length) {
+    const current = pending.pop();
+    if (!current || seen.has(current.id)) continue;
+    seen.add(current.id);
+    if (!policy.canRead(current)) return false;
+    const links = "source" in current ? [current] : Object.values(current.ownedLinks ?? {}).flat();
+    for (const link of links) {
+      if (!policy.canRead(link)) return false;
+      for (const ref of [link.source, link.target]) {
+        const uri = referenceUri(ref);
+        const id = local(scope, uri);
+        if (id !== undefined) {
+          const found = tx.resource(id);
+          if (found?.kind !== "bead") return false;
+          pending.push(storedRecord(found, scope));
+        }
+      }
+    }
+  }
+  return true;
+}
+function evaluate(
+  tx: ResourceTransaction,
+  mutation: ResourceMutation,
+  options: ResourceEvaluationOptions,
+  fault: DiagnosticFault,
+): ResourceEvaluation {
+  const scope = options.scope;
+  const { operation, input } = mutation;
+  const resolutions: ResourceReferenceResolution[] = [];
+  const creating = operation === "createBead" || operation === "createLink";
+  const deleting = operation === "deleteBead" || operation === "deleteLink";
+  const resourceKind: ResourceKind = operation.includes("Bead") ? "bead" : "link";
+  const allocatedText = (value: unknown, kind: "identity" | "revision"): string => {
+    if (typeof value !== "string" || value.length === 0)
+      throw new TypeError(`allocator must return a nonempty ${kind} string`);
+    return value;
+  };
+  const allocateRevision = (): string => {
+    const value = tx.allocateRevision();
+    // Only an established revision-allocation conflict has this wire meaning.
+    // Broken facade values and Resource-ID allocator faults remain internal.
+    if (typeof value === "object" && value !== null && value.kind === "allocation-unsafe")
+      fail("revision-allocation-unsafe");
+    return allocatedText(value, "revision");
+  };
+  const resolve = (spelling: string, expected: ResourceKind): string => {
+    const uri = canonical(scope, spelling);
+    const path = local(scope, uri);
+    if (expected === "bead" && path?.startsWith("alias/")) {
+      const target = tx.alias(path.slice(6));
+      if (!target) fail("resource-not-found");
+      return new URL(target, scope).href;
+    }
+    return uri;
+  };
+  const loadVisible = (uri: string, expected: ResourceKind): ResourceRecord => {
+    const id = resourcePath(scope, uri, expected);
+    const stored = id === undefined ? undefined : tx.resource(id);
+    if (!stored || stored.kind !== expected) fail("resource-not-found");
+    const record = storedRecord(stored, scope);
+    if (!isResourceVisible(tx, record, scope, options.policy)) fail("resource-not-found");
+    return record;
+  };
+  let id: string;
+  let before: ResourceRecord | undefined;
+  if (creating) {
+    const supplied = "id" in input ? input.id : undefined;
+    const spelling = supplied ?? allocatedText(tx.allocateResourceId(resourceKind), "identity");
+    const path = resourcePath(scope, canonical(scope, spelling), resourceKind);
+    if (path === undefined)
+      throw new TypeError("creation ID must already have canonical Resource grammar and kind");
+    if (supplied === undefined && path.indexOf("/", 6) !== -1)
+      throw new Error("allocator must return one opaque Resource identity segment");
+    id = path;
+    if (supplied !== undefined)
+      resolutions.push({
+        inputPointer: "/id",
+        original: supplied,
+        resolved: new URL(id, scope).href,
+      });
+    if (tx.identityWasCommitted(id)) {
+      if (supplied === undefined)
+        throw new Error("allocator returned a committed Resource identity");
+      fail("identity-taken");
+    }
+    if (resourceKind === "bead" && tx.alias(id.slice(6)) !== undefined) {
+      if (supplied === undefined) throw new Error("allocator returned a live Bead alias path");
+      fail("alias-path-taken");
+    }
+  } else {
+    const subject = "bead" in input ? input.bead : "link" in input ? input.link : undefined;
+    if (subject === undefined) throw new TypeError("Resource subject required");
+    const resolved = resolve(subject, resourceKind);
+    before = loadVisible(resolved, resourceKind);
+    resolutions.push({
+      inputPointer: resourceKind === "bead" ? "/bead" : "/link",
+      original: subject,
+      resolved,
+    });
+    id = local(scope, before.id) as string;
+  }
+  const uri = new URL(id, scope).href;
+  const contractMap = new Map<string, InstalledResourceContract>();
+  const contracts = (type: string): readonly InstalledResourceContract[] => {
+    const pending = [type];
+    const gathered = new Map<string, InstalledResourceContract>();
+    while (pending.length) {
+      const name = pending.pop();
+      if (!name || gathered.has(name)) continue;
+      let entry = contractMap.get(name);
+      if (!entry) {
+        const artifact = tx.installedType(name);
+        const compiled = artifact === undefined ? undefined : options.contracts.get(name, artifact);
+        if (!compiled) fail("type-not-installed");
+        let descriptor: TypeDescriptor;
+        try {
+          descriptor = parseTypeDescriptor(compiled.descriptor);
+        } catch {
+          return fail("type-not-installed");
+        }
+        if (
+          descriptor.id !== name ||
+          (descriptor.propertiesSchema !== undefined && compiled.validateProperties === undefined)
+        )
+          fail("type-not-installed");
+        entry = { ...compiled, descriptor };
+        contractMap.set(name, entry);
+      }
+      gathered.set(name, entry);
+      pending.push(...entry.descriptor.conformsTo);
+    }
+    try {
+      createTypeConformanceIndex([...gathered.values()].map((entry) => entry.descriptor));
+    } catch {
+      return fail("type-not-installed");
+    }
+    return [...gathered.values()];
+  };
+  const type = "type" in input ? input.type : before?.type;
+  if (type === undefined) throw new TypeError("Resource Type required");
+  let source: BeadRecord | undefined;
+  let endpoints: { source: Reference; target: Reference } | undefined;
+  const endpoint = (
+    reference: string | { readonly uri: string; readonly revision: string },
+  ): Reference => {
+    const spelling = typeof reference === "string" ? reference : reference.uri;
+    const absolute = resolve(spelling, "bead");
+    const path = local(scope, absolute);
+    if (path !== undefined) {
+      if (!resourcePath(scope, absolute, "bead"))
+        bad("Link endpoint is not a Bead reference", options);
+      loadVisible(absolute, "bead");
+    }
+    return (
+      typeof reference === "string" ? absolute : { uri: absolute, revision: reference.revision }
+    ) as Reference;
+  };
+  if (resourceKind === "link") {
+    if (operation === "createLink")
+      endpoints = { source: endpoint(input.source), target: endpoint(input.target) };
+    else if (before && "source" in before)
+      endpoints = { source: endpoint(before.source), target: endpoint(before.target) };
+    if (!endpoints) throw new TypeError("Link endpoints required");
+    if (
+      !deleting &&
+      local(scope, referenceUri(endpoints.source)) === undefined &&
+      local(scope, referenceUri(endpoints.target)) === undefined
+    )
+      bad("a Link must have at least one in-Scope endpoint", options);
+
+    if (operation === "createLink") {
+      resolutions.push(
+        { inputPointer: "/source", original: input.source, resolved: endpoints.source },
+        { inputPointer: "/target", original: input.target, resolved: endpoints.target },
+      );
+    }
+  }
+  const effective = contracts(type);
+  const declared = effective.find((entry) => entry.descriptor.id === type)?.descriptor;
+  if (!declared) fail("type-not-installed");
+  if (declared.describes !== resourceKind)
+    bad("declared Type describes another Resource category", options);
+
+  // Resolve installed endpoint contracts before value validation, while keeping
+  // generic endpoint existence/visibility above and constraint diagnostics below
+  // effective properties (spec: staged Resource validation).
+  const endpointChecks: {
+    type: string;
+    side: "source" | "target";
+    constraint: Extract<TypeDescriptor, { describes: "link" }>["source"];
+    address: string;
+    actual: readonly InstalledResourceContract[] | undefined;
+  }[] = [];
+  if (endpoints) {
+    for (const entry of effective) {
+      if (entry.descriptor.describes !== "link") fail("type-not-installed");
+      for (const side of ["source", "target"] as const) {
+        const constraint = entry.descriptor[side];
+        const address = referenceUri(endpoints[side]);
+        const required = constraint.conformsTo.flatMap((required) => [...contracts(required)]);
+        if (required.some((contract) => contract.descriptor.describes !== "bead"))
+          fail("type-not-installed");
+        const bead = local(scope, address) === undefined ? undefined : loadVisible(address, "bead");
+        endpointChecks.push({
+          type: entry.descriptor.id,
+          side,
+          constraint,
+          address,
+          actual: bead === undefined ? undefined : contracts(bead.type),
+        });
+      }
+    }
+    const sourceId = local(scope, referenceUri(endpoints.source));
+    if (sourceId !== undefined)
+      source = loadVisible(new URL(sourceId, scope).href, "bead") as BeadRecord;
+  }
+  const properties = deleting
+    ? (before?.properties ?? {})
+    : "propertiesChange" in input && input.propertiesChange !== undefined
+      ? patch(before?.properties ?? {}, input.propertiesChange, "properties", options)
+      : "properties" in input
+        ? (input.properties ?? {})
+        : (before?.properties ?? {});
+  const commonMetadata = deleting
+    ? (before?.metadata ?? {})
+    : "metadataChange" in input && input.metadataChange !== undefined
+      ? patch(before?.metadata ?? {}, input.metadataChange, "metadata", options)
+      : "metadata" in input
+        ? (input.metadata ?? {})
+        : (before?.metadata ?? {});
+  if (!deleting) validatePropertyContracts(effective, properties, options.limits, fault);
+  for (const { type: declaringType, side, constraint, address, actual } of endpointChecks) {
+    if (actual !== undefined) {
+      if (
+        constraint.conformsTo.some(
+          (required) => !actual.some((contract) => contract.descriptor.id === required),
+        )
+      )
+        diagnosticFailure(
+          [
+            {
+              type: declaringType,
+              schemaLocation: `${declaringType}#/${side}/conformsTo`,
+              message: "in-Scope endpoint fails an effective Type constraint",
+            },
+          ],
+          options.limits,
+        );
+    } else {
+      if (constraint.external === "none")
+        diagnosticFailure(
+          [
+            {
+              type: declaringType,
+              schemaLocation: `${declaringType}#/${side}/external`,
+              message: "external endpoint is forbidden by Type contract",
+            },
+          ],
+          options.limits,
+        );
+      if (constraint.external === "bead" && !isExternalBead(address))
+        diagnosticFailure(
+          [
+            {
+              type: declaringType,
+              schemaLocation: `${declaringType}#/${side}/external`,
+              message: "external endpoint is not bead-shaped",
+            },
+          ],
+          options.limits,
+        );
+    }
+  }
+  const sourceDescriptor = source
+    ? contracts(source.type).find((entry) => entry.descriptor.id === source?.type)?.descriptor
+    : undefined;
+  const ownership =
+    sourceDescriptor?.describes === "bead" ? sourceDescriptor.ownsOutgoing : undefined;
+  const owned =
+    ownership !== undefined && (Object.hasOwn(ownership, type) || Object.hasOwn(ownership, "*"));
+  const noOp =
+    !creating &&
+    !deleting &&
+    jsonValueEqual(properties, before?.properties) &&
+    jsonValueEqual(commonMetadata, before?.metadata ?? {});
+  const contextInput = "revisionProvenance" in input ? input.revisionProvenance : undefined;
+  // Protocol defaults: omitted and {} both carry only undetermined states.
+  const needsContext =
+    !noOp &&
+    (options.recordChangeContext ||
+      (contextInput !== undefined &&
+        (Object.hasOwn(contextInput, "agent") || Object.hasOwn(contextInput, "message"))));
+  const metadata = (prior: ResourceRecord | undefined): VersionRecipe["metadata"] => {
+    if (noOp && prior)
+      return {
+        context: { kind: "preserved", value: prior.revisionProvenance },
+      };
+    const actor = contextInput?.actor;
+    return {
+      ...(actor === undefined ? {} : { actor }),
+      context: needsContext ? { kind: "native" } : { kind: "preserved", value: undefined },
+    };
+  };
+  const revision = noOp ? before?.revision : deleting ? undefined : allocateRevision();
+  let subjectRecipe: VersionRecipe | undefined = deleting
+    ? undefined
+    : {
+        id: uri,
+        type,
+        revision: revision as string,
+        properties,
+        commonMetadata,
+        metadata: metadata(before),
+        endpoints,
+      };
+  const ownedLinks = (
+    owner: VersionRecipe,
+    descriptor: BeadTypeDescriptor,
+    replacement?: VersionRecipe,
+    removed?: string,
+  ): VersionRecipe => {
+    if (descriptor.ownsOutgoing === undefined) return owner;
+    const entries: Record<string, PreparedLink[]> = Object.create(null) as Record<
+      string,
+      PreparedLink[]
+    >;
+    for (const name of Object.keys(descriptor.ownsOutgoing)) if (name !== "*") entries[name] = [];
+    const live = tx
+      .outgoingLinks(local(scope, owner.id) as string)
+      .filter((link) => link.id !== removed && new URL(link.id, scope).href !== replacement?.id)
+      .map(
+        (link): PreparedLink => ({
+          kind: "existing",
+          value: storedRecord(link, scope) as LinkRecord,
+        }),
+      );
+    if (replacement) live.push({ kind: "replacement", value: replacement });
+    for (const prepared of live) {
+      const link = prepared.value;
+      if (Object.hasOwn(descriptor.ownsOutgoing, link.type) || descriptor.ownsOutgoing["*"]) {
+        const bucket = entries[link.type] ?? [];
+        entries[link.type] = bucket;
+        bucket.push(prepared);
+      }
+    }
+    for (const [name, links] of Object.entries(entries)) {
+      links.sort((a, b) => compareCanonicalIds(a.value.id, b.value.id));
+      const max = descriptor.ownsOutgoing[name]?.max;
+      if (max !== undefined && links.length > max)
+        diagnosticFailure(
+          [
+            {
+              type: descriptor.id,
+              schemaLocation: `${descriptor.id}#/ownsOutgoing/${name.replace(/~/g, "~0").replace(/\//g, "~1")}`,
+              message: "owned Link set exceeds declared maximum",
+            },
+          ],
+          options.limits,
+        );
+    }
+    if (
+      descriptor.ownsOutgoing["*"] &&
+      Object.values(entries).reduce((count, links) => count + links.length, 0) >
+        descriptor.ownsOutgoing["*"].max
+    )
+      diagnosticFailure(
+        [
+          {
+            type: descriptor.id,
+            schemaLocation: `${descriptor.id}#/ownsOutgoing/*`,
+            message: "whole owned Link set exceeds wildcard maximum",
+          },
+        ],
+        options.limits,
+      );
+    return { ...owner, ownedLinks: entries };
+  };
+  if (subjectRecipe && resourceKind === "bead" && declared.describes === "bead")
+    subjectRecipe = ownedLinks(subjectRecipe, declared);
+  let sourceRecipe: VersionRecipe | undefined;
+  if (owned && source && sourceDescriptor?.describes === "bead") {
+    const sourceRevision = noOp ? source.revision : allocateRevision();
+    sourceRecipe = ownedLinks(
+      {
+        id: source.id,
+        type: source.type,
+        revision: sourceRevision,
+        properties: source.properties,
+        commonMetadata: source.metadata ?? {},
+        metadata: metadata(source),
+        endpoints: undefined,
+      },
+      sourceDescriptor,
+      subjectRecipe,
+      deleting ? id : undefined,
+    );
+  }
+  if (!deleting && endpoints) {
+    for (const policy of options.maximumEndpointMultiplicity) {
+      if (!effective.some((entry) => entry.descriptor.id === policy.linkConformsTo)) continue;
+      const address = referenceUri(endpoints[policy.endpoint]);
+      const endpointId = local(scope, address);
+      if (endpointId === undefined) continue;
+      let count = 1;
+      for (const link of tx.incidentLinks(endpointId)) {
+        if (link.id === id || link[policy.endpoint] !== endpointId) continue;
+        const record = storedRecord(link, scope);
+        if (contracts(record.type).some((entry) => entry.descriptor.id === policy.linkConformsTo))
+          count++;
+      }
+      if (count > policy.max) fail("aggregate-constraint-violation");
+    }
+  }
+  // Preparation has made no graph writes. Recipes are private, never provisional
+  // Resource records passed to policy/storage. Their inventory checks ran once.
+  if (subjectRecipe) freeze(subjectRecipe);
+  if (sourceRecipe) freeze(sourceRecipe);
+  // C is a conditional logical commit point only under the owner's exclusive
+  // single-connection, synchronous, immutable-snapshot contract. Final checks
+  // below may still refuse; only the outer S6 COMMIT permits a success to escape.
+  // Adding concurrent readers/WAL, async or reentrant owners reopens this proof.
+  const context =
+    subjectRecipe?.metadata.context.kind === "native" ||
+    sourceRecipe?.metadata.context.kind === "native"
+      ? makeContext(contextInput, observeCommitTime(options.observeCommitTime))
+      : undefined;
+  const materialized = new Map<VersionRecipe, ResourceRecord>();
+  const after = subjectRecipe
+    ? materializeVersion(subjectRecipe, context, materialized)
+    : undefined;
+  const sourceAfter = sourceRecipe
+    ? (materializeVersion(sourceRecipe, context, materialized) as BeadRecord)
+    : undefined;
+  if (
+    creating
+      ? !after || !options.policy.canCreate(after)
+      : !before || !options.policy.canWrite(before, after)
+  )
+    fail("forbidden");
+  if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter)) fail("forbidden");
+  if (
+    "expectedRevision" in input &&
+    input.expectedRevision !== undefined &&
+    input.expectedRevision !== before?.revision
+  )
+    fail("revision-mismatch");
+  if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+    fail("incident-links-exist");
+  if ("propertiesChange" in input || "metadataChange" in input) {
+    const limits = options.limits;
+    const changes = [
+      ...("propertiesChange" in input ? (input.propertiesChange ?? []) : []),
+      ...("metadataChange" in input ? (input.metadataChange ?? []) : []),
+    ];
+    if (limits.patchOperations !== undefined && changes.length > limits.patchOperations)
+      fail("limit-exceeded");
+    for (const change of changes)
+      if (
+        (limits.patchPathBytes !== undefined &&
+          Buffer.byteLength(change.path) > limits.patchPathBytes) ||
+        (limits.patchPathDepth !== undefined &&
+          (change.path === "" ? 0 : change.path.split("/").length - 1) > limits.patchPathDepth)
+      )
+        fail("limit-exceeded");
+  }
+  const writes: EvaluatorStoredResource[] = [];
+  for (const record of [after, sourceAfter]) {
+    if (!record) continue;
+    const bodyJson = stringifyJsonValue(record);
+    if (
+      (options.limits.propertiesBytes !== undefined &&
+        Buffer.byteLength(stringifyJsonValue(record.properties)) >
+          options.limits.propertiesBytes) ||
+      (options.limits.representationBytes !== undefined &&
+        Buffer.byteLength(bodyJson) > options.limits.representationBytes)
+    )
+      fail("limit-exceeded");
+    if (!noOp) {
+      const stored = { id: local(scope, record.id) as string, bodyJson };
+      writes.push(
+        "source" in record
+          ? {
+              ...stored,
+              kind: "link",
+              source: local(scope, referenceUri(record.source)) ?? referenceUri(record.source),
+              target: local(scope, referenceUri(record.target)) ?? referenceUri(record.target),
+            }
+          : { ...stored, kind: "bead" },
+      );
+    }
+  }
+  const outcome: ReadUpdateMutationResult = deleting
+    ? {
+        outcome: "deleted",
+        deleted: {
+          resourceKind,
+          resource: {
+            id: before?.id as string,
+            type: before?.type as string,
+            revision: before?.revision as string,
+          },
+        },
+        ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+      }
+    : {
+        outcome: creating ? "created" : "updated",
+        resource: after as ResourceRecord,
+        ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+      };
+  // No Resource write happens until every validation/policy/CAS/limit check passes.
+  fault.check();
+  for (const write of writes) tx.putResource(write);
+  if (deleting) tx.deleteResource(id);
+  return freeze({
+    effect: "success",
+    outcome,
+    resolutions,
+    changed: writes.map((write) => write.id),
+    deleted: deleting ? [id] : [],
+  });
+}
+/** Private version recipes cannot be supplied to a Resource consumer. Only the
+ * new Link recipe may be referenced by its source; old Links stay whole records.
+ */
+interface VersionRecipe {
+  readonly id: string;
+  readonly type: string;
+  readonly revision: string;
+  readonly properties: BeadRecord["properties"];
+  readonly commonMetadata: NonNullable<BeadRecord["metadata"]>;
+  readonly endpoints: { readonly source: Reference; readonly target: Reference } | undefined;
+  readonly metadata: {
+    readonly actor?: RevisionActor;
+    readonly context:
+      | { readonly kind: "native" }
+      | { readonly kind: "preserved"; readonly value: RevisionProvenance | undefined };
+  };
+  readonly ownedLinks?: Readonly<Record<string, readonly PreparedLink[]>>;
+}
+type PreparedLink =
+  | { readonly kind: "existing"; readonly value: LinkRecord }
+  | { readonly kind: "replacement"; readonly value: VersionRecipe };
+function materializeVersion(
+  recipe: VersionRecipe,
+  nativeContext: RevisionProvenance | undefined,
+  materialized: Map<VersionRecipe, ResourceRecord>,
+): ResourceRecord {
+  const existing = materialized.get(recipe);
+  if (existing) return existing;
+  const context =
+    recipe.metadata.context.kind === "native" ? nativeContext : recipe.metadata.context.value;
+  if (recipe.metadata.context.kind === "native" && context === undefined)
+    throw new TypeError("native version requires its commit observation");
+  const record = freeze({
+    id: recipe.id,
+    type: recipe.type,
+    revision: recipe.revision,
+    properties: recipe.properties,
+    metadata: recipe.commonMetadata,
+    ...(context === undefined && recipe.metadata.actor === undefined
+      ? {}
+      : {
+          revisionProvenance: {
+            ...context,
+            ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+          },
+        }),
+    ...(recipe.endpoints ?? {}),
+    ...(recipe.ownedLinks === undefined
+      ? {}
+      : {
+          ownedLinks: Object.fromEntries(
+            Object.entries(recipe.ownedLinks).map(([type, links]) => [
+              type,
+              links.map((link) =>
+                link.kind === "existing"
+                  ? link.value
+                  : materializeVersion(link.value, nativeContext, materialized),
+              ),
+            ]),
+          ),
+        }),
+  }) as ResourceRecord;
+  materialized.set(recipe, record);
+  return record;
+}
+function observeCommitTime(clock: () => number): string {
+  const value: unknown = clock();
+  if (value !== null && (typeof value === "object" || typeof value === "function")) {
+    // Reject asynchronous clocks without leaving an unhandled rejection after
+    // the owned transaction rolls back. Never await or consume their timestamp.
+    Promise.resolve(value).catch(() => {});
+    throw new TypeError("authority commit clock must return synchronous epoch milliseconds");
+  }
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value > 8.64e15)
+    throw new TypeError(
+      "authority commit clock must return safe epoch milliseconds within Date range",
+    );
+  // The canonical context parser also rejects Date's extended-year spelling.
+  return new Date(value).toISOString();
+}
+function makeContext(
+  input: RevisionProvenanceInput | undefined,
+  committedAt: string,
+): RevisionProvenance {
+  const state = (
+    value: string | null | undefined,
+  ): { state: "undetermined" } | { state: "absent" } | { state: "present"; value: string } =>
+    value === undefined
+      ? { state: "undetermined" }
+      : value === null
+        ? { state: "absent" }
+        : { state: "present", value };
+  return parseRevisionProvenance({
+    committedAt: { state: "present", value: committedAt },
+    agent: state(input?.agent),
+    message: state(input?.message),
+  });
+}
+function isExternalBead(uri: string): boolean {
+  try {
+    const url = new URL(parseCanonicalHttpUrl(uri));
+    const match = /\/beads\/(.+)$/.exec(url.pathname);
+    if (url.search !== "" || match?.[1] === undefined) return false;
+    assertCanonicalPathSegments(match[1], "external Bead ID");
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "event": "availability-owner-terminal",
+  "pid": 90227,
+  "pgid": 90227,
+  "limiterPid": 90226,
+  "nativeOrigin": 2237492.71795792,
+  "pythonFirst": 2237492.742243125,
+  "pythonLast": 2237492.851852875,
+  "pythonClockInfo": {
+    "implementation": "mach_absolute_time()",
+    "monotonic": true,
+    "adjustable": false,
+    "resolution": 4.166666666666666e-08
+  },
+  "peers": [
+    {
+      "role": "term",
+      "pid": 90228,
+      "pgid": 90227,
+      "bootstrapAck": true,
+      "rawExit": 0,
+      "stdoutEof": true,
+      "stderrEof": true,
+      "stdoutBytes": 292,
+      "stderrBytes": 0,
+      "stdoutSha256": "788e5a59fc6689ff7f08b7ddeaab007f7072ab042149ca461c1558cbc683cf11",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "peer": {
+        "event": "availability-peer",
+        "role": "term",
+        "nonce": "bf5b0c82d4f0873a3e8453dd7f739484",
+        "pid": 90228,
+        "parent": 90227,
+        "pgid": 90227,
+        "firstMonotonic": 2237492.808209208,
+        "lastMonotonic": 2237492.809131708,
+        "nativeOrigin": 2237492.71795792,
+        "termIntUnblocked": true,
+        "observedSignals": [
+          15
+        ],
+        "productCalls": 0
+      },
+      "atSeconds": 0.09780399594455957
+    },
+    {
+      "role": "kill",
+      "pid": 90229,
+      "pgid": 90227,
+      "bootstrapAck": true,
+      "rawExit": -9,
+      "stdoutEof": true,
+      "stderrEof": true,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "peer": null,
+      "atSeconds": 0.13366258004680276
+    }
+  ],
+  "allDirectChildrenReaped": true,
+  "productCalls": 0,
+  "syntheticReleased": false,
+  "clockDomainVerified": false,
+  "status": "OBSERVED_PENDING_NATIVE_LIMITER_AND_FRESH_ROOT_AUDIT",
+  "harnessImplementationSha256": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
+}

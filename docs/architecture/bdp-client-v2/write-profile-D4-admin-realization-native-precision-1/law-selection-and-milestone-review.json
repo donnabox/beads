@@ -1,0 +1,483 @@
+{
+  "conditionalSlicesNotWholeLawNA": true,
+  "countDomains": {
+    "RUHistoryFalse": 6,
+    "TXHistoryFalse": 35,
+    "citations": 59,
+    "completeSections": 16,
+    "metadataIDs": 38,
+    "optionalHistoryExcluded": 2
+  },
+  "rows": [
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "id": "read.scope.restore-identity",
+      "milestones": [
+        "AR01",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "id": "read-update.idempotency.durable-boundary",
+      "milestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "id": "read-update.idempotency.crash-mid-sequence",
+      "milestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": false,
+      "id": "read-update.idempotency.restore",
+      "milestones": [
+        "AR01",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": "transactional.restore.key-namespace",
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.batch.atomic-commit",
+      "milestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.receipt.non-record-entries",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.idempotency.durable-admission",
+      "milestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.idempotency.pending-recovery",
+      "milestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.sequence.member-reauthorization",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.event.cursor-after-withheld",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.snapshot.erasure-ledger",
+      "milestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.record-digest",
+      "milestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.digest-domain",
+      "milestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.historical-version",
+      "milestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.live-successor",
+      "milestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.live-tombstone",
+      "milestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.owned-link-cascade",
+      "milestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.event-withholding",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.graph-facts",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.receipts",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.replication-invalidation",
+      "milestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.retention-non-propagation",
+      "milestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.restore",
+      "milestones": [
+        "AR02",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.unestablishable-content",
+      "milestones": [
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.view-projection",
+      "milestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.reads",
+      "milestones": [
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.epoch-unrotated",
+      "milestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.restore.epoch-fence",
+      "milestones": [
+        "AR02",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.restore.key-namespace",
+      "milestones": [
+        "AR02",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.live-publication",
+      "milestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.disconnect-race",
+      "milestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.erasure.persistent-event-consumer",
+      "milestones": [
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": false,
+      "id": "history.erasure",
+      "milestones": [
+        "AR01",
+        "AR06",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": false,
+      "id": "history.erasure.transactional",
+      "milestones": [
+        "AR01",
+        "AR06",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "id": "read.disclosure.gone",
+      "milestones": [
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "id": "read.http.conditional-reads",
+      "milestones": [
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.changefeed.wire-form",
+      "milestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "id": "transactional.changefeed.projection-advance",
+      "milestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "wholeLawCredit": false
+    }
+  ],
+  "wholeLawCredit": false
+}

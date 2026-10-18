@@ -1,0 +1,86 @@
+[
+  {
+    "id": "RU-owner",
+    "actual": "openRecoveryStore(options): RecoveryStore; read, visitInstalledTypes, visitRetainedOutcomes, admit, executeMember, releaseOwnedClaim, abandonAttempt, expire, close",
+    "availability": "private owner-only source module, not public admin service",
+    "anchors": [
+      "RU-API",
+      "RU-RESTORE"
+    ],
+    "doesNotProvide": "logical import/export, proof of coherent rollback prevention, erasure or recovered state certification"
+  },
+  {
+    "id": "TX-owner",
+    "actual": "openTransactionStore({file,scope,create,types,contracts,...}); readConfiguration; normal mutation/receipt/group/snapshot owner; pauseMutationAdmission; replaceAuthorizationPolicy; close",
+    "availability": "private serialized SQLite owner",
+    "anchors": [
+      "TX-OPTIONS",
+      "TX-STORAGE",
+      "TX-REOPEN",
+      "TX-ADMIN"
+    ],
+    "doesNotProvide": "erasure ledger or erasure ingestion, logical restore/epoch-reset capability"
+  },
+  {
+    "id": "TX-service",
+    "actual": "createTransactionService owner composition; replaceAuthorizationPolicy({timeoutMs,signal?})",
+    "availability": "trusted never-HTTP finite policy drain, all-visible→empty generation only",
+    "anchors": [
+      "TX-SERVICE",
+      "TX-ADMIN"
+    ],
+    "doesNotProvide": "content erasure; revocation hides data but leaves retained bytes; not a generic restore or administration route"
+  },
+  {
+    "id": "installed-TX",
+    "actual": "captureInstalledTransactionConfiguration; inherited configuration IPC then close-only command; runtime.close",
+    "availability": "private qualification bootstrap, no package export/bin/CLI flag",
+    "anchors": [
+      "TX-CAPTURE",
+      "TX-IPC",
+      "TX-RUNTIME"
+    ],
+    "doesNotProvide": "erase/import/restore command, extra root control, remote administrative principal"
+  },
+  {
+    "id": "installed-RU",
+    "actual": "captureInstalledReferenceConfiguration and startInstalledReferenceCandidate",
+    "availability": "trusted private configuration→development runtime; non-attesting",
+    "anchors": [
+      "RU-CAPTURE",
+      "RU-INSTALLED"
+    ],
+    "doesNotProvide": "administration route or restore policy"
+  },
+  {
+    "id": "fdd-loader",
+    "actual": "public ./reference-configuration loadReferenceDeployment(input)→immutable PreparedReferenceDeployment summary; internal private registry",
+    "availability": "local data preparation only, no store/listener/profile admission",
+    "anchors": [
+      "FDD-EXPORT",
+      "FDD-LOADER",
+      "FDD-CAPTURE",
+      "FDD-REGISTRY"
+    ],
+    "doesNotProvide": "owner handle, secret capability, BDP operation, logical restore or erasure authorization"
+  },
+  {
+    "id": "public-packages",
+    "actual": "cce exports . and ./development; fdd additionally ./reference-configuration",
+    "availability": "explicit export allowlist; private store/service/process subpaths remain private",
+    "anchors": [
+      "PUBLIC-DEV",
+      "FDD-EXPORT"
+    ],
+    "doesNotProvide": "generic administrative/Write admission surface"
+  },
+  {
+    "id": "existing-recovery-witness",
+    "actual": "transaction-recovery.test.ts process kill with original and copied hot journal, pending retraction, 60 retained receipts/groups, 180 resources",
+    "availability": "source test with clock/fault/cache fixture",
+    "anchors": [
+      "TX-RECOVERY"
+    ],
+    "doesNotProvide": "logical restore, epoch rotation, applied erasure, imported retention assurance, physical power-loss proof"
+  }
+]

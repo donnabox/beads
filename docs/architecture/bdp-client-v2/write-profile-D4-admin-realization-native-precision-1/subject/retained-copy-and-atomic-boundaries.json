@@ -1,0 +1,83 @@
+{
+  "atomicBoundaries": [
+    {
+      "boundary": "One existing synchronous enter/atomic transaction covers version identity/ledger, live successor/tombstone, all authority DB-carrier cleanup, group/position/floor metadata. Commit ambiguity keeps original fence/reopen rule; no separate MutationReceipt or key admission.",
+      "id": "AUTHORITY_SQLITE"
+    },
+    {
+      "boundary": "Service/owner/pump barrier serializes view eligibility, replay floor and complete erasure group publication; current policy drain alone neither tracks stream position nor scrubs queued content.",
+      "id": "AUTHORITY_PUBLICATION"
+    },
+    {
+      "boundary": "Each actual replica/consumer separately atomically applies whole group cleanup and durable checkpoint before its own publication. This is not a distributed atomic deletion of every remote copy at the authority commit; a replica not yet applying P remains behind under the existing route/wait/fail rule.",
+      "id": "EACH_CONSUMER"
+    },
+    {
+      "boundary": "Keep original identity-level state; validate/reconcile staged imported history, rotate actual TX epoch and fence history namespace, publish ledger-first before binding/resuming ordinary visibility. Partial/uncertain activation remains unavailable, never silently live.",
+      "id": "RESTORE_ACTIVATION"
+    }
+  ],
+  "captureProofConflict": "Existing D4 full raw postimage/report retention cannot automatically be reused as an erasure witness. Future exact evidence lifecycle must keep useful digest/lineage/fact proof while applying erasure to every actual controlled content copy, with no post-receipt reconstruction, edited historical evidence or weakened audit. This is a necessary proof-design review, not permission to delete old packets.",
+  "carriers": [
+    {
+      "actualOrMissingSeam": "resources; identities; aliases",
+      "carrier": "current state and identity catalog",
+      "requiredHandling": "Remove erased live record only with same-group valid successor/tombstone; preserve identity nonreuse and legitimate alias locator semantics, do not erase unrelated non-owning references.",
+      "source": "transaction-store.ts239-247,1305-1313"
+    },
+    {
+      "actualOrMissingSeam": "NEW private original-version commitment/lineage index",
+      "carrier": "original version evidence",
+      "requiredHandling": "Capture digest from original served record at version commit. Preserve pre-metadata form provenance; remove all content-bearing auxiliary fields after erasure.",
+      "source": "spec6409-6441; no current versions table"
+    },
+    {
+      "actualOrMissingSeam": "groups.body plus projected Event materialization",
+      "carrier": "groups and Events",
+      "requiredHandling": "Remove erased upserts/deltas/context/inline copies, preserve permitted lineage/execution order. Internal sanitization representation must not leak invalid wire upserts. Withhold created/updated/source-owned and graph facts only under exact per-Link-version condition; deleted lineage facts remain, original ordinals never renumber.",
+      "source": "transaction-store.ts674-690,1361-1373; transaction-events.ts191-270"
+    },
+    {
+      "actualOrMissingSeam": "receipts.receipt; receipt_pages; receipt_page_ranges",
+      "carrier": "receipts and pages",
+      "requiredHandling": "Destroy content in retained postimages and accidental diagnostics, retain immutable execution facts/body epoch/view/positions and page URL boundaries; serve existing erased vs withheld forms. Expiry promise does not defer erasure.",
+      "source": "transaction-store.ts877-924,2284-2336; spec5215-5267"
+    },
+    {
+      "actualOrMissingSeam": "creator_facts; live sequence responses/retained member facts",
+      "carrier": "sequence/dependency state",
+      "requiredHandling": "Preserve key/allocated identity dependency meaning, remove any embedded erased content, project erased to authorized resource-erased else forbidden; no auto-resume sequence tail.",
+      "source": "transaction-service.ts726-758; spec4077-4147"
+    },
+    {
+      "actualOrMissingSeam": "snapshots; snapshot_records; snapshot_pages; cached manifests/pages",
+      "carrier": "snapshots",
+      "requiredHandling": "Scrub affected records/pages, retain required expired identities; pre-P receiving-view handles become410 cursor-expired regardless lifetime, new snapshot includes complete projected ledger.",
+      "source": "transaction-snapshot.ts37-39,282-305,567-614"
+    },
+    {
+      "actualOrMissingSeam": "owner readers; eventScans WeakMap; service streams; pump current packet/frame and Node transport queue",
+      "carrier": "in-memory reads and live queues",
+      "requiredHandling": "Revalidate/fence before additional publication. Already handed bytes not revocable; not-yet-handed pre-P content cannot cross fence, including backpressure. No distributed client-ack fiction.",
+      "source": "transaction-store.ts370; transaction-service.ts296-329; transaction-sse.ts47-170"
+    },
+    {
+      "actualOrMissingSeam": "NEW identity-level ledger, per-view minimumReplayPosition and observability data",
+      "carrier": "persistent ledger/floors",
+      "requiredHandling": "Permanent across maintenance/history/epoch/view transitions; store only permitted lineage/record/digest; no retention expiration or rollback with history image.",
+      "source": "spec6581-6597; transaction-discovery.ts54-56 currentlyconstant"
+    },
+    {
+      "actualOrMissingSeam": "SQLite rollback journal/free pages; controlled backup/import images; OS/COW snapshots/logs/crash dumps where actually controlled",
+      "carrier": "durable physical and operational copies",
+      "requiredHandling": "Choose/review actual destruction or protected-key lifecycle and recovery procedure; plain SQL DELETE or projection denial is not proof of unrecoverability. Physical power-loss/media/snapshot assurance remains explicit, not claimed from process SIGKILL.",
+      "source": "transaction-store.ts358-364,581-583; recovery-store.ts270-280"
+    },
+    {
+      "actualOrMissingSeam": "declared consumer generations/caches/indexes; actual pre-act HTTP/stdout/report/trace bodies",
+      "carrier": "external consumer and validation capture",
+      "requiredHandling": "Each receiving holder applies erasure before its own further visibility and advances durable checkpoint atomically; unknown status discarded. Future raw captures are not exempt. Pre-act digest checking must release/sanitize original content before retained proof publication under a separately reviewed evidence contract. Historical unrelated packets are not retroactively edited.",
+      "source": "spec6308-6323,6499-6511,6571-6597"
+    }
+  ]
+}

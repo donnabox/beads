@@ -1,0 +1,40 @@
+{
+  "RUSeparate": "RU keeps complete retained member dispositions, successful tombstones/allocated identities and every claim resolution. Ordinary restart clears abandoned claims and never resumes unstarted sequence members; client retry retains prefix and executes tail in order. If that continuity cannot be preserved, use a different canonical Scope URL; no exposed epoch or TX receipt vehicle. TX retirement of RUrestore stays exact.",
+  "crashDistinctions": [
+    {
+      "existing": "D4 two normal close/reopen sessions",
+      "kind": "graceful reopen",
+      "limit": "Not an abrupt death, hot journal, logical restore or erasure witness."
+    },
+    {
+      "existing": "Source tests and private installed owner APIs permit a genuine admission-before-execute boundary",
+      "kind": "abandoned pending/member crash",
+      "limit": "Must observe real process death/exit+close/lock release on final installed basis; no fault callback smuggled into installed config."
+    },
+    {
+      "existing": "transaction-recovery.test and recovery-store.test kill during real SQLite work",
+      "kind": "real hot journal",
+      "limit": "Preserve actual DB plus extant journal inventory after death. SQLite physical recovery may happen before configuration refusal; no byte-unchanged refusal promise."
+    },
+    {
+      "existing": "No supported entry",
+      "kind": "logical history-changing restore",
+      "limit": "Needs actual authority/continuity/ledger/epoch implementation; raw SQL receipt edits or create:true at old URL are not it."
+    },
+    {
+      "existing": "SQLite configured FULL TX / EXTRA RU and source crash tests",
+      "kind": "power loss / filesystem durability",
+      "limit": "No physical power-cut/controller/COW/backup/media-erasure proof. Keep durability/ownership unknowns explicit; process SIGKILL does not prove hardware failure."
+    }
+  ],
+  "fullStoreLossAlternative": "If the intact latest identity/ledger store is lost, same-logical-Scope restoration additionally needs independently authoritative complete latest identity/erasure evidence outside that lost image. Current lineage strings/configuration hashes do not establish it. Without identity nonreuse continuity use a different canonical Scope; changing URL/epoch does not launder content with unestablishable erasure status.",
+  "recommendedBoundedTXRoute": "Logical history import into intact exclusive current identity/erasure store; keep identity allocation/version commitments/latest ledger out of the replacement set. This is a private implementation option, not an existing supported entry or new protocol.",
+  "steps": [
+    "Quiesce the real owner/listener under a reviewed finite lifecycle and retain exact source/configuration/ownership/proof; do not copy a live SQLite image or serve two same-Scope copies.",
+    "Accept only an authority-owned history image with positively established origin/version identity and known erasure status. Verify against the surviving current identity/version commitment/ledger state before visibility; unknown content rejected/discarded.",
+    "Import only validated history/graph state into the intact owner transaction/staging mechanism. Preserve all nonreuse markers and committed erasure records newer than the image; do not restore identities/ledger from an older backup over current state.",
+    "Mint a new actual TX epoch for history-changing activation. Preserve canonical URLs and retained address bindings. All old history-dependent token classes use their own existing fences; prior-epoch receipt remains non-disclosing and prior key is unbound, executing new under new epoch.",
+    "No old-epoch group is served as new. Reemit complete projected ledger as bounded erasure-only groups at the first new positions before any non-ledger group. Chunking must preserve complete groups and existing byte limits; no invented ledger-pagination wire field or cap widening.",
+    "Fresh snapshot carries the permanent projected ledger; prior consumer generations reconcile/discard before becoming visible. Ordinary same-history restart is a distinct control and keeps epoch."
+  ]
+}

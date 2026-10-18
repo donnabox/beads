@@ -1,0 +1,62 @@
+{
+  "decisions": [
+    {
+      "citations": "#version-erasure:6443-6446; transaction-service.ts331-370; transaction-installed-process.ts10-59",
+      "classification": "IMPLEMENTATION_PLATFORM_AUTHORITY_CHOICE",
+      "exactQuestion": "Which actual deployment owner/local operator is entitled to initiate the act, and what private capability/channel/lifetime grants that authority?",
+      "id": "AD01",
+      "nonbindingRecommendation": "Recommend same exclusive owner/service under trusted local supervisor; no user token/URL possession/caller boolean as admin authority. Existing close-only IPC and inert prepared configuration remain unchanged until separately reviewed integration.",
+      "selection": "UNADOPTED; root/platform/human owner as applicable",
+      "topic": "Deployment/operator authority"
+    },
+    {
+      "citations": "#version-erasure:6437-6441,6499-6511,6581-6597; #history-recovery-imports-and-assurance:1861-1884",
+      "classification": "IMPLEMENTATION_ASSURANCE_SCOPE_CHOICE",
+      "exactQuestion": "Which concrete stores, backup media/snapshots, process caches, consumer generations and validation captures are controlled, and how is their erasure status established/destruction completed before their further visibility?",
+      "id": "AD02",
+      "nonbindingRecommendation": "Enumerate every actual holder, use a reviewable local cleanup/key lifecycle and a specific consumer acquisition route. No assumption that SQL DELETE makes physical bytes unrecoverable, and no exemption for future raw validation content. Scope cannot waive every-store obligation.",
+      "selection": "UNADOPTED; root/platform/human owner as applicable",
+      "topic": "Controlled copies and evidence lifecycle"
+    },
+    {
+      "citations": "#scopes-and-identity:234-242; #durability-and-recovery:3389-3403; #scope-history:3674-3689; #version-erasure:6581-6597",
+      "classification": "IMPLEMENTATION_ROUTE_AND_PROOF_CHOICE",
+      "exactQuestion": "Can the supported route require an intact current identity-level store, or must full-store-loss recovery also be supported using independently authoritative latest identity/erasure evidence?",
+      "id": "AD03",
+      "nonbindingRecommendation": "Recommend bounded logical-history import into intact exclusive identity/ledger state first. Do not promise full-store-loss continuity from a copied old DB/configured lineage string. Lost identity guarantee means different Scope URL; unknown erasure content must still be rejected/discarded.",
+      "selection": "UNADOPTED; root/platform/human owner as applicable",
+      "topic": "Supported restore mechanism and continuity anchor"
+    },
+    {
+      "citations": "#version-erasure:6388-6395,6512-6517; transaction-authorization.ts5-68",
+      "classification": "IMPLEMENTATION_POLICY_CONFIGURATION_CHOICE",
+      "exactQuestion": "What existing trusted policy capture will supply subject-history permission and receiving vs never-observed views on the one final target, without creating a parallel policy language?",
+      "id": "AD04",
+      "nonbindingRecommendation": "Extend the actual private policy implementation only under its existing captured configuration/credential boundary and owned-Link closure. Current all-visible→empty cannot be called the required richer view proof. No credential or secret-committing digest output.",
+      "selection": "UNADOPTED; root/platform/human owner as applicable",
+      "topic": "Actual policy and observability binding"
+    },
+    {
+      "citations": "transaction-store.ts234-248,318-343,593-613; recovery-store.ts193-194,270-280; #version-erasure:6409-6435",
+      "classification": "IMPLEMENTATION_FORMAT_AND_MIGRATION_CHOICE",
+      "exactQuestion": "How will the changed store format record original served commitments, and what exact refusal/conversion policy applies to existing format11 data with missing original evidence?",
+      "id": "AD05",
+      "nonbindingRecommendation": "Recommend explicit fresh development format/fail-closed old-format refusal for first bounded realization, retaining original data untouched; any conversion is a separate reviewed procedure. Never silently fabricate digests from projected metadata or reseed an existing Scope. This does not authorize production data loss or reset final target.",
+      "selection": "UNADOPTED; root/platform/human owner as applicable",
+      "topic": "Store format and original-version evidence"
+    },
+    {
+      "citations": "#version-erasure:6429-6435,6532-6536,6581-6597; transaction-snapshot.ts23-34,609-613; transaction-changefeed.ts19-27",
+      "classification": "IMPLEMENTATION_CAPACITY_AND_DIAGNOSTICS_CHOICE",
+      "exactQuestion": "How will permanent lifetime ledger growth, nonempty erasure groups and ledger-first restore fit the unchanged admitted projection/Snapshot/transport limits, and how will serialization escapes be reported out of band without delaying erasure?",
+      "id": "AD06",
+      "nonbindingRecommendation": "Require actual source-derived whole-manifest/group/retained-copy bounds and finite job/activation plan before source release. Snapshot manifest cap is currently10MiB; it is not a lifetime ledger bound. No silent truncation/expiry/ledger paging field/new scheme/cap widening or stopped digest cleanup. Small fixture fit proves only that fixture.",
+      "selection": "UNADOPTED; root/platform/human owner as applicable",
+      "topic": "Capacity and failure publication"
+    }
+  ],
+  "ifDesignNeedsNewProtocol": "Stop and state the exact unsupported requirement for Donna/root; do not invent an erasure endpoint/schema/scheme, History expansion, bulk/preview report, weaker cleanup or token rule. No such ruling is selected here.",
+  "newNormativeDecisionIdentified": false,
+  "reason": "The selected pinned laws already fix digest domain, administrative no-receipt semantics, same-group live closure, every-store cleanup, view projection/fence, epoch continuity and permanent ledger behavior. Missing realization/assurance is not an undecided wire rule or N/A.",
+  "routineChoicesNotHumanPermissionGates": "Implementation legwork, owner-local decomposition and source/proof inventory are authorized now. The unadopted platform selections and later exact source/runtime releases remain separate; this plan asks the human no new question."
+}

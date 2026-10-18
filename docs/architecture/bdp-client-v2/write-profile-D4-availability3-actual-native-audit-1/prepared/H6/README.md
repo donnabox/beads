@@ -1,0 +1,7 @@
+# H6 owned observability — source-only CLOSED
+
+Implements the exact original41+required3+root2 effective DATA plan under source release530ef41b, published/readback7ccc10db. Only outer_host.py held first-failure telemetry/final finite registry and report_controls.py actual caught-class metadata change semantics. Other11 Python helpers are byte exact H5; both Perl deltas are exactly the existing H5→H6 owner-path literal. Original matches/auth/ACK/UNKNOWN/signal/reap/finally/order/deadlines remain protected by labelled-block AST stripping and exact before/after proofs.
+
+Full history stays INPLACE: original/current H5 including historical availability/M02/failedD02, caller2 and prior native/root records. No H6 attempt/result/caller3 or runtime proof exists. Both gates false/approvedempty; all58 original remaining invocations remain required/unattempted, M02/D02 never retry. The60-row command catalog is not execution authority. Tool/grammar/subject857/product679 remain pinned. New registry is600832-byte bounded, total3event ceiling618240: retention only, not successful pipe-fit/CPU/deadline proof. A short/EAGAIN write fails on the same clock with no retry/flush/grace. Future independent mechanics/root and separately published caller/availability/control authorities remain required.
+
+Imported hard-limiter historical architecture text retains its original attribution; current conditional intact-owner fault scope and residuals are explicit. No package/product/schema semantics, source profile credit, admission or full Write claim is added.

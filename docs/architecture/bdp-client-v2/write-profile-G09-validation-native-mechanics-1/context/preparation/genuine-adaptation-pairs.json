@@ -1,0 +1,90 @@
+[
+  {
+    "afterSha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+    "beforeSha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+    "forward": "deltas/run.py.patch",
+    "inverse": "deltas/run.py.inverse.patch",
+    "nonempty": false,
+    "path": "run.py"
+  },
+  {
+    "afterSha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+    "beforeSha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+    "forward": "deltas/packages.py.patch",
+    "inverse": "deltas/packages.py.inverse.patch",
+    "nonempty": false,
+    "path": "packages.py"
+  },
+  {
+    "afterSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "beforeSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "forward": "deltas/guarded-action-session-20261018-021624-549f.py.patch",
+    "inverse": "deltas/guarded-action-session-20261018-021624-549f.py.inverse.patch",
+    "nonempty": false,
+    "path": "guarded-action-session-20261018-021624-549f.py"
+  },
+  {
+    "afterSha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168",
+    "beforeSha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+    "forward": "deltas/gate.py.patch",
+    "inverse": "deltas/gate.py.inverse.patch",
+    "nonempty": true,
+    "path": "gate.py"
+  },
+  {
+    "afterSha256": "ce4125fc6922b48ac6c56fe771af0a547887305758e449f1e702736d1db34e4b",
+    "beforeSha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+    "forward": "deltas/audit.py.patch",
+    "inverse": "deltas/audit.py.inverse.patch",
+    "nonempty": true,
+    "path": "audit.py"
+  },
+  {
+    "afterSha256": "01b4407a1f4a8196fba282d4d269b487f3e0e5040a6c4ae6ae54e87a94fc509c",
+    "beforeSha256": "9c87663651f6f8db5f9f7bba4c5dfc6b1374a7e976515713c78a4e47a4e9395e",
+    "forward": "deltas/report-schemas.json.patch",
+    "inverse": "deltas/report-schemas.json.inverse.patch",
+    "nonempty": true,
+    "path": "report-schemas.json"
+  },
+  {
+    "afterSha256": "26949f3d8be0c4ff61a4fb3baedb2ad0f1647a794ad55c6edae2fbbfa140fc2d",
+    "beforeSha256": "5b9dc28dac151f7f50153f321a6abe21ddc6f6a69c7e463dc91ff9b7da867713",
+    "forward": "deltas/selection.json.patch",
+    "inverse": "deltas/selection.json.inverse.patch",
+    "nonempty": true,
+    "path": "selection.json"
+  },
+  {
+    "afterSha256": "eb7367d7ec3efdbaa9faf06a1db1da13601a11c8faab48f9420d81f039422a51",
+    "beforeSha256": "3ac343c7538ddfc43100580a184d4abcf271dc160077d035ffb99ef02ee4b484",
+    "forward": "deltas/commands.json.patch",
+    "inverse": "deltas/commands.json.inverse.patch",
+    "nonempty": true,
+    "path": "commands.json"
+  },
+  {
+    "afterSha256": "85a933a50639d94f5bff2f66c0fdd6872d2d5aa5f1c4b19452335fbff971b122",
+    "beforeSha256": "59fd0eacaf860f076c815ac30a3350110d00c67d2dea0bc9ce252b83013c7766",
+    "forward": "deltas/audit-expectations.json.patch",
+    "inverse": "deltas/audit-expectations.json.inverse.patch",
+    "nonempty": true,
+    "path": "audit-expectations.json"
+  },
+  {
+    "afterSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+    "beforeSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+    "forward": "deltas/source-binding.json.patch",
+    "inverse": "deltas/source-binding.json.inverse.patch",
+    "nonempty": true,
+    "path": "source-binding.json"
+  },
+  {
+    "afterSha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a",
+    "beforeSha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a",
+    "forward": "deltas/base-tools.candidate.json.patch",
+    "inverse": "deltas/base-tools.candidate.json.inverse.patch",
+    "nonempty": false,
+    "path": "base-tools.candidate.json"
+  }
+]

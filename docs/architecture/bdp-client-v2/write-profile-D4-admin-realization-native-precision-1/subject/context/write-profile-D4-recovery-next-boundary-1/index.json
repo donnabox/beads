@@ -1,0 +1,114 @@
+{
+  "state": "FROZEN small DATA-only recovery boundary inventory",
+  "fileCountExcludingIndex": 27,
+  "files": {
+    "binding.json": {
+      "sha256": "d559c8f6000e14c8a8ee960dfd96e71947eea6f01a6495814b20ac2a4319179c",
+      "bytes": 756
+    },
+    "context/stable-source-binding.json": {
+      "sha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+      "bytes": 93857
+    },
+    "context/write-profile-D4-administration-next-plan-1/index.json": {
+      "sha256": "e95297910733e0776df439f3ddf046a86b8ca111832b77f7dbf1b85a99bab834",
+      "bytes": 6411
+    },
+    "context/write-profile-D4-administration-next-plan-1/interfaces.json": {
+      "sha256": "ee4d0b1fec457dd77530c9836a1518195f32dce7c21b26fcdb3872b953a6fca2",
+      "bytes": 3502
+    },
+    "context/write-profile-D4-administration-next-plan-1/laws.json": {
+      "sha256": "5c18d807752196d430326e8399da2d7aa7c333cc4a172ef79bb16241e62006e7",
+      "bytes": 5632
+    },
+    "context/write-profile-D4-administration-next-plan-1/plan.md": {
+      "sha256": "23b93b6592ad02eec46afd8e1bee6d9aed4ffbfac821eeff9e4904c056728e34",
+      "bytes": 11772
+    },
+    "context/write-profile-D4-applicability-audit-1/applicability-table.json": {
+      "sha256": "d416aadaa89ff00df205b1c2fbaafbebd0e9173f7c2ae22cab5e50b3136c05b2",
+      "bytes": 10872
+    },
+    "context/write-profile-D4-applicability-audit-1/basis.json": {
+      "sha256": "d6bc96c6dc0cd1c2aa945c353b24fee6dd653605c678aba0a03ef23300c0992e",
+      "bytes": 967
+    },
+    "context/write-profile-D4-applicability-audit-1/index.json": {
+      "sha256": "9f21ed2710e601a9b858d954f7fb5c7f4ea3c7961f2a82d2b0ef308ae0c385cc",
+      "bytes": 11522
+    },
+    "context/write-profile-D4-applicability-audit-1/report.md": {
+      "sha256": "58fd2dd6858c8b62191a43600e4c6bd32ec4c694ed40ee36ec7415596fe2707e",
+      "bytes": 6304
+    },
+    "finite-boundary-table.json": {
+      "sha256": "dae3a10644a28472846a12d58fef0745a830df641fe98bd43e593de35acb4740",
+      "bytes": 4915
+    },
+    "line-anchors.json": {
+      "sha256": "37b35c92712bf39bb9295f748b789c511958fb9b5907fce511b0d1d968ba2e9d",
+      "bytes": 37976
+    },
+    "origins.json": {
+      "sha256": "7fc786da40dd7451a7f465650abbbd333207f4315d496f5e46795db5e6a5b47d",
+      "bytes": 5948
+    },
+    "report.md": {
+      "sha256": "f5b540364f4192cfd110ba9bef2ba8300b0358170a2e6e169ad49dd5989664ee",
+      "bytes": 3290
+    },
+    "source/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "source/packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495
+    },
+    "source/packages/server/src/recovery-store.ts": {
+      "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+      "bytes": 40784
+    },
+    "source/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "source/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "source/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "source/packages/server/src/transaction-recovery.test.ts": {
+      "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+      "bytes": 5728
+    },
+    "source/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "source/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "source/packages/server/src/transaction-store.test.ts": {
+      "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+      "bytes": 138540
+    },
+    "source/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "source-map.json": {
+      "sha256": "809f415ec8cff8fb57245b651a6fe4921a0178dc4c3e1c4cf58e2143885526ce",
+      "bytes": 87874
+    },
+    "supported-recipe-boundary.json": {
+      "sha256": "6b1a62fba49290405d7c80ecc8c0113ec5c0f059b2e56173b9345f3380d3f3f2",
+      "bytes": 4516
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "combinedProspectiveToolStdoutUpperBoundBytes": 618240,
+  "components": {
+    "completedProbes": 131072,
+    "firstMismatchDiagnostic": 32768,
+    "firstSignalDiagnostic": 65536,
+    "fixedEventOverheadAndClockFields": 8192,
+    "knownGroups": 2816,
+    "observedIdentities": 98304,
+    "registrations": 262144
+  },
+  "encodingAssumptions": [
+    "compact ASCII JSON; all array row bounds include their commas/brackets",
+    "known role codes, no executable comm/argv or all-host rows inside registry banks",
+    "wire projection refuses oversized numeric/text/cardinality fields without clipping; never adjusts original ownership predicates",
+    "diagnostic bounds include escaped string expansion<=6 bytes per admitted UTF8 byte and fixed field overhead; exact encoded slot length checked",
+    "the two original terminal records must separately fit their conservative envelopes before any future authority; no filtering or relabeling",
+    "future concrete root caller must bind retained complete native stdout under the unchanged agreed tool policy before execution; this DATA plan does not invent an accepted current caller"
+  ],
+  "existingOwnerTerminalBoundedEnvelopeBytes": 16384,
+  "kind": "Static prospective bounded representation/closure argument, NOT measured runtime maximum or hard-real-time proof",
+  "nativeTerminalBoundedEnvelopeBytes": 1024,
+  "noRaiseExistingOneMiBPublicationEnvelope": 1048576,
+  "registryJsonlUpperBoundBytes": 600832,
+  "timing": [
+    "same earliest native origin; ordinary120 TERM115 KILL119 strictnormal<115; host150 TERM145 KILL149 strictnormal<145",
+    "setup/import/authority/source hashes/control/IO/census/publication/diagnostic encoding/registry/terminal/native/root capture all count; no reset or finalization grace",
+    "one final same-clock encoding plus nonblocking exact-count writes only; native external alarm remains independent and armed",
+    "no guaranteed successful write/CPU/OS latency is asserted; partial/no-fit/late => fail, not permission to wait",
+    "future concrete availability and explicit new experimental/control execution authority needed; an elapsed sample cannot establish a maximum"
+  ],
+  "unchangedOtherCaps": {
+    "availabilityPerStreamBytes": 65536,
+    "censusStderrBytes": 4096,
+    "censusStdoutBytes": 262144,
+    "controlResultBytes": 1048576,
+    "originalTentativePublicationBytes": 1048576,
+    "perCensusSeconds": 0.2,
+    "productRawAggregateBytes": 268435456
+  },
+  "unknowns": [
+    "actual new source and actual event encoding fit UNBUILT",
+    "actual future root reader/capture and strict event predicates UNPREPARED",
+    "future native/availability/control runtime behavior UNOBSERVED"
+  ]
+}

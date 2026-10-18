@@ -1,0 +1,15 @@
+{
+  "currentCodeOrPolicyAdopted": false,
+  "digestReference": "packages/conformance/src/canonical-json.ts1-46 implements RFC8785 but is private to another package. @bdp/server depends on @bdp/protocol and fast-uri, not @bdp/conformance; no new internal cross-package import/export is authorized.",
+  "domain": [
+    "original complete served version record including common metadata/revisionProvenance/inlineownedLinks",
+    "exclude links aggregate",
+    "retain original absent-metadata representation when genuinely pre-projection; do not synthesize it",
+    "binary64/JCS UTF16 ordering and ordered arrays; storage JSON byte hash is not JCS digest",
+    "serialization escape cannot gate erasure; best canonical digest/OOB audit still required"
+  ],
+  "fixtureLimit": "Existing erasure-digest-vectors explicitly illustrative/no-evidence and omit UTF16-vs-codepoint and multi-element array discrimination; no runtime/code is executed here.",
+  "permanentLedgerCapacity": "Current snapshot manifest cap10MiB and immutable group/SSE/read byte bounds were proved for emptyerasures. Permanent ledger is lifetime identity state with no expiry rule. A small finite fixture does not establish a lifetime bound. Future exact source design must solve actual nonempty ledger/group/full-manifest representation without truncation, new paging field, rule/cap relaxation or hidden additional authority; source/proof gate remains unresolved.",
+  "recommendedPrivateImplementation": "A narrowly reviewed server-private digest/closure module can implement the SAME existing RFC8785 discipline with independent vectors; alternative shared-helper factoring needs explicit footprint/export/dependency review. This is code-ownership choice, never a different canonicalization or payload normalization.",
+  "restoreCapacity": "Bounded ledger-only reemission may span multiple complete existing-format groups before ANY nonledger group, with activation unavailable until complete. Exact per-phase work and failure recovery are unprepared, not assigned a fictional deadline."
+}
