@@ -577,17 +577,23 @@ func withGraphStoreBudget(budget time.Duration, fn func(context.Context, *graphs
 // The mapper receives the raw open or joined operation/cleanup error before
 // any diagnostic is emitted. Ordinary graph routes keep graphStorageError.
 func withGraphStoreErrorMapper(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapError func(error) error) error {
+	return withGraphStoreStageErrorMappers(budget, fn, output, mapError, mapError)
+}
+
+// Open failures and failures after a successful open can need different
+// fallback categories. Recognized storage errors keep their shared mapping.
+func withGraphStoreStageErrorMappers(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapOpenError, mapOperationError func(error) error) error {
 	ctx, cancel := context.WithTimeout(getRootContext(), budget)
 	defer cancel()
 	s, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
-		return mapError(err)
+		return mapOpenError(err)
 	}
 	defer func() { _ = s.Close() }() // Panic fallback; ordinary cleanup is checked below.
 	result, human, opErr := fn(ctx, s)
 	closeErr := s.Close()
 	if opErr != nil {
-		return mapError(errors.Join(opErr, closeErr))
+		return mapOperationError(errors.Join(opErr, closeErr))
 	}
 	if closeErr != nil {
 		return graphFailure("route_unavailable", "operation completed but store cleanup failed: "+closeErr.Error(), 5)
@@ -814,6 +820,10 @@ func graphPrintTo(out io.Writer, result any, human string, quiet, structured boo
 }
 
 func graphStorageError(err error) error {
+	return graphStorageErrorWithFallback(err, "graph_not_initialized")
+}
+
+func graphStorageErrorWithFallback(err error, fallback string) error {
 	// A failed rollback may join uncertainty with a definite storage refusal.
 	// No other classification may hide the inspect-before-retry boundary.
 	if errors.Is(err, graphstore.ErrOutcomeUnknown) {
@@ -861,6 +871,6 @@ func graphStorageError(err error) error {
 	case errors.Is(err, graphstore.ErrNotFound):
 		return graphFailure("not_found", err.Error(), 3)
 	default:
-		return graphFailure("graph_not_initialized", err.Error(), 5)
+		return graphFailure(fallback, err.Error(), 5)
 	}
 }

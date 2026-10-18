@@ -200,6 +200,41 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewImportStageErrorCategories(t *testing.T) {
+	bareSQL := errors.New("catalog insert failed")
+	for _, test := range []struct {
+		name   string
+		mapErr func(error) error
+		input  error
+		code   string
+		exit   int
+	}{
+		{"open-bare", graphLegacyImportOpenError, bareSQL, "graph_not_initialized", 5},
+		{"operation-bare", graphLegacyImportError, bareSQL, "route_unavailable", 5},
+		{"operation-invalid-store", graphLegacyImportError, errors.Join(bareSQL, graphstore.ErrInvalidStore), "invalid_store", 5},
+		{"operation-uncertain", graphLegacyImportError, errors.Join(bareSQL, graphstore.ErrOutcomeUnknown), "outcome_unknown", 6},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			oldJSON, oldOutput := jsonOutput, graphFailureOutput
+			var diagnostic bytes.Buffer
+			jsonOutput, graphFailureOutput = true, &diagnostic
+			defer func() { jsonOutput, graphFailureOutput = oldJSON, oldOutput }()
+			result := test.mapErr(test.input)
+			var failure *exitError
+			if !errors.As(result, &failure) || failure.Code != test.exit {
+				t.Fatalf("error=%v, want exit=%d", result, test.exit)
+			}
+			var envelope struct {
+				Code      string `json:"code"`
+				Retryable bool   `json:"retryable"`
+			}
+			if err := json.Unmarshal(diagnostic.Bytes(), &envelope); err != nil || envelope.Code != test.code || envelope.Retryable {
+				t.Fatalf("diagnostic=%q (%v), want code=%s", diagnostic.String(), err, test.code)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewOutcomeUnknownPrecedence(t *testing.T) {
 	candidateIDs := []string{"https://example.invalid/work/links/a", "https://example.invalid/work/links/b"}
 	reported := &exitError{Code: 2}
