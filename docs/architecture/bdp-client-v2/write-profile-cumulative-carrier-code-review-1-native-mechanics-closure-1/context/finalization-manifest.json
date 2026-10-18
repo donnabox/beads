@@ -1,0 +1,305 @@
+{
+  "scope": "DATA source3/native/rootclean binding + previously declared single runner HEAD literal + absolute prompt paths; no new supervision/parser/argv logic",
+  "originalScaffoldFiles": 449,
+  "historyIndexSha256": "4a2d932dbe6b701d43ed85e00f812179357be33f2ce65c829606ffde736ccbd2",
+  "initialHistory1IndexSha256": "1a05b0151afa6be0e8ddb4c4df2a5931c230316a228ec8398e4467a70cdb4102",
+  "changes": [
+    {
+      "path": "binding-adaptation.patch",
+      "before": {
+        "sha256": "ce856bfa5188ca137802d5d1e78150fa7e3fa664c516195915119dea4725b90e",
+        "bytes": 169102
+      },
+      "after": {
+        "sha256": "fd44807e5f4f42f37899f7c6ba2900f54dbd5c42d1b5f15d358fbcd42f6a4726",
+        "bytes": 428621
+      },
+      "forward": "finalization-deltas/binding-adaptation.patch.patch",
+      "inverse": "finalization-deltas/binding-adaptation.patch.inverse.patch"
+    },
+    {
+      "path": "supervision-control-adaptation.patch",
+      "before": {
+        "sha256": "bd35eea812412649a796f93f53d6919a9290328e32a9f4767c9cccf97f3c79bb",
+        "bytes": 1861
+      },
+      "after": {
+        "sha256": "5420120a6608d9a10ff68bba10b694bc50339e0e9e6914f9605414c496591bc2",
+        "bytes": 1872
+      },
+      "forward": "finalization-deltas/supervision-control-adaptation.patch.patch",
+      "inverse": "finalization-deltas/supervision-control-adaptation.patch.inverse.patch"
+    },
+    {
+      "path": "binding-adaptation.inverse.patch",
+      "before": {
+        "sha256": "e1c6cf3b373895e2903192eb333416063dfdb600d9d221c215603931a6302902",
+        "bytes": 169101
+      },
+      "after": {
+        "sha256": "5d59d4bba151fdf3b38f8a413973ed4c18de2bff5f6b17fed6486129e54dea03",
+        "bytes": 428620
+      },
+      "forward": "finalization-deltas/binding-adaptation.inverse.patch.patch",
+      "inverse": "finalization-deltas/binding-adaptation.inverse.patch.inverse.patch"
+    },
+    {
+      "path": "unresolved-inputs.json",
+      "before": {
+        "sha256": "b3634478be47bb7ef1d28a3c44e6be96c45f1042edcb543ea90fa13efd6ec7e5",
+        "bytes": 608
+      },
+      "after": {
+        "sha256": "8f54e0454dc7e8e6568d6ccecb3ac68bf8adf49a8e93d815fb464485fa82da45",
+        "bytes": 803
+      },
+      "forward": "finalization-deltas/unresolved-inputs.json.patch",
+      "inverse": "finalization-deltas/unresolved-inputs.json.inverse.patch"
+    },
+    {
+      "path": "runner-adaptation-inverse.patch",
+      "before": {
+        "sha256": "86feee883ae1c9927850a53e287b410c6cd0c6288edb798ff8f78dad8036c6fc",
+        "bytes": 2007
+      },
+      "after": {
+        "sha256": "001c915569c6844d7a36604825424960de9d386fc403118058c70e256ccefa91",
+        "bytes": 2026
+      },
+      "forward": "finalization-deltas/runner-adaptation-inverse.patch.patch",
+      "inverse": "finalization-deltas/runner-adaptation-inverse.patch.inverse.patch"
+    },
+    {
+      "path": "invocation.md",
+      "before": {
+        "sha256": "5e26a9fca5dcb2c685c8e8a82441467eb9fad9a6a7434578c56c2f559f0a4fd3",
+        "bytes": 793
+      },
+      "after": {
+        "sha256": "8eb6489b689be006a823b7e9dac1147e530b3bea598021b68b667babeb5fbcb9",
+        "bytes": 625
+      },
+      "forward": "finalization-deltas/invocation.md.patch",
+      "inverse": "finalization-deltas/invocation.md.inverse.patch"
+    },
+    {
+      "path": "README.md",
+      "before": {
+        "sha256": "f96d47954844eb8f3473689f481ac7bcb94c88c35367f258f8c202aaa95a1608",
+        "bytes": 1292
+      },
+      "after": {
+        "sha256": "9b02be42b67cfc2b457769addeff6ff47a8d3088a6b25fb538404be10a92e248",
+        "bytes": 870
+      },
+      "forward": "finalization-deltas/README.md.patch",
+      "inverse": "finalization-deltas/README.md.inverse.patch"
+    },
+    {
+      "path": "release-prerequisites.json",
+      "before": {
+        "sha256": "b11dcfb02c30c7f2aae5b5e2c006069a8f022eeb9a00f2e03c2101c116863c57",
+        "bytes": 920
+      },
+      "after": {
+        "sha256": "0255f7d15fa7084fc629eddeca71710f563361260c8b5b5126aa9cb8afc869c5",
+        "bytes": 873
+      },
+      "forward": "finalization-deltas/release-prerequisites.json.patch",
+      "inverse": "finalization-deltas/release-prerequisites.json.inverse.patch"
+    },
+    {
+      "path": "scaffold-state.json",
+      "before": {
+        "sha256": "ad8ff8ef6abae02e3f577e4778c7e05744968b6636c23ce8812ef20a53520d11",
+        "bytes": 560
+      },
+      "after": {
+        "sha256": "b8df0fb4d609b5bd917eab8ed04eeec4cb2e0a2f52fa417bb6481e8030d25f04",
+        "bytes": 520
+      },
+      "forward": "finalization-deltas/scaffold-state.json.patch",
+      "inverse": "finalization-deltas/scaffold-state.json.inverse.patch"
+    },
+    {
+      "path": "runner-adaptation.patch",
+      "before": {
+        "sha256": "6def852d27dbf00d676745e843133a9db0be3b8577ae8eb76b499244d2c1b337",
+        "bytes": 2007
+      },
+      "after": {
+        "sha256": "ec34e196f0babc989bb577a016b3f9d56822fc2a07f13eb8e5cea5e227a0f0ad",
+        "bytes": 2026
+      },
+      "forward": "finalization-deltas/runner-adaptation.patch.patch",
+      "inverse": "finalization-deltas/runner-adaptation.patch.inverse.patch"
+    },
+    {
+      "path": "runner-literal-adaptation.json",
+      "before": {
+        "sha256": "662518cc8ae33e8ac2acced7109d273baec00855f9342769e32af1b8016c6ce1",
+        "bytes": 1452
+      },
+      "after": {
+        "sha256": "5bec1e1a2923e6f8ace9f9bf936d19bbbe8740f3553111d5e3d576ac2aad40c1",
+        "bytes": 1431
+      },
+      "forward": "finalization-deltas/runner-literal-adaptation.json.patch",
+      "inverse": "finalization-deltas/runner-literal-adaptation.json.inverse.patch"
+    },
+    {
+      "path": "supervision-control-adaptation.inverse.patch",
+      "before": {
+        "sha256": "166ee67846f4714516eae178f24271e82f00d7c231698e7e275baf570debedc5",
+        "bytes": 1861
+      },
+      "after": {
+        "sha256": "e217c94d6bcebdad4a2b5b999a919b55aeb27405c2cea85ccf4a07f05436a0d2",
+        "bytes": 1872
+      },
+      "forward": "finalization-deltas/supervision-control-adaptation.inverse.patch.patch",
+      "inverse": "finalization-deltas/supervision-control-adaptation.inverse.patch.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/run.py",
+      "before": {
+        "sha256": "9fc5edb23663032fe4322e38d302794ea64836b92d45d6dff56cae9856a27a1e",
+        "bytes": 8323
+      },
+      "after": {
+        "sha256": "6a133736ab1107c1e6417705c6ba7825efe6c67ac44ccfb08ba7cd56b691be61",
+        "bytes": 8342
+      },
+      "forward": "finalization-deltas/claude-code-review/run.py.patch",
+      "inverse": "finalization-deltas/claude-code-review/run.py.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/source-reanchor.json",
+      "before": {
+        "sha256": "498236bbe562e99a033e0b242bd33d782fa6786624031e3b9ff560b76cef8a2d",
+        "bytes": 1430
+      },
+      "after": {
+        "sha256": "43cade8f930a93e934eeb177459aab7d655a68c419291db1c10a7fd9a47f9bd7",
+        "bytes": 2448
+      },
+      "forward": "finalization-deltas/claude-code-review/source-reanchor.json.patch",
+      "inverse": "finalization-deltas/claude-code-review/source-reanchor.json.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/binding.json",
+      "before": {
+        "sha256": "3d8cc7636229ad9d114091b1215458ffb5558b560de5ba6f25416806f24e184b",
+        "bytes": 207117
+      },
+      "after": {
+        "sha256": "73172072fd1de8bb8cd8b232db4eee2e4e93f7e38e0d994ab780ec00beb6039c",
+        "bytes": 465819
+      },
+      "forward": "finalization-deltas/claude-code-review/binding.json.patch",
+      "inverse": "finalization-deltas/claude-code-review/binding.json.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/context-provenance.json",
+      "before": {
+        "sha256": "7bd080dac3a00d6d447e24b69b80a482735cb8374751babeee45cf42b808936e",
+        "bytes": 178333
+      },
+      "after": {
+        "sha256": "f10220b092b2d419d4f5c0de04990c9339f472f488a17715ca6848bbbc5f6292",
+        "bytes": 630687
+      },
+      "forward": "finalization-deltas/claude-code-review/context-provenance.json.patch",
+      "inverse": "finalization-deltas/claude-code-review/context-provenance.json.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/prompt.txt",
+      "before": {
+        "sha256": "e1b40d26f56e8ff7d3ec7736415a6f331a4aa12211db8242f72fe87ad2a79796",
+        "bytes": 5422
+      },
+      "after": {
+        "sha256": "a631b4e1ea97a95d73351f3e06bd6b1af810dfd5b123579e735dc80539ba3ddd",
+        "bytes": 10635
+      },
+      "forward": "finalization-deltas/claude-code-review/prompt.txt.patch",
+      "inverse": "finalization-deltas/claude-code-review/prompt.txt.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/tool-inventory.json",
+      "before": {
+        "sha256": "87deeb606995d1f7d14cc7e22f3e4ddd67909ca3bfabb80a1049b1e2742f7cd9",
+        "bytes": 1999
+      },
+      "after": {
+        "sha256": "6b4210dc1823756d7826ce6660b8b916e9f1d40c5f4651fa424fa423c4e7d4df",
+        "bytes": 1958
+      },
+      "forward": "finalization-deltas/claude-code-review/tool-inventory.json.patch",
+      "inverse": "finalization-deltas/claude-code-review/tool-inventory.json.inverse.patch"
+    },
+    {
+      "path": "claude-code-review/preparation-status.md",
+      "before": {
+        "sha256": "341e0202b7b7187f1abc2474aeea9579d734bf9caea0829adf90b42a478df879",
+        "bytes": 317
+      },
+      "after": {
+        "sha256": "5e3bddb4e917df59bcda59f71fcd1848c07724d2bbeefbad9bee56c053410e3b",
+        "bytes": 442
+      },
+      "forward": "finalization-deltas/claude-code-review/preparation-status.md.patch",
+      "inverse": "finalization-deltas/claude-code-review/preparation-status.md.inverse.patch"
+    },
+    {
+      "path": "launch-supervision/closed-binding.json",
+      "before": {
+        "sha256": "3d8cc7636229ad9d114091b1215458ffb5558b560de5ba6f25416806f24e184b",
+        "bytes": 207117
+      },
+      "after": {
+        "sha256": "73172072fd1de8bb8cd8b232db4eee2e4e93f7e38e0d994ab780ec00beb6039c",
+        "bytes": 465819
+      },
+      "forward": "finalization-deltas/launch-supervision/closed-binding.json.patch",
+      "inverse": "finalization-deltas/launch-supervision/closed-binding.json.inverse.patch"
+    },
+    {
+      "path": "launch-supervision/frozen-packet-index.json",
+      "before": {
+        "sha256": "fdfc106a3dbf6575e07e183c6db1d913963ec37977a03cb672dd9539fa1fecc3",
+        "bytes": 64837
+      },
+      "after": {
+        "sha256": "1e5cb4bc521d48a97e87706bf4592aa7da6d3bf098624908c8e423c1f2057298",
+        "bytes": 220490
+      },
+      "forward": "finalization-deltas/launch-supervision/frozen-packet-index.json.patch",
+      "inverse": "finalization-deltas/launch-supervision/frozen-packet-index.json.inverse.patch"
+    },
+    {
+      "path": "launch-supervision/control.json",
+      "before": {
+        "sha256": "26c8932480ad7d5dfbcfd48a2fb69d373b226515d4892354e2ba16be41c66a51",
+        "bytes": 1176
+      },
+      "after": {
+        "sha256": "300495c0f5d8143d90bd11531b39cc2c5b9ae907bf1449ba0dd9d829f2188c11",
+        "bytes": 1192
+      },
+      "forward": "finalization-deltas/launch-supervision/control.json.patch",
+      "inverse": "finalization-deltas/launch-supervision/control.json.inverse.patch"
+    }
+  ],
+  "newContexts": {
+    "source3": 429,
+    "nativeSource3": 436,
+    "rootClean": 4,
+    "rootInspection": 5,
+    "current4SourceCopies": 4
+  },
+  "source3NativeAcceptedBeforeThisPreparation": true,
+  "packetMechanicsAcceptance": "UNRESOLVED",
+  "bothRootLaunchFlagsFalse": true,
+  "noAttempt": true
+}

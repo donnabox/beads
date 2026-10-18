@@ -1,0 +1,22 @@
+{
+  "oneClock": "watchdog origin before worker, gate, source, tools, proofs, census or setup; no postdeadline promotion",
+  "phaseLimits": {
+    "startup": 10,
+    "callback": 120,
+    "absoluteCallbackEnd": 130,
+    "flush": 5,
+    "absoluteFlushEnd": 135,
+    "drain": 10,
+    "strictNormalBefore": 145,
+    "TERM": 145,
+    "KILL": 149,
+    "hostOuter": 150
+  },
+  "worker": "one private Python session; product has separately registered session; AJV stays in worker group and creation/actual wait exit recorded; publisher is separate direct owned task",
+  "nonBlocking": "watchdog bounded control channels/nonblocking ps pipes <=20ms select; each ps probe <=200ms; all product/file/hash/schema/source/build/consumer work in owned worker, including final checks",
+  "ownership": "PID/group/birth/comm/parent anchored fixed UTC ps query; groups retained after leader exit; product leader must have actual census match. Census taken before group registration cannot establish its absence. Historical numeric group alone never signal authority; fresh snapshot anchor <=200ms or direct unreaped Popen handle. Unknown refuses positive/unsafe signaling.",
+  "publisher": "private owned mode writes bounded <=1MiB observation, not a product/response cap; exact identities/groups/checks recorded. Root actual outer rawExit0 and source-bound hashes of inner exit+watchdog mandatory before next stage; tentative accepted=true artifact alone never qualifies.",
+  "rootReceipt": "Root actual host150 observes whole parent execution including interpreter startup; cached actual terminal rawExit0/currentattempt/wholeParentElapsedSeconds strictly<145 (ordinary115), sourceBinding and exit/watchdog digests required. No inner timestamp substitutes host timer; root supplies real receipt after actual terminal, never guesses it. Gate complete() checks all fields before next stage. Future host launcher/release remains CLOSED/unresolved.",
+  "noHardRealtimePromise": "Host scheduling or blocking OS creation can cause refusal; elapsed/sample is never maximum guarantee. Strict host150/145/149 remain unchanged. No retries.",
+  "failed": "Raw saved files retained, partial full hashes UNKNOWN when incomplete; refused checks never credit. No fake completed exit or late postdeadline hashing."
+}
