@@ -1,0 +1,108 @@
+{
+  "state": "FULL STATIC REVIEW COMPLETE; one Low open",
+  "priorThreeRequestedFixes": [
+    {
+      "id": "D4-P2-N1",
+      "priorSeverity": "Medium",
+      "status": "RESOLVED_STATIC",
+      "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/gate.py:107",
+      "assessment": "Uses read(idx).items() against actual flat520 SHA-string mapping, then checks every implementation member. Six exact exclusions unchanged; flat index hash gate remains."
+    },
+    {
+      "id": "D4-P2-N2",
+      "priorSeverity": "Medium",
+      "status": "RESOLVED_STATIC",
+      "evidence": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/run.py:215",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/run.py:226"
+      ],
+      "assessment": "BOTH tentative publication and final success use actual current monotonic <min(flush+10,begin+term), product requires flush fact. Ordinary 115-second branch unchanged. No new clock/reset/census/signal/retry or synchronous loop work introduced; old fixed deadlines unchanged."
+    },
+    {
+      "id": "D4-P2-N3",
+      "priorSeverity": "Low",
+      "status": "RESOLVED_STATIC_WITH_DISTINCT_COMPLEMENT_FINDING",
+      "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/audit.py:102",
+      "assessment": "Settled/unreceived now requires one existing nonnull rejection category. Unsettled null stays legal. This target fix works; complementary impossible unsettled/received and initial null conditions are D4-P3-N1."
+    }
+  ],
+  "areas": [
+    {
+      "area": "Full input and scope",
+      "assessment": "All526 physical/525 indexed/520 flat implementation,472 origins,1557 pins plus186 semantic pins, exact mirror,679 live source hashes/base679/one owned678 unchanged,15 genuine pairs replayed; reviewer read/hashes do not constitute Git invocation or runtime evidence.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Full helper reading",
+      "assessment": "All seven Python helpers, MJS, full913-line source, full report grammar/finite DATA tables,21 commands,48 descriptions, controls/ownership/clock/package/proof boundaries reviewed. AST only parsed as data; no import/evaluation.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Identity and worker registration",
+      "assessment": "Worker inherited PGID contains product from creation before ack; parent direct worker remains unreaped anchor. Product PID/birth/PPID/PGID registration and current same-group schema worker recorded. Quiet excludes exactly authenticated worker PID; other same-group members, including terminal rows, prevent absence.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Reaping and signal safety",
+      "assessment": "Parent handle.poll() only reap_after_quiet after fresh post-registration census, no other owned member and leader terminal/absent; subsequent census must prove group absence before acceptance. Fresh matching birth/PGID and live comm identity required, narrow terminal-only comm variation cannot resurrect PID. Signal path uses fresh authenticated or unreaped direct-owned anchor; uncertainty never licenses guessed group signal.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "One clock and publication",
+      "assessment": "Clock starts before worker/gate/check/hash work. Product start receipt10; end min(start+120,130); checks/scanner/schema/source/build/consumer flush min(end+5,135); drain10 subject145; TERM145/KILL149/outer150. Responsive20ms loop; fixed bounded ps probe; slow work remains owned/charged. Publisher separate owned session/cap and root actual outer receipt required; no tail off-clock credit.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Scanning and capacity",
+      "assessment": "Strict UTF8/duplicate keys/finite numbers; pre-tree depth128/value-node1e6/container100000; report64MiB/results16MiB/raw256MiB/marker4096. Overflow refuses/inconclusive with saved raw, incomplete hash unknown; no product body-cap reduction or universal fit claim.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Marker, report and console",
+      "assessment": "Two exact closed five-key markers, fresh32hex attempt and order; null ordinary marker never validation. Existing verbose+JSON reporter pair preserves RPC console report, which may follow end marker. End receipt is not RPC/stdio flush or ownership. Source JSON serialization precedes final marker; parent marker receipt is not exact callback start.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Positive semantics",
+      "assessment": "Exact32 HTTP11POST21GET,2children,33receipt entries,96deletion Events (99seed),five oracle clones; full original receipt/replay and tombstone/group/postimage/noop/atomic rollback laws. All status/header/body/wire/base64/hash/POST semantics rederived. Existing12 actual operation targets/configuration remain pinned; no request auth/key fields invented.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Failed semantics",
+      "assessment": "Actual-next loops each≤12 and dispatch≤32; not required to be success-table prefix. Counts/receipt/Event/lifecycle facts rederived, unsupported final Event boundary refuses while retaining raw/no credit. Only remaining concrete issue is full observation truth table D4-P3-N1.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Source and child cleanup",
+      "assessment": "Source acquisition vs returned handle vs real exit0 AND close0stdio distinguished for both generations, cached close settlement/success; sticky ownership unknown preserved. Pending state controls directory retention; directory deletion or snapshot never owner/SQLite proof. No guaranteed finally claim.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Schema ownership",
+      "assessment": "Existing strict AJV2020/protocol schemas with separate envelope union option; Node schema task same registered worker group, owned/acknowledged/phase charged, distinct quiet phase. Schema and data descriptions not compiled or executed in this review.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Build/archive/consumer/proof",
+      "assessment": "Fresh source/lock/build/archives verified file-wise; fresh external consumer locked production graph and realpath/link/entry/payload proof; explicit root build/archive/lock/proof barriers. Current hashes remain unresolved, bootstrap reuse empty, source labels alone insufficient. No old installed runtime reused as new evidence.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "Selection and downstream checks",
+      "assessment": "Exact21 command stages, same one selected source callback/expected workload; later boundaries/smoke/preflight/historicalRead verifier follow root D4 terminal acceptance. Those Read checks yield no Write admission. Full source/configuration and independent process proof remain applicable gates.",
+      "mode": "STATIC"
+    },
+    {
+      "area": "History and future release",
+      "assessment": "P2 full296 and original nested130 preserved; prior native findings/root dispositions not erased or self-approved. Both current gates false/approvedStages[]/no run. Concrete zero-product synthetic harness UNPREPARED/UNAPPROVED,48 descriptions only. No current actual execution accepted.",
+      "mode": "STATIC"
+    }
+  ],
+  "sourceStateFinding": "D4-P3-N1",
+  "newProductCalls": 0,
+  "sourceOrHelperEdits": false,
+  "reviewerAuthoredPredecessor2": true,
+  "independenceBoundary": "Reviewed entire other-authored helper3 actual code/data/source and all changes; predecessor author identity was not accepted as native evidence. Root dispositions and prior independent report read separately.",
+  "concreteSyntheticHarness": "UNPREPARED/UNAPPROVED",
+  "executionAcceptance": false
+}

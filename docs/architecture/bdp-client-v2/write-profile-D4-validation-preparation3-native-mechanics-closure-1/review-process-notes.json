@@ -1,0 +1,17 @@
+{
+  "pureDataOnly": true,
+  "errors": [
+    {
+      "kind": "KeyError",
+      "cause": "Reviewer attempted commands[stages]; actual key is commands. Text read completed up to that access; subsequent own static inspection used actual key.",
+      "reviewedCodeInvoked": false
+    },
+    {
+      "kind": "FileNotFoundError",
+      "cause": "Reviewer mistyped the second Python executable path as python3.14 instead of python@3.14. Guard passed; own proposed data script never started; corrected guarded invocation then completed.",
+      "reviewedCodeInvoked": false
+    }
+  ],
+  "noOriginalOrHelperBytesChanged": true,
+  "noErrorSuppressionOrQualificationCredit": true
+}

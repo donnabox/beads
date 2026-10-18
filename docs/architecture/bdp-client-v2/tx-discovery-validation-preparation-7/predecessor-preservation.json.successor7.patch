@@ -1,0 +1,37 @@
+--- predecessor6/predecessor-preservation.json
++++ predecessor-preservation.json
+@@ -1,15 +1,22 @@
+ {
+-  "actualFlatRunFiles": 128,
+-  "allFresh6Required": true,
+-  "allNamedCopiesExact": true,
+-  "consumer870Files17Links": "retained IN PLACE, no body copy/reuse/count as preparation",
++  "actualFlatRunFiles": 134,
++  "actualOutcomes": "28PASS/1FAIL/23laterUNATTEMPTED, source9b7 only; unchanged complete oldP6 outputs not credit for newa61",
++  "actualStageExits": 29,
++  "allNew52StagesFreshRequired": true,
++  "bootstrapReuse": [],
++  "consumerMetadataFiles": 3,
+   "historicalArchives": 2,
+-  "inventory": "historical-subset-inventory.json",
+-  "onlyPreparedException": "execution-gate.json consumed/closed330d",
+-  "originalPreparedIndexSha256": "98922e97b577b7ec6c0158d414ff30567949c6042a070f8c108fd68ad784f225",
+-  "other956OriginalBytesExact": true,
+-  "preparedPaths": 957,
+-  "scope": "EXACT BOUNDED NAMED SUBSET ONLY, never full P5 tree",
+-  "separateGeneratedConsumerMetadataCopies": 3,
+-  "sourceHistorical27Pass1Fail24Unattempted": true
++  "historicalConsumer870Files17Links": "IN PLACE only",
++  "noHistoricalOutputReuse": true,
++  "originalP6PreparationIndexSha256": "b897b61a370de781f6d83409f71a39f924c7f0c0960b1f46f5cb2a344ad4e6bc",
++  "preparedFiles": 1312,
++  "preparedGateException": [
++    {
++      "consumedClosedSha256": "738a281da7a6fa55d26d8255da0b030d086d40145bad29983b036fe53548bedb",
++      "originalActiveBytesAlsoStoredAt": "predecessor6-original-active-gate.json",
++      "originalClosedSha256": "1d02bb7644986e5aef5d93f4f204f78e2fe39670196104b9064dd4cfcd4b4634",
++      "path": "execution-gate.json"
++    }
++  ],
++  "scope": "EXACT BOUNDED P6 prepared1312 +134 directactual files +2archives +3consumer metadata; no consumerbody/build/node_modules copy or freshcredit"
+ }

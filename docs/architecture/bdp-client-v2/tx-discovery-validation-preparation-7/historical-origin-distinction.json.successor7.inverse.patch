@@ -1,0 +1,12 @@
+--- historical-origin-distinction.json
++++ /dev/null
+@@ -1,9 +0,0 @@
+-{
+-  "allOther678LiveSourcePinsExact": true,
+-  "onlyChangedLiveReference": {
+-    "currentP7Sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+-    "historicalP6Sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+-    "path": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts"
+-  },
+-  "rule": "historical copied source/binding/origin documents keep oldbytes/labels under predecessor6 and context/historical6; active live source pin uses currentSHA; no claim original current-path origin remains byte-equal across authorized source change"
+-}

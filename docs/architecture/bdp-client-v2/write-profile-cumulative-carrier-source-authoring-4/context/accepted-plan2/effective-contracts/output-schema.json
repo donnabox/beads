@@ -1,0 +1,135 @@
+{
+  "TXHandoffFailure": "Carrier-local failed/pending state with rawWrapperSha256:null, genuine result/session/baseline unchanged. No successful summary if acceptance/persistence unavailable; later validation checks actual artifact.",
+  "TXRawWrapperIdentity": "rawWrapperSha256 = SHA256 of the exact one UTF8 serialization owned by positive onObserved, including original indentation/newline/fields. canonicalResultSha256 remains separately named derived digest; neither minimal {result,sessions,baseline} nor guessed/reformatted file may be labelled raw wrapper.",
+  "absentReport": {
+    "canonicalResultSha256": null,
+    "exactConfigurationDigest": null,
+    "ownerId": "actual fixed owner ID",
+    "ownershipVerification": "unverified",
+    "rawWrapperSha256": null,
+    "reportedCleanupState": null,
+    "resultIds": null,
+    "runtimeConfigurationIdentity": null,
+    "selectedIds": null
+  },
+  "attempt": "same existing outcome/failure-stage facts, states and result references; expected counts distinct from actual returned/validated/settled facts; missing is null/unobserved rather than zero",
+  "authoredOutcomeJoin": {
+    "authority": "exact manifest action.family + exact coverage action/assertion IDs, not report order or exchange presence",
+    "binding": "RU coverage action.assertion dot vs TX action:assertion colon retained. Resolve from canonical manifest IDs; reject duplicate action rows, duplicate assertion IDs/bindings, unknown authored IDs or incorrect family/lane. No exchange-first fallback. Report synthetic or installed attribution remains independent.",
+    "caseBindings": [
+      "V05",
+      "R22",
+      "V03",
+      "V04"
+    ],
+    "lanes": {
+      "every non-http family": "find exactly matching actions[] actionId then that action assertions[] assertionId; ignore same-ID HTTP exchange assertions for this purpose",
+      "http": "find exactly matching exchanges[] actionId then that exchange assertions[] assertionId"
+    },
+    "precedence": [
+      {
+        "authoredAssertionsAllPassed": false,
+        "when": "any authored ID resolves passed:false"
+      },
+      {
+        "authoredAssertionsAllPassed": null,
+        "when": "no resolved false and at least one authored ID unresolved"
+      },
+      {
+        "authoredAssertionsAllPassed": true,
+        "when": "every authored ID resolved passed:true"
+      }
+    ],
+    "state": "FULL active family-specific authored outcome join",
+    "unexecuted": "Stopped/not-run/reached not-implemented/unexecuted rows retain null execution credit regardless of empty assertions. Validate full inventory before join; empty inventory/list adequacy/counts never establish semantic whole-clause credit.",
+    "wholeClauseQualification": "always unestablished, both global eligibility flags false"
+  },
+  "canonicalEncoding": "canonicalJson from existing module then UTF8, SHA256 raw serialized bytes; verify canonical bytes exactly and recompute every projection from independently supplied bound inputs/reports, rather than trust candidate counters/flags.",
+  "closedRootKeys": [
+    "carrierVersion",
+    "kind",
+    "claimEligible",
+    "qualificationReady",
+    "profile",
+    "history",
+    "configuration",
+    "catalogDigests",
+    "artifactDigests",
+    "requiredIds",
+    "retiredIds",
+    "requirements",
+    "nonRequiredReportRows",
+    "reports",
+    "attempt",
+    "unresolvedConditions",
+    "limitations"
+  ],
+  "declaredFlags": "RU current34 copied as declared flags; TX allfalse. Every wholeClauseQualification stays unestablished in this private carrier, regardless of declared flag/pass. Independent full governing-clause review plus actual final installed qualification belongs later.",
+  "fixed": {
+    "carrierVersion": 1,
+    "claimEligible": false,
+    "kind": "private-profile-evidence",
+    "qualificationReady": false
+  },
+  "limitations": [
+    "source-private carrier only; no public admission or proof token",
+    "trusted-source identity equality does not prove run truth",
+    "source/historical/data-unit observations never current installed qualification",
+    "reported cleanup is not verified child/owner closure",
+    "final combined basis unbound; incoming startup/D3a not adopted"
+  ],
+  "nonRequiredReportRows": "exact known unfiltered metadata rows(5 diagnostics) retained as separate no-credit projection; no unknown/extra or wrong-profile rows; do not count diagnostics in requiredIds or planned owners",
+  "observation": "ownerId,rawWrapperSha256,canonicalResultSha256,rowIndex,state,category|null,authoredAssertionInventoryDigest,authoredAssertionsAllPassed(boolean|null),reportedCleanupState,ownershipVerification(unverified). Only fixed categories/known manifest IDs/digests/counts are serialized; no request/response body, raw header, arbitrary message/reason/exception, resolver or credential string. Preserve raw actual wrapper only via existing protected writer; this slice makes no new raw copy.",
+  "reportClosedKeys": [
+    "ownerId",
+    "rawWrapperSha256",
+    "canonicalResultSha256",
+    "selectedIds",
+    "resultIds",
+    "runtimeConfigurationIdentity",
+    "exactConfigurationDigest",
+    "reportedCleanupState",
+    "ownershipVerification"
+  ],
+  "reports": "EXACT nine reportClosedKeys for every owner in original owner order; present values remain actual source/configuration/result/cleanup projections, absent fields are explicit null. No schema version or qualification change.",
+  "requirements": "one row per canonical selected normative ID in canonical order: id,requiredProfile,ownerId|null,readiness(existing six-state planner spelling),declaredWholeContract(boolean),wholeClauseQualification(unestablished),observation|null,missingSetup[],missingApplicability[],blockedPrerequisites[]. No missing ID is dropped.",
+  "stoppedRows": "Actual stopped remainder is harness-error/not-run for every remaining selected ID, including absent plans/diagnostics. Reached missing plans are harness-error/not-implemented. Preserve category/index/order/empty exchanges; both no-credit and authoredAssertionsAllPassed:null, never every([])=true.",
+  "unboundAttemptSchema": {
+    "artifactDigests": "existing branded RU set.digests only; no fabricated installed/auth/policy/runtime configuration digests",
+    "attempt": "existing safe owner run/cleanup/evidence/outcome/failure stages/timing only; attempted versus acquired remains honest",
+    "attemptVersion": 1,
+    "bindingStatus": "unbound",
+    "claimEligible": false,
+    "closedKeys": [
+      "attemptVersion",
+      "kind",
+      "bindingStatus",
+      "configuration",
+      "claimEligible",
+      "qualificationReady",
+      "requestedProfile",
+      "declaredSourceCommit",
+      "artifactDigests",
+      "requiredIds",
+      "owners",
+      "observations",
+      "attempt",
+      "limitations"
+    ],
+    "configuration": null,
+    "declaredSourceCommit": "existing writer sourceCommit, not a runtime-read source claim",
+    "kind": "private-profile-attempt-unbound",
+    "limitations": [
+      "no returned served configuration yet",
+      "not a bound carrier, target observation, admission or qualification"
+    ],
+    "observations": "one null for every required ID; no fake rowIndex/report digest/pass or vacuous assertion credit",
+    "owners": "existing set.requirements owner/null map",
+    "qualificationReady": false,
+    "requestedProfile": "read-update (requested canonical selection only, never claimed observed profile)",
+    "requiredIds": "complete canonical130 IDs from existing set, canonical order",
+    "serializerEnforcement": "serializeProfileEvidence itself intrinsic-captures own data and checks EXACT closedKeys, no missing/extra keys including configuration, all listed fixedvalues, requestedProfile read-update, canonical130 requiredIds/owner map/artifact digest shape, observations.length===requiredIds.length with EVERY entry null, allowed finite attempt/limitations. Invalid-source on missing/extra/wrong values, never merely stringify a conventionally shaped object. assemble/verify reject unbound kind. No extra export.",
+    "transition": "first secret-safe genuine returned(index,report) with validated existing bound configuration permits BOUND ProfileEvidenceV1; pending/absent other reports stay null; every later report must match first binding. Until then failures remain unbound permanently, no successful summary."
+  },
+  "unresolvedConditions": "explicit D2S1/G2 where affected, D3 cold/intended-listener/admission, D4 administration/restore and final combined source/config/provenance. Missing setup/applicability never certifies N/A. No resolved/waived status introduced."
+}

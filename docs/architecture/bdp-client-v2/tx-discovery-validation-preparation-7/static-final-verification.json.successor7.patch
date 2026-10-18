@@ -1,0 +1,42 @@
+--- predecessor6/static-final-verification.json
++++ static-final-verification.json
+@@ -1,16 +1,25 @@
+ {
+-  "16AuditPairsAndAllBudgetsUnchanged": true,
+-  "52CommandsNamespaceOnly": true,
+-  "957PreparedSubsetAnd128FlatHistoryHonest": true,
+-  "all679Source9b7Exact": true,
+-  "allFresh6NoActiveRun": true,
+-  "allOtherSchemaBytesReversibleExact": true,
+-  "consumerBodyNotCopiedOrReused": true,
+-  "fiveHelperByteASTExact5and2": true,
+-  "gatesFalseApprovedEmpty": true,
+-  "helperSchemaProductExecuted": false,
+-  "independentMechanics": "PENDING",
+-  "rootExecution": "PENDING",
+-  "schemaOnlyExact11Arrays": true,
+-  "state": "STATIC AUTHOR DATA verification only"
++  "52FreshStages16ImmediateAudits": true,
++  "P6ActualOutcomes": "28PASS1FAIL23UNATTEMPTED historical9b7",
++  "P7OtherIndependentMechanics": "PENDING",
++  "allExecutionClosedNoRun": true,
++  "allFiveHelpersByteASTExact": true,
++  "consumerBodyCopied": false,
++  "exactEightDataArrays": true,
++  "fiveArraysMatchActualFailed03": true,
++  "metadataOnlyCopies": 3,
++  "old134FlatActualFiles29Stages2ArchivesPreserved": true,
++  "oldOriginalClosedActiveBytesPreserved": true,
++  "oldP6ActiveGateConsumed738aExceptionExplicit": true,
++  "oldP6Prepared1312Preserved": true,
++  "onlyOneSourceFileDifferentFromOld9b7": true,
++  "other678Exact": true,
++  "priorElevenInstalled02Preserved": true,
++  "reverseEightExactP6b74e": true,
++  "scope": "author file/JSON/AST/data checks ONLY; no helper/schema/product execution",
++  "sixDirtyPathsUnchanged": true,
++  "source679Newa61": true,
++  "sourceAndInstalledGrammarSelectionWorkloadsBudgetsOtherwiseExact": true,
++  "sourceArtifactsAlreadyAcceptedNotNewRuntime": "source268/native0f1/rootd310",
++  "threeArraysStaticOnlyStagesUnattempted": true
+ }

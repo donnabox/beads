@@ -1,0 +1,83 @@
+--- predecessor2/execution-gate.json
++++ current3/execution-gate.json
+@@ -1,40 +1,39 @@
+ {
+-  "actualClaudeReviewDisposed": true,
++  "actualClaudeReviewDisposed": false,
+   "actualCodeDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-1/actual-code-disposition.json",
+-    "sha256": "ec8039a560eb47e4cb2c57a3b13c032531312e46c9ff93ea7e8b45b6aa582841"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+   "approvedStages": [],
+   "baseTools": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/base-tools.candidate.json",
+-    "sha256": "3a5e2bcbd5c67fc4fd87d4fc16f514664055f7c31e0b5b03fcf3d83c9742fe88"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/base-tools.candidate.json",
++    "sha256": "c667247ad5d182f0eaf2b26b624d1ff0ce868a86c86fc10ba9c497c8534e935b"
+   },
+   "bootstrapReuse": [],
+-  "closedReason": "Actual typecheck failed TS2304 HeadersInit at three authored test annotations; preserved, no retry.",
+   "consumerInventory": {
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+   "consumerLockSha256": "UNRESOLVED",
+-  "implementationIndexSha256": "5b9964c38e9947fef7f9fe38d66fe5edc078f1dd6fb5e187e425a8820865b8b2",
++  "implementationIndexSha256": "c06e5f1d2479b3bcb3c9736621a815f46dc56c280e5eb8aba1a7b553dc8198a0",
+   "installedProvenance": {
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+   "knownCorrectedSourceFreeze": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/predecessor/context/corrected-source2/index.json",
+-    "sha256": "460702742fd52af5be7bb6e6b55fd58726d452c9ea424665449d4c5066ad35f0"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/context/current-source-correction/index.json",
++    "sha256": "2219350a2f6bcbb84bcce2b912dc7454c10117eb2e27a52b2804109d832be498"
+   },
+   "knownOriginalActualCodeTerminal": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/predecessor/context/corrected-source2/context/original-actual-code-terminal-closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/predecessor2/predecessor/context/corrected-source2/context/original-actual-code-terminal-closure.json",
+     "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084"
+   },
+   "mode": "final",
+   "nativeCodeDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-1/native-code-disposition.json",
+-    "sha256": "082658632e9163375a47c44da26afc1d449e4cbe697ee67926eb2546edf84383"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+-  "nativeCodeReviewDisposed": true,
++  "nativeCodeReviewDisposed": false,
+   "released": false,
+   "rootArchiveAcceptance": {
+     "path": "UNRESOLVED",
+@@ -53,19 +52,19 @@
+     "sha256": "UNRESOLVED"
+   },
+   "rootDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-1/disposition.json",
+-    "sha256": "98da992dd6349001cc96bbc6b38b55ac80144da6c7f5de03eb06af2b7e6b2c0a"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+-  "rootExactSourceAccepted": true,
+-  "rootPlanAccepted": true,
++  "rootExactSourceAccepted": false,
++  "rootPlanAccepted": false,
+   "session": "2026-10-18T02:16:24Z-549f",
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/source-binding.json",
+-    "sha256": "44d5826ee8f260d0de1ab1570b02ff0427c59a12707333060697f9cf047ad05d"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/source-binding.json",
++    "sha256": "00459b95b289ba42a4da948139516c3039bd81ea2a739b9dceb92c95208f7bfe"
+   },
+   "staticValidationAuthorized": false,
+   "workspaceTools": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run/workspace-tools.json",
+-    "sha256": "d914e1c669fe7c89dd7abca219f2da33da33e978e40f6f3708a16cef4955cff3"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   }
+ }

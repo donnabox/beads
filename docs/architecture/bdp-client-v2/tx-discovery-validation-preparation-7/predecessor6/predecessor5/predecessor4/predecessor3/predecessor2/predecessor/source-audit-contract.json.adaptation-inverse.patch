@@ -1,0 +1,205 @@
+--- candidate/source-audit-contract.json
++++ template/source-audit-contract.json
+@@ -1,7 +1,197 @@
+ {
+-  "cleanup": "source D3 3swork+1scleanup inclusive4s; actual finite elapsed/cleanupKnown/workSettled and every task-owned BDP directory absent. Outer120/TERM115 fail-closed. Retained stage scratch/npmcache is distinct from BDP-runtime dirs",
+-  "reports": "D3-source21 exact callbacks with actual counter maps/baselines/direct response vs raw wire distinction/9 exact zero-wire clones; historical18 report labels and source schemas preserved",
+-  "selection": "21 D3 exact callback names, full32 changefeed +9 installed contracts suites, separate pure schema1; exact file/name uniqueness, missing/duplicate/unselected execution fatal",
+-  "sourceBinaryDiffSha256": "6458c66715de3b6d2e86ae9c0d10efd1b7c146d81ba53da8028037ca9d0e4e89",
+-  "staticNoCollection": "names expanded from finite authored tables/it.each; actual Vitest collection counts and pending inventory UNRESOLVED, never inferred as run"
++  "state": "Authored source-bound contract, execution CLOSED",
++  "exactSourceCallbacks": 15,
++  "callbackSelection": [
++    {
++      "kind": "new",
++      "group": "A",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "preserves changefeed cursor precedence under current-admission opaque minima"
++    },
++    {
++      "kind": "new",
++      "group": "B",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "captures current changefeed admission once across owner entries: start-now-unknown"
++    },
++    {
++      "kind": "new",
++      "group": "B",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "captures current changefeed admission once across owner entries: genesis-unknown"
++    },
++    {
++      "kind": "new",
++      "group": "B",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "captures current changefeed admission once across owner entries: retained-unknown"
++    },
++    {
++      "kind": "new",
++      "group": "B",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "captures current changefeed admission once across owner entries: retained-pos-01"
++    },
++    {
++      "kind": "new",
++      "group": "C",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "drains current changefeed admission before owner close: start-now"
++    },
++    {
++      "kind": "new",
++      "group": "C",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "drains current changefeed admission before owner close: retained"
++    },
++    {
++      "kind": "new",
++      "group": "F",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "preserves current changefeed anchor capture before waiter preflight"
++    },
++    {
++      "kind": "new",
++      "group": "D",
++      "file": "packages/server/src/transaction-sse.test.ts",
++      "fullName": "serves current changefeed opaque minima across finite and SSE admission"
++    },
++    {
++      "kind": "legacy-unchanged",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "keeps start=now's original admission anchor through a minimum wait and drains on close",
++      "sourceDerivedHttp": 0,
++      "sourceDerivedCommits": 2
++    },
++    {
++      "kind": "legacy-unchanged",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "keeps direct and excluded changefeed minimum paths strict",
++      "sourceDerivedHttp": 0,
++      "sourceDerivedCommits": 1
++    },
++    {
++      "kind": "legacy-amended",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "serves finite start-now opaque minima before HTTP shortcuts",
++      "sourceDerivedHttp": 10,
++      "sourceDerivedCommits": 1
++    },
++    {
++      "kind": "legacy-unchanged",
++      "file": "packages/server/src/transaction-changefeed.test.ts",
++      "fullName": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
++      "sourceDerivedHttp": 7,
++      "sourceDerivedCommits": 0
++    },
++    {
++      "kind": "legacy-unchanged",
++      "file": "packages/server/src/transaction-sse.test.ts",
++      "fullName": "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
++      "sourceDerivedHttp": 2,
++      "sourceDerivedCommits": 0
++    },
++    {
++      "kind": "legacy-unchanged",
++      "file": "packages/server/src/transaction-sse.test.ts",
++      "fullName": "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up",
++      "sourceDerivedHttp": 9,
++      "sourceDerivedCommits": 1
++    }
++  ],
++  "vitest": "Only exact selected15 unique fullName/file identities pass; unselected pending/skipped separately counted and not called executed; no failed tests/suites/unhandled errors. Exit0 alone does not qualify.",
++  "newReports": {
++    "current-changefeed-minimum-owner": {
++      "records": "18 ordered actual call records; baseline/table role,after,tag,tupleFrozen,outcome/errorClass/reason,actual context or null",
++      "commits": 2,
++      "ownerLifetimes": 2,
++      "offlineDeletes": 1
++    },
++    "current-changefeed-minimum-capture": {
++      "label": [
++        "start-now-unknown",
++        "genesis-unknown",
++        "retained-unknown",
++        "retained-pos-01"
++      ],
++      "reads": "4 actual records",
++      "captures": "1 only start-now else0",
++      "waits": 1,
++      "clocks": 4,
++      "commits": 2,
++      "closes": 1,
++      "originalAfter": "actual token",
++      "positiveGroup": "actual full returned group",
++      "failureCount": 0
++    },
++    "current-changefeed-minimum-drain": {
++      "label": [
++        "start-now",
++        "retained"
++      ],
++      "readsBeforeClosedProbe": 2,
++      "rawClosedProbes": 1,
++      "serviceClosedProbes": 1,
++      "waits": 1,
++      "clocks": 2,
++      "captures": "1 now else0",
++      "closes": 1,
++      "order": [
++        "wait-entered",
++        "abort",
++        "wait-released",
++        "owner-close",
++        "close-resolved"
++      ],
++      "failureCount": 0
++    },
++    "current-changefeed-minimum-preflight": {
++      "rows": "4 actual isolated outcome/capture/read/wait/clock/close records; no aggregate inferred calls"
++    },
++    "current-changefeed-minimum-http": {
++      "attempted": 32,
++      "completed": "exact32 actual drained on success, never records.length",
++      "records": "same ordinal ready-before-status snapshot; strict ready/drained/bodyState/drainKind/availability/transport-close success fields from actual source; partial/null snapshots cannot pass",
++      "stream": "exact group2 frame+CP2,liveBeforeClose,afterDrain,ready/status/headers",
++      "elapsedMs": "actual includes cleanup, <4000 on success",
++      "runtimeClosed": true,
++      "directoryAbsent": true,
++      "failureCount": 0,
++      "observedResponses": 32
++    }
++  },
++  "sourceGroupChecks": {
++    "A": "18 actual ordered call records=2baseline+16table;2commits/2owner lifetimes/offline deletion. TypeError before entry; unsupported/no-context and corruption remain distinct. Minimum after cursor/row checks.",
++    "B": "4labels,4reads each,2commits each,one wait/four clocks/oneclose; only start-now captures once. Immutable original tuple/after, actualpos1->pos2 and positive whole group; bounded entry and drain1000ms; callback-local ownership.",
++    "C": "2labels;2read records each before separately counted rawclosedprobe,serviceclosedprobe;start-nowcapture1/retained0,onewait/twoclocks/oneclose,exact observed abort/release/ownerclose sequence.",
++    "F": "One callback,4isolated rows;capture1 each/reads0/waits0/closes1each;clock0invalid-policy else1;observed exact error identities; bounded closure and no historical cleanup registration.",
++    "D": "32 attempted/completed HTTP;actual2commits/CP1/CP2;statuses200x6,503x12,400x5,410x3,409x2,406/304/412/401oneeach. HEAD zero body/context+content-length parity; exact current context/private no-store/Retry-After1 catch-up Problem/positive live whole group2/CP2 then verifieddrain.3swork/4scleanupinclusive/default5scallback."
++  },
++  "newSourceReports": 9,
++  "historicalInventory": {
++    "status": "RESOLVED by actual owning callback inspection2; predecessor discrepancy preserved",
++    "selectedReports": [
++      "changefeed-opaque-boundaries",
++      "changefeed-opaque-http"
++    ],
++    "unselectedReport": "private-source-changefeed-parameter-context",
++    "selectedHistoricalReports": 2,
++    "newSelectedReports": 9,
++    "policy": "Reject a third selected historical output; do not expand selector or relabel unselected ordinary full-CI coverage."
++  },
++  "prospectiveTotals": {
++    "callbacks": 15,
++    "stores": 18,
++    "ownerLifetimes": 19,
++    "http": 60,
++    "commits": 23,
++    "listeners": 5,
++    "newReports": 9,
++    "legacyReports": 2
++  },
++  "sourceVsWire": "60HTTP and18stores/19ownerlifetimes/23commits are prospective source-derived inventories. Emitted actual report counters/context/frames must be independently parsed; no whole-workload wire census or invented response/wire bytes. Fetch seeds do not provide raw-wire hash.",
++  "actualAuthoredReportBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/report-schemas.json",
++    "sha256": "6b554f5bd9520bbe0a46399c97736496eda2c646d2bff105a75fcb8561e7b8e9"
++  }
+ }

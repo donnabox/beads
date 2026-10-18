@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-18T12:18:01.881224+00:00",
+  "state": "Root static exact-source/helper inspection ONLY; full independent mechanics pending",
+  "acceptedStaticInspection": true,
+  "preparationIndexSha256": "ccb92eaccffa287acc18b392ac62405f6b6ce7d908af2a438e6d5be553fc6843",
+  "implementationIndexSha256": "8d623d949f221cdedf52114a7a8bca5c3784cf2fdcab4ad971cbd9abbac90106",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+  "physicalFiles": 1963,
+  "indexedFiles": 1962,
+  "implementationSHAStrings": 1952,
+  "explicitControlExclusions": 11,
+  "origins": 1858,
+  "referencePins": 5817,
+  "genuinePairs": 38,
+  "fiveHelpersByteASTExact": true,
+  "commandsNamespaceOnly": true,
+  "orderedStages": 52,
+  "immediateAudits": 16,
+  "exactEightReversalToP6ByteEqual": true,
+  "all679CurrentSourceExact": true,
+  "closedGateSha256": "7ed635aa05fe54b6f0dbdd0f941ed7df868bf56fdf590444080d7692dfde6f89",
+  "rootReadOnlyInspectionErrors": [
+    {
+      "error": "Initial root reversal tried schema row key fields, actual fieldOccurrences; KeyError before rootinspection emitted, no helper or source effect. Correct actual key inspected and full static pass repeated."
+    }
+  ],
+  "helperSchemaProductExecuted": false,
+  "executionReleased": false
+}

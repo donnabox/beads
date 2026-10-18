@@ -1,0 +1,7 @@
+# D3a validation preparation3 — CLOSED
+
+This is a fresh named attempt namespace after the preserved preparation2 actual typecheck failure. The sole source change is three HeadersInit annotations replaced by Record<string,string>. No stage or proof from preparation2 may count as fresh. The complete observed predecessor2 physical inventory, actual failed run, original closed gate and attributed active gate closure are historical copies under predecessor2.
+
+All five executable helpers are byte-identical to accepted preparation2. Current command/data paths point here; schemas, finite selections, report grammars,52 stages/16 immediate test-audit pairs and all deadlines remain unchanged. Both execution gates are false with approvedStages empty, workspace/build/archive/consumer/lock/proof/root bindings unresolved and no run directory. Root may later release only the active control through a separately attributed durable release after native precision/mechanics acceptance.
+
+Current source679/canonical5964/current root Git patch6eea are bound. Prior actual CODE did not read later corrected or annotation bytes; historical root/native adjudications remain distinct. This preparation does not claim the annotation correction typechecks. No helper imported/evaluated or product/compiler/test/formatter/build/install/Git/reviewer ran. All stage outputs, actual versions, offlineinstall, fresh workspace tool pins, freshbuild, packages, actual external consumer lock and proof must be newly established behind the same barriers.

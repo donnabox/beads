@@ -1,0 +1,42 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-code-correction-plan-1/footprint.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-code-correction-plan-2/footprint.json
+@@ -1,27 +1,25 @@
+ {
+   "allowedFuturePaths": [
+-    "apps/bdptest/src/transactional-matrix.test.ts",
++    "packages/conformance/test-support/profile-evidence.ts",
++    "packages/conformance/test-support/profile-evidence.test.ts",
+     "apps/bdptest/test-support/read-update-artifact-execution.ts",
++    "apps/bdptest/src/transactional-matrix.test.ts"
++  ],
++  "newPaths": 0,
++  "noFactoryOrParserEdits": true,
++  "privateAdapterRefactor": "One production-used capturePrivateProfileHandoff function in existing RU app-private helper, source-private export shared with existing TX caller/data tests; no package/public/test-only API or factory seam",
++  "proposedChangedPaths": [
++    "packages/conformance/test-support/profile-evidence.ts",
+     "packages/conformance/test-support/profile-evidence.test.ts",
+-    "packages/conformance/test-support/profile-evidence.ts"
+-  ],
+-  "extraPrivateAPI": "No change; optional branded RU set third serializer argument and installedContractsDigest import retain root precisions44e16057/003d517e.",
+-  "newPaths": 0,
+-  "noNewAuthority": true,
+-  "plannedChangedPaths": [
+-    "packages/conformance/test-support/profile-evidence.ts",
+-    "packages/conformance/test-support/profile-evidence.test.ts"
+-  ],
+-  "plannedUnchangedWithinAllowedFour": [
+     "apps/bdptest/test-support/read-update-artifact-execution.ts",
+     "apps/bdptest/src/transactional-matrix.test.ts"
+   ],
+   "protectedOutsideFour": 677,
+-  "pureModuleFunctionExports": [
++  "pureModuleExportsUnchanged": [
+     "assembleProfileEvidence",
+     "verifyProfileEvidence",
+     "serializeProfileEvidence"
+   ],
+-  "sourceChangesNow": false,
+-  "whyAdaptersUnchanged": "Current RU adapter already supplies its exact snapshot baselineReceipt/sessions/exactConfiguration and TX already supplies genuine baseline/sessions plus exact once-serialized hook bytes. Corrections validate existing inputs, not rewrite wrapper format or add calls. Any later discovered need to alter these two paths requires exact bounded justification before author freeze."
++  "sourceEditsNow": false,
++  "sourceTotal": 681
+ }
