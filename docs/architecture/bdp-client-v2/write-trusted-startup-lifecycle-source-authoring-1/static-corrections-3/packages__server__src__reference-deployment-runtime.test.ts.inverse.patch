@@ -1,0 +1,12 @@
+--- after/packages/server/src/reference-deployment-runtime.test.ts
++++ before/packages/server/src/reference-deployment-runtime.test.ts
+@@ -20,9 +20,6 @@
+ import { assemblePreparedDevelopmentArguments, startDevelopmentReferenceRuntime } from "./development-runtime.js";
+ import { startTransactionRuntime } from "./transaction-runtime.js";
+ 
+-// Plain mocked builtin namespaces permit delegating observation without replacing behavior.
+-vi.mock("node:http", async (original) => ({ ...(await original<typeof import("node:http")>()) }));
+-vi.mock("node:fs/promises", async (original) => ({ ...(await original<typeof import("node:fs/promises")>()) }));
+ const sql = vi.hoisted(() => ({ rows: [] as { file: string; closed: boolean }[] }));
+ vi.mock("node:sqlite", async (original) => {
+   const actual = await original<typeof import("node:sqlite")>();

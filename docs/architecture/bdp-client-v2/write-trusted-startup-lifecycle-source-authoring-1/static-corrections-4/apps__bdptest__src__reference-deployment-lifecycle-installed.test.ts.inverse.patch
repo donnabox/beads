@@ -1,0 +1,20 @@
+--- after/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ before/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -4,7 +4,7 @@
+ import { spawn, type ChildProcess } from "node:child_process";
+ import { createHash, randomBytes } from "node:crypto";
+ import { DatabaseSync } from "node:sqlite";
+-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, readdirSync, rmSync, writeFileSync } from "node:fs";
++import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { fileURLToPath, pathToFileURL } from "node:url";
+@@ -245,7 +245,7 @@
+   const first = await f.launch(), routes = await navigate(f.client); const resource = f.resource(await f.send("create", "POST", routes.createTarget, 200, "writer", payload(f.client), "startup-created")); await f.stop(first); await f.changeWriter();
+   const second = await f.launch(false), next = await navigate(f.client); await f.send("old-token", "GET", String(resource.id), 401, "old-writer"); await f.send("new-token", "GET", String(resource.id), 200); await f.send("reader-refused", "POST", next.createTarget, 403, "reader", payload(f.client, "beads/refused"), "reader-refused"); await f.stop(second); await f.ownerProbe(true);
+ }), 60000);
+-it.each([["I06", "read-update"], ["I07", "transactional"]] as const)("%s %s absent create:false refuses without file", async (id, profile) => cohort(id, profile, 0, 1, async (f) => { const existed = existsSync(f.directory), files = existed ? readdirSync(f.directory) : []; await f.refused(false); expect(existsSync(path.join(f.directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"))).toBe(false); expect(existsSync(f.directory)).toBe(existed); expect(existed ? readdirSync(f.directory) : []).toEqual(files); }), 60000);
++it.each([["I06", "read-update"], ["I07", "transactional"]] as const)("%s %s absent create:false refuses without file", async (id, profile) => cohort(id, profile, 0, 1, async (f) => { await f.refused(false); expect(existsSync(path.join(f.directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"))).toBe(false); }), 60000);
+ it.each([["I08", "read-update"], ["I09", "transactional"]] as const)("%s %s real persisted capture mismatch refuses", async (id, profile) => cohort(id, profile, 0, 1, async (f) => {
+   await f.initialize(); const file = path.join(f.directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"), db = new DatabaseSync(file); const prior = String(db.prepare("SELECT value FROM metadata WHERE name='contractCapture'").get()!.value); db.prepare("UPDATE metadata SET value='null' WHERE name='contractCapture'").run(); db.close(); await f.refused(false); const restore = new DatabaseSync(file); restore.prepare("UPDATE metadata SET value=? WHERE name='contractCapture'").run(prior); restore.close(); await f.ownerProbe(false);
+ }), 60000);

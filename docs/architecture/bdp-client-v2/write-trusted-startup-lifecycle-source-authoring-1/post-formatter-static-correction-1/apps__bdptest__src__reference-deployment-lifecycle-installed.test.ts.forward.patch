@@ -1,0 +1,72 @@
+--- before/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ after/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -503,12 +503,16 @@
+       requested: mode,
+       actualExitBefore: session.exit !== null,
+     });
++    expect(session.exit).toBeNull();
++    expect(session.close).toBeNull();
++    expect(session.child.exitCode).toBeNull();
+     if (!session.exit) {
+       if (mode === "close") {
+         if (session.child.connected) session.child.send({ command: "close" }, () => {});
+       } else if (mode === "disconnect") {
+-        if (session.child.connected) session.child.disconnect();
+-      } else session.child.kill(mode);
++        expect(session.child.connected).toBe(true);
++        session.child.disconnect();
++      } else expect(session.child.kill(mode)).toBe(true);
+     }
+     await ends(session);
+     expect(session.exit).toEqual({ code: 0, signal: null });
+@@ -787,7 +791,13 @@
+       }),
+       Math.min(started + 45000, performance.now() + 5000),
+     );
+-    const before = { ...state };
++    const before = {
++      ...state,
++      socketDestroyed: socket.destroyed,
++      socketReadableEnded: socket.readableEnded,
++      socketReadyState: socket.readyState,
++      observedAlreadyClosed: state.closeBeforeShutdown || socket.destroyed || socket.readableEnded,
++    };
+     controls.push({ CONNECT: "actual-refusal", beforeShutdown: before });
+     return {
+       async afterStop() {
+@@ -795,7 +805,7 @@
+         await limited(closed.promise, Math.min(started + 45000, performance.now() + 5000));
+         controls.push({
+           CONNECT: "actual-peer-close",
+-          wasAlreadyClosed: before.closeBeforeShutdown,
++          wasAlreadyClosed: before.observedAlreadyClosed,
+           closeObserved: true,
+           forcedServerDestructionClaimed: false,
+         });
+@@ -903,6 +913,8 @@
+   return {
+     descriptorUrl,
+     directoryUrl,
++    descriptorResponse: response,
++    directoryResponse: directoryReply,
+     createTarget: local(new URL(directory.createBead, directoryUrl).href, client.scope),
+   };
+ }
+@@ -957,9 +969,14 @@
+     payload(client, "beads/refused"),
+     "reader-refused",
+   );
+-  await client.send("anonymous-refused", "GET", id, 401, "anonymous");
+-  await client.send("descriptor-HEAD", "HEAD", routes.descriptorUrl, 200);
+-  await client.send("Directory-HEAD", "HEAD", routes.directoryUrl, 200);
++  const anonymous = await client.send("anonymous-refused", "GET", id, 401, "anonymous");
++  for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position", "link"])
++    expect(anonymous.headers[name] === undefined).toBe(true);
++  const descriptorHead = await client.send("descriptor-HEAD", "HEAD", routes.descriptorUrl, 200);
++  const directoryHead = await client.send("Directory-HEAD", "HEAD", routes.directoryUrl, 200);
++  for (const [get, head] of [[routes.descriptorResponse, descriptorHead], [routes.directoryResponse, directoryHead]])
++    for (const name of ["content-type", "content-length", "cache-control", "etag", "last-modified", "vary"])
++      expect(head.headers[name] === get.headers[name]).toBe(true);
+   await client.send("absent", "GET", client.scope + "beads/not-created", 404);
+ }
+ it.each([

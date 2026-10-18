@@ -1,0 +1,13 @@
+--- before/packages/server/src/reference-deployment-runtime.ts
++++ after/packages/server/src/reference-deployment-runtime.ts
+@@ -14,6 +14,10 @@
+     await runtime.close();
+     throw new Error("prepared lifecycle unavailable");
+   }
++  if (!(runtime.completion instanceof Promise) || typeof runtime.listenUrl !== "string" || typeof runtime.history !== "boolean") {
++    await runtime.close();
++    throw new Error("prepared lifecycle unavailable");
++  }
+   // No captures, token, target map, file/authentication digest or capability escapes.
+   return Object.freeze({
+     scope: runtime.scope,

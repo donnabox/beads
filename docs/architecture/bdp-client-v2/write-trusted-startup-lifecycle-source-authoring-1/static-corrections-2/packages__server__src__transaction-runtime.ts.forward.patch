@@ -1,0 +1,34 @@
+--- before/packages/server/src/transaction-runtime.ts
++++ after/packages/server/src/transaction-runtime.ts
+@@ -323,11 +323,13 @@
+   const terminal = Promise.withResolvers<void>();
+   void terminal.promise.catch(() => {});
+   let liveFault: { readonly cause: unknown } | undefined;
++  const listenerFaults: unknown[] = [];
+   let rejectListening: ((error: unknown) => void) | undefined;
+   let published = false;
+   let checkedOwner: ReturnType<ReturnType<typeof openTransactionStore>["readConfiguration"]> | undefined;
+   const checkPrepared = () => { prepared?.signal?.throwIfAborted(); if (liveFault) throw liveFault.cause; };
+   const onListenerError = (error: Error) => {
++    if (!listenerFaults.includes(error)) listenerFaults.push(error);
+     liveFault ??= { cause: error }; rejectListening?.(error); terminal.reject(error);
+     if (published) void close().catch(() => {});
+   };
+@@ -405,7 +407,7 @@
+   } catch (error) {
+     prepared?.signal?.removeEventListener("abort", onAbort);
+     terminal.reject(error);
+-    const failures: unknown[] = [error];
++    const failures: unknown[] = [error, ...listenerFaults.filter((fault) => fault !== error)];
+     if (server.listening)
+       try {
+         await closeListener();
+@@ -452,7 +454,7 @@
+             failures.push(error);
+           }
+           if (firstStreamFault) failures.unshift(firstStreamFault.cause);
+-          if (liveFault) failures.unshift(liveFault.cause);
++          failures.unshift(...listenerFaults);
+           if (failures.length)
+             throw new AggregateError(failures, "transaction runtime shutdown failed");
+         })().then(() => { terminal.resolve(); }, (error: unknown) => { terminal.reject(error); throw error; })

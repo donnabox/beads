@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-18T09:28:46.670094+00:00",
+  "reason": "Static cleanup review: detach current roots from future callback cleanup so an unknown directory can never be deleted by a later callback; preserve GET/HEAD comparison pairs as readonly tuples under strict indexing. No execution or second formatter.",
+  "formatterAlreadyConsumed": true,
+  "files": [
+    {
+      "path": "packages/server/src/reference-deployment-runtime.test.ts",
+      "beforeSha256": "4709daee41c75fa4166a2fb91f9360d197bc73435fb48ed2c9e2dc90dd4b6a76",
+      "afterSha256": "cf062b5f7d6603a9c96c5cbbad9962598d867896dcb7e914f97a9bbc472e541b"
+    },
+    {
+      "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "beforeSha256": "9fc896de275421eb5f3ec6b17d7ccb0bcc3cb9948d73a04be4520dea885535e3",
+      "afterSha256": "3270a70ae08d6a870c804892aecf1657b2b3126469d00f187c1b5d82848722ee"
+    }
+  ]
+}

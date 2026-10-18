@@ -1,0 +1,10 @@
+--- b/packages/server/src/reference-deployment-runtime.test.ts
++++ a/packages/server/src/reference-deployment-runtime.test.ts
+@@ -863,7 +863,6 @@
+             },
+           )
+         : await startTransactionRuntime(state.installed);
+-    active.push(old);
+     expect(Object.keys(old).sort()).toEqual(
+       (profile === "read-update"
+         ? ["scope", "close"]

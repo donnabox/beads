@@ -1,0 +1,32 @@
+--- a/packages/server/src/development-runtime.ts
++++ b/packages/server/src/development-runtime.ts
+@@ -222,7 +222,7 @@
+   composition?: DevelopmentHttpComposition,
+   deployment?: DevelopmentDeployment,
+   installedTransport?: InstalledReferenceTransport,
+-) {
++): Promise<Readonly<{ scope: string; close(): Promise<void> }>> {
+   return startDevelopmentRuntimeCore(
+     options,
+     scheduler,
+--- a/packages/server/src/transaction-runtime.ts
++++ b/packages/server/src/transaction-runtime.ts
+@@ -101,7 +101,17 @@
+   options: TransactionRuntimeOptions,
+   seams: TransactionRuntimeTestSeams = {},
+ ) {
+-  return startTransactionRuntimeCore(captureTransactionRuntimeConfiguration(options, seams));
++  const { scope, listenUrl, configurationMetadata, replaceAuthorizationPolicy, targets, close } =
++    await startTransactionRuntimeCore(captureTransactionRuntimeConfiguration(options, seams));
++  // Keep the legacy declaration and runtime result restricted to its original six keys.
++  return Object.freeze({
++    scope,
++    listenUrl,
++    configurationMetadata,
++    replaceAuthorizationPolicy,
++    targets,
++    close,
++  });
+ }
+ export async function startPreparedTransactionRuntime(
+   handle: PreparedReferenceDeployment,

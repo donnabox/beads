@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "format",
+    "--write",
+    "packages/server/src/development-authority.ts",
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "packages/server/src/reference-deployment-process.ts",
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum",
+  "executableSha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+  "purpose": "ONE explicitly authorized format--write only; no check/test/compiler claim",
+  "startUTC": "2026-10-18T09:19:58.691563+00:00",
+  "timeoutSeconds": 30,
+  "automaticRetries": 0,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "remoteLaunchBlob": "e6321a2de5846caab990af51997a89c084907a13"
+}

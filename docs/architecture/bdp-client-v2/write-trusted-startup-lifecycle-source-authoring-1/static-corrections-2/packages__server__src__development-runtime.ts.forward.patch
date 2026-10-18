@@ -1,0 +1,48 @@
+--- before/packages/server/src/development-runtime.ts
++++ after/packages/server/src/development-runtime.ts
+@@ -553,6 +553,7 @@
+   const terminal = Promise.withResolvers<void>();
+   void terminal.promise.catch(() => {});
+   let liveFault: { readonly cause: unknown } | undefined;
++  const listenerFaults: unknown[] = [];
+   let rejectListening: ((error: unknown) => void) | undefined;
+   let published = false;
+   let checkedOwner: ReturnType<Awaited<ReturnType<typeof openDevelopmentAuthority>>["readConfiguration"]> | undefined;
+@@ -561,6 +562,7 @@
+     if (liveFault) throw liveFault.cause;
+   };
+   const onListenerError = (error: Error) => {
++    if (!listenerFaults.includes(error)) listenerFaults.push(error);
+     liveFault ??= { cause: error };
+     rejectListening?.(error);
+     terminal.reject(error);
+@@ -597,7 +599,7 @@
+         .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+         .map(([id, bodyJson]) => ({ id, bodyJson }));
+       if (actual.scope !== state.installed.scope ||
+-          !isDeepStrictEqual(actual.installedTypes, expectedTypes) ||
++          !isDeepStrictEqual([...actual.installedTypes].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0), expectedTypes) ||
+           !isDeepStrictEqual(actual.readLimits, prepared.handle.preflightReadLimits))
+         throw new Error("prepared Read/Update owner mismatch");
+       checkedOwner = actual;
+@@ -663,9 +665,9 @@
+           ...(server.listening ? [closeListener()] : []),
+           ...(authority === undefined ? [] : [authority.close()]),
+         ]);
+-    const failures = cleanup.flatMap((result) =>
++    const failures = [...listenerFaults.filter((fault) => fault !== error), ...cleanup.flatMap((result) =>
+       result.status === "rejected" ? [result.reason] : [],
+-    );
++    )];
+     if (failures.length)
+       throw new AggregateError([error, ...failures], "installed startup cleanup failed", {
+         cause: error,
+@@ -686,7 +688,7 @@
+         ownerCompletion ??= Promise.resolve().then(() => authority?.close());
+         const owner = await Promise.allSettled([ownerCompletion]);
+         const failures = [...listener, ...owner].flatMap((result) => result.status === "rejected" ? [result.reason] : []);
+-        if (liveFault) failures.unshift(liveFault.cause);
++        failures.unshift(...listenerFaults);
+         if (failures.length) throw new AggregateError(failures, "installed shutdown cleanup failed");
+       })().then(() => {
+         terminal.resolve();
