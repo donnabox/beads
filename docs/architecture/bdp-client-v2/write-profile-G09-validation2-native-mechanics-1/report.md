@@ -1,0 +1,33 @@
+# G09 validation2 — full independent static mechanics closure
+
+No new findings. G09-VAL-N1 is closed by the exact source-derived `metadata: {}` correction. This accepts helper2 static mechanics for staged preparation. No helper/schema was evaluated and no validation is released.
+
+## Exact correction
+
+At audit.py:277 the required create-resource keys are exactly `id/type/revision/properties/metadata`, with metadata exactly `{}`. All undeclared keys, including revisionProvenance, endpoint and ownedLinks, still fail. ID, Type, exact café title/properties and nonempty revision checks are unchanged. Removing exactly the two added substrings recovers the entire P1 auditor byte for byte.
+
+The selected I01 input supplies only id/type/properties; its task descriptor has no owned outgoing links. transaction-batch.ts:457–468 defaults creating metadata to `{}`. transaction-store.ts:1318–1334 uses `recordChangeContext:false`. resource-evaluator.ts:841–857 and977–985 therefore do not invent actor/native context. Its actual materializer at1109–1126 always emits common metadata and conditionally omits revisionProvenance/endpoints/ownedLinks. The outcome at1047–1063 and batch result at708–740 retain that resource. This precise five-key rule matches the fixture; optional extras would exceed the correction. It is static reasoning, not an observed successful receipt.
+
+## Full mechanics and preservation
+
+All five actual programs were read in full, including the whole461-line auditor and all inherited historical branches. Full selected source service/selector/runtime and installed helper/callback bodies were compared with the frozen schema and finite request tables. Strict duplicate/nonfinite JSON handling, exact key/type checks, result name/file multiset, unselected callback status, report identity, complete raw framing/status/header/body/octet/hash equivalence, context presence and same epoch/view, source-defined counters/positions and actual cleanup/session predicates remain intact. Failed, partial, missing, extra or unknown records cannot gain positive credit. No synthetic input was passed to the programs.
+
+The complete schema remains byte-identical P1; removing only G09 reproduces the original P10 schema members and canonical bytes. Applying original P1 inverse patches purely as text restores original auditor, gate and schema templates exactly. Run/packages/guard/gate are byte-identical P1. The commands table changes exactly24 namespace literals; reversing them restores its entire original bytes. All28 declared pairs are genuine:8 changed,20 identity. Historical contexts are not blanket-rebound.
+
+All34 stages and seven immediate callback/audit pairs remain fixed. Eight G09 source callbacks retain26 direct invocations and9 HTTP requests: service9/selector17 direct and source-wire5+2+2. S05 keeps eight reported selector rows plus its ninth abort invocation. Two legacy source callbacks and the zero-wire confinement callback add no G09 request credit. Installed callbacks remain distinct14,16,historical14 requests with three normal child lifetimes. The18590-byte legacy installed prefix and fingerprint/context-only branch are unchanged. No report union, promotion to full wire, or qualification credit for private500 follows.
+
+The full package helper requires safe regular archive members and complete source/build byte equality, allowing only the known server workspace-protocol dependency rewrite. A fresh external ignore-scripts consumer, root-pinned lock/manifest/settings, fixed eight-package production graph, confined links, full member inventory, recursive path-sensitive payload identity and exact entry remain prerequisites for installed callbacks and immediate audits. No old result/consumer/proof is reused; future hashes and actual counts remain unknown.
+
+## Integrity and authority
+
+All450 physical files/mirrors match, with449 indexed and444 implementation SHA strings covering precisely the inherited six exclusions. All353 origins,1,583 references and469 retained history pins match. All28 forward/inverse pairs were independently regenerated. Current679 source hashes match canonical `f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65`;669 paths remain protected outside ten cumulative owned paths. Three corrective test edits preserve676 prior-candidate paths. Root's immutable Git receipt binds cceHEAD/tree675, ten unstaged paths and binary00804293; no auditor Git command ran. Original actual Claude CODE read eeb; corrective native55c270/roota9cf acceptance is separate static evidence, not another provider review.
+
+Both26-key gates remain byte-identical/closed, six authority booleans false, approvedStages/bootstrapReuse empty, run absent. Exact source/tools/CODE/root attribution, approved-prefix order and applicable fresh build/archive/lock/consumer barriers remain conjunctive. Root build/archive acceptance requires actual TOP LEVEL buildMapSha256/tarProvenanceSha256. Consumer proof requires exact provenance/inventory pin objects. This closure changes no subject or authority bytes.
+
+## Runtime boundary remains closed
+
+Source3s work+1s cleanup/default5s, new installed45s work+10s cleanup/60s callback/5s request, legacy90s work/120s callback, and stage120s/TERM115/no retry remain exact. S07/S08 strict absolute3s fit is unmeasured and must fail honestly if exceeded. The legacy callback may be stopped by stricter outer policy. Retained stage scratch/cache is distinct from forbidden retained BDP runtime directories.
+
+Inherited run.py starts its clock after gate/setup and merges child streams. It does not establish whole-root time or BOTH PIPE EOF. Before any evaluation root still needs exact source disposition wrappers and a separately reviewed ordinary-tool protocol measuring from before setup/hash/gate through actual terminal, pipe closure, final receipt publication and fresh all-recorded PID/PGID absence. This acceptance is not protocol acceptance, execution readiness or host-containment proof. Source-attested credentials and child readable-ended facts remain narrower than independently retained secrets/child streams. Full-suite/exact CI and public Write qualification remain future work; evidence-verifier0/2 never means whole Write conformance.
+
+P1/native58/root3, original display typo and actual review limitations remain immutable. One reviewer DATA filename error (guessed P1/context/template instead of actual P1/template) occurred before any final outputs or subject action; the error record is preserved and the actual text inverses were verified. No AST/import/helper/schema/Node/Perl/compiler/test/build/install/runtime/probe/formatter/reviewer/Git/source/flag action occurred.

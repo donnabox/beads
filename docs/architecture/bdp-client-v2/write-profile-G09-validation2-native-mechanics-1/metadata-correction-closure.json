@@ -1,0 +1,65 @@
+{
+  "actualRuntimeObservation": false,
+  "actualTrace": [
+    {
+      "lines": [
+        45,
+        51,
+        517,
+        523,
+        816,
+        822
+      ],
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts"
+    },
+    {
+      "lines": [
+        457,
+        468,
+        708,
+        740
+      ],
+      "path": "packages/server/src/transaction-batch.ts"
+    },
+    {
+      "lines": [
+        1318,
+        1334
+      ],
+      "path": "packages/server/src/transaction-store.ts"
+    },
+    {
+      "lines": [
+        841,
+        857,
+        977,
+        985,
+        1047,
+        1063,
+        1109,
+        1126
+      ],
+      "path": "packages/server/src/resource-evaluator.ts"
+    }
+  ],
+  "auditLine": 277,
+  "closedStatically": true,
+  "extraKeysRejected": [
+    "revisionProvenance",
+    "endpoint",
+    "ownedLinks",
+    "all other undeclared keys"
+  ],
+  "finding": "G09-VAL-N1",
+  "metadataExactly": {},
+  "oldIdTypePropertiesAndNonemptyRevisionChecksExact": true,
+  "resourceRequiredExactly": [
+    "id",
+    "type",
+    "revision",
+    "properties",
+    "metadata"
+  ],
+  "sourceChangeRequired": false,
+  "twoSubstringInverseWholeAuditorEqualsP1": true
+}

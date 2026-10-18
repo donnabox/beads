@@ -1,0 +1,60 @@
+{
+  "ASTOrHelperEvaluation": false,
+  "budgets": "Exact old bounds object/source/legacy14/new selectors unchanged; no cap/deadline/schema weakening",
+  "commandsExactly24NamespaceLiteralsReverseFullBytes": true,
+  "correctedCodeNativeAndRootSeparate": true,
+  "originalActualClaudeOnlyEEB": true,
+  "originalAuditorAndGateInverse": {
+    "P1ActualAuditorInverseAppliedAsDataEqualsTemplate": true,
+    "P1ActualGateInverseAppliedAsDataEqualsTemplate": true,
+    "P2UndoMetadataEqualsP1": true,
+    "noHelperOrSchemaEvaluation": true
+  },
+  "originalSchemaInverse": {
+    "P1ActualInversePatchAppliedAsTextEqualsOriginalTemplate": true,
+    "P2SameAsP1": true,
+    "removeG09CanonicalJSONEqualsOriginalP10Template": true
+  },
+  "runPackagesGuardGateFullBytesEqualP1": true,
+  "schemaSelectionAuditExpectationsFullBytesEqualP1": true,
+  "semanticHelperCorrection": {
+    "extraResourceKeysStillRejected": [
+      "revisionProvenance",
+      "endpoint",
+      "ownedLinks",
+      "any undeclared key"
+    ],
+    "file": "audit.py",
+    "idTypePropertiesNonemptyRevisionPredicatesPreserved": true,
+    "line": 277,
+    "metadataExpectedExactly": {},
+    "requiredResourceKeysAfter": [
+      "id",
+      "type",
+      "revision",
+      "properties",
+      "metadata"
+    ],
+    "requiredResourceKeysBefore": [
+      "id",
+      "type",
+      "revision",
+      "properties"
+    ],
+    "undoExactTwoAuthoredSubstringsReturnsP1FullBytes": true
+  },
+  "sourceCanonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "workloads": {
+    "directInvocations": 26,
+    "immediatePairs": 7,
+    "installedCallsSeparate": [
+      14,
+      16,
+      14
+    ],
+    "installedChildrenSeparate": 3,
+    "sourceCallbacks": 8,
+    "sourceWire": 9,
+    "stages": 34
+  }
+}
