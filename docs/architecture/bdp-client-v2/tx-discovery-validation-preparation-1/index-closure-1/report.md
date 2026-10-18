@@ -1,0 +1,5 @@
+# Additive packaging index closure1
+
+The original CLOSED preparation freeze remains untouched. Its parent preparation-index recorded195 files and excluded its own index as intended, but a basename exclusion also skipped the historical copied template/preparation-index.json. Actual base physical count is197. The same basename exclusion left the two historical copied template indices outside the implementation list; neither is an executed candidate program. Both original template index bytes were already pinned by reference-pins and copied-origin records.
+
+The complete-base-inventory records ALL197 immutable base physical files, including the parent preparation index and omitted copied historical index. This supplement index closes its own three records; the union covers the complete packet without a hash cycle. No helper/source/schema/command/gate bytes changed. The original191 implementation pins,819 reference pins, source binding44d5826e,52 ordered stages and two CLOSED gates remain exact. This is a packaging correction only; independent mechanics/root execution release remains required. No run exists and no helper/runtime/Git action occurred.

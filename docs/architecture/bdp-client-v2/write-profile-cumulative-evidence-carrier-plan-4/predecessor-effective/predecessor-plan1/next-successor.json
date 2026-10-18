@@ -1,0 +1,40 @@
+{
+  "state": "COMPLETE CLOSED concrete four-file private cumulative evidence carrier PLAN",
+  "name": "write-profile-cumulative-evidence-carrier-plan-1",
+  "objective": "design and independently review the smallest source-private RU/TX observation assembler + offline verifier adapter over existing canonical selection, bound configurations, v2 bundles and genuine reportVersion4 results; preserve partial attempts and all public gates. Start usable partial evidence now, keep eligibility false until later complete qualification.",
+  "futureOwnedFiles": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "inputSchema": "input-schema.json",
+  "outputSchema": "output-schema.json",
+  "actualInterfaces": "actual-interface-map.json",
+  "verificationOrder": "verification-order.json",
+  "lifecycle": "lifecycle-and-adapters.json",
+  "sourceDataCases": {
+    "file": "source-data-cases.json",
+    "count": 48,
+    "groups": [
+      6,
+      24,
+      8,
+      10
+    ]
+  },
+  "budgetsSecrecy": "budgets-and-secrecy.json",
+  "validation": "validation-plan.json",
+  "profileCounts": {
+    "Read": 44,
+    "RU": 130,
+    "TX": 251
+  },
+  "nonRequiredDiagnosticsInUnfilteredReports": 5,
+  "declaredWholeFlagsAreNotProof": true,
+  "qualificationReady": false,
+  "sourceAuthoringReleased": false,
+  "reviewLaunchReleased": false,
+  "runtimeReleased": false,
+  "finalCombinedRebind": "UNRESOLVED; cce source planning only, startup515e and D3a authoring not adopted"
+}

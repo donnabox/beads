@@ -1,0 +1,18 @@
+--- plan2/actual-interface-map.json
++++ plan1/actual-interface-map.json
+@@ -39,13 +39,13 @@
+     "interface": "RU attempt writer",
+     "symbols": "createArtifactEvidenceWriter",
+     "lines": "app RU helper337–574",
+-    "constraint": "fresh output refusal, retained actual returned reports before cleanup, atomic0600 replacement, fixed failure stages, no broad arbitrary snapshot fields Configuration is absent from constructor/start/acquired and arrives only in returned(report); use distinct unbound attempt until then."
++    "constraint": "fresh output refusal, retained actual returned reports before cleanup, atomic0600 replacement, fixed failure stages, no broad arbitrary snapshot fields"
+   },
+   {
+     "interface": "TX emission",
+     "symbols": "observe/control.onObserved + existing installed callback385",
+     "lines": "TX matrix98–102/283–383/385–644",
+-    "constraint": "observed returned before finally; output hook currently writes before cleanup; actual25children/24sessions/17passes/256rows from existing callback, not new execution Positive onObserved owns exact legacy wrapper serialization; optional closed byte-return handoff is new private adapter seam, pre-hook genuine snapshot remains separate."
++    "constraint": "observed returned before finally; output hook currently writes before cleanup; actual25children/24sessions/17passes/256rows from existing callback, not new execution"
+   },
+   {
+     "interface": "TX session binding",

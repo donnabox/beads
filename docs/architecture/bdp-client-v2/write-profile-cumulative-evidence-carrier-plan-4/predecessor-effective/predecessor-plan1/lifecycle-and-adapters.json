@@ -1,0 +1,46 @@
+{
+  "reuse": "Existing RU attempt writer owns attempt state/files/atomic replacement; no new orchestration state machine or clocks. Pure module summarizes its data. Add opt-in sidecar writer functions in the SAME RU helper and use them from existing TX callback.",
+  "RU": {
+    "legacy": "createArtifactEvidenceWriter/associateArtifactObservations signatures/default behavior and all existing output paths/JSON fields unchanged when new output opt-in absent. Existing files stay immutable.",
+    "newOptIn": "BDP_PRIVATE_PROFILE_EVIDENCE_PATH optional fresh sidecar base; activate ONLY when writer filename is nonempty and exactly process.env.BDP_CUMULATIVE_REPORT_PATH. Other unit/negative-control writers with their own temporary filenames do not emit new sidecars. No caller edit or global unconditional emission. Existing start/acquired/returned/cleaned/failed/timed/failedSet/succeeded hooks feed separate .profile.attempt.json/.profile.json; collisions refused before any new output.",
+    "capture": "at returned snapshot genuine report before later mutation/cleanup; new evidence pending initially. After original cleaned callback record reported-complete or failed, never verified ownership. Emit final partial carrier only after existing legacy association/succeeded succeeds; retain attempt sidecar on any failure.",
+    "IO": "reuse exact0600 exclusive temp+atomic rename/failure aggregation mechanics; before any sidecar write safe projection/secret refusal. New sidecars cannot replace/rewrite legacy outputs. No raw report duplicate."
+  },
+  "TX": {
+    "existing": "observe returns genuine observed before finally; onObserved legacy env output currently occurs before final cleanup. Existing first callback remains same17-partial workload/25children24sessions256returned rows and all assertions/oracles.",
+    "adaptation": "add optional private carrierPath scalar to observe control, supplied ONLY by existing positive callback from same opt-in env; every negative-control call omits it. Capture bound report/session metadata while local actual tokens are available and before onObserved. Keep legacy onObserved output unchanged; opt-in sidecar writes only allowlisted projection through RU helper function.",
+    "finally": "record actual target.close/rm outcomes via narrow try/catch aggregation, preserving original thrown failure; do not change listener/store close behavior or add extra product calls. Sidecar attempt returned/pending must be retained if cleanup later fails. A final report says reported-complete only when existing cleanup operations settled without error, ownershipVerification still unverified.",
+    "limits": "No new exit/close/PID telemetry fabricated. Existing unconditional rm is not proof of child/owner release; real lifecycle repair/full installed cleanup qualification is separate. If that unknown remains, carrier faithfully stays unready.",
+    "credentials": "transient Object.values(tokens) passed solely to private safety check; never persisted/returned as part of report/config or leaked by errors. Guard new sidecar and opt-in new serialization before writing. Source code never treats hash commitments as harmless diagnostics."
+  },
+  "states": {
+    "ownerRun": [
+      "unobserved",
+      "running",
+      "returned",
+      "failed",
+      "aborted"
+    ],
+    "cleanup": [
+      "not-started",
+      "pending",
+      "reported-complete",
+      "failed",
+      "unknown"
+    ],
+    "evidence": [
+      "absent",
+      "retained",
+      "withheld-credential"
+    ],
+    "ownership": [
+      "unverified"
+    ],
+    "globalOutcome": [
+      "running",
+      "failed",
+      "observed"
+    ]
+  },
+  "transitionPolicy": "reuse existing state ordering; first failure sticky; returned genuine result remains retained after later assertion/cleanup failure; acquired≠attempted≠ready; no fabricated counts/clean flags, no automatic retries or overwriting prior attempt."
+}

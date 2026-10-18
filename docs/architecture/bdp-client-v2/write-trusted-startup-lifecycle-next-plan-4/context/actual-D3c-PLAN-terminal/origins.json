@@ -1,0 +1,870 @@
+{
+  "count": 144,
+  "files": [
+    {
+      "copy": "actual-records/stream.jsonl",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/stream.jsonl",
+      "sha256": "88f7113de4d61acbe140d152c308d993c77968062bae5a59f691545c6b641fd5",
+      "bytes": 2493551
+    },
+    {
+      "copy": "actual-records/progress.jsonl",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/progress.jsonl",
+      "sha256": "7ab70e02283a5dd520339f511161a819a5a0fc4a7ff9f4cadfc7c1a06ee8b79d",
+      "bytes": 913305
+    },
+    {
+      "copy": "actual-records/stderr.txt",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "actual-records/source-before.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/source-before.json",
+      "sha256": "f74bc1e6d3c784d40c40426c5ba3d35881d7c7da571234d102055b71028a59e9",
+      "bytes": 125240
+    },
+    {
+      "copy": "actual-records/process.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/process.json",
+      "sha256": "5b96ce65800ebb8a7d54c66f464884f452b0ac440a902fc3596cf689c3e3627f",
+      "bytes": 527
+    },
+    {
+      "copy": "actual-records/binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/binding.json",
+      "sha256": "38bc9b724b98dd699a51025b46999371ecaf71b66edfd63d00a263b7862e6100",
+      "bytes": 126109
+    },
+    {
+      "copy": "actual-records/arguments.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/arguments.json",
+      "sha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+      "bytes": 344
+    },
+    {
+      "copy": "actual-records/tool-inventory.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/tool-inventory.json",
+      "sha256": "fc6d0451e3f188e0f0c1e82d6bb4bea129b4d4eccdbed9c953bfb7b5db72cd0c",
+      "bytes": 2065
+    },
+    {
+      "copy": "actual-records/future-path-binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/future-path-binding.json",
+      "sha256": "f0a43c47e20a95ff639e60dc2cec9a180b62f083557fa7dd555b2244549af37a",
+      "bytes": 4116
+    },
+    {
+      "copy": "outer-attempt/guard-000.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-000.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-000.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-000.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-001.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-001.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-001.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-001.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-002.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-002.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-002.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-002.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-003.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-003.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-003.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-003.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-004.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-004.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-004.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-004.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-005.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-005.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-005.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-005.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-006.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-006.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-006.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-006.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-007.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-007.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-007.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-007.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-008.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-008.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-008.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-008.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-009.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-009.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-009.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-009.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-010.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-010.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-010.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-010.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-011.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-011.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-011.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-011.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-012.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-012.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-012.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-012.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-013.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-013.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-013.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-013.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-014.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-014.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-014.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-014.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-015.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-015.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-015.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-015.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-016.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-016.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-016.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-016.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-017.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-017.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-017.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-017.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-018.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-018.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-018.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-018.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-019.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-019.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-019.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-019.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-020.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-020.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-020.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-020.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-021.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-021.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-021.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-021.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-022.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-022.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-022.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-022.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-023.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-023.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-023.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-023.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-024.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-024.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-024.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-024.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-025.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-025.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-025.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-025.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-026.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-026.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-026.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-026.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-027.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-027.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-027.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-027.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-028.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-028.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-028.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-028.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-029.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-029.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-029.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-029.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-030.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-030.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-030.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-030.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-031.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-031.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-031.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-031.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-032.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-032.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-032.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-032.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-033.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-033.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-033.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-033.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-034.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-034.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-034.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-034.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-035.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-035.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-035.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-035.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-036.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-036.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-036.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-036.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-037.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-037.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-037.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-037.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-038.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-038.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-038.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-038.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-039.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-039.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-039.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-039.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-040.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-040.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-040.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-040.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-041.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-041.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-041.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-041.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-042.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-042.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-042.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-042.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-043.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-043.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-043.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-043.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-044.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-044.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-044.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-044.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-045.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-045.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-045.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-045.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-046.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-046.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-046.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-046.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-047.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-047.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-047.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-047.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-048.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-048.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-048.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-048.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-049.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-049.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-049.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-049.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-050.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-050.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-050.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-050.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-051.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-051.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-051.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-051.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-052.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-052.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-052.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-052.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-053.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-053.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-053.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-053.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-054.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-054.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-054.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-054.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-055.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-055.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-055.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-055.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-056.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-056.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-056.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-056.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-057.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-057.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-057.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-057.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-058.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-058.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-058.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-058.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-059.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-059.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/guard-059.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/guard-059.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/outer-exit.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/outer-exit.json",
+      "sha256": "7aaf8ecbd53174348529ef34af5917d6a2d54369ca1e143524967fadcf91fef3",
+      "bytes": 35180
+    },
+    {
+      "copy": "outer-attempt/outer-progress.jsonl",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/outer-progress.jsonl",
+      "sha256": "fd78d5ed4268abfff330f4ef8ea80bf1365e16b4aa0c0e62af87d558384fec33",
+      "bytes": 390630
+    },
+    {
+      "copy": "outer-attempt/wrapper.stderr",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/wrapper.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "outer-attempt/wrapper.stdout",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/attempt/wrapper.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "copy": "root-release/binding.closed.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-root-release-1/binding.closed.json",
+      "sha256": "ef6d815f1e0418da1cb8551c336ce44d05102e98f3dc8abcafb0a38d49bb095f",
+      "bytes": 126110
+    },
+    {
+      "copy": "root-release/binding.released.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-root-release-1/binding.released.json",
+      "sha256": "38bc9b724b98dd699a51025b46999371ecaf71b66edfd63d00a263b7862e6100",
+      "bytes": 126109
+    },
+    {
+      "copy": "root-release/control.closed.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-root-release-1/control.closed.json",
+      "sha256": "af93d08a086c3143bd40848ad5ed4282ea80879a1993d896316002f1feffafd5",
+      "bytes": 1266
+    },
+    {
+      "copy": "root-release/control.released.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-root-release-1/control.released.json",
+      "sha256": "f56e244abe2ed852f0f444b0ca9d8cc9507aa6d54221733304f9401edaf6d7b5",
+      "bytes": 1265
+    },
+    {
+      "copy": "root-release/release.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-root-release-1/release.json",
+      "sha256": "9c2297c1d131a5f66f8f2e1d6f82c942bd3593495428f7be1650b6d0f1d54526",
+      "bytes": 1108
+    },
+    {
+      "copy": "basis/preparation-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/preparation-index.json",
+      "sha256": "494f210df2c1fea45f6bb5a0226693b6cea40fa17d608517dde97807741f3b1a",
+      "bytes": 28704
+    },
+    {
+      "copy": "basis/preparation-binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/preparation-binding.json",
+      "sha256": "960b4694cec064d80a804acfedd11aa1dcac4a9d85f3596039ec49ae66fc2596",
+      "bytes": 1868
+    },
+    {
+      "copy": "basis/history.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/history.json",
+      "sha256": "a082795a9d3614db7c288083ed34a8a6ee5d9523e8c3bd781fdb37970fc81eeb",
+      "bytes": 787
+    },
+    {
+      "copy": "basis/launch-supervision/closed-binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/closed-binding.json",
+      "sha256": "ef6d815f1e0418da1cb8551c336ce44d05102e98f3dc8abcafb0a38d49bb095f",
+      "bytes": 126110
+    },
+    {
+      "copy": "basis/launch-supervision/frozen-packet-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/frozen-packet-index.json",
+      "sha256": "974fdcf3b819e3bb0ed54ac28e98d518fb623827cefc06479ecf93ff1b7f54e5",
+      "bytes": 16599
+    },
+    {
+      "copy": "basis/authority/history/startup-CODE-failed-supervision-root-disposition.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/authority/history/startup-CODE-failed-supervision-root-disposition.json",
+      "sha256": "3fc6bdf1758b0ad37fd49d140cd3f09faf9481ae81318fa5716ccc6d87c2b6f3",
+      "bytes": 3508
+    }
+  ],
+  "policy": "Exact available actual records only; missing runner files never fabricated. Derived review/metadata explicitly distinct and indexed."
+}

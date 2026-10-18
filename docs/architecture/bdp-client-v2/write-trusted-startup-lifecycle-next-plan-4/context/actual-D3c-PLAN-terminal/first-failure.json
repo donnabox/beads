@@ -1,0 +1,28 @@
+{
+  "firstCapturedFailure": {
+    "elapsedSeconds": 920.9256703336723,
+    "stage": "row_executable",
+    "row": {
+      "pid": 83347,
+      "ppid": 83318,
+      "pgid": 83347,
+      "state": "Ss",
+      "start": "Sun Oct 18 00:37:59 2026",
+      "comm": "(claude)"
+    },
+    "exceptionType": "RuntimeError"
+  },
+  "lastCompleteResultElapsedSeconds": 919.7240849579684,
+  "outerElapsedSeconds": 922.161372709088,
+  "wrapperExitCode": -15,
+  "error": "reviewer_identity:RuntimeError",
+  "capturedBeforeCleanupSignal": true,
+  "firstActualSignal": {
+    "elapsedSeconds": 921.0232901247218,
+    "kind": "signal",
+    "pgid": 83318,
+    "signal": 15
+  },
+  "cause": "UNKNOWN why executable spelling changed; first captured row is LIVE Ss, not zombie. No policy/ownership relaxation or speculative causal attribution.",
+  "limits": "A later zombie/defunct observation cannot be retroactively substituted for this live first failure; complete raw review does not prove CLI clean exit."
+}

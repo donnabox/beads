@@ -1,0 +1,32 @@
+--- /dev/null
++++ plan4/handoff-contract.json
+@@ -0,0 +1,29 @@
++{
++  "state": "FULL active TX handoff/error isolation contract",
++  "sourceFile": "apps/bdptest/src/transactional-matrix.test.ts",
++  "genuineCapture": "Immediately before original onObserved invocation detach genuine result/sessions/baseline plus actual source/entry. The returned genuine observed object and existing product assertions are not replaced by carrier state.",
++  "hookType": "existing private onObserved void | {bytes:Uint8Array,rawWrapperSha256:string}; optional carrierPath remains positive-only",
++  "singleSerialization": "Existing positive closure owns EXACT original literal field order sourceCommit,entry,...observed,supplemental,sequenceMemberSupplemental,principalSupplemental,conditionalSupplemental. If legacy output OR carrierPath: ONE JSON.stringify(wrapper,null,2)+newline, ONE UTF8 encoding. Legacy file uses these exact bytes; carrier receives these same bytes/digest. Neither path: original void/no new work. Carrier-only: same in-memory wrapper, no legacy path/readback dependency.",
++  "legacyErrors": "Original serialization/write errors when legacy output requested remain genuine hook exceptions and propagate through original observe try/catch/finally cleanup aggregation. Do not catch/reclassify them as carrier-only failure or suppress product errors. Legacy-only default behavior/bytes unchanged.",
++  "carrierOnlyHookError": "If no legacy output was requested, failure of the NEW carrier-only serialization/return is caught in that new branch; return void and fixed carrier unavailable state. It must not throw out of observe or prevent genuine assertions. Never catch an original legacy error with this new branch.",
++  "acceptanceBoundary": "Invoke original hook under its original error path. Separately catch ONLY new handoff capture/validation/assembly/sidecar operations. Missing/malformed/oversize/digest mismatch/JSON projection refusal creates sticky failed carrier with rawWrapperSha256:null; no return replacement or throw. On valid handoff retain exact bytes only transiently, no new raw wrapper output. Sidecar IO refusal likewise never converts to carrier success or escapes observe.",
++  "jsonRepresentationComparison": {
++    "preHook": "canonicalJson(JSON.parse(JSON.stringify(preHookField)))",
++    "actual": "canonicalJson(parsedActualField)",
++    "fields": [
++      "result",
++      "sessions",
++      "baseline"
++    ],
++    "rule": "Require all three own actual fields and successful projections. Compare explicit JSON representation, including normal omission of undefined object members and null array representation. Fixed evidence failure for missing/refused projection. sourceCommit/entry still match actual fixed provenance.",
++    "rawIdentity": "Raw wrapper digest is SHA256 of exact handoff bytes, unchanged by JSON comparison. canonicalResultSha256 remains separate derived result-data identity. No normalization/exclusion/fixedpoint/source/config/payload identity changes."
++  },
++  "failureVisibility": "Fixed code/stage only, no raw message/cause/path/token. Safe attempt failure retained when writable; absent sidecar remains an explicit failing validation observation. Return unchanged genuine observed; caller product assertions proceed. Later exact evidence validation rejects missing/invalid carrier independently. Cleanup failure is sticky, original genuine result preserved. Ownership remains unverified.",
++  "caseBindings": [
++    "V06",
++    "R20",
++    "L03",
++    "L05",
++    "L10"
++  ]
++}

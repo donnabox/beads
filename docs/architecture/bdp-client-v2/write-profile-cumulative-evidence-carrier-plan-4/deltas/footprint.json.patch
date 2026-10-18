@@ -1,0 +1,21 @@
+--- effective-plan3/footprint.json
++++ plan4/footprint.json
+@@ -17,7 +17,9 @@
+   "importDecision": {
+     "appWriterAndTXTest": "../../../packages/conformance/test-support/profile-evidence.js",
+     "newUnitFile": "./profile-evidence.js",
+-    "reason": "both app importers are source-only tests/test-support under dependency-boundary-rules83–101; TypeScript check root includes test support; no production package export/alias/barrel change necessary"
++    "reason": "both app importers are source-only tests/test-support under dependency-boundary-rules83\u2013101; TypeScript check root includes test support; no production package export/alias/barrel change necessary",
++    "txTestToRUHelper": "../test-support/read-update-artifact-execution.js",
++    "newUnitToExistingWriter": "../../../apps/bdptest/test-support/read-update-artifact-execution.js (source-only data/IO fixtures; no app test-module import)"
+   },
+   "privateModuleImports": [
+     "./profile-contract-plan.js",
+@@ -38,5 +40,6 @@
+   ],
+   "newProductTests": 0,
+   "newPureDataUnitCases": 48,
+-  "sourceAuthoringReleased": false
++  "sourceAuthoringReleased": false,
++  "privateAppHelperExport": "createPrivateProfileSidecarWriter in existing helper only; source-private IO adapter, not a new module/public package export"
+ }
