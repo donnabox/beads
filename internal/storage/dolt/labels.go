@@ -13,15 +13,21 @@ import (
 func (s *DoltStore) AddLabel(ctx context.Context, issueID, label, actor string) error {
 	return s.withCircuitWrite(ctx, func(ctx context.Context) error {
 		isWisp := s.isActiveWisp(ctx, issueID)
+		var changed bool
 		if err := s.withRetryTx(ctx, func(tx *sql.Tx) error {
-			return issueops.AddLabelInTx(ctx, tx, "", "", issueID, label, actor)
+			// Each retry owns its result; a prior rolled-back attempt must not
+			// cause a later no-op to stage unrelated Issue changes.
+			changed = false
+			var err error
+			changed, err = issueops.AddLabelInTxWithResult(ctx, tx, "", "", issueID, label, actor)
+			return err
 		}); err != nil {
 			return err
 		}
-		if isWisp {
+		if isWisp || !changed {
 			return nil
 		}
-		return s.doltAddAndCommit(ctx, []string{"events", "labels"}, fmt.Sprintf("bd: label add %s", issueID))
+		return s.doltAddAndCommit(ctx, []string{"events", "issues", "labels"}, fmt.Sprintf("bd: label add %s", issueID))
 	})
 }
 
@@ -30,15 +36,21 @@ func (s *DoltStore) AddLabel(ctx context.Context, issueID, label, actor string) 
 func (s *DoltStore) RemoveLabel(ctx context.Context, issueID, label, actor string) error {
 	return s.withCircuitWrite(ctx, func(ctx context.Context) error {
 		isWisp := s.isActiveWisp(ctx, issueID)
+		var changed bool
 		if err := s.withRetryTx(ctx, func(tx *sql.Tx) error {
-			return issueops.RemoveLabelInTx(ctx, tx, "", "", issueID, label, actor)
+			// Each retry owns its result; a prior rolled-back attempt must not
+			// cause a later no-op to stage unrelated Issue changes.
+			changed = false
+			var err error
+			changed, err = issueops.RemoveLabelInTxWithResult(ctx, tx, "", "", issueID, label, actor)
+			return err
 		}); err != nil {
 			return err
 		}
-		if isWisp {
+		if isWisp || !changed {
 			return nil
 		}
-		return s.doltAddAndCommit(ctx, []string{"events", "labels"}, fmt.Sprintf("bd: label remove %s", issueID))
+		return s.doltAddAndCommit(ctx, []string{"events", "issues", "labels"}, fmt.Sprintf("bd: label remove %s", issueID))
 	})
 }
 
