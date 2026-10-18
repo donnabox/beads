@@ -1,0 +1,40 @@
+{
+  "sourceFilesOwned": 12,
+  "baselineExisting": 679,
+  "existingOwnedChanged": 9,
+  "existingPreserved": 670,
+  "newFiles": 3,
+  "finalSourceFiles": 682,
+  "trackedWhitespaceCheckExit": 0,
+  "newFilesTrailingWhitespaceOrMissingFinalNewline": {
+    "packages/server/src/reference-deployment.ts": {
+      "trailingWhitespace": false,
+      "missingFinalNewline": false
+    },
+    "packages/server/src/reference-deployment-state.ts": {
+      "trailingWhitespace": false,
+      "missingFinalNewline": false
+    },
+    "packages/server/src/reference-deployment.test.ts": {
+      "trailingWhitespace": false,
+      "missingFinalNewline": false
+    }
+  },
+  "formatterExecutions": [
+    {
+      "file": "formatter-execution.json",
+      "exit": 0
+    },
+    {
+      "file": "formatter-pass2.json",
+      "exit": 0
+    },
+    {
+      "file": "formatter-pass3.json",
+      "exit": 0
+    }
+  ],
+  "productCommandsExecuted": [],
+  "allBuildPackageConsumerExecutionIdentities": "UNRESOLVED",
+  "reviewFlagsRemainFalse": true
+}

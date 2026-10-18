@@ -1,0 +1,116 @@
+{
+  "state": "AUTHORED prospective schemas/witnesses; none executed",
+  "customExecutionReportFilesAdded": false,
+  "sourceEvidence": {
+    "runner": "existing Vitest reporter",
+    "file": "packages/server/src/reference-deployment.test.ts",
+    "staticDirectTestTitles": [
+      "captures the RU default closure through the existing capture and exposes only an inert handle",
+      "delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler",
+      "keeps TX compilation, credentials and capabilities private and leaves live metadata unavailable",
+      "accepts duplicate RU principals with unique tokens, preserving existing semantics",
+      "snapshots caller settings before await and never rereads after file replacement",
+      "does not create or alter a pre-existing read-only target store directory",
+      "refuses shared listener/limits/fixture/fault conflicts before opening and never invokes getters",
+      "accepts the supported RU IPv6 intended listener",
+      "refuses envelope extensions, wrong profile/format and Directory/descriptor wire shapes",
+      "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+      "delegates TX exact credential and compiled closure refusals",
+      "rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo",
+      "bounds the lossless tree before numeric admission and treats number literals as atomic",
+      "isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace",
+      "closes the single real descriptor on success and syntax/contract failures",
+      "bounds reads despite stale stat and closes handles on overflow/read failure/non-file",
+      "exports only the loader and local error constructor from the public data entry"
+    ],
+    "parameterizedCase": "refuses unsupported profile %s before opening: read, undefined, future",
+    "deadline": "existing default 5s; no timeout argument or widening added",
+    "positiveClaimsWhenActuallyExecuted": [
+      "existing RU/TX captures and compiler identities",
+      "inert/frozen public results and private identity lookup",
+      "caller snapshot and file replacement no reread",
+      "no owned store creation/modification and forbidden startup calls unused",
+      "single handle close and maximum32MiB+1 stale-stat read",
+      "fixed sanitized errors; lossless bounds before numeric admission"
+    ],
+    "executionIdentity": "UNRESOLVED"
+  },
+  "configEvidence": {
+    "file": "packages/config/src/index.test.ts",
+    "suite": "bdptest.deploymentFile",
+    "claimsWhenActuallyExecuted": [
+      "unset by default",
+      "file/env precedence without deployment I/O",
+      "UTF8-byte path bound and no control characters",
+      "role-owned content/global vocabulary",
+      "field/rule-only sentinel-safe diagnostics"
+    ],
+    "executionIdentity": "UNRESOLVED"
+  },
+  "installedEvidence": {
+    "file": "scripts/smoke-executables.mjs",
+    "function": "observePackedDeploymentLoader",
+    "consumer": "fresh packed external consumer via consumer.resolve approved subpath; never workspace source/deep entry",
+    "profiles": [
+      "read-update",
+      "transactional"
+    ],
+    "negativesPerProfile": [
+      "wrong profile",
+      "invalid descriptor artifact"
+    ],
+    "portWitness": "caller-owned occupied intended port remains owned while pure loader succeeds; loader opens no listener",
+    "storeWitness": "both configured store directories remain absent",
+    "publicDeclarationWitness": "actual installed reference-deployment.d.ts contains no private capture modules/types/credential/capability fields",
+    "privacy": "four bare/deep loader and registry paths refused ERR_PACKAGE_PATH_NOT_EXPORTED; public entry exactly loader/error constructor; root has neither loader nor registry",
+    "successLine": "installed pure reference deployment loader: RU/TX, refusals and inert boundary passed",
+    "sourceVsWire": "pure package/loader evidence only; no BDP wire/service startup evidence or qualification",
+    "buildIdentity": "UNRESOLVED",
+    "packageIdentity": "UNRESOLVED",
+    "externalConsumerIdentity": "UNRESOLVED",
+    "executionIdentity": "UNRESOLVED"
+  },
+  "publicSummarySchema": {
+    "common": [
+      "format",
+      "profile",
+      "canonicalScope",
+      "listener.host",
+      "listener.port",
+      "preflightReadLimits.page.defaultItems",
+      "preflightReadLimits.page.maximumItems",
+      "preflightReadLimits.selector.bytes",
+      "preflightReadLimits.selector.depth",
+      "preflightReadLimits.selector.nodes",
+      "preflightReadLimits.cursorTtlMilliseconds",
+      "artifactIdentity",
+      "fileDigest"
+    ],
+    "readUpdateOnly": [
+      "configurationIdentity",
+      "policyIdentity",
+      "authenticationIdentity"
+    ],
+    "transactionalLivePolicyViewRuntimeIdentities": "ABSENT; deferred to actual owner readback",
+    "publicCapabilitiesCredentialsProjectedCaptures": "ABSENT"
+  },
+  "localErrorSchema": {
+    "name": "ReferenceDeploymentError",
+    "code": [
+      "configuration",
+      "file",
+      "bounds",
+      "syntax",
+      "contract",
+      "internal"
+    ],
+    "message": "fixed code-selected string only",
+    "causePayloadParserDetails": "ABSENT"
+  },
+  "qualification": {
+    "claimEligible": false,
+    "rootLaunchReleased": false,
+    "productValidationReleased": false,
+    "runtimePassClaim": false
+  }
+}

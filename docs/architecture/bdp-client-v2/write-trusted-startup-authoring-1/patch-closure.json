@@ -1,0 +1,154 @@
+{
+  "method": "In-memory textual hunk reconstruction against exact baseline/source copies; no git apply, product execution or working-tree mutation",
+  "forwardSha256": "ba1aad6016af3d8d171908c42678dde82a2adf4ecde57ce1969267b406cbf546",
+  "inverseSha256": "2b5eaf9e3b4c9165bddda876ed4d02cb334a89d27c104f33559ce4a071988d09",
+  "forward": [
+    {
+      "file": "docs/design/startup-configuration.md",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/config/src/index.test.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/config/src/index.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/package.json",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/read-sequence-lifecycle.test.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "scripts/smoke-executables.mjs",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "scripts/smoke-safety.mjs",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "scripts/smoke-safety.test.mjs",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/reference-deployment-state.ts",
+      "oldAbsent": true,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/reference-deployment.test.ts",
+      "oldAbsent": true,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/reference-deployment.ts",
+      "oldAbsent": true,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    }
+  ],
+  "inverse": [
+    {
+      "file": "docs/design/startup-configuration.md",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/config/src/index.test.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/config/src/index.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/package.json",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/read-sequence-lifecycle.test.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "scripts/smoke-executables.mjs",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "scripts/smoke-safety.mjs",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "scripts/smoke-safety.test.mjs",
+      "oldAbsent": false,
+      "newAbsent": false,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/reference-deployment-state.ts",
+      "oldAbsent": false,
+      "newAbsent": true,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/reference-deployment.test.ts",
+      "oldAbsent": false,
+      "newAbsent": true,
+      "exactExpectedBytes": true
+    },
+    {
+      "file": "packages/server/src/reference-deployment.ts",
+      "oldAbsent": false,
+      "newAbsent": true,
+      "exactExpectedBytes": true
+    }
+  ],
+  "exactOwnedTwelveBothDirections": true
+}
