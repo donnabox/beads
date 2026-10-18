@@ -1,0 +1,74 @@
+{
+  "bomHandling": "Comparison only: permit original UTF-8 BOM at a retained Actions chunk boundary before the timestamp. Raw archive/test bytes remain unchanged.",
+  "demoSkipSource": "scripts/demo-read.test.mjs:106 it.runIf(process.env.BDP_DEMO_BD_EXECUTABLE); workflow sets BDP_BD_MATRIX_EXECUTABLE and BDP_REQUIRE_BD_MATRIX, not this optional demo selector.",
+  "firstFormattedLogMainSummaryAbsent": true,
+  "internalBomLineNumbers": [
+    5486
+  ],
+  "lines": 10497,
+  "noRerun": true,
+  "passedVerboseRows": 9505,
+  "preflight": {
+    "callbacksPassed": 7,
+    "rows": [
+      {
+        "line": 12,
+        "text": "2026-10-18T17:48:16.6188087Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 62ms"
+      },
+      {
+        "line": 13,
+        "text": "2026-10-18T17:48:16.7208733Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 138ms"
+      },
+      {
+        "line": 14,
+        "text": "2026-10-18T17:48:16.8773011Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 3ms"
+      },
+      {
+        "line": 15,
+        "text": "2026-10-18T17:48:16.8776157Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 1ms"
+      },
+      {
+        "line": 16,
+        "text": "2026-10-18T17:48:16.8779334Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 2ms"
+      },
+      {
+        "line": 17,
+        "text": "2026-10-18T17:48:17.1264573Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 155ms"
+      },
+      {
+        "line": 18,
+        "text": "2026-10-18T17:48:17.4795560Z  \u2713 scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 599ms"
+      }
+    ],
+    "summary": [
+      "2026-10-18T17:48:17.4822601Z  Test Files  1 passed (1)",
+      "2026-10-18T17:48:17.4823811Z       Tests  7 passed (7)"
+    ]
+  },
+  "rawTestBytes": 4060297,
+  "rawTestExactlyOriginalZipStep19": true,
+  "rawTestSha256": "5aa7853048f9be97d3dda12f902ebe5c7dfd66c651cddaa7b38b887e761a450e",
+  "skippedRows": [
+    {
+      "line": 9896,
+      "test": "scripts/demo-read.test.mjs > runnable Read walkthrough > matches real bd and preserves the established seed command recipe",
+      "timestamp": "2026-10-18T17:43:24.7550793Z"
+    }
+  ],
+  "skippedVerboseRows": 1,
+  "terminalSummary": [
+    {
+      "line": 10493,
+      "text": "2026-10-18T17:48:15.1923483Z  Test Files  186 passed (186)"
+    },
+    {
+      "line": 10494,
+      "text": "2026-10-18T17:48:15.1967740Z       Tests  9505 passed | 1 skipped (9506)"
+    },
+    {
+      "line": 10496,
+      "text": "2026-10-18T17:48:15.1971307Z    Duration  874.63s (transform 9.88s, setup 3.22s, import 49.54s, tests 1988.03s, environment 30ms)"
+    }
+  ],
+  "uniquePassedFiles": 186
+}

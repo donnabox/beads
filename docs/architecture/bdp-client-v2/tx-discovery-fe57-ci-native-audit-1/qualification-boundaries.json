@@ -1,0 +1,56 @@
+{
+  "exactHeadCi": true,
+  "freshCumulativeFinalCombinedConfigurationEstablished": false,
+  "mainLandingAuthorizedByThisAudit": false,
+  "observedEvents": {
+    "evidence.verified": {
+      "line": 9,
+      "member": "verify/22_Read-cohort evidence gate.txt",
+      "record": {
+        "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+        "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+        "event": "evidence.verified",
+        "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+        "executable": "read-cohort-evidence",
+        "level": "info",
+        "rows": 89,
+        "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+        "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+        "schemaReadProjectionDefinitions": 47,
+        "schemaReadProjectionReachable": 46
+      }
+    },
+    "installed.reference.observed": {
+      "line": 25,
+      "member": "verify/21_Run pnpm smoke.txt",
+      "record": {
+        "allNineTargets": true,
+        "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+        "claimEligible": false,
+        "configurationIdentity": "4216aa83dff44fe5f2430b0cde44c140b61e5bff902dc1c2725766189fdaf51c",
+        "event": "installed.reference.observed",
+        "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+        "stableScope": "https://reference.invalid/acme/"
+      }
+    }
+  },
+  "ordinaryShippingWriteAdmissionEstablished": false,
+  "prSnapshot": {
+    "baseRefName": "codex/vickie-current-changefeed-minimum",
+    "headRefOid": "fe57ea2942615d5dbe770b9229d0da25f51bf1a7",
+    "isDraft": true,
+    "state": "OPEN",
+    "url": "https://github.com/gastownhall/bdp/pull/170"
+  },
+  "priorLocalAttribution": {
+    "actualStages": 52,
+    "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+    "canonicalSource": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "nativeClosureSha256": "92f6154c65b81549aa5270acc7c7754ba9a7cdcd6af5879cb0cb4417a6de9981",
+    "rootAcceptanceSha256": "9ee5f9ddb070c4bf83e5912002d0e150cc0b1645b623416ad01d2255af4577b0"
+  },
+  "readyStatusChangedByThisAudit": false,
+  "sameSourceButNotSameRunAsLocal52": true,
+  "wholeWriteQualification": false
+}

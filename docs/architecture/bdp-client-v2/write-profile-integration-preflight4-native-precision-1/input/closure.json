@@ -1,0 +1,52 @@
+{
+  "state": "FROZEN CLOSED DATA-only integration preflight4",
+  "accepted": false,
+  "authorDataComplete": true,
+  "sourceAssemblyReleased": false,
+  "sourceAdopted": false,
+  "executionReleased": false,
+  "actualCombinedSourceExists": false,
+  "actualCombinedHeadTree": "UNKNOWN",
+  "beforeByteConflicts": [],
+  "sourceHashesChecked": 5444,
+  "choices": {
+    "minimum-startup-accepted-static": {
+      "sourceFiles": 686,
+      "distinctBaseDeltaPaths": 29,
+      "literalTestFilenames": 189,
+      "containsUnacceptedG09": false
+    },
+    "full-accepted-static": {
+      "sourceFiles": 688,
+      "distinctBaseDeltaPaths": 34,
+      "literalTestFilenames": 190,
+      "containsUnacceptedG09": false
+    },
+    "minimum-startup-optional-G09": {
+      "sourceFiles": 686,
+      "distinctBaseDeltaPaths": 32,
+      "literalTestFilenames": 189,
+      "containsUnacceptedG09": true
+    },
+    "full-optional-G09": {
+      "sourceFiles": 688,
+      "distinctBaseDeltaPaths": 37,
+      "literalTestFilenames": 190,
+      "containsUnacceptedG09": true
+    }
+  },
+  "G09Accepted": false,
+  "G09ActualCode": "IN_PROGRESS root snapshot; no acceptance inferred",
+  "finalIdentityComponentsUnknown": 11,
+  "final251": {
+    "partial": 17,
+    "missing": 234,
+    "establishedWhole": 0
+  },
+  "incompleteFinalOwnerPlanUnresolved": true,
+  "publicAdmissionReleased": false,
+  "fullWriteCredit": false,
+  "sourceOrGitMutation": false,
+  "reportSha256": "9164960dba737d804ceb008c31b4c172f4a27b26eeaba6d5ee81ec4a7fa32e52",
+  "independentRootReviewRequiredBeforeNamedAssemblyRelease": true
+}

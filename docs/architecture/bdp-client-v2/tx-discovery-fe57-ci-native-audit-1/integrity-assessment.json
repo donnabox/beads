@@ -1,0 +1,55 @@
+{
+  "canonicalAlgorithm": "sha256(json.dumps(path_to_sha256_map, sort_keys=True).encode()) using Python default JSON spacing, no final newline",
+  "canonicalSource": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "noGitExecuted": true,
+  "noNetworkNeeded": "Retained exact-head Actions metadata and original archive suffice; no fresh network query performed.",
+  "originalPacketIndices": [
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-fe57-ci-1",
+      "indexSha256": "03d80309aa04672bcff590298c3ad86fc629bba4a8570f9554e14b9094fbbf80",
+      "indexedFilesRehashed": 12,
+      "indexedMirrorFilesExact": 12,
+      "mismatches": [],
+      "selfIndexMirrorExact": true
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-source-commit-1",
+      "indexSha256": "3a7d1764b4c3bda288a2017da6b7664a403074294d0973ca46392ca5d7807ca7",
+      "indexedFilesRehashed": 6,
+      "indexedMirrorFilesExact": 6,
+      "mismatches": [],
+      "selfIndexMirrorExact": true
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-final52-acceptance-1",
+      "indexSha256": "e3d524c7e24c26febafb53be4b35078a1beb8a465c662eb9652eb4fc6eb188cb",
+      "indexedFilesRehashed": 1,
+      "indexedMirrorFilesExact": 1,
+      "mismatches": [],
+      "selfIndexMirrorExact": true
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-actual-final52-audit-1",
+      "indexSha256": "732b40fd1aef4cb5e3762f9f56467f5a8c32f3c1be8223c5c94015d81ea7bd28",
+      "indexedFilesRehashed": 431,
+      "indexedMirrorFilesExact": 431,
+      "mismatches": [],
+      "selfIndexMirrorExact": true
+    }
+  ],
+  "readOutputLimitObservation": "One initial broad log grep printed giant report lines and was tool-output truncated; bounded full-data rescans independently read every original byte/member and retained the exact count and hash assessments. No subject command or artifact was retried or changed.",
+  "rootCommitReceiptAttributesCurrentCleanCommit": {
+    "canonical679Unchanged": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+    "clean": true,
+    "head": "fe57ea2942615d5dbe770b9229d0da25f51bf1a7",
+    "historicalObservations": "P10 remains attributed to cce+eed91 dirtypatch/a61 and source9bb, never relabelled as newHEAD. NewHEAD exactCI required.",
+    "noMainAbsorption": true,
+    "sameSixReviewedLocallyValidatedFiles": true,
+    "soleParent": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "tree": "6813c562dc4287bda697c4b7c1d6d94bec342ba4",
+    "utc": "2026-10-18T17:30:08.635478+00:00"
+  },
+  "sourceFilesReadAndRehashed": 679,
+  "sourceMapMatchesPriorLocalObservation": true,
+  "sourceMismatches": []
+}
