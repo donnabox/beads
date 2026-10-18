@@ -1,0 +1,32 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "scope": "INACTIVE_DIAGNOSTIC_ONLY_ROOT_CANDIDATE_DATA_PRECISION",
+  "candidateIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/index.json",
+    "sha256": "208dba8ccfcecdd70032b6504e1dd0c2d3f9d3bb90789903ab207eb1a6f5c942"
+  },
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-candidate-native-precision-1/index.json",
+    "sha256": "0097152d3c23c634a6bc006182d9ecec420464cd42decc4693b144fa4f6a3177"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-candidate-native-precision-1/closure.json",
+    "sha256": "5e7a373fe35cde29bf5216c74abdc8805eb1fbd62f6c2fc170275803b0607ff3"
+  },
+  "inspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-candidate-root-static-acceptance-1/inspection.json",
+    "sha256": "d88f4745c31a1167417f307a5d7e20ee914800dcd69061849c02cc5b8cbbb91c"
+  },
+  "findings": [],
+  "liveGateWritten": false,
+  "executionAuthorized": false,
+  "captureTextManifestRenderingAccepted": false,
+  "effectiveAuthorityNow": false,
+  "qualityOrPipelineOrSourceCorrectionCredit": false,
+  "requires": "Exact fixed text and acyclicmanifest/rendering full OTHER-native/ROOT acceptance; COMPLETE authority publication/readback then separate activation publication/readback before ONE actual diagnostic. Original P3 never resumable."
+}

@@ -1,0 +1,125 @@
+{
+  "status": "FROZEN_CLOSED_NATIVE_DATA_REVIEW",
+  "physical": 24,
+  "indexed": 23,
+  "files": {
+    "authority-pin-graph.json": {
+      "sha256": "e9b7787bc3142eb6514a8749405104a7a5d3c749dbd494241a3c52f3b959bd04",
+      "bytes": 4949,
+      "mode": "0o644"
+    },
+    "candidate-static-predicates.json": {
+      "sha256": "da36681b4b21370cd9d66e0d470af93a28e9a4ca3c7a6aaec3985d68e6302b83",
+      "bytes": 823,
+      "mode": "0o644"
+    },
+    "closure.json": {
+      "sha256": "5e7a373fe35cde29bf5216c74abdc8805eb1fbd62f6c2fc170275803b0607ff3",
+      "bytes": 1308,
+      "mode": "0o644"
+    },
+    "findings.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "mode": "0o644"
+    },
+    "gate-field-matrix.json": {
+      "sha256": "24e6ef7571e13508c7b783ca3a23ad4ceae07d54659624fd292e1a1435fc15ae",
+      "bytes": 8896,
+      "mode": "0o644"
+    },
+    "input-origins.json": {
+      "sha256": "5e48153e96f47d54e7cc48c81f80c7f50e9f6b5fbf43aafc1a7acb4bbf132a2c",
+      "bytes": 4793,
+      "mode": "0o644"
+    },
+    "inputs/actual-code-disposition.json": {
+      "sha256": "eeda8fe1204b2a36a3814c2162a4c2c9fe4a5748ce99c6cd487bab9b7a6f68d5",
+      "bytes": 4250,
+      "mode": "0o644"
+    },
+    "inputs/adoption-deltas.json": {
+      "sha256": "d4446482e8aa3027eb030644521a1daa3c3af9ec3eef2313ab584a4f48fe30ae",
+      "bytes": 11524,
+      "mode": "0o644"
+    },
+    "inputs/closure.json": {
+      "sha256": "ad7e474cc1c65145de4209ad35827d717530d37e3aaee95057d7483141377187",
+      "bytes": 957,
+      "mode": "0o644"
+    },
+    "inputs/corrected-native.json": {
+      "sha256": "55c270e44ca306510135516911ae09712a8d9aa43dfefd769f4f12f1799e0f5b",
+      "bytes": 1880,
+      "mode": "0o644"
+    },
+    "inputs/corrected-root-static.json": {
+      "sha256": "a9cf24e1c322318e73bf43d8a29fc773a57dae22abe5320fd8ca89277edf356c",
+      "bytes": 1213,
+      "mode": "0o644"
+    },
+    "inputs/execution-gate.proposed.json": {
+      "sha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2",
+      "bytes": 3057,
+      "mode": "0o644"
+    },
+    "inputs/helper-root-static.json": {
+      "sha256": "7de285aecb711b4219de734d1c4dbcd0adbd888f2e8bb8395723ba4a24b7c68e",
+      "bytes": 2701,
+      "mode": "0o644"
+    },
+    "inputs/index.json": {
+      "sha256": "208dba8ccfcecdd70032b6504e1dd0c2d3f9d3bb90789903ab207eb1a6f5c942",
+      "bytes": 1750,
+      "mode": "0o644"
+    },
+    "inputs/native-code-disposition.json": {
+      "sha256": "1c0a8cd31848473a5446de721b4d83a54521704b8287150f8d0903126d29bdfc",
+      "bytes": 1818,
+      "mode": "0o644"
+    },
+    "inputs/old-actual-scope.json": {
+      "sha256": "def436da172e0228fceb082c769afb882f176605398791a5a4a9bcdea146f72c",
+      "bytes": 781,
+      "mode": "0o644"
+    },
+    "inputs/old-actual-terminal.json": {
+      "sha256": "440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057",
+      "bytes": 1468,
+      "mode": "0o644"
+    },
+    "inputs/old-nine-findings-root.json": {
+      "sha256": "8c7820151b5caed422fb3ef687bc8baf4d7b62625e8349d4f6df50cca10bb17c",
+      "bytes": 5073,
+      "mode": "0o644"
+    },
+    "inputs/preservation.json": {
+      "sha256": "9e6ea92d6951bc30568fe065ca28fd7b52b46d860c3679eea56b02729295dfa0",
+      "bytes": 904,
+      "mode": "0o644"
+    },
+    "inputs/report.md": {
+      "sha256": "d2d0d7055c5596a3f87efb645c9ab28ec80ad017af57b76c8a30ef33dee30aa7",
+      "bytes": 1172,
+      "mode": "0o644"
+    },
+    "inputs/root-disposition.json": {
+      "sha256": "7af560c113d461f9df4fbdc438f823072460d365960db64f552a768fb251f985",
+      "bytes": 4159,
+      "mode": "0o644"
+    },
+    "report.md": {
+      "sha256": "3df93b69c960b2d94c6d91dd2cbb570c5caeefc93ecd02bd5523146f4cd11817",
+      "bytes": 4094,
+      "mode": "0o644"
+    },
+    "subject-INPLACE-census.json": {
+      "sha256": "24aa6a2bd8ca4378a0f39f8178a86d5d42e9250caebc6b0233c4a952aa0b0890",
+      "bytes": 3996,
+      "mode": "0o644"
+    }
+  },
+  "selfExcluded": [
+    "index.json"
+  ]
+}

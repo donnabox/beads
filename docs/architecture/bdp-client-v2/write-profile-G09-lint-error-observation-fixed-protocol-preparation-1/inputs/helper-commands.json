@@ -1,0 +1,39 @@
+{
+  "configurationFinalized": true,
+  "diagnosticOnly": true,
+  "noPipelineCredit": true,
+  "finalOrder": [
+    "lint-error-observation"
+  ],
+  "commands": {
+    "lint-error-observation": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--diagnostic-level=error",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "packages/server/src/transaction-schema-http.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-service.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "id": "lint-error-observation",
+      "kind": "fixed-diagnostic-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "expectedObservedRawExit": 1,
+      "qualityAcceptance": false
+    }
+  }
+}

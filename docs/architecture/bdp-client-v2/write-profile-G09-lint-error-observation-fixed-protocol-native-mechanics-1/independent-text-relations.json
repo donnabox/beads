@@ -1,0 +1,211 @@
+{
+  "allFourUnresolvedBindingsRemainInSubject": true,
+  "assignmentRelationWitnesses": [
+    {
+      "assignment": "APPROVED_GATE_SHA256",
+      "count": 1,
+      "fullInverseExact": true,
+      "independentInertValue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "noRenderedFileCreated": true,
+      "sourceEvaluation": false
+    },
+    {
+      "assignment": "APPROVED_EXECUTION_ACCEPTANCE_SHA256",
+      "count": 1,
+      "fullInverseExact": true,
+      "independentInertValue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "noRenderedFileCreated": true,
+      "sourceEvaluation": false
+    },
+    {
+      "assignment": "ACTUAL_A_TOOL_ID",
+      "count": 1,
+      "fullInverseExact": true,
+      "independentInertValue": "NATIVE_STATIC_ONLY_TOOL_ID",
+      "noRenderedFileCreated": true,
+      "sourceEvaluation": false
+    },
+    {
+      "assignment": "ACTUAL_B_TOOL_ID",
+      "count": 1,
+      "fullInverseExact": true,
+      "independentInertValue": "NATIVE_STATIC_ONLY_TOOL_ID",
+      "noRenderedFileCreated": true,
+      "sourceEvaluation": false
+    }
+  ],
+  "authorAdditionalOpaqueHypotheticalHashes": "Preserved as DATA; reviewer independently proves same count1/full-inverse property with above explicit inertvalues, not actual rendered identities.",
+  "globalIDReplacementCannotNormalizeByAssignmentOnly": true,
+  "renderedCellFilesCreated": 0,
+  "runtimeNegativeTests": 0,
+  "sourcePropertiesReviewed": [
+    {
+      "executed": false,
+      "id": "T01",
+      "independentlyVerified": true,
+      "relation": "full ndiff before restoration"
+    },
+    {
+      "executed": false,
+      "id": "T02",
+      "independentlyVerified": true,
+      "relation": "full ndiff after restoration"
+    },
+    {
+      "executed": false,
+      "id": "T03",
+      "independentlyVerified": true,
+      "relation": "all and only18 enumerated text changes invert"
+    },
+    {
+      "executed": false,
+      "id": "T04",
+      "independentlyVerified": true,
+      "relation": "gate one complete LF assignment"
+    },
+    {
+      "executed": false,
+      "id": "T05",
+      "independentlyVerified": true,
+      "relation": "gate assignment-only inverse preserves every other byte"
+    },
+    {
+      "executed": false,
+      "id": "T06",
+      "independentlyVerified": true,
+      "relation": "manifest one complete LF assignment"
+    },
+    {
+      "executed": false,
+      "id": "T07",
+      "independentlyVerified": true,
+      "relation": "manifest assignment-only inverse preserves every other byte"
+    },
+    {
+      "executed": false,
+      "id": "T08",
+      "independentlyVerified": true,
+      "relation": "actualA one complete LF assignment"
+    },
+    {
+      "executed": false,
+      "id": "T09",
+      "independentlyVerified": true,
+      "relation": "actualA assignment-only inverse preserves every other byte"
+    },
+    {
+      "executed": false,
+      "id": "T10",
+      "independentlyVerified": true,
+      "relation": "actualB one complete LF assignment"
+    },
+    {
+      "executed": false,
+      "id": "T11",
+      "independentlyVerified": true,
+      "relation": "actualB assignment-only inverse preserves every other byte"
+    },
+    {
+      "executed": false,
+      "id": "T12",
+      "independentlyVerified": true,
+      "relation": "A tool ID guard unchanged"
+    },
+    {
+      "executed": false,
+      "id": "T13",
+      "independentlyVerified": true,
+      "relation": "A historical global substitution rejected by full assignment normalization"
+    },
+    {
+      "executed": false,
+      "id": "T14",
+      "independentlyVerified": true,
+      "relation": "A RAW_EXIT0 untouched"
+    },
+    {
+      "executed": false,
+      "id": "T15",
+      "independentlyVerified": true,
+      "relation": "B tool ID guard unchanged"
+    },
+    {
+      "executed": false,
+      "id": "T16",
+      "independentlyVerified": true,
+      "relation": "B historical global substitution rejected by full assignment normalization"
+    },
+    {
+      "executed": false,
+      "id": "T17",
+      "independentlyVerified": true,
+      "relation": "B RAW_EXIT0 untouched"
+    },
+    {
+      "executed": false,
+      "id": "T18",
+      "independentlyVerified": true,
+      "relation": "exact diagnostic manifest singleton"
+    },
+    {
+      "executed": false,
+      "id": "T19",
+      "independentlyVerified": true,
+      "relation": "manifest three diagnostic scope predicates"
+    },
+    {
+      "executed": false,
+      "id": "T20",
+      "independentlyVerified": true,
+      "relation": "first parent and stage exclusive"
+    },
+    {
+      "executed": false,
+      "id": "T21",
+      "independentlyVerified": true,
+      "relation": "inner typed1/localcapture/nonquality/full old source-process conjunction"
+    },
+    {
+      "executed": false,
+      "id": "T22",
+      "independentlyVerified": true,
+      "relation": "unchanged capture obligation 22"
+    },
+    {
+      "executed": false,
+      "id": "T23",
+      "independentlyVerified": true,
+      "relation": "unchanged capture obligation 23"
+    },
+    {
+      "executed": false,
+      "id": "T24",
+      "independentlyVerified": true,
+      "relation": "unchanged capture obligation 24"
+    },
+    {
+      "executed": false,
+      "id": "T25",
+      "independentlyVerified": true,
+      "relation": "unchanged capture obligation 25"
+    },
+    {
+      "executed": false,
+      "id": "T26",
+      "independentlyVerified": true,
+      "relation": "unchanged capture obligation 26"
+    },
+    {
+      "executed": false,
+      "id": "T27",
+      "independentlyVerified": true,
+      "relation": "all clock comparison lines exactly preserved"
+    },
+    {
+      "executed": false,
+      "id": "T28",
+      "independentlyVerified": true,
+      "relation": "only artifact is inert whole txt"
+    }
+  ]
+}
