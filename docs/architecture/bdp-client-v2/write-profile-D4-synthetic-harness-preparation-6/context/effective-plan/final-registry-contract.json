@@ -1,0 +1,89 @@
+{
+  "banks": {
+    "completedCensusProbes": {
+      "fields": [
+        "pid",
+        "pgid",
+        "rawExit",
+        "stdoutEof",
+        "stderrEof"
+      ],
+      "maxRows": 2048,
+      "rowBytesWithSeparator": 64,
+      "source": "every existing probe_receipts entry through actual LAST census; creation order/duplicates retained"
+    },
+    "knownGroups": {
+      "fields": [
+        "pgid"
+      ],
+      "maxRows": 256,
+      "rowBytesWithSeparator": 11,
+      "source": "every existing groups key; numeric order; no historical-ID signal authority"
+    },
+    "observedIdentities": {
+      "fields": [
+        "pid",
+        "pgid"
+      ],
+      "maxRows": 4096,
+      "rowBytesWithSeparator": 24,
+      "source": "every existing identities item, numeric PID order; includes descendants even if unregistered"
+    },
+    "registrations": {
+      "fields": [
+        "pid",
+        "parent",
+        "pgid",
+        "roleCode",
+        "authenticated",
+        "direct"
+      ],
+      "maxRows": 4096,
+      "roleCodes": {
+        "0": "io",
+        "1": "control",
+        "2": "nested-zero-product"
+      },
+      "rowBytesWithSeparator": 64,
+      "source": "complete existing registrations, order/duplicates retained"
+    }
+  },
+  "earlierSnapshot": "outer-owner-tentative.json and any earlier watchdog receipt remain earlier snapshots; final registry must not backdate/repair them.",
+  "event": "outer-owner-final-registry",
+  "identityFields": [
+    "schemaVersion=1",
+    "case",
+    "variant",
+    "session",
+    "ownerPid",
+    "ownerPgid from existing getpgrp already used by owner, captured value only",
+    "limiterPid",
+    "clockOrigin original",
+    "freezeAt original clock domain",
+    "lastCensusAt",
+    "lastCensusGeneration"
+  ],
+  "meaning": "Complete final enumerated PID/group registry from existing records, not complete raw intermediate census bodies, creation/birth replay or global containment. Every successful census creation is represented by its terminal receipt at this boundary; incomplete setup/read/poll/registry paths stay FAILED/UNKNOWN without fabricated event.",
+  "preconditions": [
+    "Use existing final branch: published IO receipt, actual IO/control returncodes known, all known groups closed, census is None. Preserve original clean predicate and failure flags.",
+    "After all necessary IO publication/settlement censuses, enter irreversible FINALIZATION in same existing owner loop. No further census, registration/worker/task spawn, reaping, file IO or query may occur after registry freeze.",
+    "No extra probe is added to make finality true; root independently acquires its required fresh census after real terminal.",
+    "Freeze all banks from existing records including post-tentative probes. Validate finite closed projected wire values; no dedup or omission that loses a recorded ID.",
+    "Emit exactly one bounded registry JSONL event on current owner stdout before the unchanged outer-owner-terminal event. No separate registry writer/worker or circular IO-publication handshake."
+  ],
+  "publication": [
+    "Exact bounded compact ASCII JSON, allow_nan=false, integer tokens<=11 decimal characters and finite clock representations<=32 characters. Encoding failure/no-fit returns failure, no synthesized success.",
+    "Keep native alarm armed and original owner clock; pre/post construction and write checks require original normal deadline.",
+    "Keep current nonblocking single-write exact-count policy for each event. Partial/EAGAIN/error means FAILED/UNKNOWN with exact received prefix retained by root; do not add a blocking flush, off-clock drain, retry or grace.",
+    "After full registry write emit the existing owner terminal event and return using unchanged clean predicate and strict deadline. Existing finally performs no new process query/spawn; original safe cleanup remains, and any abnormal later exit prevents acceptance.",
+    "Native original limiter terminal and actual raw parent exit are still required. No registry event alone authorizes success."
+  ],
+  "rootConjunction": [
+    "one uniquely typed complete final registry, then one unchanged owner terminal, then native terminal in exact case/session/owner/limiter/origin",
+    "actual owner/native/root zero exits, normal strict before115 for ordinary /145 for host, whole120/150 unchanged",
+    "both actual pipe EOF, empty expected stderr, exact retained raw byte counts/hashes; missing/oversized/partial/late event or failed actual exit stays FAILED/UNKNOWN",
+    "fresh root selected inventory absent for union of ALL final registrations/identities/groups/probes plus root guard/native/dispatcher/observer records; zombie is not absence",
+    "existing control-specific oracle and all residual/no-credit/unknown/source/tool predicates remain conjunctive"
+  ],
+  "status": "PROPOSED CLOSED TOOL EVENT; not product report grammar"
+}

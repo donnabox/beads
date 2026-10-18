@@ -1,0 +1,50 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/findings-disposition.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/findings-disposition.json
+@@ -1,38 +1,12 @@
+ {
+-  "state": "AUTHOR ONLY source/static remedy, independent H5 acceptance PENDING",
+-  "rootRelease": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/release.json",
+-    "sha256": "41c032ffe7ed6fb0c374ded373a5586e652113f5469d6b7d30473508e733f4a4"
++  "D02-DIAG-N1": "Held mismatch and group OSError slots plus final existing registry implemented; actual new observations UNKNOWN, deeper cause not repaired",
++  "D03D04D06": "Concrete caught class label only; original call/reason/baseline unchanged",
++  "D4-OBS-N1": "Exact root5345 freeze precision applied: preserve original failure finally/local getpgrp and descriptor cleanup; no new registry-changing activity",
++  "independentConcreteCodeReview": "PENDING",
++  "kind": "AUTHOR_ONLY_IMPLEMENTATION_OF_ACCEPTED_PLAN_NOT_SELF_REVIEW",
++  "rootSourceRelease": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-observability-root-source-release-1/release.json",
++    "sha256": "530ef41b436da271079c6dcbc930a0952d6ddd85799a30ab2e7e8d10549a5561"
+   },
+-  "rootDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/disposition.json",
+-    "sha256": "78ebbc65edc0dabf86836395981116d47b980a343710e67e8cc8e873a292c64b"
+-  },
+-  "correction": [
+-    {
+-      "path": "availability_limit.pl",
+-      "beforeSha256": "a417085647b6617674d8dc839222ab85c45dcbf6e62e6440e9f76b63bc49ca14",
+-      "afterSha256": "9b85dcfc35879341070ee0692cffd4bcfd8a8f2d1a0d9b505ce2be4e7f15bae1",
+-      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py',\"$ORIGIN\",$release,\"$limiter\"",
+-      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
+-      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
+-      "availabilityWarningObservedOnly": true,
+-      "evaluatedOrCompileChecked": false
+-    },
+-    {
+-      "path": "hard_limit.pl",
+-      "beforeSha256": "fa2c5e9a26bb6cb1fd8d3ca2bec89f58f3136412e15330e1d93184e1b21f8c7e",
+-      "afterSha256": "f18dc1a43814dbe6040545f8665adee4533e326434b65e644081b85d72bf3f91",
+-      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/outer_host.py','--limited-owner',\"$ORIGIN\",$case,$variant,$release,\"$limiter\"",
+-      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
+-      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
+-      "availabilityWarningObservedOnly": false,
+-      "evaluatedOrCompileChecked": false
+-    }
+-  ],
+-  "actualH4AvailabilityAccepted": false,
+-  "actualH4ClockDomainVerified": false,
+-  "actualH5Outcomes": "UNKNOWN/UNATTEMPTED",
+-  "noWarningsSuppressionFilteringOrStderrAllowance": true,
+-  "oldAttemptNeverRetryOrRelabel": true
++  "sourceReleaseDoesNotReleaseExecution": true
+ }
