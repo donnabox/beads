@@ -1,0 +1,19 @@
+{
+  "state": "INCOMPLETE / DEFERRED at bounded read boundary for root-prioritized D3a mechanics",
+  "proposalIndexSha256": "e90e7bc81e308fefb735e078ccfa6a4066f57c790780fe9c30c24ae6dc21aeae",
+  "accepted": false,
+  "reviewComplete": false,
+  "helperExecuted": false,
+  "sourceEdited": false,
+  "candidateFindings": [
+    "Whole-clock preflight and postbinding work not included in current proposed pre-Popen origin; current helper load_gate executes before start and final source/build/consumer checks can block after child terminal.",
+    "Need exact selected-report AND Vitest result parse/hash/postbinding bound within flush/wholeclock, without importing current full read_text/splitlines audit.",
+    "Direct fork stdout can carry fixed literal markers; intercepted console.log uses microtask/RPC, so end marker is enqueue-return only, not flush. Full report/result/terminal remain mandatory."
+  ],
+  "reviewedSources": [
+    "proposal1 full plan/runner/audit/timing prerequisites",
+    "pinned Vitest4.1.10 console.3WNpx0tS.js and forks stdout piping cli-api.BK8pd4xc.js3083-3097",
+    "D4 corrected source085a full prior native review"
+  ],
+  "remaining": "Read complete reporter/clock/capacity/identity detail; finish concrete findings after D3 mechanics. No final index/acceptance emitted."
+}

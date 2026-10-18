@@ -1,0 +1,2574 @@
+{
+  "state": "CLOSED conservative complete source65f report-field bound, not a collector implementation or execution release",
+  "constants": {
+    "B": 1048576,
+    "H": 65536,
+    "rows": 32,
+    "wirePerResponse": 1179648,
+    "wireTotal": 37748736,
+    "base64PerResponse": 1572864,
+    "base64Total": 50331648,
+    "readyUTF16CodeUnitCap": 65536,
+    "readyUTF8JSONCap": 196608,
+    "headersObjectPerRow": 475138
+  },
+  "formula": "complete compact JSON report including newline <= 1458977362 +12*E +6*D UTF8 bytes; E=actual pinned real entry path UTF8 bytes, D=actual owned generated directory path UTF8 bytes, both nonempty when acquired. Before acquisition null is smaller.",
+  "constantBytes": 1458977362,
+  "E_coefficient": 12,
+  "D_coefficient": 6,
+  "exactEncodedPOSTBodiesTotal": 9302,
+  "URLBoundReason": "All dynamic string inputs derive from <=B UTF8 response JSON: JSON-decoded string UTF8<=B (surrogate replacement cannot expand relative to its6-byte escape). URI encoding/canonical path/query <=3B plus256 fixed ASCII prefix allowance. Only one changes/?after= feedStart.after call lacks a runtime string check; ToString of any acyclic parsed JSON value, if it succeeds, <=32B UTF8 (finite numeric string<=32, object default<=15, array leaf+comma accounting<=32 per consumed byte); encodeURIComponent<=96B. Outer JSON quoting conservatively multiplies those URL UTF8 bounds by6. Snapshot route capture rejects noncanonical/cross-origin URLs before row push, but request header/body size refusal occurs AFTER row push and gives no small captured URL/body bound. C256 exceeds every actual fixed Scope/prefix/literal here; no arbitrary target input exists. One special slot plus31 ordinary slots is conservative regardless of ordinal.",
+  "headersBoundReason": "Final head withinH; Latin1 strings/keys JSON encode at most6 bytes per original octet, duplicate concatenation comma-space consumes less than removed duplicate-name/colon/CRLF wire overhead. At mostfloor(H/4) original minimal a:CRLF fields; add5 JSON syntax bytes per retained member plus braces. Status line and trimming only reduce; no assumption headers already ASCII.",
+  "valueSkeleton": {
+    "kind": "installed-valid-set-observation",
+    "reportVersion": 2,
+    "source": {
+      "$encodedBytes": 42,
+      "$meaning": "40hex/null"
+    },
+    "workspaceDirty": {
+      "$encodedBytes": 40,
+      "$meaning": "bool/null/external fixed enum"
+    },
+    "entry": {
+      "$encodedBytes": 2,
+      "$meaning": "E; add6*actual UTF8 byte length, null is covered for nonempty acquired path"
+    },
+    "entrySha256": {
+      "$encodedBytes": 66,
+      "$meaning": "SHA256/null"
+    },
+    "metadata": {
+      "mode": {
+        "$encodedBytes": 16,
+        "$meaning": "workspace/external/null"
+      },
+      "source": {
+        "$encodedBytes": 42,
+        "$meaning": "40hex/null"
+      },
+      "entry": {
+        "$encodedBytes": 2,
+        "$meaning": "E; add6*actual UTF8 byte length, null is covered for nonempty acquired path"
+      },
+      "entrySha256": {
+        "$encodedBytes": 66,
+        "$meaning": "SHA256/null"
+      },
+      "fixtureSha256": {
+        "$encodedBytes": 66,
+        "$meaning": "SHA256/null"
+      },
+      "workspaceDirty": {
+        "$encodedBytes": 40,
+        "$meaning": "bool/null/not-applicable-externally-bound"
+      },
+      "diffSha256": {
+        "$encodedBytes": 66,
+        "$meaning": "SHA256/null"
+      },
+      "disposition": {
+        "$encodedBytes": 40,
+        "$meaning": "captured/null/not-applicable-externally-bound"
+      },
+      "nullReason": {
+        "$encodedBytes": 32,
+        "$meaning": "metadata-capture-failed/null"
+      }
+    },
+    "binding": {
+      "served": {
+        "scope": {
+          "$encodedBytes": 196608,
+          "$meaning": "serialized ready scope member no larger than entire ready UTF8 bound"
+        },
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": {
+          "$encodedBytes": 42,
+          "$meaning": "40hex"
+        },
+        "installedPayloadDigest": {
+          "$encodedBytes": 66,
+          "$meaning": "SHA256"
+        },
+        "installedContractsDigest": {
+          "$encodedBytes": 66,
+          "$meaning": "SHA256"
+        },
+        "policyDigest": {
+          "$encodedBytes": 66,
+          "$meaning": "SHA256"
+        },
+        "authenticationDigest": {
+          "$encodedBytes": 66,
+          "$meaning": "SHA256"
+        },
+        "fixtureDigest": {
+          "$encodedBytes": 66,
+          "$meaning": "SHA256"
+        },
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": {
+          "$encodedBytes": 196630,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "updateBead": {
+          "$encodedBytes": 196630,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "deleteBead": {
+          "$encodedBytes": 196630,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "createLink": {
+          "$encodedBytes": 196630,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "updateLink": {
+          "$encodedBytes": 196630,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "deleteLink": {
+          "$encodedBytes": 196630,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "putAlias": {
+          "$encodedBytes": 196628,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "deleteAlias": {
+          "$encodedBytes": 196631,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "updateWhere": {
+          "$encodedBytes": 196631,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "deleteWhere": {
+          "$encodedBytes": 196631,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "batch": {
+          "$encodedBytes": 196624,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        },
+        "sequence": {
+          "$encodedBytes": 196627,
+          "$meaning": "ready.scope concatenated with exact ASCII operation suffix, JSON quoting preserved"
+        }
+      },
+      "runtimeConfigurationIdentity": {
+        "$encodedBytes": 66,
+        "$meaning": "64hex"
+      },
+      "authorityMode": "canonical"
+    },
+    "claimEligible": false,
+    "initialReady": {
+      "$encodedBytes": 196608,
+      "$meaning": "returned ready JSON UTF8 <=3*65536 UTF16 code units"
+    },
+    "reopenedReady": {
+      "$encodedBytes": 196608,
+      "$meaning": "same separate returned ready bound"
+    },
+    "outcome": {
+      "$encodedBytes": 10,
+      "$meaning": "observed/failed"
+    },
+    "failureStages": [
+      "metadata-capture-failed",
+      "launch-failed",
+      "binding-validation-failed",
+      "observation-failed",
+      "reopen-refused-pre-ready",
+      "child-close-unobserved",
+      "child-exit-failed",
+      "dispatch-cap-exceeded",
+      "pending-unsettled",
+      "work-deadline",
+      "cleanup-unsettled",
+      "clone-oracle-failed",
+      "directory-removal-failed",
+      "exchange-rejected",
+      "response-validation-failed",
+      "work-aborted",
+      "prelaunch-cleanup-unsettled",
+      "prelaunch-rejected"
+    ],
+    "counts": {
+      "expected": {
+        "requests": 32,
+        "POST": 11,
+        "GET": 21,
+        "children": 2,
+        "receiptEntries": 33,
+        "receiptPages": [
+          32,
+          1
+        ],
+        "eventPages": [
+          32,
+          32,
+          32
+        ],
+        "events": 96,
+        "groups": 1,
+        "staticLocalOracleCount": 5
+      },
+      "observed": {
+        "attempted": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "settled": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "received": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "validated": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "returnedChildHandles": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "receiptEntries": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "receiptPages": [
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          }
+        ],
+        "receiptComplete": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "eventPages": [
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          }
+        ],
+        "events": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "eventTraversalComplete": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "groups": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        }
+      }
+    },
+    "observations": [
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 603981314,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 508,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 6708,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 149,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 200,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 198,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 205,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 170,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 170,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 398,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 198,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        },
+        "requestBody": {
+          "$encodedBytes": 398,
+          "$meaning": "exact fixed ASCII POST body quoted once in report"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      },
+      {
+        "ordinal": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "generation": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "method": {
+          "$encodedBytes": 6,
+          "$meaning": "GET/POST"
+        },
+        "url": {
+          "$encodedBytes": 18875906,
+          "$meaning": "one special row6*(96B+256)+2; other31 rows6*(3B+256)+2"
+        },
+        "settled": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "received": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "validated": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        },
+        "status": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "headers": {
+          "$encodedBytes": 475138,
+          "$meaning": "6H+5floor(H/4)+2; duplicate joining covered by wire char budget"
+        },
+        "body": {
+          "$encodedBytes": 6291458,
+          "$meaning": "valid UTF8 body at mostB bytes, JSON escaping at most6 per byte"
+        },
+        "wireResponseBase64": {
+          "$encodedBytes": 1572866,
+          "$meaning": "full wire base64 quoted"
+        },
+        "wireSha256": {
+          "$encodedBytes": 66,
+          "$meaning": "64hex/null"
+        },
+        "writeState": {
+          "$encodedBytes": 64,
+          "$meaning": "fixed RequestWriteState/null"
+        },
+        "errorCategory": {
+          "$encodedBytes": 32,
+          "$meaning": "fixed HttpTransportError category/unavailable/null"
+        }
+      }
+    ],
+    "oracleOutcomes": [
+      {
+        "id": "O1",
+        "state": {
+          "$encodedBytes": 12,
+          "$meaning": "unobserved/pass/failed"
+        }
+      },
+      {
+        "id": "O2",
+        "state": {
+          "$encodedBytes": 12,
+          "$meaning": "unobserved/pass/failed"
+        }
+      },
+      {
+        "id": "O3",
+        "state": {
+          "$encodedBytes": 12,
+          "$meaning": "unobserved/pass/failed"
+        }
+      },
+      {
+        "id": "O4",
+        "state": {
+          "$encodedBytes": 12,
+          "$meaning": "unobserved/pass/failed"
+        }
+      },
+      {
+        "id": "O5",
+        "state": {
+          "$encodedBytes": 12,
+          "$meaning": "unobserved/pass/failed"
+        }
+      }
+    ],
+    "eventTraversals": {
+      "seed": {
+        "pages": [
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          }
+        ],
+        "count": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "complete": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        }
+      },
+      "deletion": {
+        "pages": [
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          }
+        ],
+        "count": {
+          "$encodedBytes": 32,
+          "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+        },
+        "complete": {
+          "$encodedBytes": 5,
+          "$meaning": "boolean/null"
+        }
+      }
+    },
+    "timing": {
+      "workMilliseconds": {
+        "$encodedBytes": 32,
+        "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+      },
+      "cleanupMilliseconds": {
+        "$encodedBytes": 32,
+        "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+      },
+      "workBudgetMilliseconds": 90000,
+      "cleanupBudgetMilliseconds": 10000
+    },
+    "lifecycle": {
+      "pendingRequests": {
+        "$encodedBytes": 32,
+        "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+      },
+      "ownershipUnknown": {
+        "$encodedBytes": 5,
+        "$meaning": "boolean/null"
+      },
+      "children": [
+        {
+          "generation": {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          "phase": {
+            "$encodedBytes": 12,
+            "$meaning": "initial/reopen"
+          },
+          "launchAttempted": true,
+          "acquisition": {
+            "$encodedBytes": 12,
+            "$meaning": "unknown/acquired"
+          },
+          "refusal": {
+            "$encodedBytes": 40,
+            "$meaning": "fixed prelaunch enum/null"
+          },
+          "pid": {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          "exitCodeSnapshot": {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          "signalCodeSnapshot": {
+            "$encodedBytes": 66,
+            "$meaning": "native Node signal enum/null <=64 bytes"
+          },
+          "observedExit": {
+            "code": {
+              "$encodedBytes": 32,
+              "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+            },
+            "signal": {
+              "$encodedBytes": 66,
+              "$meaning": "native signal/null"
+            }
+          },
+          "observedClose": {
+            "code": {
+              "$encodedBytes": 32,
+              "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+            },
+            "signal": {
+              "$encodedBytes": 66,
+              "$meaning": "native signal/null"
+            }
+          },
+          "closeRequested": {
+            "$encodedBytes": 5,
+            "$meaning": "boolean/null"
+          },
+          "closePromiseSettled": {
+            "$encodedBytes": 5,
+            "$meaning": "boolean/null"
+          },
+          "closePromiseSucceeded": {
+            "$encodedBytes": 5,
+            "$meaning": "boolean/null"
+          },
+          "closure": {
+            "$encodedBytes": 40,
+            "$meaning": "observed-clean-exit-and-close/unknown-or-failed"
+          }
+        },
+        {
+          "generation": {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          "phase": {
+            "$encodedBytes": 12,
+            "$meaning": "initial/reopen"
+          },
+          "launchAttempted": true,
+          "acquisition": {
+            "$encodedBytes": 12,
+            "$meaning": "unknown/acquired"
+          },
+          "refusal": {
+            "$encodedBytes": 40,
+            "$meaning": "fixed prelaunch enum/null"
+          },
+          "pid": {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          "exitCodeSnapshot": {
+            "$encodedBytes": 32,
+            "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+          },
+          "signalCodeSnapshot": {
+            "$encodedBytes": 66,
+            "$meaning": "native Node signal enum/null <=64 bytes"
+          },
+          "observedExit": {
+            "code": {
+              "$encodedBytes": 32,
+              "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+            },
+            "signal": {
+              "$encodedBytes": 66,
+              "$meaning": "native signal/null"
+            }
+          },
+          "observedClose": {
+            "code": {
+              "$encodedBytes": 32,
+              "$meaning": "JSON number/null, conservative32 bytes for any ECMAScript finite numeric encoding; nonfinite serializes null"
+            },
+            "signal": {
+              "$encodedBytes": 66,
+              "$meaning": "native signal/null"
+            }
+          },
+          "closeRequested": {
+            "$encodedBytes": 5,
+            "$meaning": "boolean/null"
+          },
+          "closePromiseSettled": {
+            "$encodedBytes": 5,
+            "$meaning": "boolean/null"
+          },
+          "closePromiseSucceeded": {
+            "$encodedBytes": 5,
+            "$meaning": "boolean/null"
+          },
+          "closure": {
+            "$encodedBytes": 40,
+            "$meaning": "observed-clean-exit-and-close/unknown-or-failed"
+          }
+        }
+      ],
+      "directory": {
+        "path": {
+          "$encodedBytes": 2,
+          "$meaning": "D; add6*actual UTF8 byte length, null is covered for nonempty acquired path"
+        },
+        "disposition": {
+          "$encodedBytes": 12,
+          "$meaning": "removed/retained/unknown"
+        },
+        "storeFilePresence": "unknown"
+      },
+      "descendantOwnership": "root-terminal-audit-required"
+    },
+    "limitations": [
+      "private installed slice; no cold/public/whole-Write credit",
+      "same-store graceful reopen is not crash or logical restore",
+      "external payload/archive/consumer/lock/proof requires independent root binding",
+      "future startup/flush/detached-drain/full-report collector gate remains CLOSED"
+    ]
+  },
+  "limitations": [
+    "This bounds source report JSON, not total Vitest stdout, stderr, reporter failureMessages or arbitrary third-party diagnostics. Full raw log must remain file backed; independent streaming extraction needed.",
+    "E/D remain exact future execution-root parameters; no guessed external consumer path, cap or memory ceiling adopted.",
+    "Very conservative failing-prefix bound; not a claim all worst fields coexist or normal report needs this memory. Tightening needs a separate source-supported proof.",
+    "Existing collector read_text/splitlines plus json.loads has no streaming byte bound; a finite serialized bound does not prove acceptable parser memory.",
+    "No512MiB guarantee claimed. Full raw wire50331648 base64 component alone is not total JSON."
+  ]
+}

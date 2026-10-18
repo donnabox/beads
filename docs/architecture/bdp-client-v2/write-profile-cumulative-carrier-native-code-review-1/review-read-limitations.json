@@ -1,0 +1,10 @@
+{
+  "initialLongOutputTruncated": true,
+  "preservation": "Unchanged existing TX following callbacks are byte-identical; no broad re-audit of their semantics or new execution. This is the complete changed-source review with relevant dependencies.",
+  "readError": {
+    "cause": "File absent; actual raw-http-scenario-target.ts discovered and read. No source/helper/runtime execution.",
+    "command": "rg included guessed packages/conformance/src/scenario-target.ts",
+    "exit": 2
+  },
+  "recovery": "Read full new module and new48-case test in numbered chunks; full changed RU helper and TX observe/positive body and relevant runner/transport/factory bodies inspected separately. Old broad patch output was not relied on as a complete read."
+}
